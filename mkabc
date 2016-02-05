@@ -18,7 +18,7 @@ if [ "${1-}" = "testnet" ]; then
         make abc.package-ios-universal ENABLE_TESTNET=1 $@
     )
     rm -rf Airbitz/ABC-testnet/*
-    cp -a ../airbitz-core/deps/build-testnet/abc/abc-ios-universal/include/* Classes/Public 
+    cp -aL ../airbitz-core/deps/build-testnet/abc/abc-ios-universal/include/* Classes/Private 
     cp -a ../airbitz-core/deps/build-testnet/abc/abc-ios-universal/lib/* Libraries/
 else
     (
