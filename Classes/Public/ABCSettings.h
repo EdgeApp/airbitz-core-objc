@@ -12,9 +12,16 @@
 
 @interface ABCSettings : NSObject
 
-// User Settings that are synced across devices
+/// @name User Settings that are synced across devices
+/// Must call [ABCSettings loadSettings] before reading and
+/// [ABCSettings saveSettings] after writing
+
+/// How many minutes after the app is backgrounded before the user should be auto logged out
 @property (nonatomic) int minutesAutoLogout;
+
+/// Default ISO currency number for new wallets and for the account total on Wallets screen
 @property (nonatomic) int defaultCurrencyNum;
+
 @property (nonatomic) int64_t denomination;
 @property (nonatomic, copy) NSString* denominationLabel;
 @property (nonatomic) int denominationType;
@@ -32,8 +39,12 @@
 
 - (id)init:(AirbitzCore *)abc localSettings:(id)local keyChain:(id)keyChain;
 
+/// Loads all settings into [ABCSettings] structure
 - (ABCConditionCode)loadSettings;
+
+/// Saves all settings from [ABCSettings] structure
 - (ABCConditionCode)saveSettings;
+
 - (BOOL) touchIDEnabled;
 - (BOOL) enableTouchID;
 - (void) disableTouchID;

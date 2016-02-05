@@ -66,11 +66,29 @@ typedef enum eABCDeviceCaps
 
 @interface AirbitzCore : NSObject
 
+/// @name AirbitzCore read/write public object variables
+
+/// Delegate object to handle delegate callbacks
 @property (assign)            id<CoreBridgeDelegate>    delegate;
+
+/// ABC settings that can be set or viewed by app or ABC. Use method [ABCSettings loadSettings]
+/// to make sure they are loaded and [ABCSettings saveSettings] to ensure modified settings are latched
 @property (nonatomic, strong) ABCSettings               *settings;
+
+/// @name AirbitzCore read-only public object variables
+
+/// Array of Wallet objects currently loaded into account. This array is read-only and app should only
+/// access the array while in the main queue.
 @property (nonatomic, strong) NSMutableArray            *arrayWallets;
+
+/// Array of archived Wallet objects currently loaded into account. This array is read-only and app should only
+/// access the array while in the main queue.
 @property (nonatomic, strong) NSMutableArray            *arrayArchivedWallets;
+
+/// Array of NSString * wallet names. This array is read-only and app should only
+/// access the array while in the main queue.
 @property (nonatomic, strong) NSMutableArray            *arrayWalletNames;
+
 @property (nonatomic, strong) NSMutableArray            *arrayUUIDs;
 @property (nonatomic, strong) ABCWallet *currentWallet;
 @property (nonatomic, strong) NSArray                   *arrayCurrencyCodes;
@@ -162,26 +180,112 @@ typedef enum eABCDeviceCaps
 - (BOOL) bitidLogin:(NSString *)uri;
 - (BitidSignature *) bitidSign:(NSString *)uri msg:(NSString *)msg;
 
-///////////////////////// New AirbitzCore methods //////////////////////
+/// -----------------------------------------------------------------------------
+/// @name Account Management
+/// -----------------------------------------------------------------------------
+
+
+/** Create an Airbitz account with specified username, password, and PIN.
+ * @param username NSString*
+ * @param password NSString*
+ * @param pin NSString*
+ * @param complete (Optional) Code block called on success
+ * @param error (Optional) Code block called on error with parameters<br>
+ * - *param* ABCCondition code<br>
+ * - *param* NSString *errorString
+ * @return ABCConditionCode
+ */
+- (ABCConditionCode)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin
+                          complete:(void (^)(void)) completionHandler
+                             error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+- (ABCConditionCode)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin;
+
+
+/** Checks a password for valid entropy looking for correct minimum
+ *  requirements such as upper, lowercase letters, numbers, and # of digits
+ * @param password NSString*
+ * @param valid BOOL* true if password check passes
+ * @param secondsToCrack double* estimated time it takes to crack password
+ * @param count int* pointer to number of rules used
+ * @param ruleDescription NSMutableArray* array of NSString* with description of each rule
+ * @param rulePassed NSMutableArray* array of NSNumber* with BOOL of whether rule passed
+ * @param checkResultsMessage NSMutableString* message describing all failures
+ * @param complete (Optional) Code block called on success
+ * @param error (Optional) Code block called on error with parameters<br>
+ * @return ABCConditionCode
+ */
+- (ABCConditionCode)checkPasswordRules:(NSString *)password
+                                 valid:(BOOL *)valid
+                        secondsToCrack:(double *)secondsToCrack
+                                 count:(unsigned int *)count
+                       ruleDescription:(NSMutableArray **)ruleDescription
+                            rulePassed:(NSMutableArray **)rulePassed
+                   checkResultsMessage:(NSMutableString **) checkResultsMessage;
+
 
 /*
- * createAccount
- * @param NSString* username:
- * @param NSString* password:
- * @param NSString* pin:
+ * changePassword
+ * @param NSString* password: new password for currently logged in user
  *
  * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
  * @param completionHandler: completion handler code block
  * @param errorHandler: error handler code block which is called with the following args
  *                          @param ABCConditionCode       ccode: ABC error code
  *                          @param NSString *       errorString: error message
- *
  * @return ABCConditionCode
  */
-- (ABCConditionCode)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin;
-- (ABCConditionCode)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin
-                         complete:(void (^)(void)) completionHandler
-                            error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+- (ABCConditionCode)changePassword:(NSString *)password;
+- (ABCConditionCode)changePassword:(NSString *)password
+                          complete:(void (^)(void)) completionHandler
+                             error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+
+/*
+ * changePasswordWithRecoveryAnswers
+ * @param NSString*        username: username whose password to change
+ * @param NSString* recoveryAnswers: recovery answers delimited by '\n'
+ * @param NSString*     newPassword: new password
+ *
+ * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
+ * @param completionHandler: completion handler code block
+ * @param errorHandler: error handler code block which is called with the following args
+ *                          @param ABCConditionCode       ccode: ABC error code
+ *                          @param NSString *       errorString: error message
+ * @return ABCConditionCode
+ */
+- (ABCConditionCode)changePasswordWithRecoveryAnswers:(NSString *)username
+                                      recoveryAnswers:(NSString *)answers
+                                          newPassword:(NSString *)password;
+- (ABCConditionCode)changePasswordWithRecoveryAnswers:(NSString *)username
+                                      recoveryAnswers:(NSString *)answers
+                                          newPassword:(NSString *)password
+                                             complete:(void (^)(void)) completionHandler
+                                                error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+
+/*
+ * changePIN
+ * @param NSString* pin: new pin for currently logged in user
+ *
+ * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
+ * @param completionHandler: completion handler code block
+ * @param errorHandler: error handler code block which is called with the following args
+ *                          @param ABCConditionCode       ccode: ABC error code
+ *                          @param NSString *       errorString: error message
+ * @return ABCConditionCode
+ */
+- (ABCConditionCode)changePIN:(NSString *)pin;
+- (ABCConditionCode)changePIN:(NSString *)pin
+                     complete:(void (^)(void)) completionHandler
+                        error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+
+/// -----------------------------------------------------------------------------
+/// @name Wallet Management
+/// -----------------------------------------------------------------------------
+
+
+
+
+
+
 
 /*
  * createWallet
@@ -243,9 +347,10 @@ typedef enum eABCDeviceCaps
 - (ABCConditionCode)hasOTPResetPending:(BOOL *)needsReset;
 
 /**
- * getOTPLocalKey
- * @param NSString* username: user to get the OTP key for
- * @param NSString**     key: pointer to key returned from routine
+ * Gets the locally saved OTP key for the specified user.
+ *
+ * @param NSString *username: user to get the OTP key for
+ * @param NSString **key: pointer to key returned from routine
  * @return ABCConditionCode
  */
 - (ABCConditionCode)getOTPLocalKey:(NSString *)username
@@ -438,84 +543,6 @@ typedef enum eABCDeviceCaps
                      completeWithLogin:(void (^)(BOOL usedTouchID)) completionWithLogin
                        completeNoLogin:(void (^)(void)) completionNoLogin
                                  error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-/*
- * checkPasswordRules
- *  Checks a password for valid entropy looking for correct minimum
- *  requirements such as upper, lowercase letters, numbers, and # of digits
- * @param NSString                     *password: password to check
- * @param BOOL                            *valid: pointer to valid which is true if password passes checks
- * @param double                 *secondsToCrack: pointer to estimated time it takes to crack password
- * @param int                             *count: pointer to number of rules used
- * @param NSMutableArray        *ruleDescription: pointer to array of NSString * with description of each rule
- * @param NSMutableArray             *rulePassed: pointer to array of NSNumber * with BOOL of whether rule passed
- * @param NSMutableString   *checkResultsMessage: pointer to message describing failures
- *
- * @return ABCConditionCode
- */
-- (ABCConditionCode)checkPasswordRules:(NSString *)password
-                                 valid:(BOOL *)valid
-                        secondsToCrack:(double *)secondsToCrack
-                                 count:(unsigned int *)count
-                       ruleDescription:(NSMutableArray **)ruleDescription
-                            rulePassed:(NSMutableArray **)rulePassed
-                   checkResultsMessage:(NSMutableString **) checkResultsMessage;
-
-
-/*
- * changePassword
- * @param NSString* password: new password for currently logged in user
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler: completion handler code block
- * @param errorHandler: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
- */
-- (ABCConditionCode)changePassword:(NSString *)password;
-- (ABCConditionCode)changePassword:(NSString *)password
-                          complete:(void (^)(void)) completionHandler
-                             error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-/*
- * changePasswordWithRecoveryAnswers
- * @param NSString*        username: username whose password to change
- * @param NSString* recoveryAnswers: recovery answers delimited by '\n'
- * @param NSString*     newPassword: new password
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler: completion handler code block
- * @param errorHandler: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
- */
-- (ABCConditionCode)changePasswordWithRecoveryAnswers:(NSString *)username
-                                      recoveryAnswers:(NSString *)answers
-                                          newPassword:(NSString *)password;
-- (ABCConditionCode)changePasswordWithRecoveryAnswers:(NSString *)username
-                                      recoveryAnswers:(NSString *)answers
-                                          newPassword:(NSString *)password
-                                             complete:(void (^)(void)) completionHandler
-                                                error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-/*
- * changePIN
- * @param NSString* pin: new pin for currently logged in user
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler: completion handler code block
- * @param errorHandler: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
- */
-- (ABCConditionCode)changePIN:(NSString *)pin;
-- (ABCConditionCode)changePIN:(NSString *)pin
-                     complete:(void (^)(void)) completionHandler
-                        error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
 
 /*
  * createReceiveRequestWithDetails
