@@ -1,0 +1,456 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		DA5E8DB61C633950005E3093 /* ABCError.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D8F1C633950005E3093 /* ABCError.m */; };
+		DA5E8DB71C633950005E3093 /* ABCKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D911C633950005E3093 /* ABCKeychain.m */; };
+		DA5E8DB81C633950005E3093 /* ABCLocalSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D931C633950005E3093 /* ABCLocalSettings.m */; };
+		DA5E8DB91C633950005E3093 /* ABCRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D941C633950005E3093 /* ABCRequest.m */; };
+		DA5E8DBA1C633950005E3093 /* ABCSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D951C633950005E3093 /* ABCSettings.m */; };
+		DA5E8DBB1C633950005E3093 /* ABCSpend.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D961C633950005E3093 /* ABCSpend.m */; };
+		DA5E8DBC1C633950005E3093 /* ABCStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D981C633950005E3093 /* ABCStrings.m */; };
+		DA5E8DBD1C633950005E3093 /* ABCTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D991C633950005E3093 /* ABCTransaction.m */; };
+		DA5E8DBE1C633950005E3093 /* ABCTxOutput.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D9A1C633950005E3093 /* ABCTxOutput.m */; };
+		DA5E8DBF1C633950005E3093 /* ABCUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D9B1C633950005E3093 /* ABCUtil.m */; };
+		DA5E8DC01C633950005E3093 /* ABCWallet.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D9C1C633950005E3093 /* ABCWallet.m */; };
+		DA5E8DC11C633950005E3093 /* AirbitzCore.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D9D1C633950005E3093 /* AirbitzCore.m */; };
+		DA5E8DD81C633950005E3093 /* NSMutableData+Secure.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8DB51C633950005E3093 /* NSMutableData+Secure.m */; };
+		DA5E8E0B1C6424DC005E3093 /* AirbitzCore.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DA5E8DE11C633960005E3093 /* AirbitzCore.h */; };
+		DA5E8E511C643A23005E3093 /* libabc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E3B1C643A23005E3093 /* libabc.a */; };
+		DA5E8E521C643A23005E3093 /* libbitcoin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E3C1C643A23005E3093 /* libbitcoin.a */; };
+		DA5E8E531C643A23005E3093 /* libboost_atomic.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E3D1C643A23005E3093 /* libboost_atomic.a */; };
+		DA5E8E541C643A23005E3093 /* libboost_chrono.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E3E1C643A23005E3093 /* libboost_chrono.a */; };
+		DA5E8E551C643A23005E3093 /* libboost_date_time.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E3F1C643A23005E3093 /* libboost_date_time.a */; };
+		DA5E8E561C643A23005E3093 /* libboost_filesystem.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E401C643A23005E3093 /* libboost_filesystem.a */; };
+		DA5E8E571C643A23005E3093 /* libboost_program_options.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E411C643A23005E3093 /* libboost_program_options.a */; };
+		DA5E8E581C643A23005E3093 /* libboost_regex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E421C643A23005E3093 /* libboost_regex.a */; };
+		DA5E8E591C643A23005E3093 /* libboost_system.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E431C643A23005E3093 /* libboost_system.a */; };
+		DA5E8E5A1C643A23005E3093 /* libboost_thread.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E441C643A23005E3093 /* libboost_thread.a */; };
+		DA5E8E5B1C643A23005E3093 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E451C643A23005E3093 /* libcrypto.a */; };
+		DA5E8E5C1C643A23005E3093 /* libcsv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E461C643A23005E3093 /* libcsv.a */; };
+		DA5E8E5D1C643A23005E3093 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E471C643A23005E3093 /* libcurl.a */; };
+		DA5E8E5E1C643A23005E3093 /* libgit2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E481C643A23005E3093 /* libgit2.a */; };
+		DA5E8E5F1C643A23005E3093 /* libjansson.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E491C643A23005E3093 /* libjansson.a */; };
+		DA5E8E601C643A23005E3093 /* libprotobuf-lite.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E4A1C643A23005E3093 /* libprotobuf-lite.a */; };
+		DA5E8E611C643A23005E3093 /* libqrencode.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E4B1C643A23005E3093 /* libqrencode.a */; };
+		DA5E8E621C643A23005E3093 /* libsecp256k1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E4C1C643A23005E3093 /* libsecp256k1.a */; };
+		DA5E8E631C643A23005E3093 /* libsodium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E4D1C643A23005E3093 /* libsodium.a */; };
+		DA5E8E641C643A23005E3093 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E4E1C643A23005E3093 /* libssl.a */; };
+		DA5E8E651C643A23005E3093 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E4F1C643A23005E3093 /* libz.a */; };
+		DA5E8E661C643A23005E3093 /* libzmq.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E501C643A23005E3093 /* libzmq.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DAD186451C62FAC60082CB21 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+				DA5E8E0B1C6424DC005E3093 /* AirbitzCore.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		34644909F62B89AA9F648A89 /* ABCSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCSettings.h; path = Classes/Public/ABCSettings.h; sourceTree = SOURCE_ROOT; };
+		DA5E8D8D1C633950005E3093 /* ABC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABC.h; path = Classes/Private/ABC.h; sourceTree = SOURCE_ROOT; };
+		DA5E8D8E1C633950005E3093 /* ABCError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCError.h; path = Classes/Private/ABCError.h; sourceTree = SOURCE_ROOT; };
+		DA5E8D8F1C633950005E3093 /* ABCError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCError.m; path = Classes/Private/ABCError.m; sourceTree = SOURCE_ROOT; };
+		DA5E8D901C633950005E3093 /* ABCKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCKeychain.h; path = Classes/Private/ABCKeychain.h; sourceTree = SOURCE_ROOT; };
+		DA5E8D911C633950005E3093 /* ABCKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCKeychain.m; path = Classes/Private/ABCKeychain.m; sourceTree = SOURCE_ROOT; };
+		DA5E8D921C633950005E3093 /* ABCLocalSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCLocalSettings.h; path = Classes/Private/ABCLocalSettings.h; sourceTree = SOURCE_ROOT; };
+		DA5E8D931C633950005E3093 /* ABCLocalSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCLocalSettings.m; path = Classes/Private/ABCLocalSettings.m; sourceTree = SOURCE_ROOT; };
+		DA5E8D941C633950005E3093 /* ABCRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCRequest.m; path = Classes/Private/ABCRequest.m; sourceTree = SOURCE_ROOT; };
+		DA5E8D951C633950005E3093 /* ABCSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCSettings.m; path = Classes/Private/ABCSettings.m; sourceTree = SOURCE_ROOT; };
+		DA5E8D961C633950005E3093 /* ABCSpend.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCSpend.m; path = Classes/Private/ABCSpend.m; sourceTree = SOURCE_ROOT; };
+		DA5E8D971C633950005E3093 /* ABCStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCStrings.h; path = Classes/Private/ABCStrings.h; sourceTree = SOURCE_ROOT; };
+		DA5E8D981C633950005E3093 /* ABCStrings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCStrings.m; path = Classes/Private/ABCStrings.m; sourceTree = SOURCE_ROOT; };
+		DA5E8D991C633950005E3093 /* ABCTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCTransaction.m; path = Classes/Private/ABCTransaction.m; sourceTree = SOURCE_ROOT; };
+		DA5E8D9A1C633950005E3093 /* ABCTxOutput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCTxOutput.m; path = Classes/Private/ABCTxOutput.m; sourceTree = SOURCE_ROOT; };
+		DA5E8D9B1C633950005E3093 /* ABCUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCUtil.m; path = Classes/Private/ABCUtil.m; sourceTree = SOURCE_ROOT; };
+		DA5E8D9C1C633950005E3093 /* ABCWallet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCWallet.m; path = Classes/Private/ABCWallet.m; sourceTree = SOURCE_ROOT; };
+		DA5E8D9D1C633950005E3093 /* AirbitzCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AirbitzCore.m; path = Classes/Private/AirbitzCore.m; sourceTree = SOURCE_ROOT; };
+		DA5E8DB41C633950005E3093 /* NSMutableData+Secure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSMutableData+Secure.h"; path = "Classes/Private/NSMutableData+Secure.h"; sourceTree = SOURCE_ROOT; };
+		DA5E8DB51C633950005E3093 /* NSMutableData+Secure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSMutableData+Secure.m"; path = "Classes/Private/NSMutableData+Secure.m"; sourceTree = SOURCE_ROOT; };
+		DA5E8DD91C633960005E3093 /* ABCConditionCode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCConditionCode.h; path = Classes/Public/ABCConditionCode.h; sourceTree = SOURCE_ROOT; };
+		DA5E8DDA1C633960005E3093 /* ABCRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCRequest.h; path = Classes/Public/ABCRequest.h; sourceTree = SOURCE_ROOT; };
+		DA5E8DDC1C633960005E3093 /* ABCSpend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCSpend.h; path = Classes/Public/ABCSpend.h; sourceTree = SOURCE_ROOT; };
+		DA5E8DDD1C633960005E3093 /* ABCTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCTransaction.h; path = Classes/Public/ABCTransaction.h; sourceTree = SOURCE_ROOT; };
+		DA5E8DDE1C633960005E3093 /* ABCTxOutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCTxOutput.h; path = Classes/Public/ABCTxOutput.h; sourceTree = SOURCE_ROOT; };
+		DA5E8DDF1C633960005E3093 /* ABCUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCUtil.h; path = Classes/Public/ABCUtil.h; sourceTree = SOURCE_ROOT; };
+		DA5E8DE01C633960005E3093 /* ABCWallet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCWallet.h; path = Classes/Public/ABCWallet.h; sourceTree = SOURCE_ROOT; };
+		DA5E8DE11C633960005E3093 /* AirbitzCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AirbitzCore.h; path = Classes/Public/AirbitzCore.h; sourceTree = SOURCE_ROOT; };
+		DA5E8E3B1C643A23005E3093 /* libabc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libabc.a; path = Libraries/libabc.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E3C1C643A23005E3093 /* libbitcoin.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbitcoin.a; path = Libraries/libbitcoin.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E3D1C643A23005E3093 /* libboost_atomic.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_atomic.a; path = Libraries/libboost_atomic.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E3E1C643A23005E3093 /* libboost_chrono.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_chrono.a; path = Libraries/libboost_chrono.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E3F1C643A23005E3093 /* libboost_date_time.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_date_time.a; path = Libraries/libboost_date_time.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E401C643A23005E3093 /* libboost_filesystem.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_filesystem.a; path = Libraries/libboost_filesystem.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E411C643A23005E3093 /* libboost_program_options.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_program_options.a; path = Libraries/libboost_program_options.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E421C643A23005E3093 /* libboost_regex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_regex.a; path = Libraries/libboost_regex.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E431C643A23005E3093 /* libboost_system.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_system.a; path = Libraries/libboost_system.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E441C643A23005E3093 /* libboost_thread.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_thread.a; path = Libraries/libboost_thread.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E451C643A23005E3093 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = Libraries/libcrypto.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E461C643A23005E3093 /* libcsv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcsv.a; path = Libraries/libcsv.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E471C643A23005E3093 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcurl.a; path = Libraries/libcurl.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E481C643A23005E3093 /* libgit2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgit2.a; path = Libraries/libgit2.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E491C643A23005E3093 /* libjansson.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjansson.a; path = Libraries/libjansson.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E4A1C643A23005E3093 /* libprotobuf-lite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libprotobuf-lite.a"; path = "Libraries/libprotobuf-lite.a"; sourceTree = SOURCE_ROOT; };
+		DA5E8E4B1C643A23005E3093 /* libqrencode.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libqrencode.a; path = Libraries/libqrencode.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E4C1C643A23005E3093 /* libsecp256k1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsecp256k1.a; path = Libraries/libsecp256k1.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E4D1C643A23005E3093 /* libsodium.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsodium.a; path = Libraries/libsodium.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E4E1C643A23005E3093 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = Libraries/libssl.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E4F1C643A23005E3093 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = Libraries/libz.a; sourceTree = SOURCE_ROOT; };
+		DA5E8E501C643A23005E3093 /* libzmq.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzmq.a; path = Libraries/libzmq.a; sourceTree = SOURCE_ROOT; };
+		DAD186471C62FAC60082CB21 /* libAirbitzCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAirbitzCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DAD186441C62FAC60082CB21 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DA5E8E641C643A23005E3093 /* libssl.a in Frameworks */,
+				DA5E8E551C643A23005E3093 /* libboost_date_time.a in Frameworks */,
+				DA5E8E571C643A23005E3093 /* libboost_program_options.a in Frameworks */,
+				DA5E8E531C643A23005E3093 /* libboost_atomic.a in Frameworks */,
+				DA5E8E561C643A23005E3093 /* libboost_filesystem.a in Frameworks */,
+				DA5E8E601C643A23005E3093 /* libprotobuf-lite.a in Frameworks */,
+				DA5E8E631C643A23005E3093 /* libsodium.a in Frameworks */,
+				DA5E8E521C643A23005E3093 /* libbitcoin.a in Frameworks */,
+				DA5E8E5A1C643A23005E3093 /* libboost_thread.a in Frameworks */,
+				DA5E8E5F1C643A23005E3093 /* libjansson.a in Frameworks */,
+				DA5E8E621C643A23005E3093 /* libsecp256k1.a in Frameworks */,
+				DA5E8E5B1C643A23005E3093 /* libcrypto.a in Frameworks */,
+				DA5E8E661C643A23005E3093 /* libzmq.a in Frameworks */,
+				DA5E8E651C643A23005E3093 /* libz.a in Frameworks */,
+				DA5E8E5E1C643A23005E3093 /* libgit2.a in Frameworks */,
+				DA5E8E541C643A23005E3093 /* libboost_chrono.a in Frameworks */,
+				DA5E8E591C643A23005E3093 /* libboost_system.a in Frameworks */,
+				DA5E8E611C643A23005E3093 /* libqrencode.a in Frameworks */,
+				DA5E8E5D1C643A23005E3093 /* libcurl.a in Frameworks */,
+				DA5E8E511C643A23005E3093 /* libabc.a in Frameworks */,
+				DA5E8E5C1C643A23005E3093 /* libcsv.a in Frameworks */,
+				DA5E8E581C643A23005E3093 /* libboost_regex.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		DA5E8D321C632E47005E3093 /* Public */ = {
+			isa = PBXGroup;
+			children = (
+				DA5E8DD91C633960005E3093 /* ABCConditionCode.h */,
+				DA5E8DDA1C633960005E3093 /* ABCRequest.h */,
+				DA5E8DDC1C633960005E3093 /* ABCSpend.h */,
+				DA5E8DDD1C633960005E3093 /* ABCTransaction.h */,
+				DA5E8DDE1C633960005E3093 /* ABCTxOutput.h */,
+				DA5E8DDF1C633960005E3093 /* ABCUtil.h */,
+				DA5E8DE01C633960005E3093 /* ABCWallet.h */,
+				DA5E8DE11C633960005E3093 /* AirbitzCore.h */,
+				34644909F62B89AA9F648A89 /* ABCSettings.h */,
+			);
+			name = Public;
+			sourceTree = "<group>";
+		};
+		DA5E8D331C632E4F005E3093 /* Private */ = {
+			isa = PBXGroup;
+			children = (
+				DA5E8D8D1C633950005E3093 /* ABC.h */,
+				DA5E8D8E1C633950005E3093 /* ABCError.h */,
+				DA5E8D8F1C633950005E3093 /* ABCError.m */,
+				DA5E8D901C633950005E3093 /* ABCKeychain.h */,
+				DA5E8D911C633950005E3093 /* ABCKeychain.m */,
+				DA5E8D921C633950005E3093 /* ABCLocalSettings.h */,
+				DA5E8D931C633950005E3093 /* ABCLocalSettings.m */,
+				DA5E8D941C633950005E3093 /* ABCRequest.m */,
+				DA5E8D951C633950005E3093 /* ABCSettings.m */,
+				DA5E8D961C633950005E3093 /* ABCSpend.m */,
+				DA5E8D971C633950005E3093 /* ABCStrings.h */,
+				DA5E8D981C633950005E3093 /* ABCStrings.m */,
+				DA5E8D991C633950005E3093 /* ABCTransaction.m */,
+				DA5E8D9A1C633950005E3093 /* ABCTxOutput.m */,
+				DA5E8D9B1C633950005E3093 /* ABCUtil.m */,
+				DA5E8D9C1C633950005E3093 /* ABCWallet.m */,
+				DA5E8D9D1C633950005E3093 /* AirbitzCore.m */,
+				DA5E8DB41C633950005E3093 /* NSMutableData+Secure.h */,
+				DA5E8DB51C633950005E3093 /* NSMutableData+Secure.m */,
+			);
+			name = Private;
+			sourceTree = "<group>";
+		};
+		DA5E8E0E1C6439D4005E3093 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				DA5E8E3B1C643A23005E3093 /* libabc.a */,
+				DA5E8E3C1C643A23005E3093 /* libbitcoin.a */,
+				DA5E8E3D1C643A23005E3093 /* libboost_atomic.a */,
+				DA5E8E3E1C643A23005E3093 /* libboost_chrono.a */,
+				DA5E8E3F1C643A23005E3093 /* libboost_date_time.a */,
+				DA5E8E401C643A23005E3093 /* libboost_filesystem.a */,
+				DA5E8E411C643A23005E3093 /* libboost_program_options.a */,
+				DA5E8E421C643A23005E3093 /* libboost_regex.a */,
+				DA5E8E431C643A23005E3093 /* libboost_system.a */,
+				DA5E8E441C643A23005E3093 /* libboost_thread.a */,
+				DA5E8E451C643A23005E3093 /* libcrypto.a */,
+				DA5E8E461C643A23005E3093 /* libcsv.a */,
+				DA5E8E471C643A23005E3093 /* libcurl.a */,
+				DA5E8E481C643A23005E3093 /* libgit2.a */,
+				DA5E8E491C643A23005E3093 /* libjansson.a */,
+				DA5E8E4A1C643A23005E3093 /* libprotobuf-lite.a */,
+				DA5E8E4B1C643A23005E3093 /* libqrencode.a */,
+				DA5E8E4C1C643A23005E3093 /* libsecp256k1.a */,
+				DA5E8E4D1C643A23005E3093 /* libsodium.a */,
+				DA5E8E4E1C643A23005E3093 /* libssl.a */,
+				DA5E8E4F1C643A23005E3093 /* libz.a */,
+				DA5E8E501C643A23005E3093 /* libzmq.a */,
+			);
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		DAD1863E1C62FAC60082CB21 = {
+			isa = PBXGroup;
+			children = (
+				DAD186491C62FAC60082CB21 /* AirbitzCore */,
+				DAD186481C62FAC60082CB21 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DAD186481C62FAC60082CB21 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DAD186471C62FAC60082CB21 /* libAirbitzCore.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DAD186491C62FAC60082CB21 /* AirbitzCore */ = {
+			isa = PBXGroup;
+			children = (
+				DA5E8E0E1C6439D4005E3093 /* Libraries */,
+				DA5E8D331C632E4F005E3093 /* Private */,
+				DA5E8D321C632E47005E3093 /* Public */,
+			);
+			path = AirbitzCore;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DAD186461C62FAC60082CB21 /* AirbitzCore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DAD186501C62FAC60082CB21 /* Build configuration list for PBXNativeTarget "AirbitzCore" */;
+			buildPhases = (
+				DAD186431C62FAC60082CB21 /* Sources */,
+				DAD186441C62FAC60082CB21 /* Frameworks */,
+				DAD186451C62FAC60082CB21 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AirbitzCore;
+			productName = AirbitzCore;
+			productReference = DAD186471C62FAC60082CB21 /* libAirbitzCore.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DAD1863F1C62FAC60082CB21 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0720;
+				ORGANIZATIONNAME = Airbitz;
+				TargetAttributes = {
+					DAD186461C62FAC60082CB21 = {
+						CreatedOnToolsVersion = 7.2;
+					};
+				};
+			};
+			buildConfigurationList = DAD186421C62FAC60082CB21 /* Build configuration list for PBXProject "AirbitzCore" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = DAD1863E1C62FAC60082CB21;
+			productRefGroup = DAD186481C62FAC60082CB21 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				DAD186461C62FAC60082CB21 /* AirbitzCore */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DAD186431C62FAC60082CB21 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DA5E8DBF1C633950005E3093 /* ABCUtil.m in Sources */,
+				DA5E8DB71C633950005E3093 /* ABCKeychain.m in Sources */,
+				DA5E8DC11C633950005E3093 /* AirbitzCore.m in Sources */,
+				DA5E8DB61C633950005E3093 /* ABCError.m in Sources */,
+				DA5E8DB91C633950005E3093 /* ABCRequest.m in Sources */,
+				DA5E8DBB1C633950005E3093 /* ABCSpend.m in Sources */,
+				DA5E8DBA1C633950005E3093 /* ABCSettings.m in Sources */,
+				DA5E8DBC1C633950005E3093 /* ABCStrings.m in Sources */,
+				DA5E8DC01C633950005E3093 /* ABCWallet.m in Sources */,
+				DA5E8DB81C633950005E3093 /* ABCLocalSettings.m in Sources */,
+				DA5E8DBD1C633950005E3093 /* ABCTransaction.m in Sources */,
+				DA5E8DBE1C633950005E3093 /* ABCTxOutput.m in Sources */,
+				DA5E8DD81C633950005E3093 /* NSMutableData+Secure.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		DAD1864E1C62FAC60082CB21 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		DAD1864F1C62FAC60082CB21 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		DAD186511C62FAC60082CB21 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/AirbitzCore/ABC",
+					"$(PROJECT_DIR)/AirbitzCore",
+					"$(PROJECT_DIR)/Classes/Private",
+					"$(PROJECT_DIR)/Libraries",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		DAD186521C62FAC60082CB21 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/AirbitzCore/ABC",
+					"$(PROJECT_DIR)/AirbitzCore",
+					"$(PROJECT_DIR)/Classes/Private",
+					"$(PROJECT_DIR)/Libraries",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		DAD186421C62FAC60082CB21 /* Build configuration list for PBXProject "AirbitzCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DAD1864E1C62FAC60082CB21 /* Debug */,
+				DAD1864F1C62FAC60082CB21 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DAD186501C62FAC60082CB21 /* Build configuration list for PBXNativeTarget "AirbitzCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DAD186511C62FAC60082CB21 /* Debug */,
+				DAD186521C62FAC60082CB21 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = DAD1863F1C62FAC60082CB21 /* Project object */;
+}
