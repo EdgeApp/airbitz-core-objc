@@ -5,8 +5,7 @@ set -e
 
 CURRENT_DIR=$( /bin/pwd )
 
-mkdir -m 0775 -p AirBitz/ABC/
-mkdir -m 0775 -p AirBitz/ABC-testnet/
+mkdir -m 0775 -p Libraries
 
 touch ../airbitz-core/deps/recipes/abc/abc.recipe
 
