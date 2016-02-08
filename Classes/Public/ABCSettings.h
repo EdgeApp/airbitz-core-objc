@@ -6,9 +6,13 @@
 #import <Foundation/Foundation.h>
 #import "ABCConditionCode.h"
 #import "AirbitzCore.h"
+#import "ABCUser.h"
 
 @class AirbitzCore;
 @class ABCKeychain;
+@class ABCUser;
+
+#define ABC_ARRAY_EXCHANGES     @[@"Bitstamp", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
 
 @interface ABCSettings : NSObject
 
@@ -37,7 +41,7 @@
 @property (nonatomic) int64_t spendRequirePinSatoshis;
 @property (nonatomic) bool bDisablePINLogin;
 
-- (id)init:(AirbitzCore *)abc localSettings:(id)local keyChain:(id)keyChain;
+- (id)init:(ABCUser *)user localSettings:(id)local keyChain:(id)keyChain;
 
 /// Loads all settings into [ABCSettings] structure
 - (ABCConditionCode)loadSettings;

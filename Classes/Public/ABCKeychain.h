@@ -22,7 +22,6 @@
 
 @interface ABCKeychain : NSObject
 
-@property (nonatomic) ABCSettings *settings;
 @property (nonatomic) ABCLocalSettings *localSettings;
 
 - (id) init:(AirbitzCore *)abc;

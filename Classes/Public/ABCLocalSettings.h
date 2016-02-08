@@ -12,9 +12,9 @@
 
 @interface ABCLocalSettings : NSObject
 
-@property (nonatomic, retain)   NSString        *lastLoggedInAccount;
-@property (nonatomic, retain)   NSMutableArray  *touchIDUsersEnabled;
-@property (nonatomic, retain)   NSMutableArray  *touchIDUsersDisabled;
+@property (retain)   NSString        *lastLoggedInAccount;
+@property (retain)   NSMutableArray  *touchIDUsersEnabled;
+@property (retain)   NSMutableArray  *touchIDUsersDisabled;
 
 - (id)init:(AirbitzCore *)abc;
 - (void)loadAll;
