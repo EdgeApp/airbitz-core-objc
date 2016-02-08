@@ -23,7 +23,6 @@
     if (self) 
     {
         self.strID = @"";
-        self.strWalletUUID = @"";
         self.strWalletName = @"";
         self.strName = @"";
         self.strAddress = @"";
@@ -32,6 +31,7 @@
         self.strNotes = @"";
         self.outputs = [[NSArray alloc] init];
         self.bizId = 0;
+        self.wallet = nil;
     }
     return self;
 }
@@ -71,7 +71,7 @@
 {
     return([NSString stringWithFormat:@"ABCTransaction - ID: %@, WalletUUID: %@, WalletName: %@, Name: %@, Address: %@, Date: %@, Confirmed: %@, Confirmations: %u, AmountSatoshi: %lli, AmountFiat: %lf, Balance: %lli, Category: %@, Notes: %@",
             self.strID,
-            self.strWalletUUID,
+            self.wallet.strUUID,
             self.strWalletName,
             self.strName,
             self.strAddress,

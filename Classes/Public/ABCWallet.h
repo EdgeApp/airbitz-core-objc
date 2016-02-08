@@ -116,7 +116,12 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
                 complete:(void (^)(ABCImportDataModel dataModel, NSString *address, NSString *txid, uint64_t amount)) completionHandler
                    error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
 
+- (void)prioritizeAddress:(NSString *)address;
 
+
+- (void) loadTransactions;
+- (ABCTransaction *)getTransaction:(NSString *) szTxId;
+- (int64_t)getTotalSentToday;
 
 
 

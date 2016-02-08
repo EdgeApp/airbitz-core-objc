@@ -176,7 +176,7 @@
     return f;
 }
 
-- (NSDate *)dateFromTimestamp:(int64_t) intDate
+- (NSDate *)dateFromTimestamp:(int64_t) intDate;
 {
     return [NSDate dateWithTimeIntervalSince1970: intDate];
 }

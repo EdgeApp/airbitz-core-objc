@@ -11,6 +11,8 @@
 #import "ABCRequest.h"
 #import "ABCError.h"
 #import "ABCUtil.h"
+#import "ABCTxOutput.h"
+#import "ABCTransactions.h"
 
 #define HIDDEN_BITZ_URI_SCHEME                          @"hbits"
 static const int importTimeout                = 30;
@@ -398,7 +400,7 @@ exitnow:
     return [self.abcError setLastErrors:error];
 }
 
-- (void)prioritizeAddress:(NSString *)address
+- (void)prioritizeAddress:(NSString *)address;
 {
     if (!address)
         return;
@@ -413,6 +415,197 @@ exitnow:
         [self.abcError setLastErrors:Error];
         
     }];
+}
+
+- (NSString *)getTransaction;
+{
+    tABC_Error Error;
+    ABCTransaction *transaction = nil;
+    tABC_TxInfo *pTrans = NULL;
+    
+    tABC_CC result = ABC_GetTransaction([self.user.name UTF8String],
+                                        [self.user.password UTF8String],
+                                        [self.strUUID UTF8String], [szTxId UTF8String],
+                                        &pTrans, &Error);
+    if (ABC_CC_Ok == result)
+    {
+        transaction = [[ABCTransaction alloc] init];
+        [self setTransaction:wallet transaction:transaction coreTx:pTrans];
+    }
+    else
+    {
+        ABCLog(2,@("Error: AirbitzCore.loadTransactions:  %s\n"), Error.szDescription);
+        [self setLastErrors:Error];
+    }
+    ABC_FreeTransaction(pTrans);
+    return transaction;
+}
+
+- (int64_t)getTotalSentToday:(ABCWallet *)wallet
+{
+    int64_t total = 0;
+    
+    if ([wallet.arrayTransactions count] == 0)
+        return 0;
+    
+    for (ABCTransaction *t in wallet.arrayTransactions)
+    {
+        if ([[NSCalendar currentCalendar] isDateInToday:t.date])
+        {
+            if (t.amountSatoshi < 0)
+            {
+                total += t.amountSatoshi * -1;
+            }
+        }
+    }
+    return total;
+    
+}
+
+- (void) loadTransactions;
+{
+    tABC_Error Error;
+    unsigned int tCount = 0;
+    ABCTransaction *transaction;
+    tABC_TxInfo **aTransactions = NULL;
+    tABC_CC result = ABC_GetTransactions([self.user.name UTF8String],
+                                         [self.user.password UTF8String],
+                                         [self.strUUID UTF8String],
+                                         ABC_GET_TX_ALL_TIMES,
+                                         ABC_GET_TX_ALL_TIMES,
+                                         &aTransactions,
+                                         &tCount, &Error);
+    if (ABC_CC_Ok == result)
+    {
+        NSMutableArray *arrayTransactions = [[NSMutableArray alloc] init];
+        
+        for (int j = tCount - 1; j >= 0; --j)
+        {
+            tABC_TxInfo *pTrans = aTransactions[j];
+            transaction = [[ABCTransaction alloc] init];
+            [self setTransaction:transaction coreTx:pTrans];
+            [arrayTransactions addObject:transaction];
+        }
+        SInt64 bal = 0;
+        for (int j = (int) arrayTransactions.count - 1; j >= 0; --j)
+        {
+            ABCTransaction *t = arrayTransactions[j];
+            bal += t.amountSatoshi;
+            t.balance = bal;
+        }
+        self.arrayTransactions = arrayTransactions;
+        self.balance = bal;
+    }
+    else
+    {
+        ABCLog(2,@("Error: AirbitzCore.loadTransactions:  %s\n"), Error.szDescription);
+        [self.abcError setLastErrors:Error];
+    }
+    ABC_FreeTransactions(aTransactions, tCount);
+}
+
+- (void)setTransaction:(ABCTransaction *) transaction coreTx:(tABC_TxInfo *) pTrans
+{
+    transaction.strID = [NSString stringWithUTF8String: pTrans->szID];
+    transaction.strName = [NSString stringWithUTF8String: pTrans->pDetails->szName];
+    transaction.strNotes = [NSString stringWithUTF8String: pTrans->pDetails->szNotes];
+    transaction.strCategory = [NSString stringWithUTF8String: pTrans->pDetails->szCategory];
+    transaction.date = [self.user.abc dateFromTimestamp: pTrans->timeCreation];
+    transaction.amountSatoshi = pTrans->pDetails->amountSatoshi;
+    transaction.amountFiat = pTrans->pDetails->amountCurrency;
+    transaction.abFees = pTrans->pDetails->amountFeesAirbitzSatoshi;
+    transaction.minerFees = pTrans->pDetails->amountFeesMinersSatoshi;
+    transaction.strWalletName = self.strName;
+    transaction.wallet = self;
+    if (pTrans->szMalleableTxId) {
+        transaction.strMallealbeID = [NSString stringWithUTF8String: pTrans->szMalleableTxId];
+    }
+    bool bSyncing = NO;
+    transaction.confirmations = [self calcTxConfirmations:transaction.strID
+                                                isSyncing:&bSyncing];
+    transaction.bConfirmed = transaction.confirmations >= CONFIRMED_CONFIRMATION_COUNT;
+    transaction.bSyncing = bSyncing;
+    if (transaction.strName) {
+        transaction.strAddress = transaction.strName;
+    } else {
+        transaction.strAddress = @"";
+    }
+    NSMutableArray *outputs = [[NSMutableArray alloc] init];
+    for (int i = 0; i < pTrans->countOutputs; ++i)
+    {
+        ABCTxOutput *output = [[ABCTxOutput alloc] init];
+        output.strAddress = [NSString stringWithUTF8String: pTrans->aOutputs[i]->szAddress];
+        output.bInput = pTrans->aOutputs[i]->input;
+        output.value = pTrans->aOutputs[i]->value;
+        
+        [outputs addObject:output];
+    }
+    transaction.outputs = outputs;
+    transaction.bizId = pTrans->pDetails->bizId;
+}
+
+- (int)calcTxConfirmations:(NSString *)txId isSyncing:(bool *)syncing
+{
+    tABC_Error Error;
+    int txHeight = 0;
+    int blockHeight = 0;
+    *syncing = NO;
+    if ([wallet.strUUID length] == 0 || [txId length] == 0) {
+        return 0;
+    }
+    if (ABC_TxHeight([wallet.strUUID UTF8String], [txId UTF8String], &txHeight, &Error) != ABC_CC_Ok) {
+        *syncing = YES;
+        if (txHeight < 0)
+        {
+            ABCLog(0, @"calcTxConfirmations returning negative txHeight=%d", txHeight);
+            return txHeight;
+        }
+        else
+            return 0;
+    }
+    if (ABC_BlockHeight([wallet.strUUID UTF8String], &blockHeight, &Error) != ABC_CC_Ok) {
+        *syncing = YES;
+        return 0;
+    }
+    if (txHeight == 0 || blockHeight == 0) {
+        return 0;
+    }
+    
+    int retHeight = (blockHeight - txHeight) + 1;
+    
+    if (retHeight < 0)
+    {
+        retHeight = 0;
+    }
+    return retHeight;
+}
+
+- (NSMutableArray *)searchTransactionsIn: (ABCWallet *) wallet query:(NSString *)term addTo:(NSMutableArray *) arrayTransactions
+{
+    tABC_Error Error;
+    unsigned int tCount = 0;
+    ABCTransaction *transaction;
+    tABC_TxInfo **aTransactions = NULL;
+    tABC_CC result = ABC_SearchTransactions([self.name UTF8String],
+                                            [self.password UTF8String],
+                                            [wallet.strUUID UTF8String], [term UTF8String],
+                                            &aTransactions, &tCount, &Error);
+    if (ABC_CC_Ok == result)
+    {
+        for (int j = tCount - 1; j >= 0; --j) {
+            tABC_TxInfo *pTrans = aTransactions[j];
+            transaction = [[ABCTransaction alloc] init];
+            [self setTransaction:wallet transaction:transaction coreTx:pTrans];
+            [arrayTransactions addObject:transaction];
+        }
+    }
+    else
+    {
+        ABCLog(2,@("Error: AirbitzCore.searchTransactionsIn:  %s\n"), Error.szDescription);
+        [self setLastErrors:Error];
+    }
+    ABC_FreeTransactions(aTransactions, tCount);
+    return arrayTransactions;
 }
 
 

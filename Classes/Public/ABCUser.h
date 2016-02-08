@@ -19,6 +19,7 @@
 @class AirbitzCore;
 @class ABCSettings;
 @class ABCRequest;
+@class ABCTransaction;
 
 @interface BitidSignature : NSObject
 @property (nonatomic, strong) NSString *address;
@@ -68,9 +69,6 @@
 @property (nonatomic, strong) NSMutableArray            *arrayWalletNames;
 
 @property (nonatomic, strong) ABCWallet                 *currentWallet;
-@property (nonatomic, strong) NSArray                   *arrayCurrencyCodes;
-@property (nonatomic, strong) NSArray                   *arrayCurrencyNums;
-@property (nonatomic, strong) NSArray                   *arrayCurrencyStrings;
 @property (nonatomic, strong) NSArray                   *arrayCategories;
 @property (nonatomic)         int                       currentWalletID;
 @property (nonatomic)         BOOL                      bAllWalletsLoaded;
@@ -112,8 +110,6 @@
 
 
 - (ABCWallet *)getWallet: (NSString *)walletUUID;
-- (ABCTransaction *)getTransaction: (NSString *)walletUUID withTx:(NSString *) szTxId;
-- (int64_t)getTotalSentToday:(ABCWallet *)wallet;
 
 - (bool)setWalletAttributes: (ABCWallet *) wallet;
 
@@ -135,7 +131,6 @@
 - (BOOL)needsRecoveryQuestionsReminder;
 - (BOOL)recentlyLoggedIn;
 - (BOOL)passwordOk:(NSString *)password;
-- (void)prioritizeAddress:(NSString *)address inWallet:(NSString *)walletUUID;
 - (NSString *) bitidParseURI:(NSString *)uri;
 - (BOOL) bitidLogin:(NSString *)uri;
 - (BitidSignature *) bitidSign:(NSString *)uri msg:(NSString *)msg;
@@ -445,10 +440,10 @@
  */
 - (BOOL) shouldAskUserToEnableTouchID;
 
-- (ABCConditionCode)pluginDataGet:(NSString *)pluginId withKey:(NSString *)key data:(NSMutableString *)data;
-- (ABCConditionCode)pluginDataSet:(NSString *)pluginId withKey:(NSString *)key withValue:(NSString *)value;
-- (ABCConditionCode)pluginDataRemove:(NSString *)pluginId withKey:(NSString *)key;
-- (ABCConditionCode)pluginDataClear:(NSString *)pluginId;
+- (ABCConditionCode)accountDataGet:(NSString *)folder withKey:(NSString *)key data:(NSMutableString *)data;
+- (ABCConditionCode)accountDataSet:(NSString *)folder withKey:(NSString *)key withValue:(NSString *)value;
+- (ABCConditionCode)accountDataRemove:(NSString *)folder withKey:(NSString *)key;
+- (ABCConditionCode)accountDataClear:(NSString *)folder;
 
 
 //////////////////////////////////////////////////////////////////////////

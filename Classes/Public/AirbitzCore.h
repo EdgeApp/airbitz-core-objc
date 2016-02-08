@@ -61,7 +61,12 @@ typedef enum eABCDeviceCaps
 
 /// Delegate object to handle delegate callbacks
 @property (assign)            id<AirbitzCoreDelegate>    delegate;
+
+/// @name AirbitzCore currency public read-only variables
 @property (nonatomic)         int                       currencyCount;
+@property (nonatomic, strong) NSArray                   *arrayCurrencyCodes;
+@property (nonatomic, strong) NSArray                   *arrayCurrencyNums;
+@property (nonatomic, strong) NSArray                   *arrayCurrencyStrings;
 
 // Private variables. Do not read or modify from GUI app.
 @property (nonatomic, strong) ABCLocalSettings      *localSettings;
@@ -388,6 +393,8 @@ typedef enum eABCDeviceCaps
  * spin down any background queues
  */
 - (void)enterForeground;
+
+- (NSDate *)dateFromTimestamp:(int64_t) intDate;
 
 
 @end
