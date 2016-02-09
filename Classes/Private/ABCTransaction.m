@@ -7,9 +7,12 @@
 //
 
 #import "ABCTransaction.h"
+#import "ABC.h"
+#import "ABCError.h"
 
 @interface ABCTransaction ()
 
+@property                   ABCError            *abcError;
 
 @end
 
@@ -23,7 +26,6 @@
     if (self) 
     {
         self.strID = @"";
-        self.strWalletUUID = @"";
         self.strWalletName = @"";
         self.strName = @"";
         self.strAddress = @"";
@@ -32,6 +34,8 @@
         self.strNotes = @"";
         self.outputs = [[NSArray alloc] init];
         self.bizId = 0;
+        self.wallet = nil;
+        self.abcError = [[ABCError alloc] init];
     }
     return self;
 }
@@ -40,6 +44,51 @@
 {
  
 }
+
+- (void)saveTransactionDetails;
+{
+    [self.wallet.user postToMiscQueue:^{
+        
+        tABC_Error Error;
+        tABC_TxDetails *pDetails;
+        tABC_CC result = ABC_GetTransactionDetails([self.wallet.user.name UTF8String],
+                                                   [self.wallet.user.password UTF8String],
+                                                   [self.wallet.strUUID UTF8String],
+                                                   [self.strID UTF8String],
+                                                   &pDetails, &Error);
+        if (ABC_CC_Ok != result) {
+            [self.abcError setLastErrors:Error];
+            //            return false;
+            return;
+        }
+        
+        pDetails->szName = (char *) [self.strName UTF8String];
+        pDetails->szCategory = (char *) [self.strCategory UTF8String];
+        pDetails->szNotes = (char *) [self.strNotes UTF8String];
+        pDetails->amountCurrency = self.amountFiat;
+        pDetails->bizId = self.bizId;
+        
+        result = ABC_SetTransactionDetails([self.wallet.user.name UTF8String],
+                                           [self.wallet.user.password UTF8String],
+                                           [self.wallet.strUUID UTF8String],
+                                           [self.strID UTF8String],
+                                           pDetails, &Error);
+        
+        if (ABC_CC_Ok != result) {
+            [self.abcError setLastErrors:Error];
+            //            return false;
+            return;
+        }
+        
+        [self.wallet.user refreshWallets];
+        //        return true;
+        return;
+    }];
+    
+    return; // This might as well be a void. async task return value can't ever really be tested
+}
+
+
 
 // overriding the NSObject isEqual
 // allows us to call things like removeObject in array's of these
@@ -71,7 +120,7 @@
 {
     return([NSString stringWithFormat:@"ABCTransaction - ID: %@, WalletUUID: %@, WalletName: %@, Name: %@, Address: %@, Date: %@, Confirmed: %@, Confirmations: %u, AmountSatoshi: %lli, AmountFiat: %lf, Balance: %lli, Category: %@, Notes: %@",
             self.strID,
-            self.strWalletUUID,
+            self.wallet.strUUID,
             self.strWalletName,
             self.strName,
             self.strAddress,

@@ -14,9 +14,10 @@
 
 @interface ABCSettings ()
 
-@property (nonatomic) AirbitzCore *abc;
-@property (nonatomic) ABCLocalSettings *local;
-@property (nonatomic) ABCKeychain *keyChain;
+@property (nonatomic, strong) ABCUser               *user;
+@property (nonatomic, strong) ABCLocalSettings      *local;
+@property (nonatomic, strong) ABCKeychain           *keyChain;
+@property (nonatomic, strong) ABCError              *abcError;
 
 @end
 
@@ -25,10 +26,10 @@
 
 }
 
-- (id)init:(AirbitzCore *)abc localSettings:(ABCLocalSettings *)local keyChain:(ABCKeychain *)keyChain;
+- (id)init:(ABCUser *)user localSettings:(ABCLocalSettings *)local keyChain:(ABCKeychain *)keyChain;
 {
     self = [super init];
-    self.abc = abc;
+    self.user = user;
     self.local = local;
     self.keyChain = keyChain;
     return self;
@@ -38,8 +39,8 @@
 {
     tABC_Error error;
     tABC_AccountSettings *pSettings = NULL;
-    tABC_CC result = ABC_LoadAccountSettings([self.abc.name UTF8String],
-            [self.abc.password UTF8String],
+    tABC_CC result = ABC_LoadAccountSettings([self.user.name UTF8String],
+            [self.user.password UTF8String],
             &pSettings,
             &error);
     if (ABC_CC_Ok == result)
@@ -82,7 +83,7 @@
     ABC_FreeAccountSettings(pSettings);
     [self.local loadAll];
 
-    return [ABCError setLastErrors:error];
+    return [self.abcError setLastErrors:error];
 }
 
 - (ABCConditionCode)saveSettings;
@@ -91,9 +92,9 @@
     tABC_AccountSettings *pSettings;
     BOOL pinLoginChanged = NO;
 
-    ABC_LoadAccountSettings([self.abc.name UTF8String], [self.abc.password UTF8String], &pSettings, &error);
+    ABC_LoadAccountSettings([self.user.name UTF8String], [self.user.password UTF8String], &pSettings, &error);
 
-    if (ABCConditionCodeOk == [ABCError setLastErrors:error])
+    if (ABCConditionCodeOk == [self.abcError setLastErrors:error])
     {
         if (pSettings->bDisablePINLogin != self.bDisablePINLogin)
             pinLoginChanged = YES;
@@ -129,11 +130,11 @@
             });
         }
 
-        ABC_UpdateAccountSettings([self.abc.name UTF8String], [self.abc.password UTF8String], pSettings, &error);
-        if (ABCConditionCodeOk == [ABCError setLastErrors:error])
+        ABC_UpdateAccountSettings([self.user.name UTF8String], [self.user.password UTF8String], pSettings, &error);
+        if (ABCConditionCodeOk == [self.abcError setLastErrors:error])
         {
             ABC_FreeAccountSettings(pSettings);
-            [self.keyChain disableKeychainBasedOnSettings:self.abc.name];
+            [self.keyChain disableKeychainBasedOnSettings:self.user.name];
             [self.local saveAll];
         }
     }
@@ -144,9 +145,9 @@
 - (void)deletePINLogin
 {
     NSString *username = NULL;
-    if ([self.abc isLoggedIn])
+    if ([self.user isLoggedIn])
     {
-        username = self.abc.name;
+        username = self.user.name;
     }
 
     tABC_Error error;
@@ -156,7 +157,7 @@
                 &error);
         if (ABC_CC_Ok != result)
         {
-            [ABCError setLastErrors:error];
+            [self.abcError setLastErrors:error];
         }
     }
 }
@@ -169,8 +170,8 @@
     {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
             tABC_Error error;
-            ABC_PinSetup([self.abc.name UTF8String],
-                    [self.abc.password length] > 0 ? [self.abc.password UTF8String] : nil,
+            ABC_PinSetup([self.user.name UTF8String],
+                    [self.user.password length] > 0 ? [self.user.password UTF8String] : nil,
                     &error);
         });
     }
@@ -178,8 +179,8 @@
 
 - (BOOL) touchIDEnabled;
 {
-    if ([self.local.touchIDUsersDisabled indexOfObject:self.abc.name] == NSNotFound &&
-        [self.local.touchIDUsersEnabled  indexOfObject:self.abc.name] != NSNotFound)
+    if ([self.local.touchIDUsersDisabled indexOfObject:self.user.name] == NSNotFound &&
+        [self.local.touchIDUsersEnabled  indexOfObject:self.user.name] != NSNotFound)
     {
         return YES;
     }
@@ -190,13 +191,13 @@
 - (BOOL) enableTouchID;
 {
     // Need a password to enable touchID until we get support for login handles
-    if (!self.abc.password) return NO;
+    if (!self.user.password) return NO;
 
-    [self.local.touchIDUsersDisabled removeObject:self.abc.name];
-    [self.local.touchIDUsersEnabled addObject:self.abc.name];
+    [self.local.touchIDUsersDisabled removeObject:self.user.name];
+    [self.local.touchIDUsersEnabled addObject:self.user.name];
     [self.local saveAll];
-    [self.keyChain updateLoginKeychainInfo:self.abc.name
-                             password:self.abc.password
+    [self.keyChain updateLoginKeychainInfo:self.user.name
+                             password:self.user.password
                            useTouchID:YES];
 
     return YES;
@@ -205,13 +206,13 @@
 - (void) disableTouchID;
 {
     // Disable TouchID in LocalSettings
-    if (self.abc.name)
+    if (self.user.name)
     {
-        [self.local.touchIDUsersDisabled addObject:self.abc.name];
-        [self.local.touchIDUsersEnabled removeObject:self.abc.name];
+        [self.local.touchIDUsersDisabled addObject:self.user.name];
+        [self.local.touchIDUsersEnabled removeObject:self.user.name];
         [self.local saveAll];
-        [self.keyChain updateLoginKeychainInfo:self.abc.name
-                                 password:self.abc.password
+        [self.keyChain updateLoginKeychainInfo:self.user.name
+                                 password:self.user.password
                                useTouchID:NO];
     }
 }

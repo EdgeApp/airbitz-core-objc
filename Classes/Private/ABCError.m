@@ -14,45 +14,39 @@
 
 @end
 
-__strong static ABCError *singleton;
-
 @implementation ABCError
 
-+ (void)initAll;
+- (id)init;
 {
-    singleton = [ABCError alloc];
+    self = [super init];
+    return self;
 }
 
-+ (ABCError *) Singleton
+- (ABCConditionCode)setLastErrors:(tABC_Error)error;
 {
-    return singleton;
-}
-
-+ (ABCConditionCode)setLastErrors:(tABC_Error)error;
-{
-    singleton.lastConditionCode = (ABCConditionCode) error.code;
-    if (ABCConditionCodeOk == singleton.lastConditionCode)
+    self.lastConditionCode = (ABCConditionCode) error.code;
+    if (ABCConditionCodeOk == self.lastConditionCode)
     {
-        singleton.lastErrorString = @"";
+        self.lastErrorString = @"";
     }
     else
     {
-        singleton.lastErrorString = [ABCError errorMap:error];
+        self.lastErrorString = [self errorMap:error];
     }
-    return singleton.lastConditionCode;
+    return self.lastConditionCode;
 }
 
-+ (ABCConditionCode) getLastConditionCode;
+- (ABCConditionCode) getLastConditionCode;
 {
-    return singleton.lastConditionCode;
+    return self.lastConditionCode;
 }
 
-+ (NSString *) getLastErrorString;
+- (NSString *) getLastErrorString;
 {
-    return singleton.lastErrorString;
+    return self.lastErrorString;
 }
 
-+ (NSString *)errorMap:(tABC_Error)error;
+- (NSString *)errorMap:(tABC_Error)error;
 {
     if (ABCConditionCodeInvalidPinWait == error.code)
     {
@@ -67,12 +61,12 @@ __strong static ABCError *singleton;
     }
     else
     {
-        return [ABCError conditionCodeMap:(ABCConditionCode) error.code];
+        return [self conditionCodeMap:(ABCConditionCode) error.code];
     }
 
 }
 
-+ (NSString *)conditionCodeMap:(ABCConditionCode) cc;
+- (NSString *)conditionCodeMap:(ABCConditionCode) cc;
 {
     switch (cc)
     {

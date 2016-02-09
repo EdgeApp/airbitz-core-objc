@@ -6,8 +6,12 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "AirbitzCore.h"
+#import "ABCUser.h"
+#import "ABCWallet.h"
 
 @class AirbitzCore;
+@class ABCUser;
+@class ABCWallet;
 
 //
 // Object used to pass in address request details
@@ -16,8 +20,7 @@
 // with the information from this object.
 //
 @interface ABCRequest : NSObject
-// The following are passed into ABC as details for the request
-@property (nonatomic, copy) NSString *walletUUID;    // required
+// The following are passed into ABCRequest as details for the request
 @property (nonatomic)       int64_t  amountSatoshi;  // optional: will be added to URI/QRcode if given
 @property (nonatomic, copy) NSString *payeeName;     // optional: will be added to URI/QRcode if given
 @property (nonatomic, copy) NSString *category;      // optional: will be added to URI/QRcode if given
@@ -25,26 +28,26 @@
 @property (nonatomic)       unsigned int bizId;      // optional: will be added to URI/QRcode if given
 
 // The following are returned by ABC
-@property (nonatomic, weak) AirbitzCore *abc; // pointer to AirbitzCore object that created request
 @property (nonatomic, copy) NSString *requestID;
 @property (nonatomic, copy) NSString *uri;
 @property (nonatomic, copy) NSString *address;
 @property (nonatomic, copy) UIImage  *qrCode;
 
-
+@property (nonatomic, strong) ABCWallet *wallet;    // required
 
 /*
- * finalizeRequest
  * Finalizes the request so the address cannot be used by future requests. Forces address
  * rotation so the next request gets a different address
- *
  * @return ABCConditionCode
  */
 - (ABCConditionCode)finalizeRequest;
 
+/*
+ * Modify a request based on the values in the ABCRequest structure
+ * @return ABCConditionCode
+ */
 - (ABCConditionCode)modifyRequestWithDetails;
 
-
-
+- (id)init;
 @end
 
