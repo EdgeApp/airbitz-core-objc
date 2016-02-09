@@ -133,7 +133,6 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 - (NSMutableArray *)searchTransactionsIn:(NSString *)term addTo:(NSMutableArray *) arrayTransactions;
 - (ABCConditionCode) getLastConditionCode;
 - (NSString *) getLastErrorString;
-- (void)requestWalletDataSync;
 - (void)loadWalletFromCore:(NSString *)uuid;
 - (id)initWithUser:(ABCUser *) user;
 

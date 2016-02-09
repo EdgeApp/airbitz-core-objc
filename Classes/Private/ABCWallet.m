@@ -18,7 +18,6 @@
 
 #define HIDDEN_BITZ_URI_SCHEME                          @"hbits"
 static const int importTimeout                  = 30;
-static const int notifyWalletSyncDelay          = 1;
 
 @interface ABCWallet ()
 
@@ -28,8 +27,6 @@ static const int notifyWalletSyncDelay          = 1;
 @property                       ABCImportDataModel          importDataModel;
 @property (nonatomic, strong)   NSString                    *sweptAddress;
 @property (nonatomic, strong)   NSTimer                     *importCallbackTimer;
-@property                       NSOperationQueue            *dataQueue;
-@property                       NSTimer                     *notificationTimer;
 
 
 @end
@@ -48,8 +45,6 @@ static const int notifyWalletSyncDelay          = 1;
         self.arrayTransactions = [[NSArray alloc] init];
         self.abcError = [[ABCError alloc] init];
         self.user = user;
-        self.dataQueue = [[NSOperationQueue alloc] init];
-        [self.dataQueue setMaxConcurrentOperationCount:1];
 
     }
     return self;
@@ -611,56 +606,6 @@ exitnow:
     }
     ABC_FreeTransactions(aTransactions, tCount);
     return arrayTransactions;
-}
-
-- (void)notifyWalletSync
-{
-    if (self.user.delegate)
-    {
-        if ([self.user.delegate respondsToSelector:@selector(abcUserWalletChanged:)])
-        {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self loadTransactions];
-                [self.user.delegate abcUserWalletChanged:self];
-            });
-        }
-    }
-}
-
-- (void)notifyWalletSyncDelayed;
-{
-    if (self.notificationTimer) {
-        [self.notificationTimer invalidate];
-    }
-    
-    self.notificationTimer = [NSTimer scheduledTimerWithTimeInterval:notifyWalletSyncDelay
-                                                              target:self
-                                                            selector:@selector(notifyWalletSync)
-                                                            userInfo:nil
-                                                             repeats:NO];
-}
-
-- (void)requestWalletDataSync;
-{
-    if ([self.dataQueue operationCount] > 0) {
-        return;
-    }
-    
-    [self.dataQueue addOperationWithBlock:^{
-        tABC_Error error;
-        bool bDirty = false;
-        ABC_DataSyncWallet([self.user.name UTF8String],
-                           [self.user.password UTF8String],
-                           [self.strUUID UTF8String],
-                           &bDirty,
-                           &error);
-        [self.abcError setLastErrors:error];
-        dispatch_async(dispatch_get_main_queue(), ^ {
-            if (bDirty) {
-                [self notifyWalletSyncDelayed];
-            }
-        });
-    }];
 }
 
 - (void)loadWalletFromCore:(NSString *)uuid;

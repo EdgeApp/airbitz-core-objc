@@ -17,7 +17,7 @@ static const int   fileSyncFrequencySeconds   = 30;
 static const float walletLoadingTimerInterval = 15.0;     // How long to wait between wallet updates on new device logins before we consider the account fully loaded
 static const int64_t recoveryReminderAmount   = 10000000;
 static const int recoveryReminderCount        = 2;
-static const int notifyAccountSyncDelay          = 1;
+static const int notifySyncDelay          = 1;
 
 @interface ABCUser ()
 {
@@ -1135,27 +1135,26 @@ static const int notifyAccountSyncDelay          = 1;
 {
     [self stopQueues];
     
-//    unsigned long wq, dq, gq, txq, eq, mq;
+    unsigned long wq, gq, dq, eq, mq;
     
 //    // XXX: prevents crashing on logout
-//    while (YES)
-//    {
-//        wq = (unsigned long)[walletsQueue operationCount];
-//        dq = (unsigned long)[dataQueue operationCount];
-//        gq = (unsigned long)[genQRQueue operationCount];
-//        txq = (unsigned long)[txSearchQueue operationCount];
-//        eq = (unsigned long)[exchangeQueue operationCount];
-//        mq = (unsigned long)[miscQueue operationCount];
-//        
-//        //        if (0 == (wq + dq + gq + txq + eq + mq + lq))
-//        if (0 == (wq + gq + txq + eq + mq))
-//            break;
-//        
-//        ABCLog(0,
-//               @"Waiting for queues to complete wq=%lu dq=%lu gq=%lu txq=%lu eq=%lu mq=%lu",
-//               wq, dq, gq, txq, eq, mq);
-//        [NSThread sleepForTimeInterval:.2];
-//    }
+    while (YES)
+    {
+        wq = (unsigned long)[walletsQueue operationCount];
+        dq = (unsigned long)[dataQueue operationCount];
+        gq = (unsigned long)[genQRQueue operationCount];
+        eq = (unsigned long)[exchangeQueue operationCount];
+        mq = (unsigned long)[miscQueue operationCount];
+        
+        //        if (0 == (wq + dq + gq + txq + eq + mq + lq))
+        if (0 == (wq + gq  + eq + mq))
+            break;
+        
+        ABCLog(0,
+               @"Waiting for queues to complete wq=%lu dq=%lu gq=%lu eq=%lu mq=%lu",
+               wq, dq, gq, eq, mq);
+        [NSThread sleepForTimeInterval:.2];
+    }
     
     [self stopWatchers];
     [self cleanWallets];
@@ -1418,21 +1417,71 @@ static const int notifyAccountSyncDelay          = 1;
     }
 }
 
+- (void)requestWalletDataSync:(ABCWallet *)wallet;
+{
+    [dataQueue addOperationWithBlock:^{
+        tABC_Error error;
+        bool bDirty = false;
+        ABC_DataSyncWallet([self.name UTF8String],
+                           [self.password UTF8String],
+                           [wallet.strUUID UTF8String],
+                           &bDirty,
+                           &error);
+        [self setLastErrors:error];
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            if (bDirty) {
+                [self notifyWalletSyncDelayed:wallet];
+            }
+        });
+    }];
+}
+
+- (void)notifyWalletSync:(NSTimer *)timer;
+{
+    ABCWallet *wallet = [timer userInfo];
+    if (self.delegate)
+    {
+        if ([self.delegate respondsToSelector:@selector(abcUserWalletChanged:)])
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [wallet loadTransactions];
+                [self.delegate abcUserWalletChanged:wallet];
+            });
+        }
+    }
+}
+
+- (void)notifyWalletSyncDelayed:(ABCWallet *)wallet;
+{
+    if (notificationTimer) {
+        [notificationTimer invalidate];
+    }
+    
+    notificationTimer = [NSTimer scheduledTimerWithTimeInterval:notifySyncDelay
+                                                              target:self
+                                                            selector:@selector(notifyWalletSync:)
+                                                            userInfo:wallet
+                                                             repeats:NO];
+}
+
+
+
 - (void)dataSyncAllWalletsAndAccount:(NSTimer *)object
 {
+    // Do not request a sync one is currently in progress
+    if ([dataQueue operationCount] > 0) {
+        return;
+    }
+
     NSArray *arrayWallets;
     
     // Sync Wallets First
     arrayWallets = [NSArray arrayWithArray:self.arrayWallets];
     for (ABCWallet *wallet in arrayWallets)
     {
-        [wallet requestWalletDataSync];
+        [self requestWalletDataSync:wallet];
     }
     
-    // Do not request a sync one is currently in progress
-    if ([dataQueue operationCount] > 0) {
-        return;
-    }
     // Sync Account second
     [dataQueue addOperationWithBlock:^{
         [[NSThread currentThread] setName:@"Data Sync"];
@@ -1831,9 +1880,9 @@ static const int notifyAccountSyncDelay          = 1;
     if (! [self isLoggedIn])
         return;
     
-    notificationTimer = [NSTimer scheduledTimerWithTimeInterval:notifyAccountSyncDelay
+    notificationTimer = [NSTimer scheduledTimerWithTimeInterval:notifySyncDelay
                                                          target:self
-                                                       selector:@selector(notifyAccountSync:)
+                                                       selector:@selector(notifyAccountSync)
                                                        userInfo:nil
                                                         repeats:NO];
 }
