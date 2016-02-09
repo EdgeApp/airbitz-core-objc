@@ -33,4 +33,6 @@
 @property (nonatomic, strong)   NSArray         *outputs;
 @property (nonatomic, assign)   unsigned int    bizId;
 
+- (void)saveTransactionDetails;
+
 @end

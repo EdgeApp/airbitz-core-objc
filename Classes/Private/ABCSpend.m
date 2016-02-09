@@ -255,12 +255,12 @@
     return _pSpend->amountMutable == true ? YES : NO;
 }
 
-- (uint64_t)maxSpendable:(NSString *)walletUUID
+- (uint64_t)maxSpendable;
 {
     tABC_Error error;
     uint64_t result = 0;
     ABC_SpendGetMax([self.wallet.user.name UTF8String],
-        [walletUUID UTF8String], _pSpend, &result, &error);
+        [self.wallet.strUUID UTF8String], _pSpend, &result, &error);
     return result;
 }
 

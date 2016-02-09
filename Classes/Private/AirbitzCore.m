@@ -502,30 +502,6 @@
     }
 }
 
-#pragma mark - ABC Callbacks
-
-- (void)notifyOtpRequired:(NSArray *)params
-{
-    if (self.delegate)
-    {
-        if ([self.delegate respondsToSelector:@selector(airbitzCoreOTPRequired)])
-        {
-            [self.delegate airbitzCoreOTPRequired];
-        }
-    }
-}
-
-- (void)notifyOtpSkew:(NSArray *)params
-{
-    if (self.delegate)
-    {
-        if ([self.delegate respondsToSelector:@selector(airbitzCoreOTPSkew)])
-        {
-            [self.delegate airbitzCoreOTPSkew];
-        }
-    }
-}
-
 - (ABCConditionCode) getLocalAccounts:(NSMutableArray *) accounts;
 {
     char * pszUserNames;
@@ -1012,10 +988,11 @@
 /* === OTP authentication: === */
 
 
-- (ABCConditionCode)getOTPResetUsernames:(NSMutableArray **) usernameArray
+- (NSArray *)getOTPResetUsernames;
 {
     char *szUsernames = NULL;
     NSString *usernames = nil;
+    NSArray *usernameArray = nil;
     tABC_Error error;
     ABC_OtpResetGet(&szUsernames, &error);
     ABCConditionCode ccode = [self setLastErrors:error];
@@ -1024,11 +1001,11 @@
         usernames = [NSString stringWithUTF8String:szUsernames];
         usernames = [usernames stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         usernames = [self formatUsername:usernames];
-        *usernameArray = [[NSMutableArray alloc] initWithArray:[usernames componentsSeparatedByString:@"\n"]];
+        usernameArray = [[NSArray alloc] initWithArray:[usernames componentsSeparatedByString:@"\n"]];
     }
     if (szUsernames)
         free(szUsernames);
-    return ccode;
+    return usernameArray;
 }
 
 - (ABCConditionCode)getOTPLocalKey:(NSString *)username
@@ -1341,17 +1318,6 @@ void abcDebugLog(int level, NSString *statement)
 - (ABCConditionCode)setLastErrors:(tABC_Error)error;
 {
     ABCConditionCode ccode = [abcError setLastErrors:error];
-    if (ccode == ABC_CC_DecryptError || ccode == ABC_CC_DecryptFailure)
-    {
-        dispatch_async(dispatch_get_main_queue(), ^
-        {
-            if (self.delegate) {
-                if ([self.delegate respondsToSelector:@selector(airbitzCoreLoggedOut)]) {
-                    [self.delegate airbitzCoreLoggedOut];
-                }
-            }
-        });
-    }
     return ccode;
 }
 

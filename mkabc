@@ -16,7 +16,6 @@ if [ "${1-}" = "testnet" ]; then
         export BUILD_DIR=${CURRENT_DIR}/../airbitz-core/deps/build-testnet
         make abc.package-ios-universal ENABLE_TESTNET=1 $@
     )
-    rm -rf Airbitz/ABC-testnet/*
     cp -aL ../airbitz-core/deps/build-testnet/abc/abc-ios-universal/include/* Classes/Private 
     cp -a ../airbitz-core/deps/build-testnet/abc/abc-ios-universal/lib/* Libraries/
 else
@@ -25,7 +24,6 @@ else
         export BUILD_DIR=${CURRENT_DIR}/../airbitz-core/deps/build
         make abc.package-ios-universal $@
     )
-    rm -rf Airbitz/ABC/*
     cp -aL ../airbitz-core/deps/build/abc/abc-ios-universal/include/* Classes/Private
     cp -a ../airbitz-core/deps/build/abc/abc-ios-universal/lib/* Libraries/
 fi

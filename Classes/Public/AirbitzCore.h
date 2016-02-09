@@ -39,28 +39,9 @@ typedef enum eABCDeviceCaps
 @class ABCLocalSettings;
 @class ABCKeychain;
 
-@protocol AirbitzCoreDelegate <NSObject>
-
-@optional
-
-- (void) airbitzCoreRemotePasswordChange;
-- (void) airbitzCoreLoggedOut;
-- (void) airbitzCoreDataSyncUpdate;
-- (void) airbitzCoreWalletsLoading;
-- (void) airbitzCoreWalletsLoaded;
-- (void) airbitzCoreWalletsChanged;
-- (void) airbitzCoreOTPRequired;
-- (void) airbitzCoreOTPSkew;
-- (void) airbitzCoreIncomingBitcoin:(NSString *)walletUUID txid:(NSString *)txid;
-
-@end
-
 @interface AirbitzCore : NSObject
 
 /// @name AirbitzCore read/write public object variables
-
-/// Delegate object to handle delegate callbacks
-@property (assign)            id<AirbitzCoreDelegate>    delegate;
 
 /// @name AirbitzCore currency public read-only variables
 @property (nonatomic)         int                       currencyCount;
@@ -253,6 +234,7 @@ typedef enum eABCDeviceCaps
  */
 - (ABCConditionCode)getOTPResetDateForLastFailedAccountLogin:(NSDate **)date;
 
+- (NSArray *)getOTPResetUsernames;
 /**
  * requestOTPReset
  * Launches an OTP reset timer on the server,

@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "ABCUser.h"
+#import "ABCConditionCode.h"
 
 #define WALLET_ATTRIBUTE_ARCHIVE_BIT 0x1 // BIT0 is the archive bit
 
@@ -15,6 +16,12 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
     ABCImportWIF,
     ABCImportHBitsURI,
 };
+
+@class ABCUser;
+@class ABCRequest;
+@class AirbitzCore;
+@class ABCSpend;
+@class ABCTransaction;
 
 @interface ABCWallet : NSObject
 
@@ -120,16 +127,15 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 
 
 - (void) loadTransactions;
-- (ABCTransaction *)getTransaction:(NSString *) szTxId;
+- (ABCTransaction *)getTransaction:(NSString *) txId;
 - (int64_t)getTotalSentToday;
-
-
-
+- (void)refreshServer:(BOOL)bData notify:(void(^)(void))cb;
 - (NSString *)conversionString;
-
-
+- (NSMutableArray *)searchTransactionsIn:(NSString *)term addTo:(NSMutableArray *) arrayTransactions;
 - (ABCConditionCode) getLastConditionCode;
 - (NSString *) getLastErrorString;
+- (void)requestWalletDataSync;
+- (void)loadWalletFromCore:(NSString *)uuid;
 
 
 - (id)init:(ABCUser *) user;

@@ -31,14 +31,17 @@
 @optional
 
 - (void) abcUserRemotePasswordChange;
-- (void) abcUserLoggedOut;
-- (void) abcUserDataSyncUpdate;
+- (void) abcUserLoggedOut:(ABCUser *)user;
+- (void) abcUserAccountChanged;
+- (void) abcUserWalletChanged:(ABCWallet *)wallet;
 - (void) abcUserWalletsLoading;
 - (void) abcUserWalletsLoaded;
 - (void) abcUserWalletsChanged;
 - (void) abcUserOTPRequired;
 - (void) abcUserOTPSkew;
 - (void) abcUserExchangeRateChanged;
+- (void) abcUserBlockHeightChanged;
+- (void) abcUserBalanceUpdate;
 - (void) abcUserIncomingBitcoin:(NSString *)walletUUID txid:(NSString *)txid;
 
 @end
@@ -52,34 +55,34 @@
 
 /// ABC settings that can be set or viewed by app or ABC. Use method [ABCSettings loadSettings]
 /// to make sure they are loaded and [ABCSettings saveSettings] to ensure modified settings are latched
-@property (nonatomic, strong) ABCSettings               *settings;
+@property (atomic, strong) ABCSettings               *settings;
 
 /// @name AirbitzCore read-only public object variables
 
 /// Array of Wallet objects currently loaded into account. This array is read-only and app should only
 /// access the array while in the main queue.
-@property (nonatomic, strong) NSMutableArray            *arrayWallets;
+@property (atomic, strong) NSMutableArray            *arrayWallets;
 
 /// Array of archived Wallet objects currently loaded into account. This array is read-only and app should only
 /// access the array while in the main queue.
-@property (nonatomic, strong) NSMutableArray            *arrayArchivedWallets;
+@property (atomic, strong) NSMutableArray            *arrayArchivedWallets;
 
 /// Array of NSString * wallet names. This array is read-only and app should only
 /// access the array while in the main queue.
-@property (nonatomic, strong) NSMutableArray            *arrayWalletNames;
+@property (atomic, strong) NSMutableArray            *arrayWalletNames;
 
-@property (nonatomic, strong) ABCWallet                 *currentWallet;
-@property (nonatomic, strong) NSArray                   *arrayCategories;
-@property (nonatomic)         int                       currentWalletID;
-@property (nonatomic)         BOOL                      bAllWalletsLoaded;
-@property (nonatomic)         int                       numWalletsLoaded;
-@property (nonatomic)         int                       numTotalWallets;
-@property (nonatomic)         int                       numCategories;
+@property (atomic, strong) ABCWallet                 *currentWallet;
+@property (atomic, strong) NSArray                   *arrayCategories;
+@property (atomic)         int                       currentWalletID;
+@property (atomic)         BOOL                      bAllWalletsLoaded;
+@property (atomic)         int                       numWalletsLoaded;
+@property (atomic)         int                       numTotalWallets;
+@property (atomic)         int                       numCategories;
 
-@property (nonatomic, copy)     NSString                *name;
-@property (nonatomic, copy)     NSString                *password;
+@property (atomic, copy)     NSString                *name;
+@property (atomic, copy)     NSString                *password;
 
-@property (nonatomic, strong)   AirbitzCore             *abc;
+@property (atomic, strong)   AirbitzCore             *abc;
 
 
 
@@ -88,13 +91,10 @@
 - (void)startQueues;
 - (void)stopQueues;
 
-- (void)clearSyncQueue;
-- (void)clearTxSearchQueue;
 
 - (int)dataOperationCount;
 
 // New methods
-- (void)rotateWalletServer:(NSString *)walletUUID refreshData:(BOOL)bData notify:(void(^)(void))cb;
 - (void)reorderWallets: (NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath;
 - (void)makeCurrentWallet:(ABCWallet *)wallet;
 - (void)makeCurrentWalletWithIndex:(NSIndexPath *)indexPath;
@@ -112,9 +112,6 @@
 - (ABCWallet *)getWallet: (NSString *)walletUUID;
 
 - (bool)setWalletAttributes: (ABCWallet *) wallet;
-
-- (NSMutableArray *)searchTransactionsIn: (ABCWallet *) wallet query:(NSString *)term addTo:(NSMutableArray *) arrayTransactions;
-- (void)storeTransaction:(ABCTransaction *)transaction;
 
 - (int) currencyDecimalPlaces;
 - (int) maxDecimalPlaces;
@@ -457,11 +454,16 @@
 - (void)postToGenQRQueue:(void(^)(void))cb;
 - (void)postToMiscQueue:(void(^)(void))cb;
 - (void)postToWatcherQueue:(void(^)(void))cb;
+- (void)postToDataQueue:(void(^)(void))cb;
 - (ABCConditionCode)setDefaultCurrencyNum:(int)currencyNum;
 - (void)restoreConnectivity;
 - (void)lostConnectivity;
 - (void)setupLoginPIN;
 - (void)watchAddresses: (NSString *) walletUUID;
+- (void)refreshWallets;
+- (void)connectWatcher:(NSString *)uuid;
+- (void)clearDataQueue;
+- (BOOL)watcherExists:(NSString *)uuid;
 
 
 

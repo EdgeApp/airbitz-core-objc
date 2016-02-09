@@ -39,7 +39,7 @@
 - (void)spendObjectSet:(void *)o;
 
 - (BOOL)isMutable;
-- (uint64_t)maxSpendable:(NSString *)walletUUID;
+- (uint64_t)maxSpendable;
 
 
 /*

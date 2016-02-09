@@ -17,7 +17,7 @@ static const int   fileSyncFrequencySeconds   = 30;
 static const float walletLoadingTimerInterval = 15.0;     // How long to wait between wallet updates on new device logins before we consider the account fully loaded
 static const int64_t recoveryReminderAmount   = 10000000;
 static const int recoveryReminderCount        = 2;
-static const int notifyDataSyncDelay          = 1;
+static const int notifyAccountSyncDelay          = 1;
 
 @interface ABCUser ()
 {
@@ -31,7 +31,6 @@ static const int notifyDataSyncDelay          = 1;
     NSOperationQueue                                *dataQueue;
     NSOperationQueue                                *walletsQueue;
     NSOperationQueue                                *genQRQueue;
-    NSOperationQueue                                *txSearchQueue;
     NSOperationQueue                                *miscQueue;
     NSOperationQueue                                *watcherQueue;
     NSLock                                          *watcherLock;
@@ -70,8 +69,6 @@ static const int notifyDataSyncDelay          = 1;
         [walletsQueue setMaxConcurrentOperationCount:1];
         genQRQueue = [[NSOperationQueue alloc] init];
         [genQRQueue setMaxConcurrentOperationCount:1];
-        txSearchQueue = [[NSOperationQueue alloc] init];
-        [txSearchQueue setMaxConcurrentOperationCount:1];
         miscQueue = [[NSOperationQueue alloc] init];
         [miscQueue setMaxConcurrentOperationCount:8];
         watcherQueue = [[NSOperationQueue alloc] init];
@@ -140,7 +137,6 @@ static const int notifyDataSyncDelay          = 1;
         dataQueue = nil;
         walletsQueue = nil;
         genQRQueue = nil;
-        txSearchQueue = nil;
         miscQueue = nil;
         watcherQueue = nil;
         bInitialized = NO;
@@ -207,8 +203,6 @@ static const int notifyDataSyncDelay          = 1;
         [walletsQueue cancelAllOperations];
     if (genQRQueue)
         [genQRQueue cancelAllOperations];
-    if (txSearchQueue)
-        [txSearchQueue cancelAllOperations];
     if (exchangeQueue)
         [exchangeQueue cancelAllOperations];
     if (miscQueue)
@@ -231,11 +225,6 @@ static const int notifyDataSyncDelay          = 1;
     [genQRQueue addOperationWithBlock:cb];
 }
 
-- (void)postToTxSearchQueue:(void(^)(void))cb;
-{
-    [txSearchQueue addOperationWithBlock:cb];
-}
-
 - (void)postToMiscQueue:(void(^)(void))cb;
 {
     [miscQueue addOperationWithBlock:cb];
@@ -253,19 +242,13 @@ static const int notifyDataSyncDelay          = 1;
     total += exchangeQueue == nil ? 0 : [exchangeQueue operationCount];
     total += walletsQueue == nil  ? 0 : [walletsQueue operationCount];
     total += genQRQueue == nil  ? 0 : [genQRQueue operationCount];
-    total += txSearchQueue == nil  ? 0 : [txSearchQueue operationCount];
     total += watcherQueue == nil  ? 0 : [watcherQueue operationCount];
     return total;
 }
 
-- (void)clearSyncQueue
+- (void)clearDataQueue
 {
     [dataQueue cancelAllOperations];
-}
-
-- (void)clearTxSearchQueue;
-{
-    [txSearchQueue cancelAllOperations];
 }
 
 - (void)clearMiscQueue;
@@ -344,64 +327,19 @@ static const int notifyDataSyncDelay          = 1;
     }
 }
 
-- (ABCWallet *)getWalletFromCore:(NSString *)uuid
-{
-    tABC_Error error;
-    ABCWallet *wallet = [[ABCWallet alloc] init:self];
-    wallet.strUUID = uuid;
-    wallet.strName = loadingText;
-    wallet.currencyNum = -1;
-    wallet.balance = 0;
-    wallet.loaded = NO;
-    
-    if ([self watcherExists:uuid]) {
-        char *szName = NULL;
-        ABC_WalletName([self.name UTF8String], [uuid UTF8String], &szName, &error);
-        if (error.code == ABC_CC_Ok) {
-            wallet.strName = [ABCUtil safeStringWithUTF8String:szName];
-        }
-        if (szName) {
-            free(szName);
-        }
-        
-        int currencyNum;
-        ABC_WalletCurrency([self.name UTF8String], [uuid UTF8String], &currencyNum, &error);
-        if (error.code == ABC_CC_Ok) {
-            wallet.currencyNum = currencyNum;
-            wallet.currencyAbbrev = [self.abc currencyAbbrevLookup:wallet.currencyNum];
-            wallet.currencySymbol = [self.abc currencySymbolLookup:wallet.currencyNum];
-            wallet.loaded = YES;
-        } else {
-            wallet.loaded = NO;
-            wallet.currencyNum = -1;
-            wallet.strName = loadingText;
-        }
-        
-        int64_t balance;
-        ABC_WalletBalance([self.name UTF8String], [uuid UTF8String], &balance, &error);
-        if (error.code == ABC_CC_Ok) {
-            wallet.balance = balance;
-        } else {
-            wallet.balance = 0;
-        }
-    }
-    
-    bool archived = false;
-    ABC_WalletArchived([self.name UTF8String], [uuid UTF8String], &archived, &error);
-    wallet.archived = archived ? YES : NO;
-    
-    return wallet;
-}
-
 - (void)loadWallets:(NSMutableArray *)arrayWallets withTxs:(BOOL)bWithTx
 {
     ABCLog(2,@"ENTER loadWallets: %@", [NSThread currentThread].name);
     
     NSMutableArray *arrayUuids = [[NSMutableArray alloc] init];
     [self loadWalletUUIDs:arrayUuids];
-    
+    ABCWallet *wallet;
     for (NSString *uuid in arrayUuids) {
-        ABCWallet *wallet = [self getWalletFromCore:uuid];
+        wallet = [self getWallet:uuid];
+        if (!wallet){
+            wallet = [[ABCWallet alloc] init:self];
+        }
+        [wallet loadWalletFromCore:uuid];
         if (bWithTx && wallet.loaded) {
             [wallet loadTransactions];
         }
@@ -475,11 +413,10 @@ static const int notifyDataSyncDelay          = 1;
     self.bAllWalletsLoaded = NO;
 }
 
-- (void)refreshWallets
+- (void)refreshWallets;
 {
     [self refreshWallets:nil];
 }
-
 
 - (void)refreshWallets:(void(^)(void))cb
 {
@@ -670,40 +607,6 @@ static const int notifyDataSyncDelay          = 1;
         }
     }
 }
-//
-// This triggers a switch of libbitcoin servers and possibly an update if new information comes in
-//
-- (void)rotateWalletServer:(NSString *)walletUUID refreshData:(BOOL)bData notify:(void(^)(void))cb
-{
-    [self connectWatcher:walletUUID];
-    [self postToMiscQueue:^{
-        // Reconnect the watcher for this wallet
-        if (bData) {
-            // Clear data sync queue and sync the current wallet immediately
-            [dataQueue cancelAllOperations];
-            [dataQueue addOperationWithBlock:^{
-                if (![self isLoggedIn]) {
-                    return;
-                }
-                tABC_Error error;
-                ABC_DataSyncWallet([self.name UTF8String],
-                                   [self.password UTF8String],
-                                   [walletUUID UTF8String],
-                                   ABC_BitCoin_Event_Callback,
-                                   (__bridge void *) self,
-                                   &error);
-                [self setLastErrors:error];
-                dispatch_async(dispatch_get_main_queue(),^{
-                    if (cb) cb();
-                });
-            }];
-        } else {
-            dispatch_async(dispatch_get_main_queue(),^{
-                if (cb) cb();
-            });
-        }
-    }];
-}
 
 - (ABCWallet *)getWallet: (NSString *)walletUUID
 {
@@ -795,51 +698,6 @@ static const int notifyDataSyncDelay          = 1;
         [self setLastErrors:Error];
         return false;
     }
-}
-
-- (void)storeTransaction:(ABCTransaction *)transaction
-{
-    [self postToMiscQueue:^{
-        
-        tABC_Error Error;
-        tABC_TxDetails *pDetails;
-        tABC_CC result = ABC_GetTransactionDetails([self.name UTF8String],
-                                                   [self.password UTF8String],
-                                                   [transaction.strWalletUUID UTF8String],
-                                                   [transaction.strID UTF8String],
-                                                   &pDetails, &Error);
-        if (ABC_CC_Ok != result) {
-            ABCLog(2,@("Error: AirbitzCore.storeTransaction:  %s\n"), Error.szDescription);
-            [self setLastErrors:Error];
-            //            return false;
-            return;
-        }
-        
-        pDetails->szName = (char *) [transaction.strName UTF8String];
-        pDetails->szCategory = (char *) [transaction.strCategory UTF8String];
-        pDetails->szNotes = (char *) [transaction.strNotes UTF8String];
-        pDetails->amountCurrency = transaction.amountFiat;
-        pDetails->bizId = transaction.bizId;
-        
-        result = ABC_SetTransactionDetails([self.name UTF8String],
-                                           [self.password UTF8String],
-                                           [transaction.strWalletUUID UTF8String],
-                                           [transaction.strID UTF8String],
-                                           pDetails, &Error);
-        
-        if (ABC_CC_Ok != result) {
-            ABCLog(2,@("Error: AirbitzCore.storeTransaction:  %s\n"), Error.szDescription);
-            [self setLastErrors:Error];
-            //            return false;
-            return;
-        }
-        
-        [self refreshWallets];
-        //        return true;
-        return;
-    }];
-    
-    return; // This might as well be a void. async task return value can't ever really be tested
 }
 
 - (NSNumberFormatter *)generateNumberFormatter
@@ -1324,7 +1182,7 @@ static const int notifyDataSyncDelay          = 1;
                    {
                        if (self.delegate) {
                            if ([self.delegate respondsToSelector:@selector(abcUserLoggedOut)]) {
-                               [self.delegate abcUserLoggedOut];
+                               [self.delegate abcUserLoggedOut:self];
                            }
                        }
                    });
@@ -1372,7 +1230,7 @@ static const int notifyDataSyncDelay          = 1;
     }
 }
 
-- (void)connectWatcher:(NSString *)uuid
+- (void)connectWatcher:(NSString *)uuid;
 {
     [self postToWatcherQueue: ^{
         if ([self isLoggedIn]) {
@@ -1402,7 +1260,7 @@ static const int notifyDataSyncDelay          = 1;
     }
 }
 
-- (BOOL)watcherExists:(NSString *)uuid
+- (BOOL)watcherExists:(NSString *)uuid;
 {
     [watcherLock lock];
     BOOL exists = [watchers objectForKey:uuid] == nil ? NO : YES;
@@ -1456,10 +1314,6 @@ static const int notifyDataSyncDelay          = 1;
             }];
             
             [self watchAddresses:walletUUID];
-            //            if (bAllWalletsHaveBeenDataSynced) {
-            //                [self connectWatcher:walletUUID];
-            //            }
-            //            [self requestWalletDataSync:walletUUID];
         }
     }];
 }
@@ -1566,41 +1420,65 @@ static const int notifyDataSyncDelay          = 1;
 
 - (void)dataSyncAllWalletsAndAccount:(NSTimer *)object
 {
+    NSArray *arrayWallets;
+    
+    // Sync Wallets First
+    arrayWallets = [NSArray arrayWithArray:self.arrayWallets];
+    for (ABCWallet *wallet in arrayWallets)
+    {
+        [wallet requestWalletDataSync];
+    }
+    
     // Do not request a sync one is currently in progress
     if ([dataQueue operationCount] > 0) {
         return;
     }
-    
-    // Sync Wallets First
-    NSMutableArray *arrayWallets = [[NSMutableArray alloc] init];
-    [self loadWalletUUIDs: arrayWallets];
-    for (NSString *uuid in arrayWallets) {
-        [self requestWalletDataSync:uuid];
-    }
-    
     // Sync Account second
     [dataQueue addOperationWithBlock:^{
         [[NSThread currentThread] setName:@"Data Sync"];
         tABC_Error error;
-        tABC_CC cc =
+        bool bDirty = false;
+        bool bPasswordChanged = false;
         ABC_DataSyncAccount([self.name UTF8String],
                             [self.password UTF8String],
-                            ABC_BitCoin_Event_Callback,
-                            (__bridge void *) self,
+                            &bDirty,
+                            &bPasswordChanged,
                             &error);
-        if (cc == ABC_CC_InvalidOTP) {
+        ABCConditionCode ccode = [self setLastErrors:error];
+        if (ABCConditionCodeInvalidOTP == ccode)
+        {
             NSString *key = nil;
             key = [self getOTPLocalKey];
             ABCConditionCode ccode = [self getLastConditionCode];
-            if (key != nil && ccode == ABCConditionCodeOk) {
+            if (key != nil && ccode == ABCConditionCodeOk)
+            {
                 [self performSelectorOnMainThread:@selector(notifyOtpSkew:)
                                        withObject:nil
                                     waitUntilDone:NO];
-            } else {
+            }
+            else
+            {
                 [self performSelectorOnMainThread:@selector(notifyOtpRequired:)
                                        withObject:nil
                                     waitUntilDone:NO];
             }
+        }
+        else if (ABCConditionCodeOk == ccode)
+        {
+            dispatch_async(dispatch_get_main_queue(), ^ {
+                if (bDirty) {
+                    [self notifyAccountSyncDelayed];
+                }
+                if (bPasswordChanged) {
+                    if (self.delegate)
+                    {
+                        if ([self.delegate respondsToSelector:@selector(abcUserRemotePasswordChange)])
+                        {
+                            [self.delegate abcUserRemotePasswordChange];
+                        }
+                    }
+                }
+            });
         }
     }];
     
@@ -1608,20 +1486,6 @@ static const int notifyDataSyncDelay          = 1;
     [dataQueue addOperationWithBlock:^{
         tABC_Error error;
         ABC_GeneralInfoUpdate(&error);
-        [self setLastErrors:error];
-    }];
-}
-
-- (void)requestWalletDataSync:(NSString *)uuid
-{
-    [dataQueue addOperationWithBlock:^{
-        tABC_Error error;
-        ABC_DataSyncWallet([self.name UTF8String],
-                           [self.password UTF8String],
-                           [uuid UTF8String],
-                           ABC_BitCoin_Event_Callback,
-                           (__bridge void *) self,
-                           &error);
         [self setLastErrors:error];
     }];
 }
@@ -1933,36 +1797,32 @@ static const int notifyDataSyncDelay          = 1;
     }
 }
 
-- (void)notifyDataSync:(NSArray *)params
+- (void)notifyAccountSync
 {
-    if (! [self isLoggedIn])
-        return;
-    
-    unsigned long numWallets = [self.arrayWallets count] + [self.arrayArchivedWallets count];
-    
     [self loadCategories];
     
-    [self refreshWallets:^
-     {
+    int numWallets = self.numTotalWallets;
+    
+    [self refreshWallets:^ {
          
          if (self.delegate)
          {
-             if ([self.delegate respondsToSelector:@selector(abcUserDataSyncUpdate)])
+             if ([self.delegate respondsToSelector:@selector(abcUserAccountChanged)])
              {
                  dispatch_async(dispatch_get_main_queue(), ^{
-                     [self.delegate abcUserDataSyncUpdate];
+                     [self.delegate abcUserAccountChanged];
                  });
              }
          }
          // if there are new wallets, we need to start their watchers
-         if ([self.arrayWallets count] + [self.arrayArchivedWallets count] != numWallets)
+         if (self.numTotalWallets > numWallets)
          {
              [self startWatchers];
          }
      }];
 }
 
-- (void)notifyDataSyncDelayed:(NSArray *)params
+- (void)notifyAccountSyncDelayed;
 {
     if (notificationTimer) {
         [notificationTimer invalidate];
@@ -1971,9 +1831,9 @@ static const int notifyDataSyncDelay          = 1;
     if (! [self isLoggedIn])
         return;
     
-    notificationTimer = [NSTimer scheduledTimerWithTimeInterval:notifyDataSyncDelay
+    notificationTimer = [NSTimer scheduledTimerWithTimeInterval:notifyAccountSyncDelay
                                                          target:self
-                                                       selector:@selector(notifyDataSync:)
+                                                       selector:@selector(notifyAccountSync:)
                                                        userInfo:nil
                                                         repeats:NO];
 }
@@ -2200,38 +2060,42 @@ static const int notifyDataSyncDelay          = 1;
 void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 {
     ABCUser *user = (__bridge id) pInfo->pData;
-    if (pInfo->eventType == ABC_AsyncEventType_IncomingBitCoin)
+    ABCWallet *wallet = nil;
+    if (pInfo->szWalletUUID)
     {
+        wallet = [user getWallet:[NSString stringWithUTF8String:pInfo->szWalletUUID]];
+    }
+    
+    if (ABC_AsyncEventType_IncomingBitCoin == pInfo->eventType) {
         [user refreshWallets:^
          {
              if (user.delegate) {
-                 if ([user.delegate respondsToSelector:@selector(abcUserIncomingBitcoin:)]) {
+                 if ([user.delegate respondsToSelector:@selector(abcUserIncomingBitcoin:txid:)]) {
                      [user.delegate abcUserIncomingBitcoin:[NSString stringWithUTF8String:pInfo->szWalletUUID]
-                                                         txid:[NSString stringWithUTF8String:pInfo->szTxID]];
+                                                      txid:[NSString stringWithUTF8String:pInfo->szTxID]];
                  }
              }
          }];
-        return;
+    } else if (ABC_AsyncEventType_BlockHeightChange == pInfo->eventType) {
+        [user refreshWallets:^
+         {
+             if (user.delegate) {
+                 if ([user.delegate respondsToSelector:@selector(abcUserBlockHeightChanged)]) {
+                     [user.delegate abcUserBlockHeightChanged];
+                 }
+             }
+         }];
+        
+    } else if (ABC_AsyncEventType_BalanceUpdate == pInfo->eventType) {
+        [user refreshWallets:^
+         {
+             if (user.delegate) {
+                 if ([user.delegate respondsToSelector:@selector(abcUserBalanceUpdate)]) {
+                     [user.delegate abcUserBalanceUpdate];
+                 }
+             }
+         }];
     }
-    //    else if (pInfo->eventType == ABC_AsyncEventType_BlockHeightChange)
-    //    {
-    //        [abc refreshWallets];
-    //    }
-    tABC_AsyncEventType eventType = pInfo->eventType;
-    
-    dispatch_async(dispatch_get_main_queue(), ^ {
-        if (eventType == ABC_AsyncEventType_DataSyncUpdate) {
-            [user performSelectorOnMainThread:@selector(notifyDataSyncDelayed:) withObject:nil waitUntilDone:NO];
-        } else if (eventType == ABC_AsyncEventType_RemotePasswordChange) {
-            if (user.delegate)
-            {
-                if ([user.delegate respondsToSelector:@selector(abcUserRemotePasswordChange)])
-                {
-                    [user.delegate abcUserRemotePasswordChange];
-                }
-            }
-        }
-    });
 }
 
 /////////////////////////////////////////////////////////////////
@@ -2285,7 +2149,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 
 - (ABCWallet *) createWallet:(NSString *)walletName currencyNum:(int) currencyNum;
 {
-    [self clearSyncQueue];
+    [self clearDataQueue];
     if (currencyNum == 0)
     {
         if (self.settings)
@@ -2298,7 +2162,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
         }
     }
     
-    if (!self.arrayCurrencyNums || [self.arrayCurrencyNums indexOfObject:[NSNumber numberWithInt:currencyNum]] == NSNotFound)
+    if (!self.abc.arrayCurrencyNums || [self.abc.arrayCurrencyNums indexOfObject:[NSNumber numberWithInt:currencyNum]] == NSNotFound)
     {
         currencyNum = [AirbitzCore getDefaultCurrencyNum];
     }
@@ -2811,31 +2675,6 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return !(nil == self.name);
 }
 
-static int debugLevel = 1;
-
-void abcSetDebugLevel(int level)
-{
-    debugLevel = level;
-}
-
-void abcDebugLog(int level, NSString *statement)
-{
-    if (level <= debugLevel)
-    {
-        static NSDateFormatter *timeStampFormat;
-        if (!timeStampFormat) {
-            timeStampFormat = [[NSDateFormatter alloc] init];
-            [timeStampFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss.SSS"];
-            [timeStampFormat setTimeZone:[NSTimeZone systemTimeZone]];
-        }
-        
-        NSString *tempStr = [NSString stringWithFormat:@"<%@> %@",
-                             [timeStampFormat stringFromDate:[NSDate date]],statement];
-        
-        ABC_Log([tempStr UTF8String]);
-    }
-}
-
 ////////////////////////////////////////////////////////
 #pragma mark - internal routines
 ////////////////////////////////////////////////////////
@@ -2871,7 +2710,7 @@ void abcDebugLog(int level, NSString *statement)
                        {
                            if (self.delegate) {
                                if ([self.delegate respondsToSelector:@selector(abcUserLoggedOut)]) {
-                                   [self.delegate abcUserLoggedOut];
+                                   [self.delegate abcUserLoggedOut:self];
                                }
                            }
                        });
