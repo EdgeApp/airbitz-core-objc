@@ -4,3 +4,4 @@ project.xcworkspace
 Pods/
 Classes/Private/ABC.h
 Libraries/
+.idea/
