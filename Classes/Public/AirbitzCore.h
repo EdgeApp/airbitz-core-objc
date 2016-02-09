@@ -52,6 +52,7 @@ typedef enum eABCDeviceCaps
 // Private variables. Do not read or modify from GUI app.
 @property (nonatomic, strong) ABCLocalSettings      *localSettings;
 @property (nonatomic, strong) ABCKeychain           *keyChain;
+@property (atomic, strong) NSMutableArray           *loggedInUsers;
 
 
 
@@ -79,6 +80,7 @@ typedef enum eABCDeviceCaps
  * @param username NSString*
  * @param password NSString*
  * @param pin NSString*
+ * @param delegate ABCUserDelegate object for callbacks. May be set to nil;
  * @param complete (Optional) Code block called on success. Returns void if used
  * - *param* ABCUser* User object.<br>
  * @param error (Optional) Code block called on error with parameters<br>
@@ -86,16 +88,17 @@ typedef enum eABCDeviceCaps
  * - *param* NSString* errorString
  * @return ABCUser* User object or nil if failuer
  */
-- (void)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin
+- (void)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate
              complete:(void (^)(ABCUser *)) completionHandler
                 error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-- (ABCUser *)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin;
+- (ABCUser *)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate;
 
 
 /**
  * Sign In to an Airbitz account.
  * @param username NSString*
  * @param password NSString*
+ * @param delegate ABCUserDelegate object for callbacks. May be set to nil;
  * @param otp NSString* One Time Password token (optional) send nil if logging in w/o OTP token
  *                       or if OTP token has already been saved in this account from prior login
  * @param complete (Optional) Code block called on success. Returns void if used
@@ -104,8 +107,8 @@ typedef enum eABCDeviceCaps
  * - *param* ABCCondition code<br>
  * - *param* NSString* errorString
  */
-- (ABCUser *)signIn:(NSString *)username password:(NSString *)password otp:(NSString *)otp;
-- (void)signIn:(NSString *)username password:(NSString *)password otp:(NSString *)otp
+- (ABCUser *)signIn:(NSString *)username password:(NSString *)password delegate:(id)delegate otp:(NSString *)otp;
+- (void)signIn:(NSString *)username password:(NSString *)password delegate:(id)delegate otp:(NSString *)otp
       complete:(void (^)(ABCUser *user)) completionHandler
          error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
 
@@ -114,16 +117,24 @@ typedef enum eABCDeviceCaps
  * been logged into using a full username & password
  * @param username NSString*
  * @param pin NSString*
+ * @param delegate ABCUserDelegate object for callbacks. May be set to nil;
  * @param complete (Optional) Code block called on success. Returns void if used
  * - *param* ABCUser* User object.<br>
  * @param error (Optional) Code block called on error with parameters<br>
  * - *param* ABCCondition code<br>
  * - *param* NSString* errorString
  */
-- (ABCUser *)signInWithPIN:(NSString *)username pin:(NSString *)pin;
-- (void)signInWithPIN:(NSString *)username pin:(NSString *)pin
+- (ABCUser *)signInWithPIN:(NSString *)username pin:(NSString *)pin delegate:(id)delegate;
+- (void)signInWithPIN:(NSString *)username pin:(NSString *)pin delegate:(id)delegate
              complete:(void (^)(ABCUser *user)) completionHandler
                 error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+
+/**
+ * Get ABCUser object for username if logged in.
+ * @param username NSString*
+ * @return ABCUser* if logged in. nil otherwise
+ */
+- (ABCUser *) getLoggedInUser:(NSString *)username;
 
 /**
  * Logout the specified ABCUser object
@@ -192,6 +203,7 @@ typedef enum eABCDeviceCaps
  * use TouchID to login and they are outside of their auto-logout time period, this will automatically
  * show the TouchID prompt on supported devices and log them in if authenticated.
  * @param username: user account to attempt to relogin
+ * @param delegate delegate object for callbacks
  * @param doBeforeLogin: completion handler code block executes before login is attempted
  * @param completeWithLogin: completion handler code block executes if login is successful
  * - *param* ABCUser* User object
@@ -203,6 +215,7 @@ typedef enum eABCDeviceCaps
  * @return void
  */
 - (void)autoReloginOrTouchIDIfPossible:(NSString *)username
+                              delegate:(id)delegate
                          doBeforeLogin:(void (^)(void)) doBeforeLogin
                      completeWithLogin:(void (^)(ABCUser *user, BOOL usedTouchID)) completionWithLogin
                        completeNoLogin:(void (^)(void)) completionNoLogin

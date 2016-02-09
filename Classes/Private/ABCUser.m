@@ -2711,7 +2711,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
         dispatch_async(dispatch_get_main_queue(), ^
                        {
                            if (self.delegate) {
-                               if ([self.delegate respondsToSelector:@selector(abcUserLoggedOut)]) {
+                               if ([self.delegate respondsToSelector:@selector(abcUserLoggedOut:)]) {
                                    [self.delegate abcUserLoggedOut:self];
                                }
                            }
