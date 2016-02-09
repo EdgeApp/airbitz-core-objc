@@ -6,10 +6,12 @@
 #import "ABCWallet.h"
 #import "AirbitzCore.h"
 
+@class ABCWallet;
+
 @interface ABCSpend : NSObject
 
-@property (nonatomic, strong)       ABCWallet *srcWallet;
-@property (nonatomic, strong)       ABCWallet *destWallet;
+@property (nonatomic, strong)       ABCWallet               *srcWallet;
+@property (nonatomic, strong)       ABCWallet               *destWallet;
 @property (nonatomic)               long                    bizId;
 @property (nonatomic)               double                  amountFiat;
 
@@ -37,7 +39,7 @@
 - (void)spendObjectSet:(void *)o;
 
 - (BOOL)isMutable;
-- (uint64_t)maxSpendable:(NSString *)walletUUID;
+- (uint64_t)maxSpendable;
 
 
 /*

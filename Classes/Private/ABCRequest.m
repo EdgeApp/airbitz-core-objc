@@ -6,17 +6,19 @@
 #import "ABCRequest.h"
 #import "ABCError.h"
 #import "ABCUtil.h"
+#import "ABCUser.h"
 
 @interface ABCRequest ()
 {
 
 }
 @property (nonatomic, strong) ABCError          *abcError;
+@property (nonatomic, strong) ABCUser           *user; // pointer to ABCUser object that created request
 
 @end
 
 @implementation ABCRequest
-- (id)init
+- (id)init;
 {
     self = [super init];
     self.abcError = [[ABCError alloc] init];
@@ -26,11 +28,17 @@
 - (ABCConditionCode)finalizeRequest
 {
     tABC_Error error;
+    
+    if (!self.wallet || !self.user || !self.requestID)
+    {
+        error.code = ABC_CC_NULLPtr;
+        return [self.abcError setLastErrors:error];
+    }
     // Finalize this request so it isn't used elsewhere
-    ABC_FinalizeReceiveRequest([self.abc.name UTF8String],
-            [self.abc.password UTF8String], [self.walletUUID UTF8String],
+    ABC_FinalizeReceiveRequest([self.user.name UTF8String],
+            [self.user.password UTF8String], [self.wallet.strUUID UTF8String],
             [self.requestID UTF8String], &error);
-    return [ABCError setLastErrors:error];
+    return [self.abcError setLastErrors:error];
 }
 
 - (ABCConditionCode)modifyRequestWithDetails;
@@ -59,38 +67,38 @@
     
     char *pRequestID = (char *)[self.requestID UTF8String];
 
-    ABC_ModifyReceiveRequest([self.abc.name UTF8String],
-                             [self.abc.password UTF8String],
-                             [self.walletUUID UTF8String],
+    ABC_ModifyReceiveRequest([self.wallet.user.name UTF8String],
+                             [self.wallet.user.password UTF8String],
+                             [self.wallet.strUUID UTF8String],
                              pRequestID,
                              &details,
                              &error);
-    ccode = [ABCError setLastErrors:error];
+    ccode = [self.abcError setLastErrors:error];
     if (ABCConditionCodeOk != ccode)
         goto exitnow;
     
     unsigned int width = 0;
-    ABC_GenerateRequestQRCode([self.abc.name UTF8String],
-                              [self.abc.password UTF8String],
-                              [self.walletUUID UTF8String],
+    ABC_GenerateRequestQRCode([self.wallet.user.name UTF8String],
+                              [self.wallet.user.password UTF8String],
+                              [self.wallet.strUUID UTF8String],
                               pRequestID,
                               &pszURI,
                               &pData,
                               &width,
                               &error);
-    ccode = [ABCError setLastErrors:error];
+    ccode = [self.abcError setLastErrors:error];
     if (ABCConditionCodeOk != ccode)
         goto exitnow;
     self.qrCode = [ABCUtil dataToImage:pData withWidth:width andHeight:width];
     self.uri    = [NSString stringWithUTF8String:pszURI];
     
-    ABC_GetRequestAddress([self.abc.name UTF8String],
-                          [self.abc.password UTF8String],
-                          [self.walletUUID UTF8String],
+    ABC_GetRequestAddress([self.wallet.user.name UTF8String],
+                          [self.wallet.user.password UTF8String],
+                          [self.wallet.strUUID UTF8String],
                           pRequestID,
                           &szRequestAddress,
                           &error);
-    ccode = [ABCError setLastErrors:error];
+    ccode = [self.abcError setLastErrors:error];
     if (ABCConditionCodeOk != ccode)
         goto exitnow;
     

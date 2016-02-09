@@ -7,12 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ABCWallet.h"
+
+@class ABCWallet;
 
 @interface ABCTransaction : NSObject
 
+@property (nonatomic, strong)   ABCWallet       *wallet;
 @property (nonatomic, copy)     NSString        *strID;
 @property (nonatomic, copy)     NSString        *strMallealbeID;
-@property (nonatomic, copy)     NSString        *strWalletUUID;
 @property (nonatomic, copy)     NSString        *strWalletName;
 @property (nonatomic, copy)     NSString        *strName;
 @property (nonatomic, copy)     NSString        *strAddress;
@@ -29,5 +32,7 @@
 @property (nonatomic, copy)     NSString        *strNotes;
 @property (nonatomic, strong)   NSArray         *outputs;
 @property (nonatomic, assign)   unsigned int    bizId;
+
+- (void)saveTransactionDetails;
 
 @end
