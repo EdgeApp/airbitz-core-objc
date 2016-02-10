@@ -4,7 +4,6 @@
 // Created by Paul P on 2016/02/09.
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
-
 #import "ABCConditionCode.h"
 #import "ABCKeychain.h"
 #import "ABCRequest.h"
@@ -15,8 +14,16 @@
 #import "ABCUser.h"
 #import "ABCWallet.h"
 
+/// @name Example code for using AirbitzCore
+///
+///     - (void) exampleMethod;
+///     {
+///         AirbitzCore *abc  = [[AirbitzCore alloc] init:@"YourAPIKeyHere"];
+///         ABCUser *abcUser  = [abc createAccount:@"myUsername" password:@"MyPa55w0rd!&" pin:@"4283" delegate:self];
+///         ABCWallet *wallet = [abcUser createWallet:@"My Awesome Bitcoins" currencyNum:0];
+///     }
 
-#define ABC_CONFIRMED_CONFIRMATION_COUNT 6
+#define ABC_CONFIRMED_CONFIRMATION_COUNT    6
 #define ABC_PIN_REQUIRED_PERIOD_SECONDS     120
 #define ABC_ARRAY_EXCHANGES     @[@"Bitstamp", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
 
@@ -59,6 +66,7 @@ typedef enum eABCDeviceCaps
 - (NSString *)currencySymbolLookup:(int)currencyNum;
 
 #pragma mark - Account Management
+
 /// -----------------------------------------------------------------------------
 /// @name Account Management
 /// -----------------------------------------------------------------------------
@@ -68,7 +76,7 @@ typedef enum eABCDeviceCaps
  * @param password NSString*
  * @param pin NSString*
  * @param delegate ABCUserDelegate object for callbacks. May be set to nil;
- * @param complete (Optional) Code block called on success. Returns void if used
+ * @param complete (Optional) Code block called on success. Returns void if used<br>
  * - *param* ABCUser* User object.<br>
  * @param error (Optional) Code block called on error with parameters<br>
  * - *param* ABCCondition code<br>
@@ -88,8 +96,8 @@ typedef enum eABCDeviceCaps
  * @param delegate ABCUserDelegate object for callbacks. May be set to nil;
  * @param otp NSString* One Time Password token (optional) send nil if logging in w/o OTP token
  *                       or if OTP token has already been saved in this account from prior login
- * @param complete (Optional) Code block called on success. Returns void if used
- * - *param* ABCUser* User object.<br>
+ * @param complete (Optional) Code block called on success. Returns void if used<br>
+ * - *param* ABCUser* User object.
  * @param error (Optional) Code block called on error with parameters<br>
  * - *param* ABCCondition code<br>
  * - *param* NSString* errorString
@@ -105,7 +113,7 @@ typedef enum eABCDeviceCaps
  * @param username NSString*
  * @param pin NSString*
  * @param delegate ABCUserDelegate object for callbacks. May be set to nil;
- * @param complete (Optional) Code block called on success. Returns void if used
+ * @param complete (Optional) Code block called on success. Returns void if used<br>
  * - *param* ABCUser* User object.<br>
  * @param error (Optional) Code block called on error with parameters<br>
  * - *param* ABCCondition code<br>
@@ -192,11 +200,11 @@ typedef enum eABCDeviceCaps
  * @param username: user account to attempt to relogin
  * @param delegate delegate object for callbacks
  * @param doBeforeLogin: completion handler code block executes before login is attempted
- * @param completeWithLogin: completion handler code block executes if login is successful
- * - *param* ABCUser* User object
+ * @param completeWithLogin: completion handler code block executes if login is successful<br>
+ * - *param* ABCUser* User object<br>
  * - *param* BOOL* usedTouchID: TRUE if user used TouchID to login
  * @param completeNoLogin: completion handler code block executes if relogin not attempted
- * @param errorHandler: error handler code block which is called if relogin attempted but failed
+ * @param errorHandler: error handler code block which is called if relogin attempted but failed<br>
  * - *param* ABCCondition code<br>
  * - *param* NSString* errorString
  * @return void
@@ -208,6 +216,7 @@ typedef enum eABCDeviceCaps
                        completeNoLogin:(void (^)(void)) completionNoLogin
                                  error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
 
+
 #pragma mark - OTP Management
 /// -----------------------------------------------------------------------------
 /// @name OTP (2 Factor Auth) Management
@@ -217,24 +226,29 @@ typedef enum eABCDeviceCaps
  * Associates an OTP key with the given username.
  * This will not write to disk until the user has successfully logged in
  * at least once.
- * @param NSString* username: user to set the OTP key for
- * @param NSString*      key: key to set
+ * @param username NSString* user to set the OTP key for
+ * @param key NSString* key to set
  * @return ABCConditionCode
  */
 - (ABCConditionCode)setOTPKey:(NSString *)username
                           key:(NSString *)key;
 
 /**
- * getOTPResetDateForLastFailedAccountLogin
- *
  * Returns the OTP reset date for the last account that failed to log in,
  * if any. Returns an empty string otherwise.
- * @param NSDate   **date: pointer to NSDate for return value date
+ * @param date NSDate** pointer to NSDate for return value date
  * @return ABCConditionCode
  */
 - (ABCConditionCode)getOTPResetDateForLastFailedAccountLogin:(NSDate **)date;
 
+/**
+ * Returns an array of usernames of accounts local to device that
+ * have a pending OTP reset on the server. Use getOTPResetDateForLastFailedAccountLogin
+ * to get the NSDate of when the OTP reset will occur.
+ * @return ABCConditionCode
+ */
 - (NSArray *)getOTPResetUsernames;
+
 /**
  * requestOTPReset
  * Launches an OTP reset timer on the server,

@@ -50,14 +50,16 @@
 /// QRCode of request.
 @property (nonatomic, copy) UIImage  *qrCode;
 
-/*
+/// @name Instance Methods
+
+/**
  * Finalizes the request so the address cannot be used by future requests. Forces address
  * rotation so the next request gets a different address
  * @return ABCConditionCode
  */
 - (ABCConditionCode)finalizeRequest;
 
-/*
+/**
  * Modify a request based on the values in the ABCRequest structure
  * @return ABCConditionCode
  */
