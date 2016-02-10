@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -u
+set -e
+
+CURRENT_DIR=$( /bin/pwd )
+
+
+appledoc --project-name airbitz-core-objc --project-company "Airbitz" --company-id co.airbitz --output ./help --no-create-docset --search-undocumented-doc Classes/Public/.
+
