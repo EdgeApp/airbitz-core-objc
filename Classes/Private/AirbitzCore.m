@@ -44,6 +44,10 @@
 
 @implementation AirbitzCore
 
+- (id)init:(NSString *)abcAPIKey;
+{
+    return [self init:abcAPIKey hbits:@""];
+}
 
 - (id)init:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey
 {

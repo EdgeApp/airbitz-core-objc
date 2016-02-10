@@ -47,6 +47,7 @@ typedef enum eABCDeviceCaps
 @property (nonatomic, strong) NSArray                   *arrayCurrencyNums;
 @property (nonatomic, strong) NSArray                   *arrayCurrencyStrings;
 
+- (id)init:(NSString *)abcAPIKey;
 - (id)init:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey;
 - (void)free;
 
