@@ -26,6 +26,7 @@ static const int notifySyncDelay          = 1;
     
     BOOL                                            bInitialized;
     BOOL                                            bNewDeviceLogin;
+    BOOL                                            bHasSentWalletsLoaded;
     long                                            iLoginTimeSeconds;
     NSOperationQueue                                *exchangeQueue;
     NSOperationQueue                                *dataQueue;
@@ -81,6 +82,7 @@ static const int notifySyncDelay          = 1;
         currencyCodesCache = [[NSMutableDictionary alloc] init];
         
         bInitialized = YES;
+        bHasSentWalletsLoaded = NO;
         
         [self cleanWallets];
         
@@ -563,7 +565,8 @@ static const int notifySyncDelay          = 1;
 - (void)postWalletsLoadedNotification
 {
     bNewDeviceLogin = NO;
-    if (self.delegate) {
+    if (self.delegate && !bHasSentWalletsLoaded) {
+        bHasSentWalletsLoaded = YES;
         if ([self.delegate respondsToSelector:@selector(abcUserWalletsLoaded)]) {
             dispatch_async(dispatch_get_main_queue(),^{
                 [self.delegate abcUserWalletsLoaded];

@@ -41,7 +41,7 @@
 - (void) abcUserOTPSkew;
 - (void) abcUserExchangeRateChanged;
 - (void) abcUserBlockHeightChanged;
-- (void) abcUserBalanceUpdate;
+- (void) abcUserBalanceUpdate:(ABCWallet *)wallet txid:(NSString *)txid;
 - (void) abcUserIncomingBitcoin:(ABCWallet *)wallet txid:(NSString *)txid;
 
 @end
