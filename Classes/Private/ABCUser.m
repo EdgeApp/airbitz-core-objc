@@ -1346,7 +1346,7 @@ static const int notifySyncDelay          = 1;
         }
     }];
     
-//    while ([watcherQueue operationCount]);
+    while ([watcherQueue operationCount]);
 }
 
 - (void)watchAddresses: (NSString *) walletUUID
