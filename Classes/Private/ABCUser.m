@@ -2501,26 +2501,6 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return [self setLastErrors:error];
 }
 
-- (ABCConditionCode)encodeStringToQRImage:(NSString *)string
-                                    image:(UIImage **)image;
-{
-    unsigned char *pData = NULL;
-    unsigned int width;
-    tABC_Error error;
-    
-    ABC_QrEncode([string UTF8String], &pData, &width, &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
-    if (ABCConditionCodeOk == ccode)
-    {
-        *image = [ABCUtil dataToImage:pData withWidth:width andHeight:width];
-    }
-    
-    if (pData) {
-        free(pData);
-    }
-    return ccode;
-}
-
 - (ABCConditionCode)getNumWalletsInAccount:(int *)numWallets
 {
     tABC_Error error;

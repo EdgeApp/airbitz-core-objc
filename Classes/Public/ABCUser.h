@@ -328,18 +328,6 @@
  */
 - (ABCConditionCode)removeOTPResetRequest;
 
-/**
- * encodeStringToQRImage
- * Encodes a string into a QR code returned as UIImage *
- *
- * @param     NSString*   string: string to encode
- * @param     UIImage**    image: returned image
- * @return ABCConditionCode
- */
-- (ABCConditionCode)encodeStringToQRImage:(NSString *)string
-                                    image:(UIImage **)image;
-
-
 /*
  * uploadLogs
  * @param NSString* userText: text to send to support staff
