@@ -52,7 +52,7 @@
         if (pSettings->bitcoinDenomination.satoshi > 0)
         {
             self.denomination = pSettings->bitcoinDenomination.satoshi;
-            self.denominationType = pSettings->bitcoinDenomination.denominationType;
+            self.denominationType = (ABCDenomination) pSettings->bitcoinDenomination.denominationType;
 
             switch (self.denominationType) {
                 case ABCDenominationBTC:
@@ -104,7 +104,7 @@
         pSettings->minutesAutoLogout                      = self.minutesAutoLogout         ;
         pSettings->currencyNum                            = self.defaultCurrencyNum        ;
         pSettings->bitcoinDenomination.satoshi            = self.denomination              ;
-        pSettings->bitcoinDenomination.denominationType   = self.denominationType          ;
+        pSettings->bitcoinDenomination.denominationType   = (int) self.denominationType    ;
         pSettings->bNameOnPayments                        = self.bNameOnPayments           ;
         pSettings->bSpendRequirePin                       = self.bSpendRequirePin          ;
         pSettings->spendRequirePinSatoshis                = self.spendRequirePinSatoshis   ;

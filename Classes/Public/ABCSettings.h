@@ -12,6 +12,12 @@
 
 #define ABC_ARRAY_EXCHANGES     @[@"Bitstamp", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
 
+typedef NS_ENUM(NSUInteger, ABCDenomination) {
+    ABCDenominationBTC = 0,
+    ABCDenominationMBTC = 1,
+    ABCDenominationUBTC = 2,
+};
+
 @interface ABCSettings : NSObject
 
 /// @name User Settings that are synced across devices
@@ -26,7 +32,7 @@
 
 @property (nonatomic) int64_t denomination;
 @property (nonatomic, copy) NSString* denominationLabel;
-@property (nonatomic) int denominationType;
+@property (nonatomic) ABCDenomination denominationType;
 @property (nonatomic, copy) NSString* firstName;
 @property (nonatomic, copy) NSString* lastName;
 @property (nonatomic, copy) NSString* nickName;

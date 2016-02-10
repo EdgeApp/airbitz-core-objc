@@ -15,9 +15,6 @@
 #import "ABCUser.h"
 #import "ABCWallet.h"
 
-static const int ABCDenominationBTC  = 0;
-static const int ABCDenominationMBTC = 1;
-static const int ABCDenominationUBTC = 2;
 
 #define ABC_CONFIRMED_CONFIRMATION_COUNT 6
 #define ABC_PIN_REQUIRED_PERIOD_SECONDS     120
