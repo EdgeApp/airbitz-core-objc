@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<title>ABCWallet Class Reference</title>
+
+	<link rel="stylesheet" href="../css/style.css">
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1.4">
+	<meta name="generator" content="appledoc 2.2.1 (build 1334)">
+</head>
+<body class="appledoc">
+	<header>
+		<div class="container" class="hide-in-xcode">
+			
+			<h1 id="library-title">
+				<a href="../index.html">airbitz-core-objc </a>
+			</h1>
+
+			<p id="developer-home">
+				<a href="../index.html">Airbitz</a>
+			</p>
+			
+		</div>
+	</header>
+
+	<aside>
+		<div class="container">
+			<nav>
+				<ul id="header-buttons" role="toolbar">
+					<li><a href="../index.html">Index</a></li>
+<li><a href="../hierarchy.html">Hierarchy</a></li>
+
+					<li id="on-this-page" role="navigation">
+						<label>
+							On This Page
+
+							<div class="chevron">
+								<div class="chevy chevron-left"></div>
+								<div class="chevy chevron-right"></div>
+							</div>
+
+							<select id="jump-to">
+	<option value="top">Jump To&#133;</option>
+	
+
+	
+	
+	<option value="tasks">Tasks</option>
+	
+	
+
+	
+	
+
+	
+
+	
+	<optgroup label="Instance Methods">
+		
+		<option value="//api/name/createReceiveRequestWithDetails:">- createReceiveRequestWithDetails:</option>
+		
+		<option value="//api/name/exportTransactionsToCSV">- exportTransactionsToCSV</option>
+		
+		<option value="//api/name/finalizeRequestWithAddress:">- finalizeRequestWithAddress:</option>
+		
+		<option value="//api/name/importPrivateKey:importing:complete:error:">- importPrivateKey:importing:complete:error:</option>
+		
+		<option value="//api/name/newSpendFromText:">- newSpendFromText:</option>
+		
+		<option value="//api/name/newSpendTransfer:">- newSpendTransfer:</option>
+		
+	</optgroup>
+	
+	
+</select>
+						</label>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</aside>
+
+	<article>
+		<div id="overview_contents" class="container">
+			<div id="content">
+				<main role="main">
+					<h1 class="title">ABCWallet Class Reference</h1>
+
+					
+					<div class="section section-specification"><table cellspacing="0"><tbody>
+						<tr>
+	<th>Inherits from</th>
+	<td>NSObject</td>
+</tr><tr>
+	<th>Declared in</th>
+	<td>ABCWallet.h</td>
+</tr>
+						</tbody></table></div>
+					
+
+                    
+
+					
+					
+					<div class="section section-tasks">
+						<a title="Tasks" name="tasks"></a>
+						
+
+						
+						
+
+						<div class="task-list">
+							<div class="section-method">
+	<a name="//api/name/createReceiveRequestWithDetails:" title="createReceiveRequestWithDetails:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/createReceiveRequestWithDetails:">&ndash;&nbsp;createReceiveRequestWithDetails:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Create a receive request from the current wallet. User should pass in an allocated
+<a href="../Classes/ABCRequest.html">ABCRequest</a> object with optional values set for amountSatoshi, payee, category, notes, or bizID.
+The object will have a uri, address, and QRcode UIImage filled in when method completes</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)createReceiveRequestWithDetails:(ABCRequest *)<em>request</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>request</code></th>
+						<td><p>ABCRequest*</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>complete</code></th>
+						<td><p>(Optional) Code block called on success. Returns void if used</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>(Optional) Code block called on error with parameters<br>
+- <em>param</em> ABCCondition code<br>
+- <em>param</em> NSString* errorString</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCUser* User object or nil if failure</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Create a receive request from the current wallet. User should pass in an allocated
+<a href="../Classes/ABCRequest.html">ABCRequest</a> object with optional values set for amountSatoshi, payee, category, notes, or bizID.
+The object will have a uri, address, and QRcode UIImage filled in when method completes</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCWallet.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/finalizeRequestWithAddress:" title="finalizeRequestWithAddress:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/finalizeRequestWithAddress:">&ndash;&nbsp;finalizeRequestWithAddress:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Finalizes the request so the address cannot be used by future requests. Forces address
+rotation so the next request gets a different address</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)finalizeRequestWithAddress:(NSString *)<em>address</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>requestID</code></th>
+						<td><p>NSString* Bitcoin address to finalize</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCConditionCode</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Finalizes the request so the address cannot be used by future requests. Forces address
+rotation so the next request gets a different address</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCWallet.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/newSpendFromText:" title="newSpendFromText:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/newSpendFromText:">&ndash;&nbsp;newSpendFromText:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Create an <a href="../Classes/ABCSpend.html">ABCSpend</a> object from text. Text could be a bitcoin address or BIP21/BIP70 URI.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCSpend *)newSpendFromText:(NSString *)<em>uri</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>uri</code></th>
+						<td><p>NSString*  bitcoin address or full BIP21/BIP70 uri</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>complete</code></th>
+						<td><p>(Optional) Code block called on success. Method returns void if used
+- <em>param</em> ABCSpend* <a href="../Classes/ABCSpend.html">ABCSpend</a> object.</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>(Optional) Code block called on error with parameters<br>
+- <em>param</em> ABCCondition code<br>
+- <em>param</em> NSString* errorString</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCSpend* <a href="../Classes/ABCSpend.html">ABCSpend</a> object or nil if failure</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Create an <a href="../Classes/ABCSpend.html">ABCSpend</a> object from text. Text could be a bitcoin address or BIP21/BIP70 URI.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCWallet.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/newSpendTransfer:" title="newSpendTransfer:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/newSpendTransfer:">&ndash;&nbsp;newSpendTransfer:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Creates a <a href="../Classes/ABCSpend.html">ABCSpend</a> object from a wallet to wallet transfer. Transfer goes from
+current object wallet to [ABCWallet] destWallet</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCSpend *)newSpendTransfer:(ABCWallet *)<em>destWallet</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>destWallet</code></th>
+						<td><p>ABCWallet* of destination wallet for transfer</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCSpend* <a href="../Classes/ABCSpend.html">ABCSpend</a> object or nil if failure</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Creates a <a href="../Classes/ABCSpend.html">ABCSpend</a> object from a wallet to wallet transfer. Transfer goes from
+current object wallet to [ABCWallet] destWallet</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCWallet.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/exportTransactionsToCSV" title="exportTransactionsToCSV"></a>
+	<h3 class="method-title"><code><a href="#//api/name/exportTransactionsToCSV">&ndash;&nbsp;exportTransactionsToCSV</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Export a wallet&rsquo;s transactions to CSV format</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (NSString *)exportTransactionsToCSV</code></div>
+
+		    
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>csv NSString* full CSV export in a single NSString</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Export a wallet&rsquo;s transactions to CSV format</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCWallet.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/importPrivateKey:importing:complete:error:" title="importPrivateKey:importing:complete:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/importPrivateKey:importing:complete:error:">&ndash;&nbsp;importPrivateKey:importing:complete:error:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Import (sweep) private key funds into this wallet. Private key is discarded
+after sweep.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)importPrivateKey:(NSString *)<em>privateKey</em> importing:(void ( ^ ) ( NSString *address ))<em>importingHandler</em> complete:(void ( ^ ) ( ABCImportDataModel dataModel , NSString *address , NSString *txid , uint64_t amount ))<em>completionHandler</em> error:(void ( ^ ) ( ABCConditionCode ccode , NSString *errorString ))<em>errorHandler</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>privateKey</code></th>
+						<td><p>NSString* WIF or HBITS format private key string</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>importingHandler</code></th>
+						<td><p>Called when private key is determined to be valid and ABC is sweeping funds. May take up to 30 seconds to sweep.
+- <em>param</em> address NSString* public address of private key</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>completionHandler</code></th>
+						<td><p>Called on success.<br>
+- <em>param</em> dataModel <a href="../Constants/ABCImportDataModel.html">ABCImportDataModel</a> of private key<br>
+- <em>param</em> address NSString<em> public address of private key<br>
+- </em>param<em> txid NSString</em> txid of transaction that swept funds<br>
+- <em>param</em> amount uint64_t amount of satoshis swept into wallet</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>Code block called on error with parameters<br>
+- <em>param</em> ABCCondition code<br>
+- <em>param</em> NSString* errorString</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>void</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Import (sweep) private key funds into this wallet. Private key is discarded
+after sweep.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCWallet.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div>
+						</div>
+						
+					</div>
+					
+					
+
+                    
+                    
+          
+				</main>
+
+				<footer>
+					<div class="footer-copyright">
+						
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-02-09</p>
+						
+						
+						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>
+						
+					</div>
+				</footer>
+			</div>
+		</div>
+	</article>
+
+	<script src="../js/script.js"></script>
+</body>
+</html>

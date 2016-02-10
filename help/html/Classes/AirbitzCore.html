@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<title>AirbitzCore Class Reference</title>
+
+	<link rel="stylesheet" href="../css/style.css">
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1.4">
+	<meta name="generator" content="appledoc 2.2.1 (build 1334)">
+</head>
+<body class="appledoc">
+	<header>
+		<div class="container" class="hide-in-xcode">
+			
+			<h1 id="library-title">
+				<a href="../index.html">airbitz-core-objc </a>
+			</h1>
+
+			<p id="developer-home">
+				<a href="../index.html">Airbitz</a>
+			</p>
+			
+		</div>
+	</header>
+
+	<aside>
+		<div class="container">
+			<nav>
+				<ul id="header-buttons" role="toolbar">
+					<li><a href="../index.html">Index</a></li>
+<li><a href="../hierarchy.html">Hierarchy</a></li>
+
+					<li id="on-this-page" role="navigation">
+						<label>
+							On This Page
+
+							<div class="chevron">
+								<div class="chevy chevron-left"></div>
+								<div class="chevy chevron-right"></div>
+							</div>
+
+							<select id="jump-to">
+	<option value="top">Jump To&#133;</option>
+	
+	<option value="overview">Overview</option>
+	
+
+	
+	
+	<option value="tasks">Tasks</option>
+	
+	
+
+	
+	
+
+	
+
+	
+	<optgroup label="Instance Methods">
+		
+		<option value="//api/name/PINLoginExists:">- PINLoginExists:</option>
+		
+		<option value="//api/name/changePasswordWithRecoveryAnswers:recoveryAnswers:newPassword:">- changePasswordWithRecoveryAnswers:recoveryAnswers:newPassword:</option>
+		
+		<option value="//api/name/checkPasswordRules:secondsToCrack:count:ruleDescription:rulePassed:checkResultsMessage:">- checkPasswordRules:secondsToCrack:count:ruleDescription:rulePassed:checkResultsMessage:</option>
+		
+		<option value="//api/name/createAccount:password:pin:delegate:complete:error:">- createAccount:password:pin:delegate:complete:error:</option>
+		
+		<option value="//api/name/encodeStringToQRImage:image:">- encodeStringToQRImage:image:</option>
+		
+		<option value="//api/name/getLoggedInUser:">- getLoggedInUser:</option>
+		
+		<option value="//api/name/getOTPResetDateForLastFailedAccountLogin:">- getOTPResetDateForLastFailedAccountLogin:</option>
+		
+		<option value="//api/name/isAccountUsernameAvailable:">- isAccountUsernameAvailable:</option>
+		
+		<option value="//api/name/isTestNet">- isTestNet</option>
+		
+		<option value="//api/name/logout:">- logout:</option>
+		
+		<option value="//api/name/passwordExists:">- passwordExists:</option>
+		
+		<option value="//api/name/requestOTPReset:">- requestOTPReset:</option>
+		
+		<option value="//api/name/setOTPKey:key:">- setOTPKey:key:</option>
+		
+		<option value="//api/name/signIn:password:delegate:otp:">- signIn:password:delegate:otp:</option>
+		
+		<option value="//api/name/signInWithPIN:pin:delegate:">- signInWithPIN:pin:delegate:</option>
+		
+	</optgroup>
+	
+	
+</select>
+						</label>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</aside>
+
+	<article>
+		<div id="overview_contents" class="container">
+			<div id="content">
+				<main role="main">
+					<h1 class="title">AirbitzCore Class Reference</h1>
+
+					
+					<div class="section section-specification"><table cellspacing="0"><tbody>
+						<tr>
+	<th>Inherits from</th>
+	<td>NSObject</td>
+</tr><tr>
+	<th>Declared in</th>
+	<td>AirbitzCore.h</td>
+</tr>
+						</tbody></table></div>
+					
+
+                    
+					
+					<div class="section section-overview">
+						<a title="Overview" name="overview"></a>
+						<h2 class="subtitle subtitle-overview">Overview</h2>
+						<pre><code> - (void) exampleMethod;
+ {
+     AirbitzCore *abc  = [[AirbitzCore alloc] init:@"YourAPIKeyHere"];
+     ABCUser *abcUser  = [abc createAccount:@"myUsername" password:@"MyPa55w0rd!&amp;" pin:@"4283" delegate:self];
+     ABCWallet *wallet = [abcUser createWallet:@"My Awesome Bitcoins" currencyNum:0];
+ }
+</code></pre>
+					</div>
+					
+					
+
+					
+					
+					<div class="section section-tasks">
+						<a title="Tasks" name="tasks"></a>
+						
+
+						<a title="Account Management" name="task_Account Management"></a>
+						<h2 class="task-title">Account Management</h2>
+
+						<div class="task-list">
+							<div class="section-method">
+	<a name="//api/name/createAccount:password:pin:delegate:complete:error:" title="createAccount:password:pin:delegate:complete:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/createAccount:password:pin:delegate:complete:error:">&ndash;&nbsp;createAccount:password:pin:delegate:complete:error:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Create an Airbitz account with specified username, password, and PIN.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)createAccount:(NSString *)<em>username</em> password:(NSString *)<em>password</em> pin:(NSString *)<em>pin</em> delegate:(id)<em>delegate</em> complete:(void ( ^ ) ( ABCUser *))<em>completionHandler</em> error:(void ( ^ ) ( ABCConditionCode ccode , NSString *errorString ))<em>errorHandler</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>username</code></th>
+						<td><p>NSString*</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>password</code></th>
+						<td><p>NSString*</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>pin</code></th>
+						<td><p>NSString*</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>delegate</code></th>
+						<td><p><a href="../Protocols/ABCUserDelegate.html">ABCUserDelegate</a> object for callbacks. May be set to nil;</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>complete</code></th>
+						<td><p>(Optional) Code block called on success. Returns void if used<br>
+- <em>param</em> ABCUser* User object.<br></p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>(Optional) Code block called on error with parameters<br>
+- <em>param</em> ABCCondition code<br>
+- <em>param</em> NSString* errorString</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCUser* User object or nil if failuer</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Create an Airbitz account with specified username, password, and PIN.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/signIn:password:delegate:otp:" title="signIn:password:delegate:otp:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/signIn:password:delegate:otp:">&ndash;&nbsp;signIn:password:delegate:otp:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Sign In to an Airbitz account.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCUser *)signIn:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>username</code></th>
+						<td><p>NSString*</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>password</code></th>
+						<td><p>NSString*</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>delegate</code></th>
+						<td><p><a href="../Protocols/ABCUserDelegate.html">ABCUserDelegate</a> object for callbacks. May be set to nil;</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>otp</code></th>
+						<td><p>NSString* One Time Password token (optional) send nil if logging in w/o OTP token
+or if OTP token has already been saved in this account from prior login</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>(Optional) Code block called on error with parameters<br>
+- <em>param</em> ABCCondition code<br>
+- <em>param</em> NSString* errorString</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>complete</code></th>
+						<td><p>(Optional) Code block called on success. Returns void if used<br>
+- <em>param</em> ABCUser* User object.</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Sign In to an Airbitz account.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/signInWithPIN:pin:delegate:" title="signInWithPIN:pin:delegate:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/signInWithPIN:pin:delegate:">&ndash;&nbsp;signInWithPIN:pin:delegate:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Sign In to an Airbitz account with PIN. Used to sign into devices that have previously
+been logged into using a full username &amp; password</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCUser *)signInWithPIN:(NSString *)<em>username</em> pin:(NSString *)<em>pin</em> delegate:(id)<em>delegate</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>username</code></th>
+						<td><p>NSString*</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>pin</code></th>
+						<td><p>NSString*</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>delegate</code></th>
+						<td><p><a href="../Protocols/ABCUserDelegate.html">ABCUserDelegate</a> object for callbacks. May be set to nil;</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>complete</code></th>
+						<td><p>(Optional) Code block called on success. Returns void if used<br>
+- <em>param</em> ABCUser* User object.<br></p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>(Optional) Code block called on error with parameters<br>
+- <em>param</em> ABCCondition code<br>
+- <em>param</em> NSString* errorString</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Sign In to an Airbitz account with PIN. Used to sign into devices that have previously
+been logged into using a full username &amp; password</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/getLoggedInUser:" title="getLoggedInUser:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/getLoggedInUser:">&ndash;&nbsp;getLoggedInUser:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Get <a href="../Classes/ABCUser.html">ABCUser</a> object for username if logged in.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCUser *)getLoggedInUser:(NSString *)<em>username</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>username</code></th>
+						<td><p>NSString*</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCUser* if logged in. nil otherwise</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Get <a href="../Classes/ABCUser.html">ABCUser</a> object for username if logged in.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/logout:" title="logout:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/logout:">&ndash;&nbsp;logout:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Logout the specified <a href="../Classes/ABCUser.html">ABCUser</a> object</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)logout:(ABCUser *)<em>abcUser</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>abcUser</code></th>
+						<td><p>ABCUser* user to logout</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>void</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Logout the specified <a href="../Classes/ABCUser.html">ABCUser</a> object</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/passwordExists:" title="passwordExists:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/passwordExists:">&ndash;&nbsp;passwordExists:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Check if specified username has a password on the account or if it is
+a PIN-only account.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (BOOL)passwordExists:(NSString *)<em>username</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>username</code></th>
+						<td><p>NSString* user to check</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>BOOL true if user has a password</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Check if specified username has a password on the account or if it is
+a PIN-only account.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/checkPasswordRules:secondsToCrack:count:ruleDescription:rulePassed:checkResultsMessage:" title="checkPasswordRules:secondsToCrack:count:ruleDescription:rulePassed:checkResultsMessage:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/checkPasswordRules:secondsToCrack:count:ruleDescription:rulePassed:checkResultsMessage:">&ndash;&nbsp;checkPasswordRules:secondsToCrack:count:ruleDescription:rulePassed:checkResultsMessage:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Checks a password for valid entropy looking for correct minimum
+requirements such as upper, lowercase letters, numbers, and # of digits. This should be used
+by app to give feedback to user before creating a new account.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (BOOL)checkPasswordRules:(NSString *)<em>password</em> secondsToCrack:(double *)<em>secondsToCrack</em> count:(unsigned int *)<em>count</em> ruleDescription:(NSMutableArray **)<em>ruleDescription</em> rulePassed:(NSMutableArray **)<em>rulePassed</em> checkResultsMessage:(NSMutableString **)<em>checkResultsMessage</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>password</code></th>
+						<td><p>NSString* Password to check</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>secondsToCrack</code></th>
+						<td><p>double* estimated time it takes to crack password</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>count</code></th>
+						<td><p>int* pointer to number of rules used</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>ruleDescription</code></th>
+						<td><p>NSMutableArray<em> array of NSString</em> with description of each rule</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>rulePassed</code></th>
+						<td><p>NSMutableArray<em> array of NSNumber</em> with BOOL of whether rule passed</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>checkResultsMessage</code></th>
+						<td><p>NSMutableString* message describing all failures</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>BOOL True if password passes all requirements</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Checks a password for valid entropy looking for correct minimum
+requirements such as upper, lowercase letters, numbers, and # of digits. This should be used
+by app to give feedback to user before creating a new account.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/changePasswordWithRecoveryAnswers:recoveryAnswers:newPassword:" title="changePasswordWithRecoveryAnswers:recoveryAnswers:newPassword:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/changePasswordWithRecoveryAnswers:recoveryAnswers:newPassword:">&ndash;&nbsp;changePasswordWithRecoveryAnswers:recoveryAnswers:newPassword:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>changePasswordWithRecoveryAnswers</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)changePasswordWithRecoveryAnswers:(NSString *)<em>username</em> recoveryAnswers:(NSString *)<em>answers</em> newPassword:(NSString *)<em>password</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>username</code></th>
+						<td><p>NSString* username whose password to change</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>recoveryAnswers</code></th>
+						<td><p>NSString* recovery answers delimited by &lsquo;\n&rsquo;</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>(Optional) Code block called on error with parameters<br>
+- <em>param</em> ABCCondition code<br>
+- <em>param</em> NSString* errorString</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>complete</code></th>
+						<td><p>(Optional) Code block called on success. Returns void if used</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>newPassword</code></th>
+						<td><p>NSString* new password</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>changePasswordWithRecoveryAnswers</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/isAccountUsernameAvailable:" title="isAccountUsernameAvailable:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/isAccountUsernameAvailable:">&ndash;&nbsp;isAccountUsernameAvailable:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Checks if username is available</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)isAccountUsernameAvailable:(NSString *)<em>username</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>username</code></th>
+						<td><p>NSString* username to check</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCConditionCodeOk if username is available</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Checks if username is available</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div>
+						</div>
+						
+
+						<a title="OTP (2 Factor Auth) Management" name="task_OTP (2 Factor Auth) Management"></a>
+						<h2 class="task-title">OTP (2 Factor Auth) Management</h2>
+
+						<div class="task-list">
+							<div class="section-method">
+	<a name="//api/name/setOTPKey:key:" title="setOTPKey:key:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/setOTPKey:key:">&ndash;&nbsp;setOTPKey:key:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Associates an OTP key with the given username.
+This will not write to disk until the user has successfully logged in
+at least once.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)setOTPKey:(NSString *)<em>username</em> key:(NSString *)<em>key</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>NSString*</code></th>
+						<td><p>key: key to set</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCConditionCode</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Associates an OTP key with the given username.
+This will not write to disk until the user has successfully logged in
+at least once.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/getOTPResetDateForLastFailedAccountLogin:" title="getOTPResetDateForLastFailedAccountLogin:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/getOTPResetDateForLastFailedAccountLogin:">&ndash;&nbsp;getOTPResetDateForLastFailedAccountLogin:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>getOTPResetDateForLastFailedAccountLogin</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)getOTPResetDateForLastFailedAccountLogin:(NSDate **)<em>date</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>NSDate</code></th>
+						<td><p>**date: pointer to NSDate for return value date</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCConditionCode</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>getOTPResetDateForLastFailedAccountLogin</p>
+
+<p>Returns the OTP reset date for the last account that failed to log in,
+if any. Returns an empty string otherwise.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/requestOTPReset:" title="requestOTPReset:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/requestOTPReset:">&ndash;&nbsp;requestOTPReset:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>requestOTPReset
+Launches an OTP reset timer on the server,
+which will disable the OTP authentication requirement when it expires.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)requestOTPReset:(NSString *)<em>username</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>NSString</code></th>
+						<td><p>*username:</p>
+
+<p>(Optional. If used, method returns immediately with ABCCConditionCodeOk)</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>completionHandler:</code></th>
+						<td><p>completion handler code block</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>errorHandler:</code></th>
+						<td><p>error handler code block which is called with the following args</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>ABCConditionCode</code></th>
+						<td><p>ccode: ABC error code</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>NSString</code></th>
+						<td><ul>
+<li><pre><code>errorString: error message
+</code></pre></li>
+</ul>
+</td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCConditionCode</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>requestOTPReset
+Launches an OTP reset timer on the server,
+which will disable the OTP authentication requirement when it expires.</p>
+
+<p>This only works after the caller has successfully authenticated
+with the server, such as through a password login,
+but has failed to fully log in due to a missing OTP key.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/encodeStringToQRImage:image:" title="encodeStringToQRImage:image:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/encodeStringToQRImage:image:">&ndash;&nbsp;encodeStringToQRImage:image:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>encodeStringToQRImage
+Encodes a string into a QR code returned as UIImage *</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)encodeStringToQRImage:(NSString *)<em>string</em> image:(UIImage **)<em>image</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>UIImage**</code></th>
+						<td><p>image: returned image</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>NSString*</code></th>
+						<td><p>string: string to encode</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCConditionCode</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>encodeStringToQRImage
+Encodes a string into a QR code returned as UIImage *</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/PINLoginExists:" title="PINLoginExists:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/PINLoginExists:">&ndash;&nbsp;PINLoginExists:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>PINLoginExists
+Checks if PIN login is possible for the given username. This checks if
+there is a local PIN package on the device from a prior login</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (BOOL)PINLoginExists:(NSString *)<em>username</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>NSString</code></th>
+						<td><p>*username: username to check</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>BOOL: YES if username is available</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>PINLoginExists
+Checks if PIN login is possible for the given username. This checks if
+there is a local PIN package on the device from a prior login</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/isTestNet" title="isTestNet"></a>
+	<h3 class="method-title"><code><a href="#//api/name/isTestNet">&ndash;&nbsp;isTestNet</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Returns TRUE if AirbitzCore is compiled for testnet</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (bool)isTestNet</code></div>
+
+		    
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>BOOL</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Returns TRUE if AirbitzCore is compiled for testnet</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div>
+						</div>
+						
+					</div>
+					
+					
+
+                    
+                    
+          
+				</main>
+
+				<footer>
+					<div class="footer-copyright">
+						
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-02-09</p>
+						
+						
+						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>
+						
+					</div>
+				</footer>
+			</div>
+		</div>
+	</article>
+
+	<script src="../js/script.js"></script>
+</body>
+</html>

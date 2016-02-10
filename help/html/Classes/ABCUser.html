@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<title>ABCUser Class Reference</title>
+
+	<link rel="stylesheet" href="../css/style.css">
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1.4">
+	<meta name="generator" content="appledoc 2.2.1 (build 1334)">
+</head>
+<body class="appledoc">
+	<header>
+		<div class="container" class="hide-in-xcode">
+			
+			<h1 id="library-title">
+				<a href="../index.html">airbitz-core-objc </a>
+			</h1>
+
+			<p id="developer-home">
+				<a href="../index.html">Airbitz</a>
+			</p>
+			
+		</div>
+	</header>
+
+	<aside>
+		<div class="container">
+			<nav>
+				<ul id="header-buttons" role="toolbar">
+					<li><a href="../index.html">Index</a></li>
+<li><a href="../hierarchy.html">Hierarchy</a></li>
+
+					<li id="on-this-page" role="navigation">
+						<label>
+							On This Page
+
+							<div class="chevron">
+								<div class="chevy chevron-left"></div>
+								<div class="chevy chevron-right"></div>
+							</div>
+
+							<select id="jump-to">
+	<option value="top">Jump To&#133;</option>
+	
+
+	
+	
+	<option value="tasks">Tasks</option>
+	
+	
+
+	
+	
+	<optgroup label="Properties">
+		
+		<option value="//api/name/arrayArchivedWallets">arrayArchivedWallets</option>
+		
+		<option value="//api/name/arrayWalletNames">arrayWalletNames</option>
+		
+		<option value="//api/name/arrayWallets">arrayWallets</option>
+		
+		<option value="//api/name/delegate">delegate</option>
+		
+		<option value="//api/name/settings">settings</option>
+		
+	</optgroup>
+	
+
+	
+
+	
+	<optgroup label="Instance Methods">
+		
+		<option value="//api/name/encodeStringToQRImage:image:">- encodeStringToQRImage:image:</option>
+		
+		<option value="//api/name/getOTPDetails:timeout:">- getOTPDetails:timeout:</option>
+		
+		<option value="//api/name/getOTPLocalKey">- getOTPLocalKey</option>
+		
+		<option value="//api/name/getOTPResetDateForLastFailedAccountLogin:">- getOTPResetDateForLastFailedAccountLogin:</option>
+		
+		<option value="//api/name/passwordExists">- passwordExists</option>
+		
+		<option value="//api/name/recentlyLoggedIn">- recentlyLoggedIn</option>
+		
+		<option value="//api/name/removeOTPAuth">- removeOTPAuth</option>
+		
+		<option value="//api/name/removeOTPKey">- removeOTPKey</option>
+		
+		<option value="//api/name/removeOTPResetRequest">- removeOTPResetRequest</option>
+		
+		<option value="//api/name/requestOTPReset:">- requestOTPReset:</option>
+		
+		<option value="//api/name/setOTPAuth:">- setOTPAuth:</option>
+		
+		<option value="//api/name/setOTPKey:key:">- setOTPKey:key:</option>
+		
+	</optgroup>
+	
+	
+</select>
+						</label>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</aside>
+
+	<article>
+		<div id="overview_contents" class="container">
+			<div id="content">
+				<main role="main">
+					<h1 class="title">ABCUser Class Reference</h1>
+
+					
+					<div class="section section-specification"><table cellspacing="0"><tbody>
+						<tr>
+	<th>Inherits from</th>
+	<td>NSObject</td>
+</tr><tr>
+	<th>Declared in</th>
+	<td>ABCUser.h</td>
+</tr>
+						</tbody></table></div>
+					
+
+                    
+
+					
+					
+					<div class="section section-tasks">
+						<a title="Tasks" name="tasks"></a>
+						
+
+						<a title="AirbitzCore read/write public object variables" name="task_AirbitzCore read/write public object variables"></a>
+						<h2 class="task-title">AirbitzCore read/write public object variables</h2>
+
+						<div class="task-list">
+							<div class="section-method">
+	<a name="//api/name/delegate" title="delegate"></a>
+	<h3 class="method-title"><code><a href="#//api/name/delegate">&nbsp;&nbsp;delegate</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Delegate object to handle delegate callbacks</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>@property (assign) id&lt;ABCUserDelegate&gt; delegate</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Delegate object to handle delegate callbacks</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCUser.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/settings" title="settings"></a>
+	<h3 class="method-title"><code><a href="#//api/name/settings">&nbsp;&nbsp;settings</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>ABC settings that can be set or viewed by app or ABC. Use method <a href="../Classes/ABCSettings.html#//api/name/loadSettings">[ABCSettings loadSettings]</a>
+to make sure they are loaded and <a href="../Classes/ABCSettings.html#//api/name/saveSettings">[ABCSettings saveSettings]</a> to ensure modified settings are latched</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>@property (atomic, strong) ABCSettings *settings</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>ABC settings that can be set or viewed by app or ABC. Use method <a href="../Classes/ABCSettings.html#//api/name/loadSettings">[ABCSettings loadSettings]</a>
+to make sure they are loaded and <a href="../Classes/ABCSettings.html#//api/name/saveSettings">[ABCSettings saveSettings]</a> to ensure modified settings are latched</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCUser.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div>
+						</div>
+						
+
+						<a title="AirbitzCore read-only public object variables" name="task_AirbitzCore read-only public object variables"></a>
+						<h2 class="task-title">AirbitzCore read-only public object variables</h2>
+
+						<div class="task-list">
+							<div class="section-method">
+	<a name="//api/name/arrayWallets" title="arrayWallets"></a>
+	<h3 class="method-title"><code><a href="#//api/name/arrayWallets">&nbsp;&nbsp;arrayWallets</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Array of Wallet objects currently loaded into account. This array is read-only and app should only
+access the array while in the main queue.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>@property (atomic, strong) NSMutableArray *arrayWallets</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Array of Wallet objects currently loaded into account. This array is read-only and app should only
+access the array while in the main queue.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCUser.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/arrayArchivedWallets" title="arrayArchivedWallets"></a>
+	<h3 class="method-title"><code><a href="#//api/name/arrayArchivedWallets">&nbsp;&nbsp;arrayArchivedWallets</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Array of archived Wallet objects currently loaded into account. This array is read-only and app should only
+access the array while in the main queue.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>@property (atomic, strong) NSMutableArray *arrayArchivedWallets</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Array of archived Wallet objects currently loaded into account. This array is read-only and app should only
+access the array while in the main queue.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCUser.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/arrayWalletNames" title="arrayWalletNames"></a>
+	<h3 class="method-title"><code><a href="#//api/name/arrayWalletNames">&nbsp;&nbsp;arrayWalletNames</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Array of NSString * wallet names. This array is read-only and app should only
+access the array while in the main queue.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>@property (atomic, strong) NSMutableArray *arrayWalletNames</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Array of NSString * wallet names. This array is read-only and app should only
+access the array while in the main queue.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCUser.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div>
+						</div>
+						
+
+						<a title="Account Management" name="task_Account Management"></a>
+						<h2 class="task-title">Account Management</h2>
+
+						<div class="task-list">
+							<div class="section-method">
+	<a name="//api/name/passwordExists" title="passwordExists"></a>
+	<h3 class="method-title"><code><a href="#//api/name/passwordExists">&ndash;&nbsp;passwordExists</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Check if this user has a password on the account or if it is
+a PIN-only account.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (BOOL)passwordExists</code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>username</code></th>
+						<td><p>NSString* user to check</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>BOOL true if user has a password</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Check if this user has a password on the account or if it is
+a PIN-only account.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCUser.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/recentlyLoggedIn" title="recentlyLoggedIn"></a>
+	<h3 class="method-title"><code><a href="#//api/name/recentlyLoggedIn">&ndash;&nbsp;recentlyLoggedIn</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Check if this user has logged in &ldquo;recently&rdquo;. Currently fixed to return TRUE
+within 120 seconds of login. Useful for requiring less security for spending such as a PIN
+on spend.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (BOOL)recentlyLoggedIn</code></div>
+
+		    
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>BOOL</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Check if this user has logged in &ldquo;recently&rdquo;. Currently fixed to return TRUE
+within 120 seconds of login. Useful for requiring less security for spending such as a PIN
+on spend.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCUser.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div>
+						</div>
+						
+
+						<a title="Wallet Management" name="task_Wallet Management"></a>
+						<h2 class="task-title">Wallet Management</h2>
+
+						<div class="task-list">
+							<div class="section-method">
+	<a name="//api/name/getOTPLocalKey" title="getOTPLocalKey"></a>
+	<h3 class="method-title"><code><a href="#//api/name/getOTPLocalKey">&ndash;&nbsp;getOTPLocalKey</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Gets the locally saved OTP key for the current user.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (NSString *)getOTPLocalKey</code></div>
+
+		    
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>key NSString* OTP key</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Gets the locally saved OTP key for the current user.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCUser.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/setOTPKey:key:" title="setOTPKey:key:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/setOTPKey:key:">&ndash;&nbsp;setOTPKey:key:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>setOTPKey
+Associates an OTP key with the given username.
+This will not write to disk until the user has successfully logged in
+at least once.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)setOTPKey:(NSString *)<em>username</em> key:(NSString *)<em>key</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>NSString*</code></th>
+						<td><p>key: key to set</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCConditionCode</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>setOTPKey
+Associates an OTP key with the given username.
+This will not write to disk until the user has successfully logged in
+at least once.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCUser.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/removeOTPKey" title="removeOTPKey"></a>
+	<h3 class="method-title"><code><a href="#//api/name/removeOTPKey">&ndash;&nbsp;removeOTPKey</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>removeOTPKey
+Removes the OTP key for current user.
+This will remove the key from disk as well.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)removeOTPKey</code></div>
+
+		    
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCConditionCode</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>removeOTPKey
+Removes the OTP key for current user.
+This will remove the key from disk as well.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCUser.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/getOTPDetails:timeout:" title="getOTPDetails:timeout:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/getOTPDetails:timeout:">&ndash;&nbsp;getOTPDetails:timeout:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>getOTPDetails
+Reads the OTP configuration from the server.
+This will remove the key from disk as well.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)getOTPDetails:(bool *)<em>enabled</em> timeout:(long *)<em>timeout</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>bool*</code></th>
+						<td><p>enabled: enabled flag if OTP is enabled for this user</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>long*</code></th>
+						<td><p>timeout: number seconds required after a reset is requested</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCConditionCode</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>getOTPDetails
+Reads the OTP configuration from the server.
+This will remove the key from disk as well.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCUser.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/setOTPAuth:" title="setOTPAuth:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/setOTPAuth:">&ndash;&nbsp;setOTPAuth:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>setOTPAuth
+Sets up OTP authentication on the server for currently logged in user
+This will generate a new token if the username doesn&rsquo;t already have one.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)setOTPAuth:(long)<em>timeout</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>long</code></th>
+						<td><p>timeout: number seconds required after a reset is requested
+before OTP is disabled.</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCConditionCode</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>setOTPAuth
+Sets up OTP authentication on the server for currently logged in user
+This will generate a new token if the username doesn&rsquo;t already have one.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCUser.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/removeOTPAuth" title="removeOTPAuth"></a>
+	<h3 class="method-title"><code><a href="#//api/name/removeOTPAuth">&ndash;&nbsp;removeOTPAuth</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>removeOTPAuth
+Removes the OTP authentication requirement from the server for the
+currently logged in user</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)removeOTPAuth</code></div>
+
+		    
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCConditionCode</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>removeOTPAuth
+Removes the OTP authentication requirement from the server for the
+currently logged in user</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCUser.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/getOTPResetDateForLastFailedAccountLogin:" title="getOTPResetDateForLastFailedAccountLogin:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/getOTPResetDateForLastFailedAccountLogin:">&ndash;&nbsp;getOTPResetDateForLastFailedAccountLogin:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>getOTPResetDateForLastFailedAccountLogin</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)getOTPResetDateForLastFailedAccountLogin:(NSDate **)<em>date</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>NSDate</code></th>
+						<td><p>**date: pointer to NSDate for return value date</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCConditionCode</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>getOTPResetDateForLastFailedAccountLogin</p>
+
+<p>Returns the OTP reset date for the last account that failed to log in,
+if any. Returns an empty string otherwise.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCUser.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/requestOTPReset:" title="requestOTPReset:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/requestOTPReset:">&ndash;&nbsp;requestOTPReset:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>requestOTPReset
+Launches an OTP reset timer on the server,
+which will disable the OTP authentication requirement when it expires.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)requestOTPReset:(NSString *)<em>username</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>NSString</code></th>
+						<td><p>*username:</p>
+
+<p>(Optional. If used, method returns immediately with ABCCConditionCodeOk)</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>completionHandler:</code></th>
+						<td><p>completion handler code block</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>errorHandler:</code></th>
+						<td><p>error handler code block which is called with the following args</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>ABCConditionCode</code></th>
+						<td><p>ccode: ABC error code</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>NSString</code></th>
+						<td><ul>
+<li><pre><code>errorString: error message
+</code></pre></li>
+</ul>
+</td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCConditionCode</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>requestOTPReset
+Launches an OTP reset timer on the server,
+which will disable the OTP authentication requirement when it expires.</p>
+
+<p>This only works after the caller has successfully authenticated
+with the server, such as through a password login,
+but has failed to fully log in due to a missing OTP key.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCUser.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/removeOTPResetRequest" title="removeOTPResetRequest"></a>
+	<h3 class="method-title"><code><a href="#//api/name/removeOTPResetRequest">&ndash;&nbsp;removeOTPResetRequest</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>removeOTPResetRequest
+Removes the OTP reset request from the server for the
+currently logged in user</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)removeOTPResetRequest</code></div>
+
+		    
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCConditionCode</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>removeOTPResetRequest
+Removes the OTP reset request from the server for the
+currently logged in user</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCUser.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/encodeStringToQRImage:image:" title="encodeStringToQRImage:image:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/encodeStringToQRImage:image:">&ndash;&nbsp;encodeStringToQRImage:image:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>encodeStringToQRImage
+Encodes a string into a QR code returned as UIImage *</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)encodeStringToQRImage:(NSString *)<em>string</em> image:(UIImage **)<em>image</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>UIImage**</code></th>
+						<td><p>image: returned image</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>NSString*</code></th>
+						<td><p>string: string to encode</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCConditionCode</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>encodeStringToQRImage
+Encodes a string into a QR code returned as UIImage *</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCUser.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div>
+						</div>
+						
+					</div>
+					
+					
+
+                    
+                    
+          
+				</main>
+
+				<footer>
+					<div class="footer-copyright">
+						
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-02-09</p>
+						
+						
+						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>
+						
+					</div>
+				</footer>
+			</div>
+		</div>
+	</article>
+
+	<script src="../js/script.js"></script>
+</body>
+</html>
