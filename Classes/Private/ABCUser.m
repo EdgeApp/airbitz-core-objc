@@ -2110,20 +2110,22 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 {
     ABCUser *user = (__bridge id) pInfo->pData;
     ABCWallet *wallet = nil;
+    NSString *txid = nil;
     
     if (ABC_AsyncEventType_IncomingBitCoin == pInfo->eventType) {
-        NSString *txid;
         if (pInfo->szWalletUUID)
         {
             wallet = [user getWallet:[NSString stringWithUTF8String:pInfo->szWalletUUID]];
             txid = [NSString stringWithUTF8String:pInfo->szTxID];
         }
+        if (!wallet || !txid || !pInfo->szWalletUUID) {
+            ABCLog(1, @"EventCallback: NULL pointer from ABC");
+        }
         [user refreshWallets:^
          {
              if (user.delegate) {
                  if ([user.delegate respondsToSelector:@selector(abcUserIncomingBitcoin:txid:)]) {
-                     [user.delegate abcUserIncomingBitcoin:wallet
-                                                      txid:txid];
+                     [user.delegate abcUserIncomingBitcoin:wallet txid:txid];
                  }
              }
          }];
@@ -2138,11 +2140,19 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
          }];
         
     } else if (ABC_AsyncEventType_BalanceUpdate == pInfo->eventType) {
+        if (pInfo->szWalletUUID)
+        {
+            wallet = [user getWallet:[NSString stringWithUTF8String:pInfo->szWalletUUID]];
+            txid = [NSString stringWithUTF8String:pInfo->szTxID];
+        }
+        if (!wallet || !txid || !pInfo->szWalletUUID) {
+            ABCLog(1, @"EventCallback: NULL pointer from ABC");
+        }
         [user refreshWallets:^
          {
              if (user.delegate) {
-                 if ([user.delegate respondsToSelector:@selector(abcUserBalanceUpdate)]) {
-                     [user.delegate abcUserBalanceUpdate];
+                 if ([user.delegate respondsToSelector:@selector(abcUserBalanceUpdate:txid:)]) {
+                     [user.delegate abcUserBalanceUpdate:wallet txid:txid];
                  }
              }
          }];
