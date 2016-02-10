@@ -96,7 +96,7 @@ static const int importTimeout                  = 30;
     ccode = [self.abcError setLastErrors:error];
     if (ABCConditionCodeOk != ccode)
         goto exitnow;
-    request.requestID = [NSString stringWithUTF8String:pRequestID];
+    request.address = [NSString stringWithUTF8String:pRequestID];
     
     ABC_ModifyReceiveRequest([self.user.name UTF8String],
                              [self.user.password UTF8String],
@@ -122,18 +122,6 @@ static const int importTimeout                  = 30;
         goto exitnow;
     request.qrCode = [ABCUtil dataToImage:pData withWidth:width andHeight:width];
     request.uri    = [NSString stringWithUTF8String:pszURI];
-    
-    ABC_GetRequestAddress([self.user.name UTF8String],
-                          [self.user.password UTF8String],
-                          [request.wallet.strUUID UTF8String],
-                          pRequestID,
-                          &szRequestAddress,
-                          &error);
-    ccode = [self.abcError setLastErrors:error];
-    if (ABCConditionCodeOk != ccode)
-        goto exitnow;
-    
-    request.address = [NSString stringWithUTF8String:szRequestAddress];
     
 exitnow:
     

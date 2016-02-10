@@ -30,7 +30,7 @@
 {
     tABC_Error error;
     
-    if (!self.wallet || !self.user || !self.requestID)
+    if (!self.wallet || !self.user || !self.address)
     {
         error.code = ABC_CC_NULLPtr;
         return [self.abcError setLastErrors:error];
@@ -38,7 +38,7 @@
     // Finalize this request so it isn't used elsewhere
     ABC_FinalizeReceiveRequest([self.user.name UTF8String],
             [self.user.password UTF8String], [self.wallet.strUUID UTF8String],
-            [self.requestID UTF8String], &error);
+            [self.address UTF8String], &error);
     return [self.abcError setLastErrors:error];
 }
 
@@ -66,7 +66,7 @@
     details.amountFeesMinersSatoshi = 0;
     details.amountCurrency = 0;
     
-    char *pRequestID = (char *)[self.requestID UTF8String];
+    char *pRequestID = (char *)[self.address UTF8String];
 
     ABC_ModifyReceiveRequest([self.wallet.user.name UTF8String],
                              [self.wallet.user.password UTF8String],
@@ -92,18 +92,6 @@
         goto exitnow;
     self.qrCode = [ABCUtil dataToImage:pData withWidth:width andHeight:width];
     self.uri    = [NSString stringWithUTF8String:pszURI];
-    
-    ABC_GetRequestAddress([self.wallet.user.name UTF8String],
-                          [self.wallet.user.password UTF8String],
-                          [self.wallet.strUUID UTF8String],
-                          pRequestID,
-                          &szRequestAddress,
-                          &error);
-    ccode = [self.abcError setLastErrors:error];
-    if (ABCConditionCodeOk != ccode)
-        goto exitnow;
-    
-    self.address = [NSString stringWithUTF8String:szRequestAddress];
     
 exitnow:
     

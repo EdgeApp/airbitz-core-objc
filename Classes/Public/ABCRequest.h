@@ -11,27 +11,44 @@
 @class ABCUser;
 @class ABCWallet;
 
-//
-// Object used to pass in address request details
-// Optional fields payeeName, category, notes, and bizId will cause
-// transactions details of incoming transaction to be automatically tagged
-// with the information from this object.
-//
+/// Object used to pass in address request details
+/// Optional fields payeeName, category, notes, and bizId will cause
+/// transactions details of incoming transaction to be automatically tagged
+/// with the information from this object.
+
 @interface ABCRequest : NSObject
-// The following are passed into ABCRequest as details for the request
-@property (nonatomic)       int64_t  amountSatoshi;  // optional: will be added to URI/QRcode if given
-@property (nonatomic, copy) NSString *payeeName;     // optional: will be added to URI/QRcode if given
-@property (nonatomic, copy) NSString *category;      // optional: will be added to URI/QRcode if given
+/// @name The following properties are passed into ABCRequest as details for the request
+
+/// Wallet object to generate an address request from. REQUIRED
+@property (nonatomic, strong) ABCWallet *wallet;
+
+/// Amount of satoshis to add to request. Optional
+@property (nonatomic)       int64_t  amountSatoshi;
+
+/// Payee name to specify in the request. This should be the name of the entity intended to
+/// pay the request. This is auto tagged to transaction meta data for all incoming
+/// transactions to the address from this request
+@property (nonatomic, copy) NSString *payeeName;
+
+/// The category to tag all transactions incoming to this request's address
+@property (nonatomic, copy) NSString *category;
+
+/// Misc notes to tag all transactions incoming to this request's address
 @property (nonatomic, copy) NSString *notes;         // optional: will be added to URI/QRcode if given
+
+/// An Airbitz Directory bizid to tag all transactions incoming to this request's address
 @property (nonatomic)       unsigned int bizId;      // optional: will be added to URI/QRcode if given
 
-// The following are returned by ABC
-@property (nonatomic, copy) NSString *requestID;
-@property (nonatomic, copy) NSString *uri;
-@property (nonatomic, copy) NSString *address;
-@property (nonatomic, copy) UIImage  *qrCode;
+/// @name The following properties are returned by ABC
 
-@property (nonatomic, strong) ABCWallet *wallet;    // required
+/// Full request URI ie. "bitcoin:12kjhg9834gkjh4tjr1jhgSADG4GASf?amount=.2123&label=Airbitz&notes=Hello"
+@property (nonatomic, copy) NSString *uri;
+
+/// Bitcoin public address for request
+@property (nonatomic, copy) NSString *address;
+
+/// QRCode of request.
+@property (nonatomic, copy) UIImage  *qrCode;
 
 /*
  * Finalizes the request so the address cannot be used by future requests. Forces address
