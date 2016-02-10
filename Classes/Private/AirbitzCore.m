@@ -1346,14 +1346,5 @@ void abcDebugLog(int level, NSString *statement)
     [data appendBytes:&rand length:sizeof(u_int32_t)];
 }
 
-/// Example code for using AirbitzCore
-//- (void) exampleMethod;
-//{
-//    AirbitzCore *abc  = [[AirbitzCore alloc] init:@"YourAPIKeyHere"];
-//    ABCUser *abcUser  = [abc createAccount:@"myUsername" password:@"MyPa55w0rd!&" pin:@"4283" delegate:self];
-//    ABCWallet *wallet = [abcUser createWallet:@"My Awesome Bitcoins" currencyNum:0];
-//    
-//}
-
 @end
 
