@@ -9,5 +9,6 @@
 
 @interface ABCRequest (Internal)
 
+@property (nonatomic, strong) ABCWallet         *wallet;
 
 @end

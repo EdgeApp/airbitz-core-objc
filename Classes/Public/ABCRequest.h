@@ -19,9 +19,6 @@
 @interface ABCRequest : NSObject
 /// @name The following properties are passed into ABCRequest as details for the request
 
-/// Wallet object to generate an address request from. REQUIRED
-@property (nonatomic, strong) ABCWallet *wallet;
-
 /// Amount of satoshis to add to request. Optional
 @property (nonatomic)       int64_t  amountSatoshi;
 
@@ -49,6 +46,8 @@
 
 /// QRCode of request.
 @property (nonatomic, copy) UIImage  *qrCode;
+
+
 
 /// @name Instance Methods
 
