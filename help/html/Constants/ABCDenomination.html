@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 
-	<title>ABCImportDataModel Constants Reference</title>
+	<title>ABCDenomination Constants Reference</title>
 
 	<link rel="stylesheet" href="../css/style.css">
 	<meta name="viewport" content="initial-scale=1, maximum-scale=1.4">
@@ -59,13 +59,13 @@
 		<div id="overview_contents" class="container">
 			<div id="content">
 				<main role="main">
-					<h1 class="title">ABCImportDataModel Constants Reference</h1>
+					<h1 class="title">ABCDenomination Constants Reference</h1>
 
 					
 					<div class="section section-specification"><table cellspacing="0"><tbody>
 						<tr>
 	<th>Declared in</th>
-	<td>ABCWallet.h</td>
+	<td>ABCSettings.h</td>
 </tr>
 						</tbody></table></div>
 					
@@ -75,17 +75,19 @@
 					
 
                     
-                    <h3 class="subsubtitle method-title">ABCImportDataModel</h3>
+                    <h3 class="subsubtitle method-title">ABCDenomination</h3>
                     
                     <div class="section">
                         <!-- display enum values -->
                         
                         <h4 class="method-subtitle">Definition</h4>
-                        <code>typedef NS_ENUM(NSUInteger, ABCImportDataModel ) {<br>
+                        <code>typedef NS_ENUM(NSUInteger, ABCDenomination ) {<br>
                             
-                            &nbsp;&nbsp; <a href="">ABCImportWIF</a>,<br>
+                            &nbsp;&nbsp; <a href="">ABCDenominationBTC</a> = 0,<br>
                             
-                            &nbsp;&nbsp; <a href="">ABCImportHBitsURI</a>,<br>
+                            &nbsp;&nbsp; <a href="">ABCDenominationMBTC</a> = 1,<br>
+                            
+                            &nbsp;&nbsp; <a href="">ABCDenominationUBTC</a> = 2,<br>
                             
                             };</code>
                     
@@ -95,22 +97,32 @@
                         <h4 class="method-subtitle">Constants</h4>
                         <dl class="termdef">
                             
-                            <dt><a name="" title="ABCImportWIF"></a><code>ABCImportWIF</code></dt>
+                            <dt><a name="" title="ABCDenominationBTC"></a><code>ABCDenominationBTC</code></dt>
 <dd>
 
     
 	<p>
-		Declared In <code class="declared-in-ref">ABCWallet.h</code>.
+		Declared In <code class="declared-in-ref">ABCSettings.h</code>.
 	</p>
 	
 </dd>
                             
-                            <dt><a name="" title="ABCImportHBitsURI"></a><code>ABCImportHBitsURI</code></dt>
+                            <dt><a name="" title="ABCDenominationMBTC"></a><code>ABCDenominationMBTC</code></dt>
 <dd>
 
     
 	<p>
-		Declared In <code class="declared-in-ref">ABCWallet.h</code>.
+		Declared In <code class="declared-in-ref">ABCSettings.h</code>.
+	</p>
+	
+</dd>
+                            
+                            <dt><a name="" title="ABCDenominationUBTC"></a><code>ABCDenominationUBTC</code></dt>
+<dd>
+
+    
+	<p>
+		Declared In <code class="declared-in-ref">ABCSettings.h</code>.
 	</p>
 	
 </dd>

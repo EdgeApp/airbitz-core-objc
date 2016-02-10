@@ -19,6 +19,7 @@
  and auto-backed up accounts and wallets with zero-knowledge security and privacy. All
  blockchain/bitcoin private and public keys are fully encrypted by the users' credentials
  before being backed up on to peer to peer servers.
+ 
     void exampleMethod(void)
     {
         // Create an account
