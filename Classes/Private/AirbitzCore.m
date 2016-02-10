@@ -1081,24 +1081,24 @@
     return ABCConditionCodeOk;
 }
 
-- (ABCConditionCode)encodeStringToQRImage:(NSString *)string
-                                    image:(UIImage **)image;
+- (UIImage *)encodeStringToQRImage:(NSString *)string;
 {
     unsigned char *pData = NULL;
     unsigned int width;
     tABC_Error error;
+    UIImage *image = nil;;
     
     ABC_QrEncode([string UTF8String], &pData, &width, &error);
     ABCConditionCode ccode = [self setLastErrors:error];
     if (ABCConditionCodeOk == ccode)
     {
-        *image = [ABCUtil dataToImage:pData withWidth:width andHeight:width];
+        image = [ABCUtil dataToImage:pData withWidth:width andHeight:width];
     }
     
     if (pData) {
         free(pData);
     }
-    return ccode;
+    return image;;
 }
 
 

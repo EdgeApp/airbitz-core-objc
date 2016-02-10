@@ -272,15 +272,11 @@ typedef enum eABCDeviceCaps
                               error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
 
 /**
- * encodeStringToQRImage
  * Encodes a string into a QR code returned as UIImage *
- *
- * @param     NSString*   string: string to encode
- * @param     UIImage**    image: returned image
- * @return ABCConditionCode
+ * @param string NSString* string to encode
+ * @return UIImage* returned image
  */
-- (ABCConditionCode)encodeStringToQRImage:(NSString *)string
-                                    image:(UIImage **)image;
+- (UIImage *)encodeStringToQRImage:(NSString *)string;
 
 
 /**
