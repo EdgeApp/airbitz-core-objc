@@ -9,6 +9,8 @@
 #import "ABCTransaction.h"
 #import "ABC.h"
 #import "ABCError.h"
+#import "ABCUser+Internal.h"
+#import "AirbitzCore+Internal.h"
 
 @interface ABCTransaction ()
 

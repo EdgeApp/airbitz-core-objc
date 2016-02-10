@@ -1,24 +1,26 @@
 //
-//  AirbitzCore.h
-//  Airbitz
+// AirbitzCore.h
+//
+// Created by Paul P on 2016/02/09.
+// Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import "ABCWallet.h"
-#import "ABCTransaction.h"
 #import "ABCConditionCode.h"
-#import "ABCSpend.h"
+#import "ABCKeychain.h"
 #import "ABCRequest.h"
 #import "ABCSettings.h"
+#import "ABCSpend.h"
+#import "ABCTransaction.h"
+#import "ABCTxOutput.h"
 #import "ABCUser.h"
-#import "ABCLocalSettings.h"
-#import "ABCKeychain.h"
+#import "ABCWallet.h"
 
 static const int ABCDenominationBTC  = 0;
 static const int ABCDenominationMBTC = 1;
 static const int ABCDenominationUBTC = 2;
 
-#define CONFIRMED_CONFIRMATION_COUNT 6
-#define PIN_REQUIRED_PERIOD_SECONDS     120
+#define ABC_CONFIRMED_CONFIRMATION_COUNT 6
+#define ABC_PIN_REQUIRED_PERIOD_SECONDS     120
 #define ABC_ARRAY_EXCHANGES     @[@"Bitstamp", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
 
 #define ABCLog(level, format_string,...) \
@@ -33,35 +35,22 @@ typedef enum eABCDeviceCaps
 } ABCDeviceCaps;
 
 @class ABCSpend;
-@class AirbitzCore;
 @class ABCSettings;
 @class ABCRequest;
-@class ABCLocalSettings;
-@class ABCKeychain;
+@class ABCUser;
 
 @interface AirbitzCore : NSObject
 
-/// @name AirbitzCore read/write public object variables
-
 /// @name AirbitzCore currency public read-only variables
-@property (nonatomic)         int                       currencyCount;
+
 @property (nonatomic, strong) NSArray                   *arrayCurrencyCodes;
 @property (nonatomic, strong) NSArray                   *arrayCurrencyNums;
 @property (nonatomic, strong) NSArray                   *arrayCurrencyStrings;
-
-// Private variables. Do not read or modify from GUI app.
-@property (nonatomic, strong) ABCLocalSettings      *localSettings;
-@property (nonatomic, strong) ABCKeychain           *keyChain;
-@property (atomic, strong) NSMutableArray           *loggedInUsers;
-
-
 
 - (id)init:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey;
 - (void)free;
 
 - (BOOL)accountExistsLocal:(NSString *)username;
-
-- (int64_t) cleanNumString:(NSString *) value;
 - (NSArray *)getRecoveryQuestionsForUserName:(NSString *)strUserName
                                    isSuccess:(BOOL *)bSuccess
                                     errorMsg:(NSMutableString *)error;
@@ -353,14 +342,18 @@ typedef enum eABCDeviceCaps
         NSMutableArray *arrayCategoryMust)) completionHandler
                               error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
 
+/**
+ * Returns TRUE if AirbitzCore is compiled for testnet
+ * @return BOOL
+ */
 - (bool)isTestNet;
 
 
 /*
  * getLocalAccounts
- *      Get a list of previously logged in account names on this device
- * @param  NSMutableArray*       : array of strings of account names
- * @return ABCConditionCode: error code to look up
+ *      Get a list of previously logged in usernames on this device
+ * @param  accounts NSMutableArray* array of strings of account names
+ * @return ABCConditionCode error code
  */
 - (ABCConditionCode) getLocalAccounts:(NSMutableArray *) accounts;
 
@@ -389,7 +382,6 @@ typedef enum eABCDeviceCaps
  */
 - (void)enterForeground;
 
-- (NSDate *)dateFromTimestamp:(int64_t) intDate;
 
 
 @end

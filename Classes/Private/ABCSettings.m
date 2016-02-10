@@ -10,6 +10,8 @@
 #import "ABCUtil.h"
 #import "ABCKeychain.h"
 #import "ABCLocalSettings.h"
+#import "ABCUser+Internal.h"
+#import "AirbitzCore+Internal.h"
 
 
 @interface ABCSettings ()

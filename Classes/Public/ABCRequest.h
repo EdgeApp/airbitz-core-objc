@@ -6,8 +6,6 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "AirbitzCore.h"
-#import "ABCUser.h"
-#import "ABCWallet.h"
 
 @class AirbitzCore;
 @class ABCUser;

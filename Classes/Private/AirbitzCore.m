@@ -1,18 +1,5 @@
 
-#import "ABC.h"
-#import "ABCWallet.h"
-#import "ABCTransaction.h"
-#import "ABCTxOutput.h"
-#import "ABCKeychain.h"
-#import "ABCSpend.h"
-
-#import "AirbitzCore.h"
-#import "ABCError.h"
-#import "ABCRequest.h"
-#import "ABCSettings.h"
-#import "ABCUtil.h"
-#import "ABCStrings.h"
-#import "ABCUser.h"
+#import "AirbitzCore+Internal.h"
 #import <pthread.h>
 
 #define CURRENCY_NUM_AUD                 36
@@ -28,6 +15,8 @@
 #define CURRENCY_NUM_EUR                978
 
 #define DEFAULT_CURRENCY_NUM CURRENCY_NUM_USD // USD
+
+@class ABCUtil;
 
 @implementation BitidSignature
 - (id)init
@@ -47,10 +36,14 @@
     ABCError                                        *abcError;
 }
 
+@property (atomic, strong) ABCLocalSettings         *localSettings;
+@property (atomic, strong) ABCKeychain              *keyChain;
+@property (atomic, strong) NSMutableArray           *loggedInUsers;
 
 @end
 
 @implementation AirbitzCore
+
 
 - (id)init:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey
 {
@@ -117,13 +110,12 @@
         ABC_GetCurrencies(&aCurrencies, &currencyCount, &Error);
         [self setLastErrors:Error];
 
-        self.currencyCount = currencyCount;
         // set up our internal currency arrays
-        NSMutableArray *arrayCurrencyCodes = [[NSMutableArray alloc] initWithCapacity:self.currencyCount];
-        NSMutableArray *arrayCurrencyNums = [[NSMutableArray alloc] initWithCapacity:self.currencyCount];
+        NSMutableArray *arrayCurrencyCodes = [[NSMutableArray alloc] initWithCapacity:currencyCount];
+        NSMutableArray *arrayCurrencyNums = [[NSMutableArray alloc] initWithCapacity:currencyCount];
         NSMutableArray *arrayCurrencyStrings = [[NSMutableArray alloc] init];
         
-        for (int i = 0; i < self.currencyCount; i++)
+        for (int i = 0; i < currencyCount; i++)
         {
             [arrayCurrencyStrings addObject:[NSString stringWithFormat:@"%s - %@",
                                                                        aCurrencies[i].szCode,
@@ -198,13 +190,6 @@
         [f setCurrencySymbol:@""];
     }
     return [f stringFromNumber:[NSNumber numberWithFloat:currency]];
-}
-
-- (int64_t) cleanNumString:(NSString *) value
-{
-    NSNumberFormatter *f = [self generateNumberFormatter];
-    NSNumber *num = [f numberFromString:value];
-    return [num longLongValue];
 }
 
 // gets the recover questions for a given account

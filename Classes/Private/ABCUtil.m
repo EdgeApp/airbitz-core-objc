@@ -4,6 +4,9 @@
 //
 
 #import "ABCUtil.h"
+#import "ABCUser+Internal.h"
+#import "AirbitzCore+Internal.h"
+
 #import <UIKit/UIKit.h>
 #import <sys/sysctl.h>
 

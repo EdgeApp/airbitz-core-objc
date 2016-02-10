@@ -11,10 +11,12 @@
 #import "ABCSettings.h"
 #import "ABCUtil.h"
 #import "ABCStrings.h"
+#import "ABCUser+Internal.h"
+#import "AirbitzCore+Internal.h"
 #import <pthread.h>
 
 static const int   fileSyncFrequencySeconds   = 30;
-static const float walletLoadingTimerInterval = 15.0;     // How long to wait between wallet updates on new device logins before we consider the account fully loaded
+static const float walletLoadingTimerInterval = 20.0;     // How long to wait between wallet updates on new device logins before we consider the account fully loaded
 static const int64_t recoveryReminderAmount   = 10000000;
 static const int recoveryReminderCount        = 2;
 static const int notifySyncDelay          = 1;
@@ -45,8 +47,8 @@ static const int notifySyncDelay          = 1;
     
 }
 
+@property (atomic, strong)   AirbitzCore             *abc;
 @property (nonatomic, strong) NSTimer               *walletLoadingTimer;
-
 
 @end
 
@@ -175,6 +177,7 @@ static const int notifySyncDelay          = 1;
 {
     if ([self isLoggedIn])
     {
+        [self saveLogoutDate];
         [self stopQueues];
         [self disconnectWatchers];
     }
@@ -771,13 +774,6 @@ static const int notifySyncDelay          = 1;
     return decimalPlaces;
 }
 
-- (int64_t) cleanNumString:(NSString *) value
-{
-    NSNumberFormatter *f = [self generateNumberFormatter];
-    NSNumber *num = [f numberFromString:value];
-    return [num longLongValue];
-}
-
 - (NSString *)formatSatoshi: (int64_t) amount
 {
     return [self formatSatoshi:amount withSymbol:true];
@@ -1018,7 +1014,7 @@ static const int notifySyncDelay          = 1;
 - (BOOL)recentlyLoggedIn
 {
     long now = (long) [[NSDate date] timeIntervalSince1970];
-    return now - iLoginTimeSeconds <= PIN_REQUIRED_PERIOD_SECONDS;
+    return now - iLoginTimeSeconds <= ABC_PIN_REQUIRED_PERIOD_SECONDS;
 }
 
 - (void)login

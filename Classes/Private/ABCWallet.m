@@ -14,6 +14,8 @@
 #import "ABCTxOutput.h"
 #import "ABCTransaction.h"
 #import "ABCStrings.h"
+#import "ABCUser+Internal.h"
+#import "AirbitzCore+Internal.h"
 
 
 #define HIDDEN_BITZ_URI_SCHEME                          @"hbits"
@@ -518,12 +520,12 @@ exitnow:
     transaction.strWalletName = self.strName;
     transaction.wallet = self;
     if (pTrans->szMalleableTxId) {
-        transaction.strMallealbeID = [NSString stringWithUTF8String: pTrans->szMalleableTxId];
+        transaction.strMalleableID = [NSString stringWithUTF8String: pTrans->szMalleableTxId];
     }
     bool bSyncing = NO;
     transaction.confirmations = [self calcTxConfirmations:transaction.strID
                                                 isSyncing:&bSyncing];
-    transaction.bConfirmed = transaction.confirmations >= CONFIRMED_CONFIRMATION_COUNT;
+    transaction.bConfirmed = transaction.confirmations >= ABC_CONFIRMED_CONFIRMATION_COUNT;
     transaction.bSyncing = bSyncing;
     if (transaction.strName) {
         transaction.strAddress = transaction.strName;

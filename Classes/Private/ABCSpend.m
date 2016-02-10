@@ -8,6 +8,8 @@
 #import "ABCWallet.h"
 #import "ABC.h"
 #import "ABCError.h"
+#import "ABCUser+Internal.h"
+#import "AirbitzCore+Internal.h"
 
 @interface ABCSpend ()
 
@@ -224,7 +226,7 @@
             pTrans->pDetails->amountCurrency = _amountFiat;
         }
         if (0 < _bizId) {
-            pTrans->pDetails->bizId = _bizId;
+            pTrans->pDetails->bizId = (unsigned int)_bizId;
         }
         ABC_SetTransactionDetails([self.wallet.user.name UTF8String], NULL,
             [self.srcWallet.strUUID UTF8String], [txId UTF8String],

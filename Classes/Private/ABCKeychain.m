@@ -6,16 +6,14 @@
 //  Copyright (c) 2015 Airbitz. All rights reserved.
 //
 
-
-#import "ABCKeychain.h"
-#import "AirbitzCore.h"
 #import "NSMutableData+Secure.h"
 #import <LocalAuthentication/LocalAuthentication.h>
-#import "ABCLocalSettings.h"
+#import "ABCKeychain+Internal.h"
 
 @interface ABCKeychain ()
 
 @property (nonatomic) AirbitzCore *abc;
+@property (nonatomic) ABCLocalSettings *localSettings;
 
 @end
 

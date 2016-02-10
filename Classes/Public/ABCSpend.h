@@ -3,7 +3,6 @@
 //  AirBitz
 //
 
-#import "ABCWallet.h"
 #import "AirbitzCore.h"
 
 @class ABCWallet;

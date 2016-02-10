@@ -4,8 +4,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ABCConditionCode.h"
-#import "ABC.h"
+#import "AirbitzCore+Internal.h"
 
 @interface ABCError : NSObject
 

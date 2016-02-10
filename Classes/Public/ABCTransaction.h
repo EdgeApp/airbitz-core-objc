@@ -15,7 +15,7 @@
 
 @property (nonatomic, strong)   ABCWallet       *wallet;
 @property (nonatomic, copy)     NSString        *strID;
-@property (nonatomic, copy)     NSString        *strMallealbeID;
+@property (nonatomic, copy)     NSString        *strMalleableID;
 @property (nonatomic, copy)     NSString        *strWalletName;
 @property (nonatomic, copy)     NSString        *strName;
 @property (nonatomic, copy)     NSString        *strAddress;

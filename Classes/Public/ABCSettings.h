@@ -4,9 +4,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ABCConditionCode.h"
 #import "AirbitzCore.h"
-#import "ABCUser.h"
 
 @class AirbitzCore;
 @class ABCKeychain;
@@ -40,8 +38,6 @@
 @property (nonatomic) bool bSpendRequirePin;
 @property (nonatomic) int64_t spendRequirePinSatoshis;
 @property (nonatomic) bool bDisablePINLogin;
-
-- (id)init:(ABCUser *)user localSettings:(id)local keyChain:(id)keyChain;
 
 /// Loads all settings into [ABCSettings] structure
 - (ABCConditionCode)loadSettings;

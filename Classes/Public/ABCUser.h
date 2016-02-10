@@ -3,20 +3,10 @@
 //  Airbitz
 //
 
-#import "ABCWallet.h"
-#import "ABCTransaction.h"
-#import "ABCConditionCode.h"
-#import "ABCSpend.h"
-#import "ABCRequest.h"
-#import "ABCSettings.h"
 #import "AirbitzCore.h"
-#import "ABCUser.h"
 
-#define CONFIRMED_CONFIRMATION_COUNT 6
-#define PIN_REQUIRED_PERIOD_SECONDS     120
-
-@class ABCSpend;
 @class AirbitzCore;
+@class ABCSpend;
 @class ABCSettings;
 @class ABCRequest;
 @class ABCTransaction;
@@ -26,22 +16,52 @@
 @property (nonatomic, strong) NSString *signature;
 @end
 
+/// @name ABCUser Delegate callbacks
+
 @protocol ABCUserDelegate <NSObject>
 
 @optional
 
+/// Password has been changed by a remote device. User will be able to login on current device
+/// with old password. One user logs in with new password, old password will cease to function.
 - (void) abcUserRemotePasswordChange;
+
+/// User has been logged out. Always called after [ABCUser logout] once Core has finished logout
+/// Also called under some error conditions such as corrupt local data.
 - (void) abcUserLoggedOut:(ABCUser *)user;
+
+/// Account details such as settings have changed
 - (void) abcUserAccountChanged;
+
+/// Specific wallet has changed. Changes may include new transactions or modified metadata
 - (void) abcUserWalletChanged:(ABCWallet *)wallet;
+
+/// Called when the wallets in the account are still loading their prior transactions.
 - (void) abcUserWalletsLoading;
+
+/// At minimum, the primary wallet has finished loading. Other wallets may still be loading
 - (void) abcUserWalletsLoaded;
+
+/// Wallets in the account have changed. Changes may include new wallet order or wallet names.
 - (void) abcUserWalletsChanged;
+
+/// Account has had OTP enabled on another device. GUI should ask user to add OTP key from
+/// OTP authenticated device.
 - (void) abcUserOTPRequired;
+
+/// Current OTP token on device does not match server OTP token. Token may have been changed by another
+/// device or user's time clock is skewed.
 - (void) abcUserOTPSkew;
-- (void) abcUserExchangeRateChanged;
+
+- (void) abcUserExchangeRateChanged; // XXX remove me and move to GUI
 - (void) abcUserBlockHeightChanged;
+
+/// This device has just sync'ed a transaction to the specified wallet from another device
+/// causing a change in balance. This happens if two devices share a wallet. First device will see
+/// abcUserIncomingBitcoin. The second device will see abcUserBalanceUpdate
 - (void) abcUserBalanceUpdate:(ABCWallet *)wallet txid:(NSString *)txid;
+
+/// The specified wallet has just received a new transaction with given txid.
 - (void) abcUserIncomingBitcoin:(ABCWallet *)wallet txid:(NSString *)txid;
 
 @end
@@ -82,17 +102,9 @@
 @property (atomic, copy)     NSString                *name;
 @property (atomic, copy)     NSString                *password;
 
-@property (atomic, strong)   AirbitzCore             *abc;
 
 
 
-- (id)initWithCore:(AirbitzCore *)airbitzCore;
-- (void)free;
-- (void)startQueues;
-- (void)stopQueues;
-
-
-- (int)dataOperationCount;
 
 // New methods
 - (void)reorderWallets: (NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath;
@@ -100,7 +112,6 @@
 - (void)makeCurrentWalletWithIndex:(NSIndexPath *)indexPath;
 - (void)makeCurrentWalletWithUUID:(NSString *)strUUID;
 - (ABCWallet *)selectWalletWithUUID:(NSString *)strUUID;
-- (long) saveLogoutDate;
 - (void)addCategory:(NSString *)strCategory;
 - (void)loadCategories;
 - (void)saveCategories:(NSMutableArray *)saveArrayCategories;
@@ -114,8 +125,6 @@
 - (bool)setWalletAttributes: (ABCWallet *) wallet;
 
 - (int) currencyDecimalPlaces;
-- (int) maxDecimalPlaces;
-- (int64_t) cleanNumString:(NSString *) value;
 - (NSString *)formatCurrency:(double) currency withCurrencyNum:(int)currencyNum;
 - (NSString *)formatCurrency:(double) currency withCurrencyNum:(int)currencyNum withSymbol:(bool)symbol;
 - (NSString *)formatSatoshi:(int64_t) bitcoin;
@@ -126,7 +135,6 @@
 - (int64_t) denominationToSatoshi: (NSString *) amount;
 - (NSString *)conversionStringFromNum:(int) currencyNum withAbbrev:(bool) abbrev;
 - (BOOL)needsRecoveryQuestionsReminder;
-- (BOOL)recentlyLoggedIn;
 - (BOOL)passwordOk:(NSString *)password;
 - (NSString *) bitidParseURI:(NSString *)uri;
 - (BOOL) bitidLogin:(NSString *)uri;
@@ -177,6 +185,15 @@
  * @return BOOL true if user has a password
  */
 - (BOOL)passwordExists;
+
+/**
+ * Check if this user has logged in "recently". Currently fixed to return TRUE
+ * within 120 seconds of login. Useful for requiring less security for spending such as a PIN
+ * on spend.
+ * @return BOOL
+ */
+- (BOOL)recentlyLoggedIn;
+
 
 
 /// -----------------------------------------------------------------------------
@@ -421,8 +438,6 @@
 - (ABCConditionCode) currencyToSatoshi:(double)currency
                            currencyNum:(int)currencyNum
                                satoshi:(int64_t *)pSatoshi;
-- (ABCConditionCode) getLastConditionCode;
-- (NSString *) getLastErrorString;
 
 /*
  * shouldAskUserToEnableTouchID
@@ -442,29 +457,10 @@
 - (ABCConditionCode)accountDataRemove:(NSString *)folder withKey:(NSString *)key;
 - (ABCConditionCode)accountDataClear:(NSString *)folder;
 
-
-//////////////////////////////////////////////////////////////////////////
-// Internal routines - Do not call from GUI App
-//////////////////////////////////////////////////////////////////////////
-- (void)login;
-- (void)logout;
-- (void)enterBackground;
-- (void)enterForeground;
-- (BOOL)didLoginExpire;
-- (void)postToGenQRQueue:(void(^)(void))cb;
-- (void)postToMiscQueue:(void(^)(void))cb;
-- (void)postToWatcherQueue:(void(^)(void))cb;
-- (void)postToDataQueue:(void(^)(void))cb;
-- (ABCConditionCode)setDefaultCurrencyNum:(int)currencyNum;
-- (void)restoreConnectivity;
-- (void)lostConnectivity;
-- (void)setupLoginPIN;
-- (void)watchAddresses: (NSString *) walletUUID;
-- (void)refreshWallets;
-- (void)connectWatcher:(NSString *)uuid;
-- (void)clearDataQueue;
-- (BOOL)watcherExists:(NSString *)uuid;
-
+- (ABCConditionCode) getLastConditionCode;
+- (NSString *) getLastErrorString;
 
 
 @end
+
+
