@@ -19,14 +19,46 @@
  and auto-backed up accounts and wallets with zero-knowledge security and privacy. All
  blockchain/bitcoin private and public keys are fully encrypted by the users' credentials
  before being backed up on to peer to peer servers.
-
-    - (void) exampleMethod;
+    void exampleMethod(void)
     {
+        // Create an account
         AirbitzCore *abc  = [[AirbitzCore alloc] init:@"YourAPIKeyHere"];
         ABCUser *abcUser  = [abc createAccount:@"myUsername" password:@"MyPa55w0rd!&" pin:@"4283" delegate:self];
+        // New account is auto logged in after creation
+
+        // Create a wallet in the user account
         ABCWallet *wallet = [abcUser createWallet:@"My Awesome Bitcoins" currencyNum:0];
+
+        // Logout
+        [abc logout:abcUser];
+
+        // Log back in with full credentials
+        abcUser = [abc signIn:@"myUsername" password:@"MyPa55w0rd!&" delegate:self otp:nil];
+        [abc logout:abcUser];
+
+        // Log back in with PIN using completion handler codeblock
+        [abc signInWithPIN:@"myUsername" pin:@"4283" delegate:self complete:^(ABCUser *user)
+        {
+            ABCUser *abcUser = user;
+
+            // Get the first wallet in the account
+            ABCWallet *wallet = abcUser.arrayWallets[0];
+
+            // Create a bitcoin request
+            ABCRequest *request = [[ABCRequest alloc] init];
+            [wallet createReceiveRequestWithDetails:request];
+
+            // Use the request results
+            NSString *bitcoinAddress = request.address;
+            NSString *bitcoinURI     = request.uri;
+            UIImage  *bitcoinQRCode  = request.qrCode;
+
+        } error:^(ABCConditionCode ccode, NSString *errorString)
+        {
+            NSLog(@"Argh! Error code: %d. Error string:%@", ccode, errorString);
+        }];
     }
-*/
+ */
 
 #define ABC_CONFIRMED_CONFIRMATION_COUNT    6
 #define ABC_PIN_REQUIRED_PERIOD_SECONDS     120
