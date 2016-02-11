@@ -15,12 +15,17 @@
 #import "ABCWallet.h"
 
 /**
- AirbitzCore is a client-side blockchain and EdgeSecurity SDK providing auto-encrypted
+ AirbitzCore (ABC) is a client-side blockchain and EdgeSecurity SDK providing auto-encrypted
  and auto-backed up accounts and wallets with zero-knowledge security and privacy. All
  blockchain/bitcoin private and public keys are fully encrypted by the users' credentials
- before being backed up on to peer to peer servers.
+ before being backed up on to peer to peer servers. ABC allows developers to create new
+ Airbitz wallet accounts or login to pre-existing accounts. Account encrypted data is
+ automatically synchronized between all devices and apps using the Airbitz SDK. This allows a
+ third party application to generate payment requests or send funds for the users' account
+ that may have been created on the Airbitz Mobile Bitcoin Wallet or any other Airbitz SDK
+ application.
  
-    void exampleMethod(void)
+    - (void) exampleMethod
     {
         // Create an account
         AirbitzCore *abc  = [[AirbitzCore alloc] init:@"YourAPIKeyHere"];
@@ -47,19 +52,36 @@
 
             // Create a bitcoin request
             ABCRequest *request = [[ABCRequest alloc] init];
+            
+            // Put in some optional meta data into this request so incoming funds are automatically tagged
+            request.payeeName     = @"William Swanson"; // Name of the person receiving request
+            request.category      = @"Income:Rent";     // Category of payment. Auto tags category when funds come in
+            request.notes         = @"Rent payment for Jan 2016";
+            request.amountSatoshi = 12345000;
+            
             [wallet createReceiveRequestWithDetails:request];
 
             // Use the request results
             NSString *bitcoinAddress = request.address;
             NSString *bitcoinURI     = request.uri;
             UIImage  *bitcoinQRCode  = request.qrCode;
+            
+            // Now go and display the QR code or send payment to address in some other way.
 
         } error:^(ABCConditionCode ccode, NSString *errorString)
         {
             NSLog(@"Argh! Error code: %d. Error string:%@", ccode, errorString);
         }];
+        
+    }
+
+    // Delegate method called when bitcoin is received
+    - (void) abcUserIncomingBitcoin:(ABCWallet *)wallet txid:(NSString *)txid;
+    {
+        NSLog(@"Yay, my wallet just received bitcoin", wallet.strName);
     }
  */
+
 
 #define ABC_CONFIRMED_CONFIRMATION_COUNT    6
 #define ABC_PIN_REQUIRED_PERIOD_SECONDS     120
