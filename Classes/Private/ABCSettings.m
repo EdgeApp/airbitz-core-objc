@@ -237,7 +237,11 @@
 - (BOOL) haveSettingsChanged:(tABC_AccountSettings *)pSettings;
 {
     BOOL settingsChanged = NO;
+    if (!pSettings)
+        return YES;
+    
     if (
+            !pSettings ||
             pSettings->bDisablePINLogin                       != self.bDisablePINLogin          ||
             pSettings->minutesAutoLogout                      != self.minutesAutoLogout         ||
             pSettings->currencyNum                            != self.defaultCurrencyNum        ||
@@ -247,6 +251,12 @@
             pSettings->bSpendRequirePin                       != self.bSpendRequirePin          ||
             pSettings->spendRequirePinSatoshis                != self.spendRequirePinSatoshis   ||
 
+            !pSettings->szFirstName ||
+        !pSettings->szLastName ||
+        !pSettings->szNickname ||
+        !pSettings->szFullName ||
+        !pSettings->szPIN ||
+        !pSettings->szExchangeRateSource ||
             ![self.firstName isEqualToString:               [NSString stringWithUTF8String:pSettings->szFirstName         ]] ||
             ![self.lastName isEqualToString:                [NSString stringWithUTF8String:pSettings->szLastName          ]] ||
             ![self.nickName isEqualToString:                [NSString stringWithUTF8String:pSettings->szNickname          ]] ||
