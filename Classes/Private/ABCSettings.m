@@ -237,37 +237,45 @@
 - (BOOL) haveSettingsChanged:(tABC_AccountSettings *)pSettings;
 {
     BOOL settingsChanged = NO;
-    if (!pSettings)
-        return YES;
-    
-    if (
-            !pSettings ||
-            pSettings->bDisablePINLogin                       != self.bDisablePINLogin          ||
-            pSettings->minutesAutoLogout                      != self.minutesAutoLogout         ||
-            pSettings->currencyNum                            != self.defaultCurrencyNum        ||
-            pSettings->bitcoinDenomination.satoshi            != self.denomination              ||
-            pSettings->bitcoinDenomination.denominationType   != (int) self.denominationType    ||
-            pSettings->bNameOnPayments                        != self.bNameOnPayments           ||
-            pSettings->bSpendRequirePin                       != self.bSpendRequirePin          ||
-            pSettings->spendRequirePinSatoshis                != self.spendRequirePinSatoshis   ||
 
-            !pSettings->szFirstName ||
-        !pSettings->szLastName ||
-        !pSettings->szNickname ||
-        !pSettings->szFullName ||
-        !pSettings->szPIN ||
-        !pSettings->szExchangeRateSource ||
-            ![self.firstName isEqualToString:               [NSString stringWithUTF8String:pSettings->szFirstName         ]] ||
-            ![self.lastName isEqualToString:                [NSString stringWithUTF8String:pSettings->szLastName          ]] ||
-            ![self.nickName isEqualToString:                [NSString stringWithUTF8String:pSettings->szNickname          ]] ||
-            ![self.fullName isEqualToString:                [NSString stringWithUTF8String:pSettings->szFullName          ]] ||
-            ![self.strPIN isEqualToString:                  [NSString stringWithUTF8String:pSettings->szPIN               ]] ||
-            ![self.exchangeRateSource isEqualToString:      [NSString stringWithUTF8String:pSettings->szExchangeRateSource]] )
+    if (
+        !pSettings ||
+        pSettings->bDisablePINLogin                       != self.bDisablePINLogin          ||
+        pSettings->minutesAutoLogout                      != self.minutesAutoLogout         ||
+        pSettings->currencyNum                            != self.defaultCurrencyNum        ||
+        pSettings->bitcoinDenomination.satoshi            != self.denomination              ||
+        pSettings->bitcoinDenomination.denominationType   != (int) self.denominationType    ||
+        pSettings->bNameOnPayments                        != self.bNameOnPayments           ||
+        pSettings->bSpendRequirePin                       != self.bSpendRequirePin          ||
+        pSettings->spendRequirePinSatoshis                != self.spendRequirePinSatoshis   ||
+
+        ![self isNSStringEqualToCString:self.firstName            cstring:pSettings->szFirstName         ] ||
+        ![self isNSStringEqualToCString:self.lastName             cstring:pSettings->szLastName          ] ||
+        ![self isNSStringEqualToCString:self.nickName             cstring:pSettings->szNickname          ] ||
+        ![self isNSStringEqualToCString:self.fullName             cstring:pSettings->szFullName          ] ||
+        ![self isNSStringEqualToCString:self.strPIN               cstring:pSettings->szPIN               ] ||
+        ![self isNSStringEqualToCString:self.exchangeRateSource   cstring:pSettings->szExchangeRateSource] )
     {
         settingsChanged = YES;
     }
     return settingsChanged;
+}
 
+- (BOOL) isNSStringEqualToCString:(NSString *)string cstring:(char *)cstring
+{
+    NSString *str = string;
+    char *cstr = cstring;
+    
+    if (!str)
+        str = @"";
+    
+    if (!cstr)
+        cstr = "";
+    
+    if ([str isEqualToString:[NSString stringWithUTF8String:cstr]])
+        return YES;
+
+    return NO;
 }
 
 - (void)doSetDenominationLabel
