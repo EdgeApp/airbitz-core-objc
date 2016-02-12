@@ -115,7 +115,6 @@
 - (void)addCategory:(NSString *)strCategory;
 - (void)loadCategories;
 - (void)saveCategories:(NSMutableArray *)saveArrayCategories;
-- (BOOL)accountExistsLocal:(NSString *)username;
 - (BOOL) isLoggedIn;
 
 
