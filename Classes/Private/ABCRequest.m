@@ -3,10 +3,6 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import "ABCRequest.h"
-#import "ABCError.h"
-#import "ABCUtil.h"
-#import "ABCUser+Internal.h"
 #import "AirbitzCore+Internal.h"
 
 @interface ABCRequest ()
@@ -14,7 +10,7 @@
 
 }
 @property (nonatomic, strong) ABCError          *abcError;
-@property (nonatomic, strong) ABCUser           *user; // pointer to ABCUser object that created request
+@property (nonatomic, strong) ABCAccount           *user; // pointer to ABCAccount object that created request
 @property (nonatomic, strong) ABCWallet         *wallet;
 
 @end

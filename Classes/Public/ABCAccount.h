@@ -1,5 +1,5 @@
 //
-//  ABCUser.h
+//  ABCAccount.h
 //  Airbitz
 //
 
@@ -16,62 +16,62 @@
 @property (nonatomic, strong) NSString *signature;
 @end
 
-/// @name ABCUser Delegate callbacks
+/// @name ABCAccount Delegate callbacks
 
-@protocol ABCUserDelegate <NSObject>
+@protocol ABCAccountDelegate <NSObject>
 
 @optional
 
 /// Password has been changed by a remote device. User will be able to login on current device
 /// with old password. One user logs in with new password, old password will cease to function.
-- (void) abcUserRemotePasswordChange;
+- (void) abcAccountRemotePasswordChange;
 
-/// User has been logged out. Always called after [ABCUser logout] once Core has finished logout
+/// User has been logged out. Always called after [ABCAccount logout] once Core has finished logout
 /// Also called under some error conditions such as corrupt local data.
-- (void) abcUserLoggedOut:(ABCUser *)user;
+- (void) abcAccountLoggedOut:(ABCAccount *)user;
 
 /// Account details such as settings have changed
-- (void) abcUserAccountChanged;
+- (void) abcAccountAccountChanged;
 
 /// Specific wallet has changed. Changes may include new transactions or modified metadata
-- (void) abcUserWalletChanged:(ABCWallet *)wallet;
+- (void) abcAccountWalletChanged:(ABCWallet *)wallet;
 
 /// Called when the wallets in the account are still loading their prior transactions.
-- (void) abcUserWalletsLoading;
+- (void) abcAccountWalletsLoading;
 
 /// At minimum, the primary wallet has finished loading. Other wallets may still be loading
-- (void) abcUserWalletsLoaded;
+- (void) abcAccountWalletsLoaded;
 
 /// Wallets in the account have changed. Changes may include new wallet order or wallet names.
-- (void) abcUserWalletsChanged;
+- (void) abcAccountWalletsChanged;
 
 /// Account has had OTP enabled on another device. GUI should ask user to add OTP key from
 /// OTP authenticated device.
-- (void) abcUserOTPRequired;
+- (void) abcAccountOTPRequired;
 
 /// Current OTP token on device does not match server OTP token. Token may have been changed by another
 /// device or user's time clock is skewed.
-- (void) abcUserOTPSkew;
+- (void) abcAccountOTPSkew;
 
-- (void) abcUserExchangeRateChanged; // XXX remove me and move to GUI
-- (void) abcUserBlockHeightChanged;
+- (void) abcAccountExchangeRateChanged; // XXX remove me and move to GUI
+- (void) abcAccountBlockHeightChanged;
 
 /// This device has just sync'ed a transaction to the specified wallet from another device
 /// causing a change in balance. This happens if two devices share a wallet. First device will see
-/// abcUserIncomingBitcoin. The second device will see abcUserBalanceUpdate
-- (void) abcUserBalanceUpdate:(ABCWallet *)wallet txid:(NSString *)txid;
+/// abcAccountIncomingBitcoin. The second device will see abcAccountBalanceUpdate
+- (void) abcAccountBalanceUpdate:(ABCWallet *)wallet txid:(NSString *)txid;
 
 /// The specified wallet has just received a new transaction with given txid.
-- (void) abcUserIncomingBitcoin:(ABCWallet *)wallet txid:(NSString *)txid;
+- (void) abcAccountIncomingBitcoin:(ABCWallet *)wallet txid:(NSString *)txid;
 
 @end
 
-@interface ABCUser : NSObject
+@interface ABCAccount : NSObject
 
 /// @name AirbitzCore read/write public object variables
 
 /// Delegate object to handle delegate callbacks
-@property (assign)            id<ABCUserDelegate>    delegate;
+@property (assign)            id<ABCAccountDelegate>    delegate;
 
 /// ABC settings that can be set or viewed by app or ABC. Use method [ABCSettings loadSettings]
 /// to make sure they are loaded and [ABCSettings saveSettings] to ensure modified settings are latched

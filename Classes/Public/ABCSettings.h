@@ -8,7 +8,7 @@
 
 @class AirbitzCore;
 @class ABCKeychain;
-@class ABCUser;
+@class ABCAccount;
 
 #define ABC_ARRAY_EXCHANGES     @[@"Bitstamp", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
 

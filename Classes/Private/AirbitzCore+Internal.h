@@ -7,6 +7,7 @@
 
 #import "ABC.h"
 #import "AirbitzCore.h"
+#import "ABCAccount+Internal.h"
 #import "ABCConditionCode.h"
 #import "ABCError.h"
 #import "ABCKeychain+Internal.h"
@@ -16,7 +17,7 @@
 #import "ABCSpend+Internal.h"
 #import "ABCStrings.h"
 #import "ABCTransaction.h"
-#import "ABCUser+Internal.h"
+#import "ABCAccount+Internal.h"
 #import "ABCUtil.h"
 #import "ABCWallet+Internal.h"
 

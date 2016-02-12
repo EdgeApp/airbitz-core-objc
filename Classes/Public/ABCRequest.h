@@ -8,7 +8,7 @@
 #import "AirbitzCore.h"
 
 @class AirbitzCore;
-@class ABCUser;
+@class ABCAccount;
 @class ABCWallet;
 
 /// Object used to pass in address request details

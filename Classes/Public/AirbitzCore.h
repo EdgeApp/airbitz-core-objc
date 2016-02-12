@@ -11,7 +11,7 @@
 #import "ABCSpend.h"
 #import "ABCTransaction.h"
 #import "ABCTxOutput.h"
-#import "ABCUser.h"
+#import "ABCAccount.h"
 #import "ABCWallet.h"
 
 /**
@@ -29,26 +29,26 @@
     {
         // Create an account
         AirbitzCore *abc  = [[AirbitzCore alloc] init:@"YourAPIKeyHere"];
-        ABCUser *abcUser  = [abc createAccount:@"myUsername" password:@"MyPa55w0rd!&" pin:@"4283" delegate:self];
+        ABCAccount *abcAccount  = [abc createAccount:@"myUsername" password:@"MyPa55w0rd!&" pin:@"4283" delegate:self];
         // New account is auto logged in after creation
 
         // Create a wallet in the user account
-        ABCWallet *wallet = [abcUser createWallet:@"My Awesome Bitcoins" currencyNum:0];
+        ABCWallet *wallet = [abcAccount createWallet:@"My Awesome Bitcoins" currencyNum:0];
 
         // Logout
-        [abc logout:abcUser];
+        [abc logout:abcAccount];
 
         // Log back in with full credentials
-        abcUser = [abc signIn:@"myUsername" password:@"MyPa55w0rd!&" delegate:self otp:nil];
-        [abc logout:abcUser];
+        abcAccount = [abc signIn:@"myUsername" password:@"MyPa55w0rd!&" delegate:self otp:nil];
+        [abc logout:abcAccount];
 
         // Log back in with PIN using completion handler codeblock
-        [abc signInWithPIN:@"myUsername" pin:@"4283" delegate:self complete:^(ABCUser *user)
+        [abc signInWithPIN:@"myUsername" pin:@"4283" delegate:self complete:^(ABCAccount *user)
         {
-            ABCUser *abcUser = user;
+            ABCAccount *abcAccount = user;
 
             // Get the first wallet in the account
-            ABCWallet *wallet = abcUser.arrayWallets[0];
+            ABCWallet *wallet = abcAccount.arrayWallets[0];
 
             // Create a bitcoin request
             ABCRequest *request = [[ABCRequest alloc] init];
@@ -76,7 +76,7 @@
     }
 
     // Delegate method called when bitcoin is received
-    - (void) abcUserIncomingBitcoin:(ABCWallet *)wallet txid:(NSString *)txid;
+    - (void) abcAccountIncomingBitcoin:(ABCWallet *)wallet txid:(NSString *)txid;
     {
         NSLog(@"Yay, my wallet just received bitcoin", wallet.strName);
     }
@@ -101,7 +101,7 @@ typedef enum eABCDeviceCaps
 @class ABCSpend;
 @class ABCSettings;
 @class ABCRequest;
-@class ABCUser;
+@class ABCAccount;
 
 @interface AirbitzCore : NSObject
 
@@ -135,70 +135,70 @@ typedef enum eABCDeviceCaps
  * @param username NSString*
  * @param password NSString*
  * @param pin NSString*
- * @param delegate ABCUserDelegate object for callbacks. May be set to nil;
+ * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
  * @param complete (Optional) Code block called on success. Returns void if used<br>
- * - *param* ABCUser* User object.<br>
+ * - *param* ABCAccount* User object.<br>
  * @param error (Optional) Code block called on error with parameters<br>
  * - *param* ABCCondition code<br>
  * - *param* NSString* errorString
- * @return ABCUser* User object or nil if failure
+ * @return ABCAccount* User object or nil if failure
  */
 - (void)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate
-             complete:(void (^)(ABCUser *)) completionHandler
+             complete:(void (^)(ABCAccount *)) completionHandler
                 error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-- (ABCUser *)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate;
+- (ABCAccount *)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate;
 
 
 /**
  * Sign In to an Airbitz account.
  * @param username NSString*
  * @param password NSString*
- * @param delegate ABCUserDelegate object for callbacks. May be set to nil;
+ * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
  * @param otp NSString* One Time Password token (optional). Send nil if logging in w/o OTP token
  *                       or if OTP token has already been saved in this account from prior login
  * @param complete (Optional) Code block called on success. Returns void if used<br>
- * - *param* ABCUser* User object.
+ * - *param* ABCAccount* User object.
  * @param error (Optional) Code block called on error with parameters<br>
  * - *param* ABCCondition code<br>
  * - *param* NSString* errorString
- * @return ABCUser*
+ * @return ABCAccount*
  */
 - (void)signIn:(NSString *)username password:(NSString *)password delegate:(id)delegate otp:(NSString *)otp
-      complete:(void (^)(ABCUser *user)) completionHandler
+      complete:(void (^)(ABCAccount *user)) completionHandler
          error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-- (ABCUser *)signIn:(NSString *)username password:(NSString *)password delegate:(id)delegate otp:(NSString *)otp;
+- (ABCAccount *)signIn:(NSString *)username password:(NSString *)password delegate:(id)delegate otp:(NSString *)otp;
 
 /**
  * Sign In to an Airbitz account with PIN. Used to sign into devices that have previously
  * been logged into using a full username & password
  * @param username NSString*
  * @param pin NSString*
- * @param delegate ABCUserDelegate object for callbacks. May be set to nil;
+ * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
  * @param complete (Optional) Code block called on success. Returns void if used<br>
- * - *param* ABCUser* User object.<br>
+ * - *param* ABCAccount* User object.<br>
  * @param error (Optional) Code block called on error with parameters<br>
  * - *param* ABCCondition code<br>
  * - *param* NSString* errorString
- * @return ABCUser*
+ * @return ABCAccount*
  */
 - (void)signInWithPIN:(NSString *)username pin:(NSString *)pin delegate:(id)delegate
-             complete:(void (^)(ABCUser *user)) completionHandler
+             complete:(void (^)(ABCAccount *user)) completionHandler
                 error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-- (ABCUser *)signInWithPIN:(NSString *)username pin:(NSString *)pin delegate:(id)delegate;
+- (ABCAccount *)signInWithPIN:(NSString *)username pin:(NSString *)pin delegate:(id)delegate;
 
 /**
- * Get ABCUser object for username if logged in.
+ * Get ABCAccount object for username if logged in.
  * @param username NSString*
- * @return ABCUser* if logged in. nil otherwise
+ * @return ABCAccount* if logged in. nil otherwise
  */
-- (ABCUser *) getLoggedInUser:(NSString *)username;
+- (ABCAccount *) getLoggedInUser:(NSString *)username;
 
 /**
- * Logout the specified ABCUser object
- * @param abcUser ABCUser* user to logout
+ * Logout the specified ABCAccount object
+ * @param abcAccount ABCAccount* user to logout
  * @return void
  */
-- (void)logout:(ABCUser *)abcUser;
+- (void)logout:(ABCAccount *)abcAccount;
 
 /**
  * Check if specified username has a password on the account or if it is
@@ -251,7 +251,7 @@ typedef enum eABCDeviceCaps
  * @param delegate delegate object for callbacks
  * @param doBeforeLogin: completion handler code block executes before login is attempted
  * @param completeWithLogin: completion handler code block executes if login is successful<br>
- * - *param* ABCUser* User object<br>
+ * - *param* ABCAccount* User object<br>
  * - *param* BOOL* usedTouchID: TRUE if user used TouchID to login
  * @param completeNoLogin: completion handler code block executes if relogin not attempted
  * @param errorHandler: error handler code block which is called if relogin attempted but failed<br>
@@ -262,7 +262,7 @@ typedef enum eABCDeviceCaps
 - (void)autoReloginOrTouchIDIfPossible:(NSString *)username
                               delegate:(id)delegate
                          doBeforeLogin:(void (^)(void)) doBeforeLogin
-                     completeWithLogin:(void (^)(ABCUser *user, BOOL usedTouchID)) completionWithLogin
+                     completeWithLogin:(void (^)(ABCAccount *user, BOOL usedTouchID)) completionWithLogin
                        completeNoLogin:(void (^)(void)) completionNoLogin
                                  error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
 
@@ -458,6 +458,13 @@ typedef enum eABCDeviceCaps
 /// ------------------------------------------------------------------
 /// @name Utility methods
 /// ------------------------------------------------------------------
+
+/**
+ * Transforms a username into the internal format used for hashing.
+ * This collapses spaces, converts things to lowercase,
+ * and checks for invalid characters.
+ */
++ (NSString *)fixUsername:(NSString *)username;
 
 /**
  * Encodes a string into a QR code returned as UIImage *

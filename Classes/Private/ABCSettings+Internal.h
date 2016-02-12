@@ -9,6 +9,6 @@
 
 @interface ABCSettings (Internal)
 
-- (id)init:(ABCUser *)user localSettings:(id)local keyChain:(id)keyChain;
+- (id)init:(ABCAccount *)user localSettings:(id)local keyChain:(id)keyChain;
 
 @end

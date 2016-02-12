@@ -16,7 +16,7 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
     ABCImportHBitsURI,
 };
 
-@class ABCUser;
+@class ABCAccount;
 @class ABCRequest;
 @class AirbitzCore;
 @class ABCSpend;
@@ -33,7 +33,7 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 @property (nonatomic, assign)   double          balance;
 @property (nonatomic, strong)   NSArray         *arrayTransactions;
 @property (nonatomic, assign)   BOOL            loaded;
-@property (nonatomic, strong)   ABCUser         *user;
+@property (nonatomic, strong)   ABCAccount         *user;
 
 
 /** Create a receive request from the current wallet. User should pass in an allocated
@@ -44,7 +44,7 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  * @param error (Optional) Code block called on error with parameters<br>
  * - *param* ABCCondition code<br>
  * - *param* NSString* errorString
- * @return ABCUser* User object or nil if failure
+ * @return ABCAccount* User object or nil if failure
  */
 - (ABCConditionCode)createReceiveRequestWithDetails:(ABCRequest *)request;
 - (void)createReceiveRequestWithDetails:(ABCRequest *)request

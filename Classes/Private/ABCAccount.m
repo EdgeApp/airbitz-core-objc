@@ -1,17 +1,4 @@
 
-#import "ABCWallet.h"
-#import "ABCTransaction.h"
-#import "ABCTxOutput.h"
-#import "ABCKeychain.h"
-#import "ABCSpend.h"
-
-#import "AirbitzCore.h"
-#import "ABCError.h"
-#import "ABCRequest.h"
-#import "ABCSettings.h"
-#import "ABCUtil.h"
-#import "ABCStrings.h"
-#import "ABCUser+Internal.h"
 #import "AirbitzCore+Internal.h"
 #import <pthread.h>
 
@@ -21,7 +8,7 @@ static const int64_t recoveryReminderAmount   = 10000000;
 static const int recoveryReminderCount        = 2;
 static const int notifySyncDelay          = 1;
 
-@interface ABCUser ()
+@interface ABCAccount ()
 {
     ABCError                                        *abcError;
     long long                                       logoutTimeStamp;
@@ -52,7 +39,7 @@ static const int notifySyncDelay          = 1;
 
 @end
 
-@implementation ABCUser
+@implementation ABCAccount
 
 - (id)initWithCore:(AirbitzCore *)airbitzCore;
 {
@@ -557,9 +544,9 @@ static const int notifySyncDelay          = 1;
 {
     ABCLog(1, @"postWalletsLoading numWalletsLoaded=%d", self.numWalletsLoaded);
     if (self.delegate) {
-        if ([self.delegate respondsToSelector:@selector(abcUserWalletsLoading)]) {
+        if ([self.delegate respondsToSelector:@selector(abcAccountWalletsLoading)]) {
             dispatch_async(dispatch_get_main_queue(),^{
-                [self.delegate abcUserWalletsLoading];
+                [self.delegate abcAccountWalletsLoading];
             });
         }
     }
@@ -570,9 +557,9 @@ static const int notifySyncDelay          = 1;
     bNewDeviceLogin = NO;
     if (self.delegate && !bHasSentWalletsLoaded) {
         bHasSentWalletsLoaded = YES;
-        if ([self.delegate respondsToSelector:@selector(abcUserWalletsLoaded)]) {
+        if ([self.delegate respondsToSelector:@selector(abcAccountWalletsLoaded)]) {
             dispatch_async(dispatch_get_main_queue(),^{
-                [self.delegate abcUserWalletsLoaded];
+                [self.delegate abcAccountWalletsLoaded];
             });
         }
     }
@@ -581,9 +568,9 @@ static const int notifySyncDelay          = 1;
 - (void) postNotificationWalletsChanged
 {
     if (self.delegate) {
-        if ([self.delegate respondsToSelector:@selector(abcUserWalletsChanged)]) {
+        if ([self.delegate respondsToSelector:@selector(abcAccountWalletsChanged)]) {
             dispatch_async(dispatch_get_main_queue(),^{
-                [self.delegate abcUserWalletsChanged];
+                [self.delegate abcAccountWalletsChanged];
             });
         }
     }
@@ -1179,8 +1166,8 @@ static const int notifySyncDelay          = 1;
     dispatch_async(dispatch_get_main_queue(), ^
                    {
                        if (self.delegate) {
-                           if ([self.delegate respondsToSelector:@selector(abcUserLoggedOut:)]) {
-                               [self.delegate abcUserLoggedOut:self];
+                           if ([self.delegate respondsToSelector:@selector(abcAccountLoggedOut:)]) {
+                               [self.delegate abcAccountLoggedOut:self];
                            }
                        }
                    });
@@ -1407,9 +1394,9 @@ static const int notifySyncDelay          = 1;
         dispatch_async(dispatch_get_main_queue(),^{
             if (self.delegate)
             {
-                if ([self.delegate respondsToSelector:@selector(abcUserExchangeRateChanged)])
+                if ([self.delegate respondsToSelector:@selector(abcAccountExchangeRateChanged)])
                 {
-                    [self.delegate abcUserExchangeRateChanged];
+                    [self.delegate abcAccountExchangeRateChanged];
                 }
             }
         });
@@ -1440,11 +1427,11 @@ static const int notifySyncDelay          = 1;
     ABCWallet *wallet = [timer userInfo];
     if (self.delegate)
     {
-        if ([self.delegate respondsToSelector:@selector(abcUserWalletChanged:)])
+        if ([self.delegate respondsToSelector:@selector(abcAccountWalletChanged:)])
         {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [wallet loadTransactions];
-                [self.delegate abcUserWalletChanged:wallet];
+                [self.delegate abcAccountWalletChanged:wallet];
             });
         }
     }
@@ -1520,9 +1507,9 @@ static const int notifySyncDelay          = 1;
                 if (bPasswordChanged) {
                     if (self.delegate)
                     {
-                        if ([self.delegate respondsToSelector:@selector(abcUserRemotePasswordChange)])
+                        if ([self.delegate respondsToSelector:@selector(abcAccountRemotePasswordChange)])
                         {
-                            [self.delegate abcUserRemotePasswordChange];
+                            [self.delegate abcAccountRemotePasswordChange];
                         }
                     }
                 }
@@ -1827,9 +1814,9 @@ static const int notifySyncDelay          = 1;
 {
     if (self.delegate)
     {
-        if ([self.delegate respondsToSelector:@selector(abcUserOTPRequired)])
+        if ([self.delegate respondsToSelector:@selector(abcAccountOTPRequired)])
         {
-            [self.delegate abcUserOTPRequired];
+            [self.delegate abcAccountOTPRequired];
         }
     }
 }
@@ -1838,9 +1825,9 @@ static const int notifySyncDelay          = 1;
 {
     if (self.delegate)
     {
-        if ([self.delegate respondsToSelector:@selector(abcUserOTPSkew)])
+        if ([self.delegate respondsToSelector:@selector(abcAccountOTPSkew)])
         {
-            [self.delegate abcUserOTPSkew];
+            [self.delegate abcAccountOTPSkew];
         }
     }
 }
@@ -1855,10 +1842,10 @@ static const int notifySyncDelay          = 1;
          
          if (self.delegate)
          {
-             if ([self.delegate respondsToSelector:@selector(abcUserAccountChanged)])
+             if ([self.delegate respondsToSelector:@selector(abcAccountAccountChanged)])
              {
                  dispatch_async(dispatch_get_main_queue(), ^{
-                     [self.delegate abcUserAccountChanged];
+                     [self.delegate abcAccountAccountChanged];
                  });
              }
          }
@@ -2107,7 +2094,7 @@ static const int notifySyncDelay          = 1;
 
 void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 {
-    ABCUser *user = (__bridge id) pInfo->pData;
+    ABCAccount *user = (__bridge id) pInfo->pData;
     ABCWallet *wallet = nil;
     NSString *txid = nil;
     
@@ -2123,8 +2110,8 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
         [user refreshWallets:^
          {
              if (user.delegate) {
-                 if ([user.delegate respondsToSelector:@selector(abcUserIncomingBitcoin:txid:)]) {
-                     [user.delegate abcUserIncomingBitcoin:wallet txid:txid];
+                 if ([user.delegate respondsToSelector:@selector(abcAccountIncomingBitcoin:txid:)]) {
+                     [user.delegate abcAccountIncomingBitcoin:wallet txid:txid];
                  }
              }
          }];
@@ -2132,8 +2119,8 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
         [user refreshWallets:^
          {
              if (user.delegate) {
-                 if ([user.delegate respondsToSelector:@selector(abcUserBlockHeightChanged)]) {
-                     [user.delegate abcUserBlockHeightChanged];
+                 if ([user.delegate respondsToSelector:@selector(abcAccountBlockHeightChanged)]) {
+                     [user.delegate abcAccountBlockHeightChanged];
                  }
              }
          }];
@@ -2150,8 +2137,8 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
         [user refreshWallets:^
          {
              if (user.delegate) {
-                 if ([user.delegate respondsToSelector:@selector(abcUserBalanceUpdate:txid:)]) {
-                     [user.delegate abcUserBalanceUpdate:wallet txid:txid];
+                 if ([user.delegate respondsToSelector:@selector(abcAccountBalanceUpdate:txid:)]) {
+                     [user.delegate abcAccountBalanceUpdate:wallet txid:txid];
                  }
              }
          }];
@@ -2159,7 +2146,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 }
 
 /////////////////////////////////////////////////////////////////
-//////////////////// New ABCUser methods ////////////////////
+//////////////////// New ABCAccount methods ////////////////////
 /////////////////////////////////////////////////////////////////
 
 - (ABCConditionCode)changePIN:(NSString *)pin;
@@ -2749,8 +2736,8 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
         dispatch_async(dispatch_get_main_queue(), ^
                        {
                            if (self.delegate) {
-                               if ([self.delegate respondsToSelector:@selector(abcUserLoggedOut:)]) {
-                                   [self.delegate abcUserLoggedOut:self];
+                               if ([self.delegate respondsToSelector:@selector(abcAccountLoggedOut:)]) {
+                                   [self.delegate abcAccountLoggedOut:self];
                                }
                            }
                        });

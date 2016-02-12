@@ -7,10 +7,10 @@
 
 #import "AirbitzCore+Internal.h"
 
-@class ABCUser;
+@class ABCAccount;
 
 @interface ABCWallet (Internal)
 
-- (id)initWithUser:(ABCUser *) user;
+- (id)initWithUser:(ABCAccount *) user;
 
 @end

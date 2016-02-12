@@ -6,15 +6,6 @@
 //  Copyright (c) 2016 AirBitz. All rights reserved.
 //
 
-#import "ABC.h"
-#import "ABCWallet.h"
-#import "ABCRequest.h"
-#import "ABCError.h"
-#import "ABCUtil.h"
-#import "ABCTxOutput.h"
-#import "ABCTransaction.h"
-#import "ABCStrings.h"
-#import "ABCUser+Internal.h"
 #import "AirbitzCore+Internal.h"
 
 
@@ -37,7 +28,7 @@ static const int importTimeout                  = 30;
 
 #pragma mark - NSObject overrides
 
-- (id)initWithUser:(ABCUser *) user;
+- (id)initWithUser:(ABCAccount *) user;
 {
     self = [super init];
     if (self) 

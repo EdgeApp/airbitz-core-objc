@@ -1,11 +1,11 @@
 //
-//  ABCUser+Internal.h
+//  ABCAccount+Internal.h
 //  Airbitz
 //
 
 #import "AirbitzCore+Internal.h"
 
-@interface ABCUser (Internal)
+@interface ABCAccount (Internal)
 
 @property (atomic, strong)   AirbitzCore             *abc;
 

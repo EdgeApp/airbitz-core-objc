@@ -3,20 +3,13 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import "ABCSettings.h"
 #import <Foundation/Foundation.h>
-#import "ABCError.h"
-#import "AirbitzCore.h"
-#import "ABCUtil.h"
-#import "ABCKeychain.h"
-#import "ABCLocalSettings.h"
-#import "ABCUser+Internal.h"
 #import "AirbitzCore+Internal.h"
 
 
 @interface ABCSettings ()
 
-@property (nonatomic, strong) ABCUser               *user;
+@property (nonatomic, strong) ABCAccount               *user;
 @property (nonatomic, strong) ABCLocalSettings      *local;
 @property (nonatomic, strong) ABCKeychain           *keyChain;
 @property (nonatomic, strong) ABCError              *abcError;
@@ -28,7 +21,7 @@
 
 }
 
-- (id)init:(ABCUser *)user localSettings:(ABCLocalSettings *)local keyChain:(ABCKeychain *)keyChain;
+- (id)init:(ABCAccount *)user localSettings:(ABCLocalSettings *)local keyChain:(ABCKeychain *)keyChain;
 {
     self = [super init];
     self.user = user;
@@ -72,10 +65,10 @@
 
             if (self.user.delegate)
             {
-                if ([self.user.delegate respondsToSelector:@selector(abcUserAccountChanged)])
+                if ([self.user.delegate respondsToSelector:@selector(abcAccountAccountChanged)])
                 {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [self.user.delegate abcUserAccountChanged];
+                        [self.user.delegate abcAccountAccountChanged];
                     });
                 }
             }
@@ -146,10 +139,10 @@
             }
             if (self.user.delegate)
             {
-                if ([self.user.delegate respondsToSelector:@selector(abcUserAccountChanged)])
+                if ([self.user.delegate respondsToSelector:@selector(abcAccountAccountChanged)])
                 {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [self.user.delegate abcUserAccountChanged];
+                        [self.user.delegate abcAccountAccountChanged];
                     });
                 }
             }

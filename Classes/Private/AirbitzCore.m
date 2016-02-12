@@ -146,7 +146,7 @@
 
 - (void)enterBackground
 {
-    for (ABCUser *user in self.loggedInUsers)
+    for (ABCAccount *user in self.loggedInUsers)
     {
         [user enterBackground];
     }
@@ -156,7 +156,7 @@
 {
     [self checkLoginExpired];
     
-    for (ABCUser *user in self.loggedInUsers)
+    for (ABCAccount *user in self.loggedInUsers)
     {
         [user enterForeground];
     }
@@ -337,10 +337,10 @@
     return NO;
 }
 
-- (ABCUser *) getLoggedInUser:(NSString *)username;
+- (ABCAccount *) getLoggedInUser:(NSString *)username;
 {
     // Grab all logged in users
-    for (ABCUser *user in self.loggedInUsers)
+    for (ABCAccount *user in self.loggedInUsers)
     {
         if ([username isEqualToString:user.name])
             return user;
@@ -380,7 +380,7 @@
     NSString *username;
 
     // Grab all logged in users
-    for (ABCUser *user in self.loggedInUsers)
+    for (ABCAccount *user in self.loggedInUsers)
     {
         bLoginExpired = [user didLoginExpire];
         if (bLoginExpired)
@@ -402,7 +402,7 @@
 
 - (void)restoreConnectivity;
 {
-    for (ABCUser *user in self.loggedInUsers)
+    for (ABCAccount *user in self.loggedInUsers)
     {
         [user restoreConnectivity];
     }
@@ -410,7 +410,7 @@
 
 - (void)lostConnectivity;
 {
-    for (ABCUser *user in self.loggedInUsers)
+    for (ABCAccount *user in self.loggedInUsers)
     {
         [user lostConnectivity];
     }
@@ -608,7 +608,7 @@
 
 #pragma mark - Account Management
 
-- (ABCUser *)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate;
+- (ABCAccount *)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate;
 {
     tABC_Error error;
     const char *szPassword = [password length] == 0 ? NULL : [password UTF8String];
@@ -616,7 +616,7 @@
     ABCConditionCode ccode = [self setLastErrors:error];
     if (ABCConditionCodeOk == ccode)
     {
-        ABCUser *user = [[ABCUser alloc] initWithCore:self];
+        ABCAccount *user = [[ABCAccount alloc] initWithCore:self];
         user.delegate = delegate;
         user.name = username;
         user.password = password;
@@ -639,11 +639,11 @@
 }
 
 - (void)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate
-                  complete:(void (^)(ABCUser *)) completionHandler
+                  complete:(void (^)(ABCAccount *)) completionHandler
                      error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-        ABCUser *user = [self createAccount:username password:password pin:pin delegate:delegate];
+        ABCAccount *user = [self createAccount:username password:password pin:pin delegate:delegate];
         NSString *errorString = [self getLastErrorString];
         ABCConditionCode ccode = [self getLastConditionCode];
 
@@ -660,7 +660,7 @@
     });
 }
 
-- (ABCUser *)signIn:(NSString *)username
+- (ABCAccount *)signIn:(NSString *)username
            password:(NSString *)password
            delegate:(id)delegate
                 otp:(NSString *)otp;
@@ -694,7 +694,7 @@
             if (ABCConditionCodeOk == ccode)
             {
                 
-                ABCUser *user = [[ABCUser alloc] initWithCore:self];
+                ABCAccount *user = [[ABCAccount alloc] initWithCore:self];
                 user.delegate = delegate;
                 [self.loggedInUsers addObject:user];
                 user.name = username;
@@ -711,11 +711,11 @@
 
 
 - (void)signIn:(NSString *)username password:(NSString *)password delegate:(id)delegate otp:(NSString *)otp
-      complete:(void (^)(ABCUser *user)) completionHandler
+      complete:(void (^)(ABCAccount *user)) completionHandler
          error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-        ABCUser *user = [self signIn:username password:password delegate:delegate otp:otp];
+        ABCAccount *user = [self signIn:username password:password delegate:delegate otp:otp];
         NSString *errorString = [self getLastErrorString];
         ABCConditionCode ccode = [self getLastConditionCode];
         
@@ -732,7 +732,7 @@
     });
 }
 
-- (ABCUser *)signInWithPIN:(NSString *)username pin:(NSString *)pin delegate:(id)delegate;
+- (ABCAccount *)signInWithPIN:(NSString *)username pin:(NSString *)pin delegate:(id)delegate;
 {
     tABC_Error error;
     ABCConditionCode ccode;
@@ -753,7 +753,7 @@
         
         if (ABCConditionCodeOk == ccode)
         {
-            ABCUser *user = [[ABCUser alloc] initWithCore:self];
+            ABCAccount *user = [[ABCAccount alloc] initWithCore:self];
             user.delegate = delegate;
             [self.loggedInUsers addObject:user];
             user.name = username;
@@ -771,11 +771,11 @@
 }
 
 - (void)signInWithPIN:(NSString *)username pin:(NSString *)pin delegate:(id)delegate
-             complete:(void (^)(ABCUser *user)) completionHandler
+             complete:(void (^)(ABCAccount *user)) completionHandler
                 error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-        ABCUser *user = [self signInWithPIN:username pin:pin delegate:delegate];
+        ABCAccount *user = [self signInWithPIN:username pin:pin delegate:delegate];
         NSString *errorString = [self getLastErrorString];
         ABCConditionCode ccode = [self getLastConditionCode];
         
@@ -792,7 +792,7 @@
     });
 }
 
-- (void)logout:(ABCUser *)user;
+- (void)logout:(ABCAccount *)user;
 {
     [self.keyChain disableRelogin:user.name];
     [user logout];
@@ -926,7 +926,7 @@
 - (void)autoReloginOrTouchIDIfPossible:(NSString *)username
                               delegate:(id)delegate
                          doBeforeLogin:(void (^)(void)) doBeforeLogin
-                     completeWithLogin:(void (^)(ABCUser *user, BOOL usedTouchID)) completionWithLogin
+                     completeWithLogin:(void (^)(ABCAccount *user, BOOL usedTouchID)) completionWithLogin
                        completeNoLogin:(void (^)(void)) completionNoLogin
                                  error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
 {
@@ -939,7 +939,7 @@
         if (doRelogin)
         {
             if (doBeforeLogin) doBeforeLogin();
-            [self signIn:username password:password delegate:delegate otp:nil complete:^(ABCUser *user){
+            [self signIn:username password:password delegate:delegate otp:nil complete:^(ABCAccount *user){
                 if (completionWithLogin) completionWithLogin(user, usedTouchID);
             } error:^(ABCConditionCode ccode, NSString *errorString) {
                 if (errorHandler) errorHandler(ccode, errorString);
