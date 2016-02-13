@@ -162,7 +162,7 @@ typedef enum eABCDeviceCaps
  * - *param* ABCAccount* Account object created from SignIn call
  * @param error (Optional) Code block called on error with parameters<br>
  * - *param* NSError*
- * @return ABCAccount*
+ * @return ABCAccount* or void if using completion handler
  */
 - (void)signIn:(NSString *)username password:(NSString *)password delegate:(id)delegate otp:(NSString *)otp
       complete:(void (^)(ABCAccount *account)) completionHandler
@@ -175,17 +175,17 @@ typedef enum eABCDeviceCaps
  * @param username NSString*
  * @param pin NSString*
  * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
- * @param complete (Optional) Code block called on success. Returns void if used<br>
+ * @param error NSError** May be set to nil. Only used when not using completion handler
+ * @param complete (Optional) Code block called on success.<br>
  * - *param* ABCAccount* User object.<br>
  * @param error (Optional) Code block called on error with parameters<br>
- * - *param* ABCCondition code<br>
- * - *param* NSString* errorString
- * @return ABCAccount*
+ * - *param* NSError*
+ * @return ABCAccount* or void if using completion handler
  */
 - (void)signInWithPIN:(NSString *)username pin:(NSString *)pin delegate:(id)delegate
              complete:(void (^)(ABCAccount *user)) completionHandler
-                error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-- (ABCAccount *)signInWithPIN:(NSString *)username pin:(NSString *)pin delegate:(id)delegate;
+                error:(void (^)(NSError *error)) errorHandler;
+- (ABCAccount *)signInWithPIN:(NSString *)username pin:(NSString *)pin delegate:(id)delegate error:(NSError **)error;
 
 /**
  * Get ABCAccount object for username if logged in.
@@ -272,9 +272,10 @@ typedef enum eABCDeviceCaps
  * Checks if PIN login is possible for the given username. This checks if
  * there is a local PIN package on the device from a prior login
  * @param username NSString* username to check
+ * @param error NSError** May be set to nil. Only used when not using completion handler
  * @return BOOL YES PIN login is possible
  */
-- (BOOL)PINLoginExists:(NSString *)username;
+- (BOOL)PINLoginExists:(NSString *)username error:(NSError **)error;
 
 /*
  * accountDeleteLocal

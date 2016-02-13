@@ -513,19 +513,26 @@
     return ccode;
 }
 
-- (BOOL)PINLoginExists:(NSString *)username;
+- (BOOL)PINLoginExists:(NSString *)username error:(NSError **)nserror;
 {
-    ABCConditionCode ccode;
+    NSError *lnserror;
+    tABC_Error error;
+    
     bool exists = NO;
     if (username && 0 < username.length)
     {
-        tABC_Error error;
         ABC_PinLoginExists([username UTF8String], &exists, &error);
-        ccode = [self setLastErrors:error];
-        if (ABCConditionCodeOk == ccode)
-            return (BOOL) exists;
+        lnserror = [ABCError makeNSError:error];
     }
-    return NO;
+    else
+    {
+        error.code = ABC_CC_NULLPtr;
+        lnserror = [ABCError makeNSError:error];
+    }
+    
+    if (nserror)
+        *nserror = lnserror;
+    return exists;
 }
 
 - (BOOL)accountExistsLocal:(NSString *)username;
@@ -727,61 +734,65 @@
     });
 }
 
-- (ABCAccount *)signInWithPIN:(NSString *)username pin:(NSString *)pin delegate:(id)delegate;
+- (ABCAccount *)signInWithPIN:(NSString *)username pin:(NSString *)pin delegate:(id)delegate error:(NSError **)nserror;
 {
     tABC_Error error;
-    ABCConditionCode ccode;
+    NSError *lnserror;
+    ABCAccount *account = nil;
     
     if (!username || !pin)
     {
         error.code = (tABC_CC) ABCConditionCodeNULLPtr;
-        [self setLastErrors:error];
-        return nil;
-    }
-    
-    if ([self PINLoginExists:username])
-    {
-        ABC_PinLogin([username UTF8String],
-                     [pin UTF8String],
-                     &error);
-        ccode = [self setLastErrors:error];
-        
-        if (ABCConditionCodeOk == ccode)
-        {
-            ABCAccount *user = [[ABCAccount alloc] initWithCore:self];
-            user.delegate = delegate;
-            [self.loggedInUsers addObject:user];
-            user.name = username;
-            [user login];
-            return user;
-        }
+        lnserror = [ABCError makeNSError:error];
     }
     else
     {
-        error.code = (tABC_CC) ABCConditionCodeError;
-        ccode = [self setLastErrors:error];
+        if ([self PINLoginExists:username error:nil])
+        {
+            ABC_PinLogin([username UTF8String],
+                         [pin UTF8String],
+                         &error);
+            *nserror = [ABCError makeNSError:error];
+            
+            if (!*nserror)
+            {
+                account = [[ABCAccount alloc] initWithCore:self];
+                account.delegate = delegate;
+                [self.loggedInUsers addObject:account];
+                account.name = username;
+                [account login];
+            }
+        }
+        else
+        {
+            error.code = (tABC_CC) ABCConditionCodeError;
+            lnserror = [ABCError makeNSError:error];
+        }
+        
     }
-    return nil;
+    
+    if (nserror)
+        *nserror = lnserror;
+    return account;
     
 }
 
 - (void)signInWithPIN:(NSString *)username pin:(NSString *)pin delegate:(id)delegate
              complete:(void (^)(ABCAccount *user)) completionHandler
-                error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler
+                error:(void (^)(NSError *error)) errorHandler;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-        ABCAccount *user = [self signInWithPIN:username pin:pin delegate:delegate];
-        NSString *errorString = [self getLastErrorString];
-        ABCConditionCode ccode = [self getLastConditionCode];
+        NSError *error;
+        ABCAccount *account = [self signInWithPIN:username pin:pin delegate:delegate error:&error];
         
         dispatch_async(dispatch_get_main_queue(), ^(void) {
-            if (ABCConditionCodeOk == ccode)
+            if (account)
             {
-                if (completionHandler) completionHandler(user);
+                if (completionHandler) completionHandler(account);
             }
             else
             {
-                if (errorHandler) errorHandler(ccode, errorString);
+                if (errorHandler) errorHandler(error);
             }
         });
     });

@@ -1948,21 +1948,6 @@ static const int notifySyncDelay          = 1;
     return ccode;
 }
 
-- (BOOL)PINLoginExists:(NSString *)username;
-{
-    ABCConditionCode ccode;
-    bool exists = NO;
-    if (username && 0 < username.length)
-    {
-        tABC_Error error;
-        ABC_PinLoginExists([username UTF8String], &exists, &error);
-        ccode = [self setLastErrors:error];
-        if (ABCConditionCodeOk == ccode)
-            return exists;
-    }
-    return NO;
-}
-
 - (BOOL)accountExistsLocal:(NSString *)username;
 {
     if (username == nil) {
