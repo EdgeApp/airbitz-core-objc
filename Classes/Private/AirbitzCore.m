@@ -610,14 +610,6 @@
 
 - (ABCAccount *)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate error:(NSError **)nserror;
 {
-
-    
-    
-    tABC_Error error;
-    error.code = ABC_CC_AccountAlreadyExists;
-    *nserror = [ABCError makeNSError:error];
-    return nil;
-    
     const char *szPassword = [password length] == 0 ? NULL : [password UTF8String];
     ABC_CreateAccount([username UTF8String], szPassword, &error);
     *nserror = [ABCError makeNSError:error];
