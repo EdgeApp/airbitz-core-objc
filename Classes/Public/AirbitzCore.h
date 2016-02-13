@@ -33,7 +33,7 @@
         // New account is auto logged in after creation
 
         // Create a wallet in the user account
-        ABCWallet *wallet = [abcAccount createWallet:@"My Awesome Bitcoins" currencyNum:0];
+        ABCWallet *wallet = [abcAccount createWallet:@"My Awesome Bitcoins" currency:nil];
 
         // Logout
         [abc logout:abcAccount];

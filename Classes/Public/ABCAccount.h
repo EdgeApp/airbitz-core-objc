@@ -202,17 +202,19 @@
 /*
  * createWallet
  * @param walletName NSString* Name of wallet or set to nil to use default wallet name
- * @param currencyNum int ISO currency number for wallet. set to 0 to use defaultCurrencyNum from
- *                               settings or the global default currency number if settings unavailable
+ * @param currency NSString* ISO 3 digit currency code for wallet. Set to nil to use default currency from
+ *  settings or the global default currency if settings unavailable. ie. "USD, EUR, CAD, PHP"
  * (Optional. If used, method returns immediately with void
+ * @param error NSError** May be set to nil. Only used when not using completion handler
  * @param complete (Optional) Code block called on success. Returns void if used<br>
  * - *param* ABCWallet* User object.<br>
  * @param error (Optional) Code block called on error with parameters<br>
  * - *param* NSError*
- * @return void or ABCWallet* User object or nil if failure
+ * @return ABCWallet* wallet object or nil if failure. If using completion handler, returns void.
  */
-- (ABCWallet *) createWallet:(NSString *)walletName currencyNum:(int) currencyNum error:(NSError **)nserror;
-- (void) createWallet:(NSString *)walletName currencyNum:(int) currencyNum
+- (ABCWallet *) createWallet:(NSString *)walletName currency:(NSString *)currency;
+- (ABCWallet *) createWallet:(NSString *)walletName currency:(NSString *)currency error:(NSError **)nserror;
+- (void) createWallet:(NSString *)walletName currency:(NSString *)currency
              complete:(void (^)(ABCWallet *)) completionHandler
                 error:(void (^)(NSError *)) errorHandler;
 

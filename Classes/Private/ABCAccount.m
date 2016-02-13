@@ -1546,7 +1546,7 @@ static const int notifySyncDelay          = 1;
     {
         // create first wallet if it doesn't already exist
         ABCLog(1, @"Creating first wallet in account");
-        [self createWallet:nil currencyNum:0 error:&error];
+        [self createWallet:nil currency:nil error:&error];
     }
     return error;
 }
@@ -2155,33 +2155,36 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return nserror;
 }
 
-- (ABCConditionCode)changePIN:(NSString *)pin
-                     complete:(void (^)(void)) completionHandler
-                        error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler
+- (void)changePIN:(NSString *)pin
+         complete:(void (^)(void)) completionHandler
+            error:(void (^)(NSError *error)) errorHandler
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-        ABCConditionCode ccode = [self changePIN:pin];
-        NSString *errorString = [self getLastErrorString];
+        NSError *error = [self changePIN:pin];
         
         dispatch_async(dispatch_get_main_queue(), ^(void) {
-            if (ABCConditionCodeOk == ccode)
+            if (!error)
             {
                 if (completionHandler) completionHandler();
             }
             else
             {
-                if (errorHandler) errorHandler(ccode, errorString);
+                if (errorHandler) errorHandler(error);
             }
         });
     });
-    return ABCConditionCodeOk;
-    
 }
 
-- (ABCWallet *) createWallet:(NSString *)walletName currencyNum:(int) currencyNum error:(NSError **)nserror;
+- (ABCWallet *) createWallet:(NSString *)walletName currency:(NSString *)currency;
+{
+    return [self createWallet:walletName currency:currency error:nil];
+}
+
+- (ABCWallet *) createWallet:(NSString *)walletName currency:(NSString *)currency error:(NSError **)nserror;
 {
     [self clearDataQueue];
-    if (currencyNum == 0)
+    int currencyNum = 0;
+    if (nil == currency)
     {
         if (self.settings)
         {
@@ -2192,10 +2195,18 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
             currencyNum = [AirbitzCore getDefaultCurrencyNum];
         }
     }
-    
-    if (!self.abc.arrayCurrencyNums || [self.abc.arrayCurrencyNums indexOfObject:[NSNumber numberWithInt:currencyNum]] == NSNotFound)
+    else
     {
-        currencyNum = [AirbitzCore getDefaultCurrencyNum];
+        if (!self.abc.arrayCurrencyNums || [self.abc.arrayCurrencyNums indexOfObject:[NSNumber numberWithInt:currencyNum]] == NSNotFound)
+        {
+            currencyNum = [AirbitzCore getDefaultCurrencyNum];
+        }
+        else
+        {
+            // Get currencyNum from currency code
+            int idx = (int) [self.abc.arrayCurrencyCodes indexOfObject:currency];
+            currencyNum = (int) self.abc.arrayCurrencyNums[idx];
+        }
     }
     
     NSString *defaultWallet = [NSString stringWithString:defaultWalletName];
@@ -2225,13 +2236,13 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return nil;
 }
 
-- (void) createWallet:(NSString *)walletName currencyNum:(int) currencyNum
+- (void) createWallet:(NSString *)walletName currency:(NSString *)currency
              complete:(void (^)(ABCWallet *)) completionHandler
-                error:(void (^)(NSError *)) errorHandler
+                error:(void (^)(NSError *)) errorHandler;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
         NSError *error = nil;
-        ABCWallet *wallet = [self createWallet:walletName currencyNum:currencyNum error:&error];
+        ABCWallet *wallet = [self createWallet:walletName currency:currency error:&error];
         
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             if (!error)
