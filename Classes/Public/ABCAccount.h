@@ -238,18 +238,6 @@
 - (NSString *)getOTPLocalKey;
 
 /**
- * setOTPKey
- * Associates an OTP key with the given username.
- * This will not write to disk until the user has successfully logged in
- * at least once.
- * @param NSString* username: user to set the OTP key for
- * @param NSString*      key: key to set
- * @return ABCConditionCode
- */
-- (ABCConditionCode)setOTPKey:(NSString *)username
-                          key:(NSString *)key;
-
-/**
  * removeOTPKey
  * Removes the OTP key for current user.
  * This will remove the key from disk as well.

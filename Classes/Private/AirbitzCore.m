@@ -659,20 +659,17 @@
     });
 }
 
-- (ABCAccount *)signIn:(NSString *)username
-           password:(NSString *)password
-           delegate:(id)delegate
-                otp:(NSString *)otp;
+- (ABCAccount *)signIn:(NSString *)username password:(NSString *)password delegate:(id)delegate otp:(NSString *)otp error:(NSError **)nserror;
 {
     
     tABC_Error error;
-    ABCConditionCode ccode = ABCConditionCodeOk;
     bNewDeviceLogin = NO;
     
     if (!username || !password)
     {
         error.code = (tABC_CC) ABCConditionCodeNULLPtr;
-        ccode = [self setLastErrors:error];
+        *nserror = [ABCError makeNSError:error];
+        return nil;
     }
     else
     {
@@ -681,16 +678,16 @@
         
         if (otp)
         {
-            ccode = [self setOTPKey:username key:otp];
+            *nserror = [self setOTPKey:username key:otp];
         }
         
-        if (ABCConditionCodeOk == ccode)
+        if (!nserror)
         {
             ABC_SignIn([username UTF8String],
                        [password UTF8String], &error);
-            ccode = [self setLastErrors:error];
+            *nserror = [ABCError makeNSError:error];
             
-            if (ABCConditionCodeOk == ccode)
+            if (!nserror)
             {
                 
                 ABCAccount *user = [[ABCAccount alloc] initWithCore:self];
@@ -710,22 +707,21 @@
 
 
 - (void)signIn:(NSString *)username password:(NSString *)password delegate:(id)delegate otp:(NSString *)otp
-      complete:(void (^)(ABCAccount *user)) completionHandler
-         error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler
+      complete:(void (^)(ABCAccount *account)) completionHandler
+         error:(void (^)(NSError *)) errorHandler;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-        ABCAccount *user = [self signIn:username password:password delegate:delegate otp:otp];
-        NSString *errorString = [self getLastErrorString];
-        ABCConditionCode ccode = [self getLastConditionCode];
+        NSError *error = nil;
+        ABCAccount *account = [self signIn:username password:password delegate:delegate otp:otp error:&error];
         
         dispatch_async(dispatch_get_main_queue(), ^(void) {
-            if (ABCConditionCodeOk == ccode)
+            if (account)
             {
-                if (completionHandler) completionHandler(user);
+                if (completionHandler) completionHandler(account);
             }
             else
             {
-                if (errorHandler) errorHandler(ccode, errorString);
+                if (errorHandler) errorHandler(error);
             }
         });
     });
@@ -925,9 +921,9 @@
 - (void)autoReloginOrTouchIDIfPossible:(NSString *)username
                               delegate:(id)delegate
                          doBeforeLogin:(void (^)(void)) doBeforeLogin
-                     completeWithLogin:(void (^)(ABCAccount *user, BOOL usedTouchID)) completionWithLogin
-                       completeNoLogin:(void (^)(void)) completionNoLogin
-                                 error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                   completionWithLogin:(void (^)(ABCAccount *account, BOOL usedTouchID)) completionWithLogin
+                     completionNoLogin:(void (^)(void)) completionNoLogin
+                                 error:(void (^)(NSError *error)) errorHandler;
 {
     dispatch_async(dispatch_get_main_queue(), ^(void) {
         NSString *password;
@@ -938,10 +934,10 @@
         if (doRelogin)
         {
             if (doBeforeLogin) doBeforeLogin();
-            [self signIn:username password:password delegate:delegate otp:nil complete:^(ABCAccount *user){
-                if (completionWithLogin) completionWithLogin(user, usedTouchID);
-            } error:^(ABCConditionCode ccode, NSString *errorString) {
-                if (errorHandler) errorHandler(ccode, errorString);
+            [self signIn:username password:password delegate:delegate otp:nil complete:^(ABCAccount *account){
+                if (completionWithLogin) completionWithLogin(account, usedTouchID);
+            } error:^(NSError *error) {
+                if (errorHandler) errorHandler(error);
             }];
         }
         else
@@ -1019,12 +1015,12 @@
     return ccode;
 }
 
-- (ABCConditionCode)setOTPKey:(NSString *)username
-                          key:(NSString *)key;
+- (NSError *)setOTPKey:(NSString *)username
+                   key:(NSString *)key;
 {
     tABC_Error error;
     ABC_OtpKeySet([username UTF8String], (char *)[key UTF8String], &error);
-    return [self setLastErrors:error];
+    return [ABCError makeNSError:error];
 }
 
 - (ABCConditionCode)getOTPResetDateForLastFailedAccountLogin:(NSDate **)date;

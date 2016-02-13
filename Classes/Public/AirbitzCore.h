@@ -137,15 +137,15 @@ typedef enum eABCDeviceCaps
  * @param password NSString*
  * @param pin NSString*
  * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
- * @param error NSError** May be set to nil
+ * @param error NSError** May be set to nil. Only used when not using completion handler
  * @param complete (Optional) Code block called on success. Returns void if used<br>
- * - *param* ABCAccount* User object.<br>
+ * - *param* ABCAccount* Account object.<br>
  * @param error (Optional) Code block called on error with parameters<br>
  * - *param* NSError*
  * @return ABCAccount* User object or nil if failure
  */
 - (void)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate
-             complete:(void (^)(ABCAccount *)) completionHandler
+             complete:(void (^)(ABCAccount *account)) completionHandler
                 error:(void (^)(NSError *)) errorHandler;
 - (ABCAccount *)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate error:(NSError **)error;
 
@@ -157,17 +157,17 @@ typedef enum eABCDeviceCaps
  * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
  * @param otp NSString* One Time Password token (optional). Send nil if logging in w/o OTP token
  *                       or if OTP token has already been saved in this account from prior login
+ * @param error NSError** May be set to nil. Only used when not using completion handler
  * @param complete (Optional) Code block called on success. Returns void if used<br>
- * - *param* ABCAccount* User object.
+ * - *param* ABCAccount* Account object created from SignIn call
  * @param error (Optional) Code block called on error with parameters<br>
- * - *param* ABCCondition code<br>
- * - *param* NSString* errorString
+ * - *param* NSError*
  * @return ABCAccount*
  */
 - (void)signIn:(NSString *)username password:(NSString *)password delegate:(id)delegate otp:(NSString *)otp
-      complete:(void (^)(ABCAccount *user)) completionHandler
-         error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-- (ABCAccount *)signIn:(NSString *)username password:(NSString *)password delegate:(id)delegate otp:(NSString *)otp;
+      complete:(void (^)(ABCAccount *account)) completionHandler
+         error:(void (^)(NSError *)) errorHandler;
+- (ABCAccount *)signIn:(NSString *)username password:(NSString *)password delegate:(id)delegate otp:(NSString *)otp error:(NSError **)error;
 
 /**
  * Sign In to an Airbitz account with PIN. Used to sign into devices that have previously
@@ -251,21 +251,22 @@ typedef enum eABCDeviceCaps
  * @param username: user account to attempt to relogin
  * @param delegate delegate object for callbacks
  * @param doBeforeLogin: completion handler code block executes before login is attempted
- * @param completeWithLogin: completion handler code block executes if login is successful<br>
- * - *param* ABCAccount* User object<br>
+ * @param completionWithLogin: completion handler code block executes if login is successful<br>
+ * - *param* ABCAccount* Account object created from SignIn call
  * - *param* BOOL* usedTouchID: TRUE if user used TouchID to login
  * @param completeNoLogin: completion handler code block executes if relogin not attempted
- * @param errorHandler: error handler code block which is called if relogin attempted but failed<br>
- * - *param* ABCCondition code<br>
- * - *param* NSString* errorString
+ * @param errorHandler (Optional) Code block called on error with parameters<br>
+ * - *param* NSError*
  * @return void
+
+ 
  */
 - (void)autoReloginOrTouchIDIfPossible:(NSString *)username
                               delegate:(id)delegate
                          doBeforeLogin:(void (^)(void)) doBeforeLogin
-                     completeWithLogin:(void (^)(ABCAccount *user, BOOL usedTouchID)) completionWithLogin
-                       completeNoLogin:(void (^)(void)) completionNoLogin
-                                 error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                   completionWithLogin:(void (^)(ABCAccount *account, BOOL usedTouchID)) completionWithLogin
+                     completionNoLogin:(void (^)(void)) completionNoLogin
+                                 error:(void (^)(NSError *error)) errorHandler;
 
 /**
  * Checks if PIN login is possible for the given username. This checks if
@@ -352,10 +353,10 @@ typedef enum eABCDeviceCaps
  * at least once.
  * @param username NSString* user to set the OTP key for
  * @param key NSString* key to set
- * @return ABCConditionCode
+ * @return NSError*
  */
-- (ABCConditionCode)setOTPKey:(NSString *)username
-                          key:(NSString *)key;
+- (NSError *)setOTPKey:(NSString *)username
+                   key:(NSString *)key;
 
 /**
  * Returns the OTP reset date for the last account that failed to log in,

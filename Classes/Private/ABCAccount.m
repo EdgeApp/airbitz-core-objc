@@ -2380,14 +2380,6 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return key;
 }
 
-- (ABCConditionCode)setOTPKey:(NSString *)username
-                          key:(NSString *)key;
-{
-    tABC_Error error;
-    ABC_OtpKeySet([username UTF8String], (char *)[key UTF8String], &error);
-    return [self setLastErrors:error];
-}
-
 - (ABCConditionCode)removeOTPKey;
 {
     tABC_Error error;
