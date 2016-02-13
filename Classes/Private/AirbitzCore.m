@@ -618,31 +618,36 @@
 - (ABCAccount *)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate error:(NSError **)nserror;
 {
     tABC_Error error;
+    NSError *lnserror = nil;
+    ABCAccount *account = nil;
+    
     const char *szPassword = [password length] == 0 ? NULL : [password UTF8String];
     ABC_CreateAccount([username UTF8String], szPassword, &error);
-    *nserror = [ABCError makeNSError:error];
-    if (! *nserror)
+    lnserror = [ABCError makeNSError:error];
+    if (! lnserror)
     {
-        ABCAccount *user = [[ABCAccount alloc] initWithCore:self];
-        user.delegate = delegate;
-        user.name = username;
-        user.password = password;
-        *nserror = [user changePIN:pin];
+        account = [[ABCAccount alloc] initWithCore:self];
+        account.delegate = delegate;
+        account.name = username;
+        account.password = password;
+        lnserror = [account changePIN:pin];
 
-        if (!*nserror)
+        if (!lnserror)
         {
-            [self.loggedInUsers addObject:user];
+            [self.loggedInUsers addObject:account];
 
             [self setLastAccessedAccount:username];
             // update user's default currency num to match their locale
             int currencyNum = [self getCurrencyNumOfLocale];
-            [user.settings enableTouchID];
-            [user setDefaultCurrencyNum:currencyNum];
-            [user login];
-            return user;
+            [account.settings enableTouchID];
+            [account setDefaultCurrencyNum:currencyNum];
+            [account login];
         }
     }
-    return nil;
+    
+    if (nserror)
+        *nserror = lnserror;
+    return account;
 }
 
 - (void)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate
@@ -651,12 +656,12 @@
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
         NSError *error = nil;
-        ABCAccount *user = [self createAccount:username password:password pin:pin delegate:delegate error:&error];
+        ABCAccount *account = [self createAccount:username password:password pin:pin delegate:delegate error:&error];
 
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             if (nil == error)
             {
-                if (completionHandler) completionHandler(user);
+                if (completionHandler) completionHandler(account);
             }
             else
             {
@@ -669,14 +674,16 @@
 - (ABCAccount *)signIn:(NSString *)username password:(NSString *)password delegate:(id)delegate otp:(NSString *)otp error:(NSError **)nserror;
 {
     
+    NSError *lnserror = nil;
+    ABCAccount *account = nil;
+
     tABC_Error error;
     bNewDeviceLogin = NO;
     
     if (!username || !password)
     {
         error.code = (tABC_CC) ABCConditionCodeNULLPtr;
-        *nserror = [ABCError makeNSError:error];
-        return nil;
+        lnserror = [ABCError makeNSError:error];
     }
     else
     {
@@ -685,31 +692,31 @@
         
         if (otp)
         {
-            *nserror = [self setOTPKey:username key:otp];
+            lnserror = [self setOTPKey:username key:otp];
         }
         
-        if (!nserror)
+        if (!lnserror)
         {
             ABC_SignIn([username UTF8String],
                        [password UTF8String], &error);
-            *nserror = [ABCError makeNSError:error];
+            lnserror = [ABCError makeNSError:error];
             
-            if (!nserror)
+            if (!lnserror)
             {
-                
-                ABCAccount *user = [[ABCAccount alloc] initWithCore:self];
-                user.delegate = delegate;
-                [self.loggedInUsers addObject:user];
-                user.name = username;
-                user.password = password;
-                [user login];
-                [user setupLoginPIN];
-                return user;
+                account = [[ABCAccount alloc] initWithCore:self];
+                account.delegate = delegate;
+                [self.loggedInUsers addObject:account];
+                account.name = username;
+                account.password = password;
+                [account login];
+                [account setupLoginPIN];
             }
         }
     }
     
-    return nil;
+    if (nserror)
+        *nserror = lnserror;
+    return account;
 }
 
 
