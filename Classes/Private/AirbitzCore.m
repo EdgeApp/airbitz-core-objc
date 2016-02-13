@@ -608,21 +608,28 @@
 
 #pragma mark - Account Management
 
-- (ABCAccount *)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate;
+- (ABCAccount *)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate error:(NSError **)nserror;
 {
+
+    
+    
     tABC_Error error;
+    error.code = ABC_CC_AccountAlreadyExists;
+    *nserror = [ABCError makeNSError:error];
+    return nil;
+    
     const char *szPassword = [password length] == 0 ? NULL : [password UTF8String];
     ABC_CreateAccount([username UTF8String], szPassword, &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
-    if (ABCConditionCodeOk == ccode)
+    *nserror = [ABCError makeNSError:error];
+    if (! *nserror)
     {
         ABCAccount *user = [[ABCAccount alloc] initWithCore:self];
         user.delegate = delegate;
         user.name = username;
         user.password = password;
-        ccode = [user changePIN:pin];
+        *nserror = [user changePIN:pin];
 
-        if (ABCConditionCodeOk == ccode)
+        if (!*nserror)
         {
             [self.loggedInUsers addObject:user];
 
@@ -640,21 +647,20 @@
 
 - (void)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate
                   complete:(void (^)(ABCAccount *)) completionHandler
-                     error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                     error:(void (^)(NSError *)) errorHandler;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-        ABCAccount *user = [self createAccount:username password:password pin:pin delegate:delegate];
-        NSString *errorString = [self getLastErrorString];
-        ABCConditionCode ccode = [self getLastConditionCode];
+        NSError *error = nil;
+        ABCAccount *user = [self createAccount:username password:password pin:pin delegate:delegate error:&error];
 
         dispatch_async(dispatch_get_main_queue(), ^(void) {
-            if (ABCConditionCodeOk == ccode)
+            if (nil == error)
             {
                 if (completionHandler) completionHandler(user);
             }
             else
             {
-                if (errorHandler) errorHandler(ccode, errorString);
+                if (errorHandler) errorHandler(error);
             }
         });
     });
@@ -916,11 +922,11 @@
 }
 
 
-- (ABCConditionCode)isAccountUsernameAvailable:(NSString *)username;
+- (NSError *)isAccountUsernameAvailable:(NSString *)username;
 {
     tABC_Error error;
     ABC_AccountAvailable([username UTF8String], &error);
-    return [self setLastErrors:error];
+    return [ABCError makeNSError:error];
 }
 
 - (void)autoReloginOrTouchIDIfPossible:(NSString *)username

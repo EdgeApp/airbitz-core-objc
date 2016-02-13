@@ -1536,9 +1536,9 @@ static const int notifySyncDelay          = 1;
     return ccode;
 }
 
-- (ABCConditionCode)createFirstWalletIfNeeded
+- (NSError *)createFirstWalletIfNeeded;
 {
-    ABCConditionCode ccode = ABCConditionCodeError;
+    NSError *error = nil;
     NSMutableArray *wallets = [[NSMutableArray alloc] init];
     [self loadWalletUUIDs:wallets];
     
@@ -1546,10 +1546,9 @@ static const int notifySyncDelay          = 1;
     {
         // create first wallet if it doesn't already exist
         ABCLog(1, @"Creating first wallet in account");
-        [self createWallet:nil currencyNum:0];
-        ccode = [self getLastConditionCode];
+        [self createWallet:nil currencyNum:0 error:&error];
     }
-    return ccode;
+    return error;
 }
 
 
@@ -2149,26 +2148,26 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 //////////////////// New ABCAccount methods ////////////////////
 /////////////////////////////////////////////////////////////////
 
-- (ABCConditionCode)changePIN:(NSString *)pin;
+- (NSError *)changePIN:(NSString *)pin;
 {
     tABC_Error error;
     if (!pin)
     {
         error.code = (tABC_CC) ABCConditionCodeNULLPtr;
-        return [self setLastErrors:error];
+        return [ABCError makeNSError:error];
     }
     const char * passwd = [self.password length] > 0 ? [self.password UTF8String] : nil;
     
     ABC_SetPIN([self.name UTF8String], passwd, [pin UTF8String], &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
-    if (ABCConditionCodeOk == ccode)
+    NSError *nserror = [ABCError makeNSError:error];
+    if (! nserror)
     {
         ABC_PinSetup([self.name UTF8String],
                      passwd,
                      &error);
-        ccode = [self setLastErrors:error];
+        nserror = [ABCError makeNSError:error];
     }
-    return ccode;
+    return nserror;
 }
 
 - (ABCConditionCode)changePIN:(NSString *)pin
@@ -2194,7 +2193,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     
 }
 
-- (ABCWallet *) createWallet:(NSString *)walletName currencyNum:(int) currencyNum;
+- (ABCWallet *) createWallet:(NSString *)walletName currencyNum:(int) currencyNum error:(NSError **)nserror;
 {
     [self clearDataQueue];
     if (currencyNum == 0)
@@ -2228,9 +2227,9 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
                      currencyNum,
                      &szUUID,
                      &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
+    *nserror = [ABCError makeNSError:error];
     
-    if (ABCConditionCodeOk == ccode)
+    if (!nserror)
     {
         [self startAllWallets];
         [self connectWatchers];
@@ -2242,22 +2241,21 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 }
 
 - (void) createWallet:(NSString *)walletName currencyNum:(int) currencyNum
-                         complete:(void (^)(void)) completionHandler
-                            error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler
+             complete:(void (^)(ABCWallet *)) completionHandler
+                error:(void (^)(NSError *)) errorHandler
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-        [self createWallet:walletName currencyNum:currencyNum];
-        NSString *errorString = [self getLastErrorString];
-        ABCConditionCode ccode = [self getLastConditionCode];
+        NSError *error = nil;
+        ABCWallet *wallet = [self createWallet:walletName currencyNum:currencyNum error:&error];
         
         dispatch_async(dispatch_get_main_queue(), ^(void) {
-            if (ABCConditionCodeOk == ccode)
+            if (!error)
             {
-                if (completionHandler) completionHandler();
+                if (completionHandler) completionHandler(wallet);
             }
             else
             {
-                if (errorHandler) errorHandler(ccode, errorString);
+                if (errorHandler) errorHandler(error);
             }
         });
     });
@@ -2273,13 +2271,6 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
                      (char *)[walletName UTF8String],
                      &error);
     [self refreshWallets];
-    return [self setLastErrors:error];
-}
-
-- (ABCConditionCode)isAccountUsernameAvailable:(NSString *)username;
-{
-    tABC_Error error;
-    ABC_AccountAvailable([username UTF8String], &error);
     return [self setLastErrors:error];
 }
 

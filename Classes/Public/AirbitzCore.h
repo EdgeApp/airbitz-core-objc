@@ -82,13 +82,14 @@
     }
  */
 
-
 #define ABC_CONFIRMED_CONFIRMATION_COUNT    6
 #define ABC_PIN_REQUIRED_PERIOD_SECONDS     120
 #define ABC_ARRAY_EXCHANGES     @[@"Bitstamp", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
 
 #define ABCLog(level, format_string,...) \
 ((abcDebugLog(level, [NSString stringWithFormat:format_string,##__VA_ARGS__])))
+
+#define ABCErrorDomain @"ABCErrorDomain"
 
 void abcDebugLog(int level, NSString *string);
 void abcSetDebugLevel(int level);
@@ -136,17 +137,17 @@ typedef enum eABCDeviceCaps
  * @param password NSString*
  * @param pin NSString*
  * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
+ * @param error NSError** May be set to nil
  * @param complete (Optional) Code block called on success. Returns void if used<br>
  * - *param* ABCAccount* User object.<br>
  * @param error (Optional) Code block called on error with parameters<br>
- * - *param* ABCCondition code<br>
- * - *param* NSString* errorString
+ * - *param* NSError*
  * @return ABCAccount* User object or nil if failure
  */
 - (void)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate
              complete:(void (^)(ABCAccount *)) completionHandler
-                error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-- (ABCAccount *)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate;
+                error:(void (^)(NSError *)) errorHandler;
+- (ABCAccount *)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate error:(NSError **)error;
 
 
 /**
@@ -237,9 +238,9 @@ typedef enum eABCDeviceCaps
 /**
  * Checks if username is available
  * @param username NSString* username to check
- * @return ABCConditionCodeOk if username is available
+ * @return nil if username is available
  */
-- (ABCConditionCode)isAccountUsernameAvailable:(NSString *)username;
+- (NSError *)isAccountUsernameAvailable:(NSString *)username;
 
 /*
  * Attempts to auto-relogin the specified user if they are within their auto-logout

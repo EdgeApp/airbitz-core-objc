@@ -30,9 +30,29 @@
     }
     else
     {
-        self.lastErrorString = [self errorMap:error];
+        self.lastErrorString = [ABCError errorMap:error];
     }
     return self.lastConditionCode;
+}
+
++ (NSError *)makeNSError:(tABC_Error)error;
+{
+    if (ABCConditionCodeOk == error.code)
+    {
+        return nil;
+    }
+    else
+    {
+        NSString *failureReason = [NSString stringWithFormat:@"%@\n%@: %@:%d",
+                                   [NSString stringWithUTF8String:error.szDescription],
+                                   [NSString stringWithUTF8String:error.szSourceFunc],
+                                   [NSString stringWithUTF8String:error.szSourceFile],
+                                   error.nSourceLine];
+        return [NSError errorWithDomain:ABCErrorDomain
+                                   code:error.code
+                               userInfo:@{ NSLocalizedDescriptionKey:[ABCError errorMap:error] ,
+                                           NSLocalizedFailureReasonErrorKey:failureReason}];
+    }
 }
 
 - (ABCConditionCode) getLastConditionCode;
@@ -45,7 +65,7 @@
     return self.lastErrorString;
 }
 
-- (NSString *)errorMap:(tABC_Error)error;
++ (NSString *)errorMap:(tABC_Error)error;
 {
     if (ABCConditionCodeInvalidPinWait == error.code)
     {
@@ -60,12 +80,12 @@
     }
     else
     {
-        return [self conditionCodeMap:(ABCConditionCode) error.code];
+        return [ABCError conditionCodeMap:(ABCConditionCode) error.code];
     }
 
 }
 
-- (NSString *)conditionCodeMap:(ABCConditionCode) cc;
++ (NSString *)conditionCodeMap:(ABCConditionCode) cc;
 {
     switch (cc)
     {

@@ -170,12 +170,12 @@
  * @param errorHandler: error handler code block which is called with the following args
  *                          @param ABCConditionCode       ccode: ABC error code
  *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
+ * @return ABCConditionCode or void if completion handlers used
  */
-- (ABCConditionCode)changePIN:(NSString *)pin;
-- (ABCConditionCode)changePIN:(NSString *)pin
+- (NSError *)changePIN:(NSString *)pin;
+- (void)changePIN:(NSString *)pin
                      complete:(void (^)(void)) completionHandler
-                        error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                        error:(void (^)(NSError *)) errorHandler;
 
 /**
  * Check if this user has a password on the account or if it is
@@ -201,21 +201,20 @@
 
 /*
  * createWallet
- * @param NSString* walletName: set to nil to use default wallet name
- * @param int       currencyNum: ISO currency number for wallet. set to 0 to use defaultCurrencyNum from
+ * @param walletName NSString* Name of wallet or set to nil to use default wallet name
+ * @param currencyNum int ISO currency number for wallet. set to 0 to use defaultCurrencyNum from
  *                               settings or the global default currency number if settings unavailable
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler: completion handler code block
- * @param errorHandler: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
+ * (Optional. If used, method returns immediately with void
+ * @param complete (Optional) Code block called on success. Returns void if used<br>
+ * - *param* ABCWallet* User object.<br>
+ * @param error (Optional) Code block called on error with parameters<br>
+ * - *param* NSError*
+ * @return void or ABCWallet* User object or nil if failure
  */
-- (ABCWallet *) createWallet:(NSString *)walletName currencyNum:(int) currencyNum;
+- (ABCWallet *) createWallet:(NSString *)walletName currencyNum:(int) currencyNum error:(NSError **)nserror;
 - (void) createWallet:(NSString *)walletName currencyNum:(int) currencyNum
-             complete:(void (^)(void)) completionHandler
-                error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+             complete:(void (^)(ABCWallet *)) completionHandler
+                error:(void (^)(NSError *)) errorHandler;
 
 
 /*
@@ -227,7 +226,7 @@
 - (ABCConditionCode) renameWallet:(NSString *)walletUUID
                           newName:(NSString *)walletName;
 
-- (ABCConditionCode) createFirstWalletIfNeeded;
+- (NSError *)createFirstWalletIfNeeded;
 - (ABCConditionCode) getNumWalletsInAccount:(int *)numWallets;
 
 - (BOOL)hasOTPResetPending;

@@ -13,11 +13,12 @@
  * @param  ABCConditionCode: error code to look up
  * @return NSString*       : text description of error
  */
-- (NSString *)conditionCodeMap:(const ABCConditionCode) code;
++ (NSString *)conditionCodeMap:(const ABCConditionCode) code;
 
 - (id)init;
 - (ABCConditionCode)setLastErrors:(tABC_Error)error;
 - (ABCConditionCode) getLastConditionCode;
 - (NSString *) getLastErrorString;
++ (NSError *) makeNSError:(tABC_Error)error;
 
 @end
