@@ -679,7 +679,11 @@
     });
 }
 
-- (ABCAccount *)signIn:(NSString *)username password:(NSString *)password delegate:(id)delegate otp:(NSString *)otp error:(NSError **)nserror;
+- (ABCAccount *)signIn:(NSString *)username
+              password:(NSString *)password
+              delegate:(id)delegate
+                   otp:(NSString *)otp
+                 error:(NSError **)nserror;
 {
     
     NSError *lnserror = nil;
@@ -876,67 +880,6 @@
     return valid;
 }
 
-- (ABCConditionCode)changePasswordWithRecoveryAnswers:(NSString *)username
-                                      recoveryAnswers:(NSString *)answers
-                                          newPassword:(NSString *)password;
-{
-    //    const char *ignore = "ignore";
-    tABC_Error error;
-    
-    if (!username || !answers || !password)
-    {
-        error.code = ABC_CC_BadPassword;
-        return [self setLastErrors:error];
-    }
-    // Should not have any running watchers. This routine should run on a non-logged in user.
-//    [self stopWatchers];
-//    [self stopQueues];
-    
-    // NOTE: userNameTextField is repurposed for current password
-    ABC_ChangePasswordWithRecoveryAnswers([username UTF8String], [answers UTF8String], [password UTF8String], &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
-    
-//    [self startWatchers];
-//    [self startQueues];
-    
-    if ([self.localSettings.touchIDUsersEnabled containsObject:username])
-    {
-        [self.localSettings.touchIDUsersDisabled removeObject:username];
-        [self.localSettings saveAll];
-        [self.keyChain updateLoginKeychainInfo:username
-                                      password:password
-                                    useTouchID:YES];
-    }
-    
-    return ccode;
-}
-
-- (void)changePasswordWithRecoveryAnswers:(NSString *)username
-                          recoveryAnswers:(NSString *)answers
-                              newPassword:(NSString *)password
-                                 complete:(void (^)(void)) completionHandler
-                                    error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler
-{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-         ABCConditionCode ccode = [self changePasswordWithRecoveryAnswers:username
-                                                          recoveryAnswers:answers
-                                                              newPassword:password];
-         NSString *errorString = [self getLastErrorString];
-         dispatch_async(dispatch_get_main_queue(), ^(void) {
-             if (ABCConditionCodeOk == ccode)
-             {
-                 if (completionHandler) completionHandler();
-             }
-             else
-             {
-                 if (errorHandler) errorHandler(ccode, errorString);
-             }
-         });
-        
-     });
-}
-
-
 - (NSError *)isAccountUsernameAvailable:(NSString *)username;
 {
     tABC_Error error;
@@ -1049,31 +992,6 @@
     return [ABCError makeNSError:error];
 }
 
-- (ABCConditionCode)getOTPResetDateForLastFailedAccountLogin:(NSDate **)date;
-{
-    tABC_Error error;
-    char *szDate = NULL;
-    ABC_OtpResetDate(&szDate, &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
-    if (ABCConditionCodeOk == ccode) {
-        if (szDate == NULL || strlen(szDate) == 0) {
-            *date = nil;
-        } else {
-            NSString *dateStr = [NSString stringWithUTF8String:szDate];
-
-            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-            [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
-
-            NSDate *dateTemp = [dateFormatter dateFromString:dateStr];
-            *date = dateTemp;
-        }
-    }
-
-    if (szDate) free(szDate);
-
-    return ccode;
-}
-
 - (ABCConditionCode)requestOTPReset:(NSString *)username;
 {
     tABC_Error error;
@@ -1164,36 +1082,66 @@
     });
 }
 
-- (void)checkRecoveryAnswers:(NSString *)username answers:(NSString *)strAnswers otp:(NSString *)otp
-       complete:(void (^)(BOOL validAnswers)) completionHandler
-          error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler
+- (void)signInWithRecoveryAnswers:(NSString *)username
+                          answers:(NSString *)answers
+                              otp:(NSString *)otp
+                         complete:(void (^)(BOOL validAnswers)) completionHandler
+                            error:(void (^)(NSError *, NSDate *resetDate)) errorHandler;
 {
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
         bool bABCValid = false;
         tABC_Error error;
-        ABCConditionCode ccode;
+        NSError *nserror;
+        NSDate *resetDate;
 
         if (otp)
         {
-            ccode = [self setOTPKey:username key:otp];
+            nserror = [self setOTPKey:username key:otp];
         }
         
+        // This actually logs in the user
         ABC_CheckRecoveryAnswers([username UTF8String],
-                [strAnswers UTF8String],
+                [answers UTF8String],
                 &bABCValid,
                 &error);
-        ccode = [self setLastErrors:error];
-        NSString *errorStr = [self getLastErrorString];
+        nserror = [ABCError makeNSError:error];
+
+        if (ABCConditionCodeInvalidOTP == nserror.code)
+        {
+            char *szDate = NULL;
+            ABC_OtpResetDate(&szDate, &error);
+            NSError *nserror2 = [ABCError makeNSError:error];
+            if (!nserror2)
+            {
+                if (szDate == NULL || strlen(szDate) == 0)
+                {
+                    resetDate = nil;
+                }
+                else
+                {
+                    NSString *dateStr = [NSString stringWithUTF8String:szDate];
+                    
+                    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                    [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
+                    
+                    NSDate *dateTemp = [dateFormatter dateFromString:dateStr];
+                    resetDate = dateTemp;
+                }
+            }
+            
+            if (szDate) free(szDate);
+            
+        }
 
         dispatch_async(dispatch_get_main_queue(), ^(void) {
-            if (ABCConditionCodeOk == ccode)
+            if (!nserror)
             {
                 if (completionHandler) completionHandler(bABCValid);
             }
             else
             {
-                if (errorHandler) errorHandler(ccode, errorStr);
+                if (errorHandler) errorHandler(nserror, resetDate);
             }
         });
     });

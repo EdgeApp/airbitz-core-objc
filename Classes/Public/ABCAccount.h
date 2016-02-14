@@ -147,19 +147,18 @@
 
 /*
  * changePassword
- * @param NSString* password: new password for currently logged in user
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler: completion handler code block
- * @param errorHandler: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
+ * @param password NSString* new password for currently logged in user
+ * (Optional. If used, method returns immediately with void)
+ * @param completionHandler (Optional) completion handler code block
+ * @param errorHandler (Optional) Code block called on error with parameters<br>
+ * - *param* NSError*
+ * @return NSError object or nil if failure. Return void if using completion
+ *  handler
  */
-- (ABCConditionCode)changePassword:(NSString *)password;
-- (ABCConditionCode)changePassword:(NSString *)password
-                          complete:(void (^)(void)) completionHandler
-                             error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+- (NSError *)changePassword:(NSString *)password;
+- (void)changePassword:(NSString *)password
+              complete:(void (^)(void)) completionHandler
+                 error:(void (^)(NSError *)) errorHandler;
 
 /*
  * changePIN

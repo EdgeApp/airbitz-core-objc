@@ -209,6 +209,26 @@ typedef enum eABCDeviceCaps
                         error:(NSError **)error;
 
 /**
+ * Log in a user using recovery answers. Will only succeed if user has recovery questions and answers
+ * set in their account. Use [ABCAccount setRecoveryQuestions] to set questions and answers
+ * @param username NSString*
+ * @param answers  NSString* concatenated string of recovery answers separated by '\n' after each answer
+ * @param otp NSString* OTP token if needed to login. May be set to nil.
+ * @param complete: completion handler code block<br>
+ * - *param* BOOL validAnswers TRUE if recovery answers are correct
+ * @param error: error handler code block which is called with the following args<br>
+ * - *param* NSError*<br>
+ * - *param* NSDate* resetDate If login fails due to OTP and a reset has been requested, this contains
+ *  the date that the reset will occur.
+ * @return void
+ */
+- (void)signInWithRecoveryAnswers:(NSString *)username
+                          answers:(NSString *)answers
+                              otp:(NSString *)otp
+                         complete:(void (^)(BOOL validAnswers)) completionHandler
+                            error:(void (^)(NSError *, NSDate *resetDate)) errorHandler;
+
+/**
  * Get ABCAccount object for username if logged in.
  * @param username NSString*
  * @return ABCAccount* if logged in. nil otherwise
@@ -314,40 +334,6 @@ typedef enum eABCDeviceCaps
 /// -----------------------------------------------------------------------------
 
 /**
- * changePasswordWithRecoveryAnswers
- * @param username NSString* username whose password to change
- * @param recoveryAnswers NSString* recovery answers delimited by '\n'
- * @param newPassword NSString* new password
- * @param complete (Optional) Code block called on success. Returns void if used
- * @param error (Optional) Code block called on error with parameters<br>
- * - *param* ABCCondition code<br>
- * - *param* NSString* errorString
- */
-- (ABCConditionCode)changePasswordWithRecoveryAnswers:(NSString *)username
-                                      recoveryAnswers:(NSString *)answers
-                                          newPassword:(NSString *)password;
-- (void)changePasswordWithRecoveryAnswers:(NSString *)username
-                          recoveryAnswers:(NSString *)answers
-                              newPassword:(NSString *)password
-                                 complete:(void (^)(void)) completionHandler
-                                    error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-/**
- * @param username NSString*
- * @param answers  NSString* concatenated string of recovery answers separated by '\n' after each answer
- * @param otp NSString* OTP token if needed to login. May be set to nil.
- * @param complete: completion handler code block<br>
- * - *param* BOOL validAnswers TRUE if recovery answers are correct
- * @param error: error handler code block which is called with the following args<br>
- * - *param* ABCCondition code<br>
- * - *param* NSString* errorString
- * @return void
- */
-- (void)checkRecoveryAnswers:(NSString *)username answers:(NSString *)answers otp:(NSString *)otp
-                    complete:(void (^)(BOOL validAnswers)) completionHandler
-                       error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-/**
  * Gets a list of recovery questions to ask user. These are suggested questions from the Airbitz
  * servers, but app is free to choose its own to present the user.
  * @param complete completion handler code block which is called with the following args<br>
@@ -380,14 +366,6 @@ typedef enum eABCDeviceCaps
  */
 - (NSError *)setOTPKey:(NSString *)username
                    key:(NSString *)key;
-
-/**
- * Returns the OTP reset date for the last account that failed to log in,
- * if any. Returns an empty string otherwise.
- * @param date NSDate** pointer to NSDate for return value date
- * @return ABCConditionCode
- */
-- (ABCConditionCode)getOTPResetDateForLastFailedAccountLogin:(NSDate **)date;
 
 /**
  * Returns an array of usernames of accounts local to device that

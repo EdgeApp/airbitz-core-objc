@@ -2253,24 +2253,24 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return [self setLastErrors:error];
 }
 
-- (ABCConditionCode)changePassword:(NSString *)password;
+- (NSError *)changePassword:(NSString *)password;
 {
-    //    const char *ignore = "ignore";
+    NSError *nserror = nil;
     tABC_Error error;
     
     if (!password)
     {
         error.code = ABC_CC_BadPassword;
-        return [self setLastErrors:error];
+        return [ABCError makeNSError:error];
     }
     [self stopWatchers];
     [self stopQueues];
     
     
     ABC_ChangePassword([self.name UTF8String], [@"ignore" UTF8String], [password UTF8String], &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
+    nserror = [ABCError makeNSError:error];
     
-    if (ABCConditionCodeOk == ccode)
+    if (!nserror)
     {
         self.password = password;
         [self setupLoginPIN];
@@ -2290,31 +2290,29 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     [self startQueues];
     
     
-    return ccode;
+    return nserror;
 }
 
-- (ABCConditionCode)changePassword:(NSString *)password
-                          complete:(void (^)(void)) completionHandler
-                             error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler
+- (void)changePassword:(NSString *)password
+                   complete:(void (^)(void)) completionHandler
+                      error:(void (^)(NSError *)) errorHandler;
 {
     [self postToDataQueue:^(void)
      {
-         ABCConditionCode ccode = [self changePassword:password];
-         NSString *errorString = [self getLastErrorString];
+         NSError *error = [self changePassword:password];
          dispatch_async(dispatch_get_main_queue(), ^(void)
                         {
-                            if (ABCConditionCodeOk == ccode)
+                            if (!error)
                             {
                                 if (completionHandler) completionHandler();
                             }
                             else
                             {
-                                if (errorHandler) errorHandler(ccode, errorString);
+                                if (errorHandler) errorHandler(error);
                             }
                         });
          
      }];
-    return ABCConditionCodeOk;
 }
 
 /* === OTP authentication: === */
@@ -2387,31 +2385,6 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     ABC_OtpAuthRemove([self.name UTF8String], [self.password UTF8String], &error);
     [self removeOTPKey];
     return [self setLastErrors:error];
-}
-
-- (ABCConditionCode)getOTPResetDateForLastFailedAccountLogin:(NSDate **)date;
-{
-    tABC_Error error;
-    char *szDate = NULL;
-    ABC_OtpResetDate(&szDate, &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
-    if (ABCConditionCodeOk == ccode) {
-        if (szDate == NULL || strlen(szDate) == 0) {
-            *date = nil;
-        } else {
-            NSString *dateStr = [NSString stringWithUTF8String:szDate];
-            
-            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-            [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
-            
-            NSDate *dateTemp = [dateFormatter dateFromString:dateStr];
-            *date = dateTemp;
-        }
-    }
-    
-    if (szDate) free(szDate);
-    
-    return ccode;
 }
 
 - (ABCConditionCode)requestOTPReset:(NSString *)username;
