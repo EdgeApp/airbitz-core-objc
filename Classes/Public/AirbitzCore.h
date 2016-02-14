@@ -293,19 +293,20 @@ typedef enum eABCDeviceCaps
  * Checks if PIN login is possible for the given username. This checks if
  * there is a local PIN package on the device from a prior login
  * @param username NSString* username to check
- * @param error NSError** May be set to nil. Only used when not using completion handler
+ * @param error NSError** (optional) May be set to nil.
  * @return BOOL YES PIN login is possible
  */
+- (BOOL)PINLoginExists:(NSString *)username;
 - (BOOL)PINLoginExists:(NSString *)username error:(NSError **)error;
 
 /*
- * accountDeleteLocal
- *      Deletes named account from local device. Account is recoverable if it contains a password
- * @param NSString* username: username of account to delete
- *
- * @return ABCConditionCode
+ * Deletes named account from local device. Account is recoverable if it contains a password.
+ * Use [AirbitzCore passwordExists] to determine if account has a password. Recommend warning
+ * user before executing removeLocalAccount if passwordExists returns FALSE.
+ * @param NSString* username: username of account to delete *
+ * @return NSError* nil if method succeeds
  */
-- (ABCConditionCode)accountDeleteLocal:(NSString *)username;
+- (NSError *)removeLocalAccount:(NSString *)username;
 
 #pragma mark - Account Recovery
 /// -----------------------------------------------------------------------------

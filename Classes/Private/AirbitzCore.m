@@ -519,6 +519,7 @@
     return nserror;
 }
 
+- (BOOL)PINLoginExists:(NSString *)username; { return [self PINLoginExists:username error:nil]; }
 - (BOOL)PINLoginExists:(NSString *)username error:(NSError **)nserror;
 {
     NSError *lnserror;
@@ -595,24 +596,25 @@
     });
 }
 
-- (ABCConditionCode)accountDeleteLocal:(NSString *)account;
+- (NSError *)removeLocalAccount:(NSString *)account;
 {
     tABC_Error error;
+    NSError *nserror = nil;
     ABC_AccountDelete((const char*)[account UTF8String], &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
-    if (ABCConditionCodeOk == ccode)
+    nserror = [ABCError makeNSError:error];
+    if (!nserror)
     {
         if ([account isEqualToString:[self getLastAccessedAccount]])
         {
             // If we deleted the account we most recently logged into,
             // set the lastLoggedInAccount to the top most account in the list.
             NSMutableArray *accounts = [[NSMutableArray alloc] init];
-            [self getLocalAccounts:accounts];
+            nserror = [self getLocalAccounts:accounts];
             [self setLastAccessedAccount:accounts[0]];
         }
     }
 
-    return [self setLastErrors:error];
+    return nserror;
 }
 
 /////////////////////////////////////////////////////////////////
