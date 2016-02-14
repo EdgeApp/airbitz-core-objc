@@ -142,13 +142,20 @@ typedef enum eABCDeviceCaps
  * - *param* ABCAccount* Account object.<br>
  * @param error (Optional) Code block called on error with parameters<br>
  * - *param* NSError*
- * @return ABCAccount* User object or nil if failure
+ * @return ABCAccount* Account object or nil if failure. Return void if using completion
+ *  handler
  */
-- (void)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate
+- (void)createAccount:(NSString *)username
+             password:(NSString *)password
+                  pin:(NSString *)pin
+             delegate:(id)delegate
              complete:(void (^)(ABCAccount *account)) completionHandler
                 error:(void (^)(NSError *)) errorHandler;
-- (ABCAccount *)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate error:(NSError **)error;
-
+- (ABCAccount *)createAccount:(NSString *)username
+                     password:(NSString *)password
+                          pin:(NSString *)pin
+                     delegate:(id)delegate
+                        error:(NSError **)error;
 
 /**
  * Sign In to an Airbitz account.
@@ -162,12 +169,20 @@ typedef enum eABCDeviceCaps
  * - *param* ABCAccount* Account object created from SignIn call
  * @param error (Optional) Code block called on error with parameters<br>
  * - *param* NSError*
- * @return ABCAccount* or void if using completion handler
+ * @return ABCAccount* Account object or nil if failure. Return void if using completion
+ *  handler
  */
-- (void)signIn:(NSString *)username password:(NSString *)password delegate:(id)delegate otp:(NSString *)otp
+- (void)signIn:(NSString *)username
+      password:(NSString *)password
+      delegate:(id)delegate
+           otp:(NSString *)otp
       complete:(void (^)(ABCAccount *account)) completionHandler
          error:(void (^)(NSError *)) errorHandler;
-- (ABCAccount *)signIn:(NSString *)username password:(NSString *)password delegate:(id)delegate otp:(NSString *)otp error:(NSError **)error;
+- (ABCAccount *)signIn:(NSString *)username
+              password:(NSString *)password
+              delegate:(id)delegate
+                   otp:(NSString *)otp
+                 error:(NSError **)error;
 
 /**
  * Sign In to an Airbitz account with PIN. Used to sign into devices that have previously
@@ -180,12 +195,18 @@ typedef enum eABCDeviceCaps
  * - *param* ABCAccount* User object.<br>
  * @param error (Optional) Code block called on error with parameters<br>
  * - *param* NSError*
- * @return ABCAccount* or void if using completion handler
+ * @return ABCAccount* Account object or nil if failure. Return void if using completion
+ *  handler
  */
-- (void)signInWithPIN:(NSString *)username pin:(NSString *)pin delegate:(id)delegate
+- (void)signInWithPIN:(NSString *)username
+                  pin:(NSString *)pin
+             delegate:(id)delegate
              complete:(void (^)(ABCAccount *user)) completionHandler
                 error:(void (^)(NSError *error)) errorHandler;
-- (ABCAccount *)signInWithPIN:(NSString *)username pin:(NSString *)pin delegate:(id)delegate error:(NSError **)error;
+- (ABCAccount *)signInWithPIN:(NSString *)username
+                          pin:(NSString *)pin
+                     delegate:(id)delegate
+                        error:(NSError **)error;
 
 /**
  * Get ABCAccount object for username if logged in.
@@ -230,10 +251,10 @@ typedef enum eABCDeviceCaps
 
 /**
  * Get a list of previously logged in usernames on this device
- * @param  accounts NSMutableArray* array of strings of account names
- * @return ABCConditionCode error code
+ * @param accounts NSMutableArray* array of strings of account names
+ * @return NSError* error code
  */
-- (ABCConditionCode) getLocalAccounts:(NSMutableArray *) accounts;
+- (NSError *) getLocalAccounts:(NSMutableArray *) accounts;
 
 /**
  * Checks if username is available

@@ -494,14 +494,16 @@
     }
 }
 
-- (ABCConditionCode) getLocalAccounts:(NSMutableArray *) accounts;
+- (NSError *) getLocalAccounts:(NSMutableArray *) accounts;
 {
     char * pszUserNames;
     NSArray *arrayAccounts = nil;
+    NSError *nserror = nil;
     tABC_Error error;
     ABC_ListAccounts(&pszUserNames, &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
-    if (ABCConditionCodeOk == ccode)
+    nserror = [ABCError makeNSError:error];
+    
+    if (!nserror)
     {
         [accounts removeAllObjects];
         NSString *str = [NSString stringWithCString:pszUserNames encoding:NSUTF8StringEncoding];
@@ -514,7 +516,7 @@
             }
         }
     }
-    return ccode;
+    return nserror;
 }
 
 - (BOOL)PINLoginExists:(NSString *)username error:(NSError **)nserror;

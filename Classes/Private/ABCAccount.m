@@ -1925,29 +1925,6 @@ static const int notifySyncDelay          = 1;
     return bitid;
 }
 
-- (ABCConditionCode) getLocalAccounts:(NSMutableArray *) accounts;
-{
-    char * pszUserNames;
-    NSArray *arrayAccounts = nil;
-    tABC_Error error;
-    ABC_ListAccounts(&pszUserNames, &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
-    if (ABCConditionCodeOk == ccode)
-    {
-        [accounts removeAllObjects];
-        NSString *str = [NSString stringWithCString:pszUserNames encoding:NSUTF8StringEncoding];
-        arrayAccounts = [str componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
-        for(NSString *str in arrayAccounts)
-        {
-            if(str && str.length!=0)
-            {
-                [accounts addObject:str];
-            }
-        }
-    }
-    return ccode;
-}
-
 - (BOOL)accountExistsLocal:(NSString *)username;
 {
     if (username == nil) {
