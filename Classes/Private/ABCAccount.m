@@ -2182,8 +2182,11 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 
 - (ABCWallet *) createWallet:(NSString *)walletName currency:(NSString *)currency error:(NSError **)nserror;
 {
+    NSError *lnserror;
     [self clearDataQueue];
     int currencyNum = 0;
+    ABCWallet *wallet = nil;
+    
     if (nil == currency)
     {
         if (self.settings)
@@ -2197,7 +2200,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     }
     else
     {
-        if (!self.abc.arrayCurrencyNums || [self.abc.arrayCurrencyNums indexOfObject:[NSNumber numberWithInt:currencyNum]] == NSNotFound)
+        if (!self.abc.arrayCurrencyNums || [self.abc.arrayCurrencyCodes indexOfObject:currency] == NSNotFound)
         {
             currencyNum = [AirbitzCore getDefaultCurrencyNum];
         }
@@ -2223,17 +2226,20 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
                      currencyNum,
                      &szUUID,
                      &error);
-    *nserror = [ABCError makeNSError:error];
+    lnserror = [ABCError makeNSError:error];
     
-    if (!nserror)
+    if (!lnserror)
     {
         [self startAllWallets];
         [self connectWatchers];
         [self refreshWallets];
         
-        return [self getWallet:[NSString stringWithUTF8String:szUUID]];
+        wallet = [self getWallet:[NSString stringWithUTF8String:szUUID]];
     }
-    return nil;
+    
+    if (nserror)
+        *nserror = lnserror;
+    return wallet;
 }
 
 - (void) createWallet:(NSString *)walletName currency:(NSString *)currency

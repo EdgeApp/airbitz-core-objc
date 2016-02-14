@@ -127,6 +127,10 @@
             [arrayCurrencyNums addObject:[NSNumber numberWithInt:aCurrencies[i].num]];
             [arrayCurrencyCodes addObject:[NSString stringWithUTF8String:aCurrencies[i].szCode]];
         }
+        self.arrayCurrencyStrings = arrayCurrencyStrings;
+        self.arrayCurrencyNums    = arrayCurrencyNums;
+        self.arrayCurrencyCodes   = arrayCurrencyCodes;
+        
         self.localSettings = [[ABCLocalSettings alloc] init:self];
         self.keyChain = [[ABCKeychain alloc] init:self];
 
