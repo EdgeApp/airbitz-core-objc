@@ -1092,7 +1092,7 @@ static const int notifySyncDelay          = 1;
 - (long) saveLogoutDate;
 {
     long currentTimeStamp = (long) [[NSDate date] timeIntervalSince1970];
-    logoutTimeStamp = currentTimeStamp + (60 * self.settings.minutesAutoLogout);
+    logoutTimeStamp = currentTimeStamp + (self.settings.secondsAutoLogout);
     
     // Save in iOS ABCKeychain
     [self.abc.keyChain setKeychainInt:logoutTimeStamp

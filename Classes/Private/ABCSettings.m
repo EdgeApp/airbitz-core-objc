@@ -42,7 +42,7 @@
     {
         if ([self haveSettingsChanged:pSettings])
         {
-            self.minutesAutoLogout = pSettings->minutesAutoLogout;
+            self.secondsAutoLogout = pSettings->secondsAutoLogout;
             self.defaultCurrencyNum = pSettings->currencyNum;
             if (pSettings->bitcoinDenomination.satoshi > 0)
             {
@@ -95,7 +95,7 @@
             pinLoginChanged = settingsChanged = YES;
         if ([self haveSettingsChanged:pSettings])
         {
-            pSettings->minutesAutoLogout                      = self.minutesAutoLogout         ;
+            pSettings->secondsAutoLogout                      = self.secondsAutoLogout         ;
             pSettings->currencyNum                            = self.defaultCurrencyNum        ;
             pSettings->bitcoinDenomination.satoshi            = self.denomination              ;
             pSettings->bitcoinDenomination.denominationType   = (int) self.denominationType    ;
@@ -234,7 +234,7 @@
     if (
         !pSettings ||
         pSettings->bDisablePINLogin                       != self.bDisablePINLogin          ||
-        pSettings->minutesAutoLogout                      != self.minutesAutoLogout         ||
+        pSettings->secondsAutoLogout                      != self.secondsAutoLogout         ||
         pSettings->currencyNum                            != self.defaultCurrencyNum        ||
         pSettings->bitcoinDenomination.satoshi            != self.denomination              ||
         pSettings->bitcoinDenomination.denominationType   != (int) self.denominationType    ||
