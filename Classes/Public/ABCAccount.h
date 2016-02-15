@@ -276,16 +276,6 @@
 - (ABCConditionCode)removeOTPAuth;
 
 /**
- * getOTPResetDateForLastFailedAccountLogin
- *
- * Returns the OTP reset date for the last account that failed to log in,
- * if any. Returns an empty string otherwise.
- * @param NSDate   **date: pointer to NSDate for return value date
- * @return ABCConditionCode
- */
-- (ABCConditionCode)getOTPResetDateForLastFailedAccountLogin:(NSDate **)date;
-
-/**
  * requestOTPReset
  * Launches an OTP reset timer on the server,
  * which will disable the OTP authentication requirement when it expires.

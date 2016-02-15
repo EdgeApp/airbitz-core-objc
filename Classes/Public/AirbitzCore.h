@@ -374,8 +374,7 @@ typedef enum eABCDeviceCaps
 
 /**
  * Returns an array of usernames of accounts local to device that
- * have a pending OTP reset on the server. Use getOTPResetDateForLastFailedAccountLogin
- * to get the NSDate of when the OTP reset will occur.
+ * have a pending OTP reset on the server. 
  * @return NSArray* of NSString* of usernames
  */
 - (NSArray *)getOTPResetUsernames;
