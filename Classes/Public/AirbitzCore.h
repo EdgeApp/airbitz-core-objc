@@ -163,12 +163,15 @@ typedef enum eABCDeviceCaps
  * @param password NSString*
  * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
  * @param otp NSString* One Time Password token (optional). Send nil if logging in w/o OTP token
- *                       or if OTP token has already been saved in this account from prior login
+ *  or if OTP token has already been saved in this account from prior login
+ * @param resetDate NSDate** If login fails due to invalid or unset OTP key, and an OTP reset has been
  * @param error NSError** May be set to nil. Only used when not using completion handler
  * @param complete (Optional) Code block called on success. Returns void if used<br>
  * - *param* ABCAccount* Account object created from SignIn call
  * @param error (Optional) Code block called on error with parameters<br>
- * - *param* NSError*
+ * - *param* NSError*<br>
+ * - *param* NSDate* resetDate If login fails due to invalid or unset OTP key, and an OTP reset has been
+ *  requested, the data that the reset will occur will be returned in this argument
  * @return ABCAccount* Account object or nil if failure. Return void if using completion
  *  handler
  */
@@ -177,11 +180,12 @@ typedef enum eABCDeviceCaps
       delegate:(id)delegate
            otp:(NSString *)otp
       complete:(void (^)(ABCAccount *account)) completionHandler
-         error:(void (^)(NSError *)) errorHandler;
+         error:(void (^)(NSError *, NSDate *resetDate)) errorHandler;
 - (ABCAccount *)signIn:(NSString *)username
               password:(NSString *)password
               delegate:(id)delegate
                    otp:(NSString *)otp
+             resetDate:(NSDate **)resetDate
                  error:(NSError **)error;
 
 /**
@@ -192,9 +196,10 @@ typedef enum eABCDeviceCaps
  * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
  * @param error NSError** May be set to nil. Only used when not using completion handler
  * @param complete (Optional) Code block called on success.<br>
- * - *param* ABCAccount* User object.<br>
+ * - *param* ABCAccount* User object.
  * @param error (Optional) Code block called on error with parameters<br>
  * - *param* NSError*
+ *  requested, the data that the reset will occur will be returned in this argument
  * @return ABCAccount* Account object or nil if failure. Return void if using completion
  *  handler
  */
@@ -202,7 +207,7 @@ typedef enum eABCDeviceCaps
                   pin:(NSString *)pin
              delegate:(id)delegate
              complete:(void (^)(ABCAccount *user)) completionHandler
-                error:(void (^)(NSError *error)) errorHandler;
+                error:(void (^)(NSError *)) errorHandler;
 - (ABCAccount *)signInWithPIN:(NSString *)username
                           pin:(NSString *)pin
                      delegate:(id)delegate
