@@ -24,8 +24,8 @@ typedef NS_ENUM(NSUInteger, ABCDenomination) {
 /// Must call [ABCSettings loadSettings] before reading and
 /// [ABCSettings saveSettings] after writing
 
-/// How many minutes after the app is backgrounded before the user should be auto logged out
-@property (nonatomic) int minutesAutoLogout;
+/// How many seconds after the app is backgrounded before the user should be auto logged out
+@property (nonatomic) int secondsAutoLogout;
 
 /// Default ISO currency number for new wallets and for the account total on Wallets screen
 @property (nonatomic) int defaultCurrencyNum;
