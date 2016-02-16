@@ -1142,21 +1142,21 @@
 
 
 - (void)getRecoveryQuestionsChoices: (void (^)(
-        NSMutableArray *arrayCategoryString,
-        NSMutableArray *arrayCategoryNumeric,
-        NSMutableArray *arrayCategoryMust)) completionHandler
-        error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                                               NSMutableArray *arrayCategoryString,
+                                               NSMutableArray *arrayCategoryNumeric,
+                                               NSMutableArray *arrayCategoryMust)) completionHandler
+                              error:(void (^)(NSError *error)) errorHandler;
 {
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
         tABC_Error error;
+        NSError *nserror = nil;
         tABC_QuestionChoices *pQuestionChoices = NULL;
         ABC_GetQuestionChoices(&pQuestionChoices, &error);
 
-        ABCConditionCode ccode = [self setLastErrors:error];
-        NSString *errorString = [self getLastErrorString];
-
-        if (ABCConditionCodeOk == ccode)
+        nserror = [ABCError makeNSError:error];
+        
+        if (!nserror)
         {
             NSMutableArray        *arrayCategoryString  = [[NSMutableArray alloc] init];
             NSMutableArray        *arrayCategoryNumeric = [[NSMutableArray alloc] init];
@@ -1175,7 +1175,7 @@
         else
         {
             dispatch_async(dispatch_get_main_queue(), ^(void) {
-                errorHandler(ccode, errorString);
+                errorHandler(nserror);
             });
         }
         ABC_FreeQuestionChoices(pQuestionChoices);

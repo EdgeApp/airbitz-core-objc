@@ -346,15 +346,14 @@ typedef enum eABCDeviceCaps
  * - *param* arrayCategoryNumeric NSMutableString* array of numeric based questions<br>
  * - *param* arrayCategoryMust NSMutableString* array of questions of which one must have an answer
  * @param error error handler code block which is called with the following args<br>
- * - *param* ABCCondition code<br>
- * - *param* NSString* errorString
+ * - *param* NSError* error
  * @return void
  */
 - (void)getRecoveryQuestionsChoices: (void (^)(
                                                NSMutableArray *arrayCategoryString,
                                                NSMutableArray *arrayCategoryNumeric,
                                                NSMutableArray *arrayCategoryMust)) completionHandler
-                              error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                              error:(void (^)(NSError *error)) errorHandler;
 
 #pragma mark - OTP Management
 /// -----------------------------------------------------------------------------
