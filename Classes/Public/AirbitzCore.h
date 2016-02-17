@@ -267,12 +267,12 @@ typedef enum eABCDeviceCaps
  * @param checkResultsMessage NSMutableString* message describing all failures
  * @return BOOL True if password passes all requirements
  */
-- (BOOL)checkPasswordRules:(NSString *)password
++ (BOOL)checkPasswordRules:(NSString *)password
             secondsToCrack:(double *)secondsToCrack
                      count:(unsigned int *)count
-           ruleDescription:(NSMutableArray **)ruleDescription
-                rulePassed:(NSMutableArray **)rulePassed
-       checkResultsMessage:(NSMutableString **) checkResultsMessage;
+           ruleDescription:(NSMutableArray *)ruleDescription
+                rulePassed:(NSMutableArray *)rulePassed
+       checkResultsMessage:(NSMutableString *)checkResultsMessage;
 
 /**
  * Get a list of previously logged in usernames on this device

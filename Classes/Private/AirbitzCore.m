@@ -932,12 +932,12 @@
     ABC_ClearKeyCache(&Error);
 }
 
-- (BOOL)checkPasswordRules:(NSString *)password
++ (BOOL)checkPasswordRules:(NSString *)password
             secondsToCrack:(double *)secondsToCrack
                      count:(unsigned int *)count
-           ruleDescription:(NSMutableArray **)ruleDescription
-                rulePassed:(NSMutableArray **)rulePassed
-       checkResultsMessage:(NSMutableString **) checkResultsMessage;
+           ruleDescription:(NSMutableArray *)ruleDescription
+                rulePassed:(NSMutableArray *)rulePassed
+       checkResultsMessage:(NSMutableString *)checkResultsMessage;
 {
     BOOL valid = YES;
     tABC_Error error;
@@ -947,27 +947,24 @@
                       &aRules,
                       count,
                       &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
+    NSError *nserror = [ABCError makeNSError:error];
     
-    *ruleDescription = [NSMutableArray arrayWithCapacity:*count];
-    *rulePassed = [NSMutableArray arrayWithCapacity:*count];
-    
-    if (ABCConditionCodeOk == ccode)
+    if (!nserror)
     {
-        [*checkResultsMessage appendString:@"Your password...\n"];
+        [checkResultsMessage appendString:@"Your password...\n"];
         for (int i = 0; i < *count; i++)
         {
             tABC_PasswordRule *pRule = aRules[i];
-            (*ruleDescription)[i] = [NSString stringWithUTF8String:pRule->szDescription];
+            [ruleDescription addObject:[NSString stringWithUTF8String:pRule->szDescription]];
             if (!pRule->bPassed)
             {
                 valid = NO;
-                [*checkResultsMessage appendFormat:@"%s.\n", pRule->szDescription];
-                (*rulePassed)[i] = [NSNumber numberWithBool:NO];
+                [checkResultsMessage appendFormat:@"%s.\n", pRule->szDescription];
+                [rulePassed addObject:[NSNumber numberWithBool:NO]];
             }
             else
             {
-                (*rulePassed)[i] = [NSNumber numberWithBool:YES];
+                [rulePassed addObject:[NSNumber numberWithBool:YES]];
             }
         }
     }
