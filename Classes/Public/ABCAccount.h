@@ -284,22 +284,6 @@
 - (ABCConditionCode)removeOTPResetRequest;
 
 /*
- * uploadLogs
- * @param NSString* userText: text to send to support staff
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param complete: completion handler code block which is called with void
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
- */
-- (ABCConditionCode)uploadLogs:(NSString *)userText;
-- (ABCConditionCode)uploadLogs:(NSString *)userText
-                      complete:(void(^)(void))completionHandler
-                         error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-/*
  * walletRemove
  * @param NSString* uuid: UUID of wallet to delete
  *

@@ -556,7 +556,7 @@
 }
 
 
-- (ABCConditionCode)uploadLogs:(NSString *)userText;
+- (NSError *)uploadLogs:(NSString *)userText;
 {
     NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
     NSString *build = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
@@ -572,25 +572,22 @@
     tABC_Error error;
     ABC_UploadLogs(NULL, NULL, &error);
 
-    return [self setLastErrors:error];
+    return [ABCError makeNSError:error];
 }
 
 - (void)uploadLogs:(NSString *)userText
           complete:(void(^)(void))completionHandler
-             error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+             error:(void (^)(NSError *error)) errorHandler;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
 
-        ABCConditionCode ccode;
-        ccode = [self uploadLogs:userText];
-
-        NSString *errorString = [self getLastErrorString];
-
+        NSError *error = [self uploadLogs:userText];
+        
         dispatch_async(dispatch_get_main_queue(),^{
-            if (ABC_CC_Ok == ccode) {
+            if (!error) {
                 if (completionHandler) completionHandler();
             } else {
-                if (errorHandler) errorHandler(ccode, errorString);
+                if (errorHandler) errorHandler(error);
             }
         });
     });

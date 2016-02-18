@@ -1939,47 +1939,6 @@ static const int notifySyncDelay          = 1;
 }
 
 
-- (ABCConditionCode)uploadLogs:(NSString *)userText;
-{
-    NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-    NSString *build = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
-    NSString *versionbuild = [NSString stringWithFormat:@"%@ %@", version, build];
-    
-    NSOperatingSystemVersion osVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
-    ABC_Log([[NSString stringWithFormat:@"User Comment:%@", userText] UTF8String]);
-    ABC_Log([[NSString stringWithFormat:@"Platform:%@", [ABCUtil platform]] UTF8String]);
-    ABC_Log([[NSString stringWithFormat:@"Platform String:%@", [ABCUtil platformString]] UTF8String]);
-    ABC_Log([[NSString stringWithFormat:@"OS Version:%d.%d.%d", (int)osVersion.majorVersion, (int)osVersion.minorVersion, (int)osVersion.patchVersion] UTF8String]);
-    ABC_Log([[NSString stringWithFormat:@"Airbitz Version:%@", versionbuild] UTF8String]);
-    
-    tABC_Error error;
-    ABC_UploadLogs([self.name UTF8String], NULL, &error);
-    
-    return [self setLastErrors:error];
-}
-
-- (ABCConditionCode)uploadLogs:(NSString *)userText
-                      complete:(void(^)(void))completionHandler
-                         error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-{
-    [self postToMiscQueue:^{
-        
-        ABCConditionCode ccode;
-        ccode = [self uploadLogs:userText];
-        
-        NSString *errorString = [self getLastErrorString];
-        
-        dispatch_async(dispatch_get_main_queue(),^{
-            if (ABC_CC_Ok == ccode) {
-                if (completionHandler) completionHandler();
-            } else {
-                if (errorHandler) errorHandler(ccode, errorString);
-            }
-        });
-    }];
-    return ABCConditionCodeOk;
-}
-
 - (ABCConditionCode)walletRemove:(NSString *)uuid;
 {
     // Check if we are trying to delete the current wallet

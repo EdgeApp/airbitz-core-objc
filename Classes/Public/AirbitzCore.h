@@ -398,20 +398,19 @@ typedef enum eABCDeviceCaps
                     password:(NSString *)password;
 
 /*
- * uploadLogs
- * @param NSString* userText: text to send to support staff
- *
+ * Uploads AirbitzCore debug log with optional message from user.
+ * @param userText NSString* text to send to support staff
  * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param complete: completion handler code block which is called with void
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
+ * @param complete completion handler code block which is called with void
+ * @param error error handler code block which is called with the following args<br>
+ * - *param* NSError* error
+ * @return NSError object or nil if success. Return void if using completion
+ *  handler
  */
-- (ABCConditionCode)uploadLogs:(NSString *)userText;
+- (NSError *)uploadLogs:(NSString *)userText;
 - (void)uploadLogs:(NSString *)userText
           complete:(void(^)(void))completionHandler
-             error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+             error:(void (^)(NSError *error)) errorHandler;
 
 /// @name Error Return
 
