@@ -1089,32 +1089,30 @@
     return [ABCError makeNSError:error];
 }
 
-- (ABCConditionCode)requestOTPReset:(NSString *)username;
+- (NSError *)requestOTPReset:(NSString *)username;
 {
     tABC_Error error;
     ABC_OtpResetSet([username UTF8String], &error);
-    return [self setLastErrors:error];
+    return [ABCError makeNSError:error];
 }
 
-- (ABCConditionCode)requestOTPReset:(NSString *)username
+- (void)requestOTPReset:(NSString *)username
                            complete:(void (^)(void)) completionHandler
-                              error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler
+                              error:(void (^)(NSError *error)) errorHandler
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-        ABCConditionCode ccode = [self requestOTPReset:username];
-        NSString *errorString = [self getLastErrorString];
+        NSError *error = [self requestOTPReset:username];
         dispatch_async(dispatch_get_main_queue(), ^(void) {
-            if (ABCConditionCodeOk == ccode)
+            if (!error)
             {
                 if (completionHandler) completionHandler();
             }
             else
             {
-                if (errorHandler) errorHandler(ccode, errorString);
+                if (errorHandler) errorHandler(error);
             }
         });
     });
-    return ABCConditionCodeOk;
 }
 
 - (UIImage *)encodeStringToQRImage:(NSString *)string;

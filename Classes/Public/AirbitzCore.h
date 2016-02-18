@@ -379,26 +379,23 @@ typedef enum eABCDeviceCaps
 - (NSArray *)getOTPResetUsernames;
 
 /**
- * requestOTPReset
  * Launches an OTP reset timer on the server,
  * which will disable the OTP authentication requirement when it expires.
  *
- * This only works after the caller has successfully authenticated
- * with the server, such as through a password login,
- * but has failed to fully log in due to a missing OTP key.
- * @param NSString   *username:
+ * @param username NSString*
  *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
+ * (Optional. If used, method returns immediately with void)
  * @param completionHandler: completion handler code block
- * @param errorHandler: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
+ * @param error error handler code block which is called with the following args<br>
+ * - *param* NSError* error
+ * @return NSError object or nil if success. Return void if using completion
+ *  handler
  */
-- (ABCConditionCode)requestOTPReset:(NSString *)username
-                           complete:(void (^)(void)) completionHandler
-                              error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-- (ABCConditionCode)requestOTPReset:(NSString *)username;
+- (void)requestOTPReset:(NSString *)username
+               complete:(void (^)(void)) completionHandler
+                  error:(void (^)(NSError *error)) errorHandler;
+- (NSError *)requestOTPReset:(NSString *)username
+                    password:(NSString *)password;
 
 /*
  * uploadLogs

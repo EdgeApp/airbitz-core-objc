@@ -2387,34 +2387,6 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return [self setLastErrors:error];
 }
 
-- (ABCConditionCode)requestOTPReset:(NSString *)username;
-{
-    tABC_Error error;
-    ABC_OtpResetSet([username UTF8String], &error);
-    return [self setLastErrors:error];
-}
-
-- (ABCConditionCode)requestOTPReset:(NSString *)username
-                           complete:(void (^)(void)) completionHandler
-                              error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler
-{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-        ABCConditionCode ccode = [self requestOTPReset:username];
-        NSString *errorString = [self getLastErrorString];
-        dispatch_async(dispatch_get_main_queue(), ^(void) {
-            if (ABCConditionCodeOk == ccode)
-            {
-                if (completionHandler) completionHandler();
-            }
-            else
-            {
-                if (errorHandler) errorHandler(ccode, errorString);
-            }
-        });
-    });
-    return ABCConditionCodeOk;
-}
-
 - (ABCConditionCode)removeOTPResetRequest;
 {
     tABC_Error error;
