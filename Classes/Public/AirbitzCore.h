@@ -83,7 +83,6 @@
  */
 
 #define ABC_CONFIRMED_CONFIRMATION_COUNT    6
-#define ABC_PIN_REQUIRED_PERIOD_SECONDS     120
 #define ABC_ARRAY_EXCHANGES     @[@"Bitstamp", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
 
 #define ABCLog(level, format_string,...) \
@@ -94,6 +93,10 @@
 void abcDebugLog(int level, NSString *string);
 void abcSetDebugLevel(int level);
 
+/**
+ * Device capabilities enum
+ * ABCDeviceCapsTouchID: Device supported TouchID fingerprint login
+ */
 typedef enum eABCDeviceCaps
 {
     ABCDeviceCapsTouchID,
@@ -112,19 +115,29 @@ typedef enum eABCDeviceCaps
 @property (nonatomic, strong) NSArray                   *arrayCurrencyNums;
 @property (nonatomic, strong) NSArray                   *arrayCurrencyStrings;
 
-- (id)init:(NSString *)abcAPIKey;
-- (id)init:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey;
-- (void)free;
 
-- (BOOL)accountExistsLocal:(NSString *)username;
-- (void)restoreConnectivity;
-- (void)lostConnectivity;
-- (NSString *)coreVersion;
 - (NSString *)currencyAbbrevLookup:(int) currencyNum;
 - (NSString *)currencySymbolLookup:(int)currencyNum;
 
-#pragma mark - Account Management
 
+/**
+ * Initialize the AirbitzCore object. Required for functionality of ABC SDK.
+ * @param abcAPIKey NSString* API key obtained from Airbitz Inc.
+ * @param hbitsKey (Optional) unique key used to encrypt private keys for use as implementation
+ * specific "gift cards" that are only redeemable by applications using this implementation.
+ * @return AirbitzCore* Instance of AirbitzCore object
+ */
+- (id)init:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey;
+- (id)init:(NSString *)abcAPIKey;
+
+/**
+ * Free the AirbitzCore object.
+ */
+- (void)free;
+
+
+
+#pragma mark - Account Management
 /// -----------------------------------------------------------------------------
 /// @name Account Management
 /// -----------------------------------------------------------------------------
@@ -252,7 +265,6 @@ typedef enum eABCDeviceCaps
  */
 - (BOOL)passwordExists:(NSString *)username;
 
-
 /** Checks a password for valid entropy looking for correct minimum
  *  requirements such as upper, lowercase letters, numbers, and # of digits. This should be used
  *  by app to give feedback to user before creating a new account.
@@ -277,6 +289,15 @@ typedef enum eABCDeviceCaps
  * @return NSError* error code
  */
 - (NSError *) getLocalAccounts:(NSMutableArray *) accounts;
+
+/**
+ * Checks if an account with the specified username exists locally on the current device.
+ * This does not check for existence of the account on the entire Airbitz system. If a username
+ * was created but never logged into this device, this will return NO.
+ * @param username NSString* Username of account to check
+ * @return YES if account exists locally, NO otherwise.
+ */
+- (BOOL)accountExistsLocal:(NSString *)username;
 
 /**
  * Checks if username is available
@@ -321,14 +342,28 @@ typedef enum eABCDeviceCaps
 - (BOOL)PINLoginExists:(NSString *)username;
 - (BOOL)PINLoginExists:(NSString *)username error:(NSError **)error;
 
-/*
+/**
  * Deletes named account from local device. Account is recoverable if it contains a password.
  * Use [AirbitzCore passwordExists] to determine if account has a password. Recommend warning
  * user before executing removeLocalAccount if passwordExists returns FALSE.
- * @param NSString* username: username of account to delete *
+ * @param username NSString*  username of account to delete
  * @return NSError* nil if method succeeds
  */
 - (NSError *)removeLocalAccount:(NSString *)username;
+
+/**
+ * Returns the NSString* of the last account that was logged into. If that account was deleted,
+ * returns the username of another local account. This can be overridden by calling
+ * [AirbitzCore setLastAccessedAccount]
+ * @return NSString* username of last account
+ */
+- (NSString *) getLastAccessedAccount;
+
+/**
+ * Overrides the cached account name returned by [AirbitzCore getLastAccessedAccount]
+ * @param username NSString* username
+ */
+- (void) setLastAccessedAccount:(NSString *) username;
 
 #pragma mark - Account Recovery
 /// -----------------------------------------------------------------------------
@@ -404,6 +439,54 @@ typedef enum eABCDeviceCaps
 - (NSError *)requestOTPReset:(NSString *)username
                     password:(NSString *)password;
 
+#pragma mark - System Calls and Queries
+/// ------------------------------------------------------------------
+/// @name System Calls and Queries
+/// ------------------------------------------------------------------
+
+/**
+ * Gets the version of AirbitzCore compiled into this implementation
+ * @return NSString* Version number if string format. ie. "1.8.5"
+ */
+- (NSString *)coreVersion;
+
+/**
+ * Check if device has a capability from ABCDeviceCaps
+ * @return BOOL TRUE if device has specified capability
+ */
+- (BOOL) hasDeviceCapability:(ABCDeviceCaps) caps;
+
+/**
+ * Returns TRUE if AirbitzCore is compiled for testnet
+ * @return BOOL
+ */
+- (bool) isTestNet;
+
+/**
+ * Call this routine from within applicationDidEnterBackground to have ABC
+ * spin down any background queues
+ */
+- (void) enterBackground;
+
+
+/**
+ * Call this routine from within applicationDidEnterBackground to have ABC
+ * spin up any background queues
+ */
+- (void) enterForeground;
+
+/**
+ * Call this routine when application loses network connectibity to have ABC
+ * prevent repeated network calls
+ */
+- (void)restoreConnectivity;
+
+/**
+ * Call this routine when application re-gains network connectibity to have ABC
+ * re-initiate networking
+ */
+- (void)lostConnectivity;
+
 /*
  * Uploads AirbitzCore debug log with optional message from user.
  * @param userText NSString* text to send to support staff
@@ -419,51 +502,8 @@ typedef enum eABCDeviceCaps
           complete:(void(^)(void))completionHandler
              error:(void (^)(NSError *error)) errorHandler;
 
-/// @name Error Return
 
-/**
- * Get the most recent ABCCConditionCode from the previous API call.
- * @return ABCConditionCode error code
- */
-- (ABCConditionCode) getLastConditionCode;
-
-/**
- * Get the error string from the most recent ABCCConditionCode from the previous API call.
- * @return ABCConditionCode error code
- */
-- (NSString *) getLastErrorString;
-
-/// ------------------------------------------------------------------
-/// @name System Query
-/// ------------------------------------------------------------------
-
-/**
- * Check if device has a capability from ABCDeviceCaps
- * @return BOOL TRUE if device has specified capability
- */
-- (BOOL) hasDeviceCapability:(ABCDeviceCaps) caps;
-
-/**
- * Returns TRUE if AirbitzCore is compiled for testnet
- * @return BOOL
- */
-- (bool)isTestNet;
-
-/*
- * enterBackground
- * Call this routine from within applicationDidEnterBackground to have ABC
- * spin down any background queues
- */
-- (void)enterBackground;
-
-
-/*
- * enterBackground
- * Call this routine from within applicationDidEnterBackground to have ABC
- * spin down any background queues
- */
-- (void)enterForeground;
-
+#pragma mark - Utility Methods
 /// ------------------------------------------------------------------
 /// @name Utility methods
 /// ------------------------------------------------------------------
@@ -480,7 +520,7 @@ typedef enum eABCDeviceCaps
  * @param string NSString* string to encode
  * @return UIImage* returned image
  */
-- (UIImage *)encodeStringToQRImage:(NSString *)string;
++ (UIImage *)encodeStringToQRImage:(NSString *)string;
 
 /// @name Class methods to retrieve constant parameters from ABC
 
@@ -488,9 +528,9 @@ typedef enum eABCDeviceCaps
 + (int) getMinimumPasswordLength;
 + (int) getMinimumPINLength;
 + (int) getDefaultCurrencyNum;
+- (NSString *) getLastErrorString;
+- (ABCConditionCode) getLastConditionCode;
 
-- (NSString *) getLastAccessedAccount;
-- (void) setLastAccessedAccount:(NSString *) account;
 
 
 @end

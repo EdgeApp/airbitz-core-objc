@@ -951,6 +951,8 @@ static const int notifySyncDelay          = 1;
     return bResult;
 }
 
+#define ABC_PIN_REQUIRED_PERIOD_SECONDS     120
+
 - (BOOL)recentlyLoggedIn
 {
     long now = (long) [[NSDate date] timeIntervalSince1970];
