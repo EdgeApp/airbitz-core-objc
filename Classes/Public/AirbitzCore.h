@@ -117,9 +117,6 @@ typedef enum eABCDeviceCaps
 - (void)free;
 
 - (BOOL)accountExistsLocal:(NSString *)username;
-- (NSArray *)getRecoveryQuestionsForUserName:(NSString *)strUserName
-                                   isSuccess:(BOOL *)bSuccess
-                                    errorMsg:(NSMutableString *)error;
 - (void)restoreConnectivity;
 - (void)lostConnectivity;
 - (NSString *)coreVersion;
@@ -338,6 +335,16 @@ typedef enum eABCDeviceCaps
 /// @name Account Recovery
 /// -----------------------------------------------------------------------------
 
+/**
+ * Gets the recovery questions set for the specified username. Questions are
+ * returned as an NSArray of NSString*. Recovery questions need to have been previously set
+ * with a call to [ABCAccount setRecoveryQuestions]
+ * @param username NSString* username to query
+ * @return NSArray* Array of questions in NSString format. Returns nil if no questions
+ * have been set.
+ */
+- (NSArray *)getRecoveryQuestionsForUserName:(NSString *)username
+                                       error:(NSError **)error;
 /**
  * Gets a list of recovery questions to ask user. These are suggested questions from the Airbitz
  * servers, but app is free to choose its own to present the user.

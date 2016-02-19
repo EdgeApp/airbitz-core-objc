@@ -895,51 +895,6 @@ static const int notifySyncDelay          = 1;
     }
 }
 
-// gets the recover questions for a given account
-// nil is returned if there were no questions for this account
-- (NSArray *)getRecoveryQuestionsForUserName:(NSString *)strUserName
-                                   isSuccess:(BOOL *)bSuccess
-                                    errorMsg:(NSMutableString *)error
-{
-    NSMutableArray *arrayQuestions = nil;
-    char *szQuestions = NULL;
-    
-    *bSuccess = NO;
-    tABC_Error Error;
-    tABC_CC result = ABC_GetRecoveryQuestions([strUserName UTF8String],
-                                              &szQuestions,
-                                              &Error);
-    [self setLastErrors:Error];
-    if (ABC_CC_Ok == result)
-    {
-        if (szQuestions && strlen(szQuestions))
-        {
-            // create an array of strings by pulling each question that is seperated by a newline
-            arrayQuestions = [[NSMutableArray alloc] initWithArray:[[NSString stringWithUTF8String:szQuestions] componentsSeparatedByString: @"\n"]];
-            // remove empties
-            [arrayQuestions removeObject:@""];
-            *bSuccess = YES;
-        }
-        else
-        {
-            [error appendString:NSLocalizedString(@"This user does not have any recovery questions set!", nil)];
-            *bSuccess = NO;
-        }
-    }
-    else
-    {
-        [error appendString:[self getLastErrorString]];
-        [self setLastErrors:Error];
-    }
-    
-    if (szQuestions)
-    {
-        free(szQuestions);
-    }
-    
-    return arrayQuestions;
-}
-
 - (void)incRecoveryReminder
 {
     [self incRecoveryReminder:1];
@@ -983,12 +938,10 @@ static const int notifySyncDelay          = 1;
     BOOL bResult = NO;
     int reminderCount = [self getReminderCount];
     if (self.currentWallet.balance >= recoveryReminderAmount && reminderCount < recoveryReminderCount) {
-        BOOL bQuestions = NO;
-        NSMutableString *errorMsg = [[NSMutableString alloc] init];
-        [self getRecoveryQuestionsForUserName:self.name
-                                    isSuccess:&bQuestions
-                                     errorMsg:errorMsg];
-        if (!bQuestions) {
+        NSError *error = nil;
+        NSArray *arrayQuestions = [self.abc getRecoveryQuestionsForUserName:self.name
+                                                                      error:&error];
+        if (!arrayQuestions) {
             [self incRecoveryReminder];
             bResult = YES;
         } else {

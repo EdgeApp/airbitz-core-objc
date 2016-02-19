@@ -202,20 +202,18 @@
 
 // gets the recover questions for a given account
 // nil is returned if there were no questions for this account
-- (NSArray *)getRecoveryQuestionsForUserName:(NSString *)strUserName
-                                   isSuccess:(BOOL *)bSuccess
-                                    errorMsg:(NSMutableString *)error
+- (NSArray *)getRecoveryQuestionsForUserName:(NSString *)username
+                                       error:(NSError **)nserror
 {
     NSMutableArray *arrayQuestions = nil;
     char *szQuestions = NULL;
 
-    *bSuccess = NO; 
-    tABC_Error Error;
-    tABC_CC result = ABC_GetRecoveryQuestions([strUserName UTF8String],
+    tABC_Error error;
+    ABC_GetRecoveryQuestions([username UTF8String],
                                               &szQuestions,
-                                              &Error);
-    [self setLastErrors:Error];
-    if (ABC_CC_Ok == result)
+                                              &error);
+    NSError *nserror2 = [ABCError makeNSError:error];
+    if (!nserror2)
     {
         if (szQuestions && strlen(szQuestions))
         {
@@ -223,26 +221,22 @@
             arrayQuestions = [[NSMutableArray alloc] initWithArray:[[NSString stringWithUTF8String:szQuestions] componentsSeparatedByString: @"\n"]];
             // remove empties
             [arrayQuestions removeObject:@""];
-            *bSuccess = YES; 
         }
-        else
-        {
-            [error appendString:NSLocalizedString(@"This user does not have any recovery questions set!", nil)];
-            *bSuccess = NO; 
-        }
-    }
-    else
-    {
-        [error appendString:[self getLastErrorString]];
-        [self setLastErrors:Error];
     }
 
     if (szQuestions)
     {
         free(szQuestions);
     }
+    
+    if (nserror)
+        *nserror = nserror2;
 
-    return arrayQuestions;
+    if (arrayQuestions)
+    {
+        return [NSArray arrayWithArray:arrayQuestions];
+    }
+    return nil;
 }
 
 - (BOOL)autoReloginOrTouchIDIfPossibleMain:(NSString *)username
