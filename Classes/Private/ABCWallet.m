@@ -49,6 +49,17 @@ static const int importTimeout                  = 30;
 }
 
 
+- (NSError *) renameWallet:(NSString *)newName;
+{
+    tABC_Error error;
+    ABC_RenameWallet([self.account.name UTF8String],
+                     [self.account.password UTF8String],
+                     [self.strUUID UTF8String],
+                     (char *)[newName UTF8String],
+                     &error);
+    [self.account refreshWallets];
+    return [ABCError makeNSError:error];
+}
 
 - (ABCConditionCode)createReceiveRequestWithDetails:(ABCRequest *)request;
 {

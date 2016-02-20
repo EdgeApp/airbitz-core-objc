@@ -2144,19 +2144,6 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     });
 }
 
-- (ABCConditionCode) renameWallet:(NSString *)walletUUID
-                          newName:(NSString *)walletName;
-{
-    tABC_Error error;
-    ABC_RenameWallet([self.name UTF8String],
-                     [self.password UTF8String],
-                     [walletUUID UTF8String],
-                     (char *)[walletName UTF8String],
-                     &error);
-    [self refreshWallets];
-    return [self setLastErrors:error];
-}
-
 - (NSError *)changePassword:(NSString *)password;
 {
     NSError *nserror = nil;

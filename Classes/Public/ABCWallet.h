@@ -34,6 +34,12 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 @property (nonatomic, strong)   NSArray         *arrayTransactions;
 @property (nonatomic, assign)   BOOL            loaded;
 @property (nonatomic, strong)   ABCAccount         *user;
+/**
+ * @param newName NSString* new name of wallet
+ * NSError* error code
+ */
+- (NSError *) renameWallet:(NSString *)newName;
+
 
 
 /** Create a receive request from the current wallet. User should pass in an allocated

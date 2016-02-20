@@ -217,15 +217,6 @@
                 error:(void (^)(NSError *)) errorHandler;
 
 
-/*
- * renameWallet
- * @param NSString* walletUUID: UUID of wallet to rename
- * @param NSString*    newName: new name of wallet
- * @return ABCConditionCode
- */
-- (ABCConditionCode) renameWallet:(NSString *)walletUUID
-                          newName:(NSString *)walletName;
-
 - (NSError *)createFirstWalletIfNeeded;
 - (ABCConditionCode) getNumWalletsInAccount:(int *)numWallets;
 
