@@ -1345,16 +1345,6 @@ static const int notifySyncDelay          = 1;
                                           [n intValue], &error);
             [self setLastErrors:error];
         }
-        
-        dispatch_async(dispatch_get_main_queue(),^{
-            if (self.delegate)
-            {
-                if ([self.delegate respondsToSelector:@selector(abcAccountExchangeRateChanged)])
-                {
-                    [self.delegate abcAccountExchangeRateChanged];
-                }
-            }
-        });
     }
 }
 

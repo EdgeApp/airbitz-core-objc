@@ -53,7 +53,6 @@
 /// device or user's time clock is skewed.
 - (void) abcAccountOTPSkew;
 
-- (void) abcAccountExchangeRateChanged; // XXX remove me and move to GUI
 - (void) abcAccountBlockHeightChanged;
 
 /// This device has just sync'ed a transaction to the specified wallet from another device
