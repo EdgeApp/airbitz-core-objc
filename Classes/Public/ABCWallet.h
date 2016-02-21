@@ -33,12 +33,26 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 @property (nonatomic, assign)   double          balance;
 @property (nonatomic, strong)   NSArray         *arrayTransactions;
 @property (nonatomic, assign)   BOOL            loaded;
-@property (nonatomic, strong)   ABCAccount         *user;
+@property (nonatomic, strong)   ABCAccount      *account;
+
 /**
  * @param newName NSString* new name of wallet
  * NSError* error code
  */
 - (NSError *) renameWallet:(NSString *)newName;
+
+/**
+ * Deletes wallet from user's account. This will render wallet completely inaccessible including any
+ * future funds that may be sent to any addresses in this wallet. Give users ample warning before
+ * calling this routine.
+ * @param complete Completion handler code block which is called with void. (Optional. If used, method 
+ * returns immediately with void)
+ * @param error Error handler code block which is called with the following args
+ * @return NSError* or nil if no error. Returns void if completion handlers are used.
+ */
+- (void)removeWallet:(void(^)(void))completionHandler
+               error:(void (^)(NSError *error)) errorHandler;
+- (NSError *)removeWallet;
 
 
 

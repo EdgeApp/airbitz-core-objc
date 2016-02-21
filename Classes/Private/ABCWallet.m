@@ -28,7 +28,7 @@ static const int importTimeout                  = 30;
 
 #pragma mark - NSObject overrides
 
-- (id)initWithUser:(ABCAccount *) user;
+- (id)initWithUser:(ABCAccount *) account;
 {
     self = [super init];
     if (self) 
@@ -37,7 +37,7 @@ static const int importTimeout                  = 30;
         self.strName = @"";
         self.arrayTransactions = [[NSArray alloc] init];
         self.abcError = [[ABCError alloc] init];
-        self.user = user;
+        self.account = account;
 
     }
     return self;
@@ -47,7 +47,6 @@ static const int importTimeout                  = 30;
 {
 
 }
-
 
 - (NSError *) renameWallet:(NSString *)newName;
 {
@@ -60,6 +59,76 @@ static const int importTimeout                  = 30;
     [self.account refreshWallets];
     return [ABCError makeNSError:error];
 }
+
+- (NSError *)removeWallet
+{
+    // Check if we are trying to delete the current wallet
+    if ([self.account.currentWallet.strUUID isEqualToString:self.strUUID])
+    {
+        // Find a non-archived wallet that isn't the wallet we're going to delete
+        // and make it the current wallet
+        for (ABCWallet *wallet in self.account.arrayWallets)
+        {
+            if (![wallet.strUUID isEqualToString:self.strUUID])
+            {
+                if (!wallet.archived)
+                {
+                    [self.account makeCurrentWallet:wallet];
+                    break;
+                }
+            }
+        }
+    }
+    ABCLog(1,@"Deleting wallet [%@]", self.strUUID);
+    tABC_Error error;
+    
+    ABC_WalletRemove([self.account.name UTF8String], [self.strUUID UTF8String], &error);
+    
+    [self.account refreshWallets];
+    return [ABCError makeNSError:error];
+}
+
+- (void) removeWallet:(void(^)(void))completionHandler
+                error:(void (^)(NSError *error)) errorHandler;
+{
+    // Check if we are trying to delete the current wallet
+    if ([self.account.currentWallet.strUUID isEqualToString:self.strUUID])
+    {
+        // Find a non-archived wallet that isn't the wallet we're going to delete
+        // and make it the current wallet
+        for (ABCWallet *w in self.account.arrayWallets)
+        {
+            if (![w.strUUID isEqualToString:self.strUUID])
+            {
+                if (!w.archived)
+                {
+                    [self.account makeCurrentWallet:w];
+                    break;
+                }
+            }
+        }
+    }
+    
+    [self.account postToMiscQueue:^
+     {
+         ABCLog(1,@"Deleting wallet [%@]", self.strUUID);
+         tABC_Error error;
+         
+         ABC_WalletRemove([self.account.name UTF8String], [self.strUUID UTF8String], &error);
+         NSError *nserror = [ABCError makeNSError:error];
+         
+         [self.account refreshWallets];
+         
+         dispatch_async(dispatch_get_main_queue(),^{
+             if (!nserror) {
+                 if (completionHandler) completionHandler();
+             } else {
+                 if (errorHandler) errorHandler(nserror);
+             }
+         });
+     }];
+}
+
 
 - (ABCConditionCode)createReceiveRequestWithDetails:(ABCRequest *)request;
 {
@@ -89,8 +158,8 @@ static const int importTimeout                  = 30;
     request.wallet = self;
     
     // create the request
-    ABC_CreateReceiveRequest([self.user.name UTF8String],
-                             [self.user.password UTF8String],
+    ABC_CreateReceiveRequest([self.account.name UTF8String],
+                             [self.account.password UTF8String],
                              [request.wallet.strUUID UTF8String],
                              &details,
                              &pRequestID,
@@ -100,8 +169,8 @@ static const int importTimeout                  = 30;
         goto exitnow;
     request.address = [NSString stringWithUTF8String:pRequestID];
     
-    ABC_ModifyReceiveRequest([self.user.name UTF8String],
-                             [self.user.password UTF8String],
+    ABC_ModifyReceiveRequest([self.account.name UTF8String],
+                             [self.account.password UTF8String],
                              [request.wallet.strUUID UTF8String],
                              pRequestID,
                              &details,
@@ -111,8 +180,8 @@ static const int importTimeout                  = 30;
         goto exitnow;
     
     unsigned int width = 0;
-    ABC_GenerateRequestQRCode([self.user.name UTF8String],
-                              [self.user.password UTF8String],
+    ABC_GenerateRequestQRCode([self.account.name UTF8String],
+                              [self.account.password UTF8String],
                               [request.wallet.strUUID UTF8String],
                               pRequestID,
                               &pszURI,
@@ -139,7 +208,7 @@ exitnow:
                                complete:(void (^)(void)) completionHandler
                                   error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler
 {
-    [self.user postToGenQRQueue:^(void)
+    [self.account postToGenQRQueue:^(void)
      {
          ABCConditionCode ccode = [self createReceiveRequestWithDetails:request];
          NSString *errorString = [self.abcError getLastErrorString];
@@ -184,7 +253,7 @@ exitnow:
                 complete:(void(^)(ABCSpend *sp))completionHandler
                    error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
 {
-    [self.user postToMiscQueue:^{
+    [self.account postToMiscQueue:^{
         ABCSpend *abcSpend;
         abcSpend = [self newSpendFromText:uri];
         NSString *errorString = [self getLastErrorString];
@@ -212,7 +281,7 @@ exitnow:
     ABCSpend *abcSpend = [[ABCSpend alloc] init:self];
     tABC_SpendTarget *pSpend = NULL;
     
-    ABC_SpendNewTransfer([self.user.name UTF8String],
+    ABC_SpendNewTransfer([self.account.name UTF8String],
                          [destWallet.strUUID UTF8String], 0, &pSpend, &error);
     ABCConditionCode ccode = [self.abcError setLastErrors:error];
     if (ABCConditionCodeOk == ccode)
@@ -348,8 +417,8 @@ exitnow:
     int64_t endTime = 0x0FFFFFFFFFFFFFFF; // Need to pull this from GUI
     
     ABCConditionCode ccode;
-    ABC_CsvExport([self.user.name UTF8String],
-                  [self.user.password UTF8String],
+    ABC_CsvExport([self.account.name UTF8String],
+                  [self.account.password UTF8String],
                   [self.strUUID UTF8String],
                   startTime, endTime, &szCsvData, &error);
     ccode = [self.abcError setLastErrors:error];
@@ -368,8 +437,8 @@ exitnow:
     tABC_Error error;
     char *szSeed = NULL;
     ABCConditionCode ccode;
-    ABC_ExportWalletSeed([self.user.name UTF8String],
-                         [self.user.password UTF8String],
+    ABC_ExportWalletSeed([self.account.name UTF8String],
+                         [self.account.password UTF8String],
                          [self.strUUID UTF8String],
                          &szSeed, &error);
     ccode = [self.abcError setLastErrors:error];
@@ -384,8 +453,8 @@ exitnow:
 - (ABCConditionCode)finalizeRequestWithAddress:(NSString *)address;
 {
     tABC_Error error;
-    ABC_FinalizeReceiveRequest([self.user.name UTF8String],
-                               [self.user.password UTF8String],
+    ABC_FinalizeReceiveRequest([self.account.name UTF8String],
+                               [self.account.password UTF8String],
                                [self.strUUID UTF8String],
                                [address UTF8String],
                                &error);
@@ -397,10 +466,10 @@ exitnow:
     if (!address)
         return;
     
-    [self.user postToWatcherQueue:^{
+    [self.account postToWatcherQueue:^{
         tABC_Error Error;
-        ABC_PrioritizeAddress([self.user.name UTF8String],
-                              [self.user.password UTF8String],
+        ABC_PrioritizeAddress([self.account.name UTF8String],
+                              [self.account.password UTF8String],
                               [self.strUUID UTF8String],
                               [address UTF8String],
                               &Error);
@@ -415,8 +484,8 @@ exitnow:
     ABCTransaction *transaction = nil;
     tABC_TxInfo *pTrans = NULL;
     
-    tABC_CC result = ABC_GetTransaction([self.user.name UTF8String],
-                                        [self.user.password UTF8String],
+    tABC_CC result = ABC_GetTransaction([self.account.name UTF8String],
+                                        [self.account.password UTF8String],
                                         [self.strUUID UTF8String], [txId UTF8String],
                                         &pTrans, &Error);
     if (ABC_CC_Ok == result)
@@ -460,8 +529,8 @@ exitnow:
     unsigned int tCount = 0;
     ABCTransaction *transaction;
     tABC_TxInfo **aTransactions = NULL;
-    tABC_CC result = ABC_GetTransactions([self.user.name UTF8String],
-                                         [self.user.password UTF8String],
+    tABC_CC result = ABC_GetTransactions([self.account.name UTF8String],
+                                         [self.account.password UTF8String],
                                          [self.strUUID UTF8String],
                                          ABC_GET_TX_ALL_TIMES,
                                          ABC_GET_TX_ALL_TIMES,
@@ -502,7 +571,7 @@ exitnow:
     transaction.strName = [NSString stringWithUTF8String: pTrans->pDetails->szName];
     transaction.strNotes = [NSString stringWithUTF8String: pTrans->pDetails->szNotes];
     transaction.strCategory = [NSString stringWithUTF8String: pTrans->pDetails->szCategory];
-    transaction.date = [self.user.abc dateFromTimestamp: pTrans->timeCreation];
+    transaction.date = [self.account.abc dateFromTimestamp: pTrans->timeCreation];
     transaction.amountSatoshi = pTrans->pDetails->amountSatoshi;
     transaction.amountFiat = pTrans->pDetails->amountCurrency;
     transaction.abFees = pTrans->pDetails->amountFeesAirbitzSatoshi;
@@ -578,8 +647,8 @@ exitnow:
     unsigned int tCount = 0;
     ABCTransaction *transaction;
     tABC_TxInfo **aTransactions = NULL;
-    tABC_CC result = ABC_SearchTransactions([self.user.name UTF8String],
-                                            [self.user.password UTF8String],
+    tABC_CC result = ABC_SearchTransactions([self.account.name UTF8String],
+                                            [self.account.password UTF8String],
                                             [self.strUUID UTF8String], [term UTF8String],
                                             &aTransactions, &tCount, &Error);
     if (ABC_CC_Ok == result)
@@ -609,9 +678,9 @@ exitnow:
     self.balance = 0;
     self.loaded = NO;
     
-    if ([self.user watcherExists:uuid]) {
+    if ([self.account watcherExists:uuid]) {
         char *szName = NULL;
-        ABC_WalletName([self.user.name UTF8String], [uuid UTF8String], &szName, &error);
+        ABC_WalletName([self.account.name UTF8String], [uuid UTF8String], &szName, &error);
         
         if (error.code == ABC_CC_Ok) {
             self.strName = [ABCUtil safeStringWithUTF8String:szName];
@@ -622,11 +691,11 @@ exitnow:
         }
         
         int currencyNum;
-        ABC_WalletCurrency([self.user.name UTF8String], [uuid UTF8String], &currencyNum, &error);
+        ABC_WalletCurrency([self.account.name UTF8String], [uuid UTF8String], &currencyNum, &error);
         if (error.code == ABC_CC_Ok) {
             self.currencyNum = currencyNum;
-            self.currencyAbbrev = [self.user.abc currencyAbbrevLookup:self.currencyNum];
-            self.currencySymbol = [self.user.abc currencySymbolLookup:self.currencyNum];
+            self.currencyAbbrev = [self.account.abc currencyAbbrevLookup:self.currencyNum];
+            self.currencySymbol = [self.account.abc currencySymbolLookup:self.currencyNum];
             self.loaded = YES;
         } else {
             self.loaded = NO;
@@ -635,7 +704,7 @@ exitnow:
         }
         
         int64_t balance;
-        ABC_WalletBalance([self.user.name UTF8String], [uuid UTF8String], &balance, &error);
+        ABC_WalletBalance([self.account.name UTF8String], [uuid UTF8String], &balance, &error);
         if (error.code == ABC_CC_Ok) {
             self.balance = balance;
         } else {
@@ -644,7 +713,7 @@ exitnow:
     }
     
     bool archived = false;
-    ABC_WalletArchived([self.user.name UTF8String], [uuid UTF8String], &archived, &error);
+    ABC_WalletArchived([self.account.name UTF8String], [uuid UTF8String], &archived, &error);
     self.archived = archived ? YES : NO;
 }
 
@@ -655,20 +724,20 @@ exitnow:
 //
 - (void)refreshServer:(BOOL)bData notify:(void(^)(void))cb;
 {
-    [self.user connectWatcher:self.strUUID];
-    [self.user postToMiscQueue:^{
+    [self.account connectWatcher:self.strUUID];
+    [self.account postToMiscQueue:^{
         // Reconnect the watcher for this wallet
         if (bData) {
             // Clear data sync queue and sync the current wallet immediately
-            [self.user clearDataQueue];
-            [self.user postToDataQueue:^{
-                if (![self.user isLoggedIn]) {
+            [self.account clearDataQueue];
+            [self.account postToDataQueue:^{
+                if (![self.account isLoggedIn]) {
                     return;
                 }
                 tABC_Error error;
                 bool bDirty = false;
-                ABC_DataSyncWallet([self.user.name UTF8String],
-                                   [self.user.password UTF8String],
+                ABC_DataSyncWallet([self.account.name UTF8String],
+                                   [self.account.password UTF8String],
                                    [self.strUUID UTF8String],
                                    &bDirty,
                                    &error);
@@ -688,7 +757,7 @@ exitnow:
 
 - (NSString *)conversionString
 {
-    return [self.user conversionStringFromNum:self.currencyNum withAbbrev:YES];
+    return [self.account conversionStringFromNum:self.currencyNum withAbbrev:YES];
 }
 
 
@@ -751,8 +820,8 @@ exitnow:
     tABC_Error error;
     char *pszAddress = NULL;
     void *pData = (__bridge void *) self;
-    ABC_SweepKey([self.user.name UTF8String],
-                 [self.user.password UTF8String],
+    ABC_SweepKey([self.account.name UTF8String],
+                 [self.account.password UTF8String],
                  [walletUUID UTF8String],
                  [privateKey UTF8String],
                  &pszAddress,

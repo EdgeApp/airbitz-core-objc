@@ -45,12 +45,12 @@
 
 - (void)saveTransactionDetails;
 {
-    [self.wallet.user postToMiscQueue:^{
+    [self.wallet.account postToMiscQueue:^{
         
         tABC_Error Error;
         tABC_TxDetails *pDetails;
-        tABC_CC result = ABC_GetTransactionDetails([self.wallet.user.name UTF8String],
-                                                   [self.wallet.user.password UTF8String],
+        tABC_CC result = ABC_GetTransactionDetails([self.wallet.account.name UTF8String],
+                                                   [self.wallet.account.password UTF8String],
                                                    [self.wallet.strUUID UTF8String],
                                                    [self.strID UTF8String],
                                                    &pDetails, &Error);
@@ -66,8 +66,8 @@
         pDetails->amountCurrency = self.amountFiat;
         pDetails->bizId = self.bizId;
         
-        result = ABC_SetTransactionDetails([self.wallet.user.name UTF8String],
-                                           [self.wallet.user.password UTF8String],
+        result = ABC_SetTransactionDetails([self.wallet.account.name UTF8String],
+                                           [self.wallet.account.password UTF8String],
                                            [self.wallet.strUUID UTF8String],
                                            [self.strID UTF8String],
                                            pDetails, &Error);
@@ -78,7 +78,7 @@
             return;
         }
         
-        [self.wallet.user refreshWallets];
+        [self.wallet.account refreshWallets];
         //        return true;
         return;
     }];

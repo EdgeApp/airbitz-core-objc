@@ -274,23 +274,6 @@
 - (ABCConditionCode)removeOTPResetRequest;
 
 /*
- * walletRemove
- * @param NSString* uuid: UUID of wallet to delete
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param complete: completion handler code block which is called with void
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
- */
-
-- (ABCConditionCode)walletRemove:(NSString *)uuid;
-- (ABCConditionCode)walletRemove:(NSString *)uuid
-                        complete:(void(^)(void))completionHandler
-                           error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-/*
  * setRecoveryQuestions
  * @param NSString* password: password of currently logged in user
  * @param NSString* questions: concatenated string of recovery questions separated by '\n' after each question

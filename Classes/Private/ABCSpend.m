@@ -65,7 +65,7 @@
     char *szRawTx = NULL;
     tABC_Error error;
 
-    ABC_SpendSignTx([self.wallet.user.name UTF8String],
+    ABC_SpendSignTx([self.wallet.account.name UTF8String],
             [self.srcWallet.strUUID UTF8String], _pSpend, &szRawTx, &error);
     ABCConditionCode ccode = [self.abcError setLastErrors:error];
     if (ABCConditionCodeOk == ccode)
@@ -79,7 +79,7 @@
 - (void)signTx:(void (^)(NSString * txData)) completionHandler
         error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
 {
-    [self.wallet.user postToMiscQueue:^
+    [self.wallet.account postToMiscQueue:^
     {
         NSString *txData;
         ABCConditionCode ccode = [self signTx:&txData];
@@ -101,7 +101,7 @@
 - (void)signAndSaveTx:(void (^)(NSString * rawTx)) completionHandler
          error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
 {
-    [self.wallet.user postToMiscQueue:^
+    [self.wallet.account postToMiscQueue:^
     {
         NSString *rawTx;
         NSString *txId;
@@ -129,7 +129,7 @@
 - (ABCConditionCode)broadcastTx:(NSString *)rawTx;
 {
     tABC_Error error;
-    ABC_SpendBroadcastTx([self.wallet.user.name UTF8String],
+    ABC_SpendBroadcastTx([self.wallet.account.name UTF8String],
         [self.srcWallet.strUUID UTF8String], _pSpend, (char *)[rawTx UTF8String], &error);
     return [self.abcError setLastErrors:error];
 }
@@ -140,7 +140,7 @@
     char *szTxId = NULL;
     tABC_Error error;
 
-    ABC_SpendSaveTx([self.wallet.user.name UTF8String],
+    ABC_SpendSaveTx([self.wallet.account.name UTF8String],
         [self.srcWallet.strUUID UTF8String], _pSpend, (char *)[rawTx UTF8String], &szTxId, &error);
     ABCConditionCode ccode = [self.abcError setLastErrors:error];
     if (ccode == ABCConditionCodeOk) {
@@ -175,7 +175,7 @@
 - (void)signBroadcastSaveTx:(void (^)(NSString * txId)) completionHandler
          error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
 {
-    [self.wallet.user postToMiscQueue:^
+    [self.wallet.account postToMiscQueue:^
     {
         NSString *txId;
         ABCConditionCode ccode = [self signBroadcastSaveTx:&txId];
@@ -205,7 +205,7 @@
     if (_pSpend->szDestUUID) {
         NSAssert((self.destWallet), @"destWallet missing");
     }
-    ABC_GetTransaction([self.wallet.user.name UTF8String], NULL,
+    ABC_GetTransaction([self.wallet.account.name UTF8String], NULL,
         [self.srcWallet.strUUID UTF8String], [txId UTF8String], &pTrans, &error);
     if (ABC_CC_Ok == error.code) {
         if (self.destWallet) {
@@ -222,7 +222,7 @@
         if (0 < _bizId) {
             pTrans->pDetails->bizId = (unsigned int)_bizId;
         }
-        ABC_SetTransactionDetails([self.wallet.user.name UTF8String], NULL,
+        ABC_SetTransactionDetails([self.wallet.account.name UTF8String], NULL,
             [self.srcWallet.strUUID UTF8String], [txId UTF8String],
             pTrans->pDetails, &error);
     }
@@ -231,13 +231,13 @@
 
     // This was a transfer
     if (self.destWallet) {
-        ABC_GetTransaction([self.wallet.user.name UTF8String], NULL,
+        ABC_GetTransaction([self.wallet.account.name UTF8String], NULL,
             [self.destWallet.strUUID UTF8String], [txId UTF8String], &pTrans, &error);
         if (ABC_CC_Ok == error.code) {
             pTrans->pDetails->szName = strdup([self.srcWallet.strName UTF8String]);
             pTrans->pDetails->szCategory = strdup([[NSString stringWithFormat:@"%@%@", transferCategory, self.srcWallet.strName] UTF8String]);
 
-            ABC_SetTransactionDetails([self.wallet.user.name UTF8String], NULL,
+            ABC_SetTransactionDetails([self.wallet.account.name UTF8String], NULL,
                 [self.destWallet.strUUID UTF8String], [txId UTF8String],
                 pTrans->pDetails, &error);
         }
@@ -255,7 +255,7 @@
 {
     tABC_Error error;
     uint64_t result = 0;
-    ABC_SpendGetMax([self.wallet.user.name UTF8String],
+    ABC_SpendGetMax([self.wallet.account.name UTF8String],
         [self.wallet.strUUID UTF8String], _pSpend, &result, &error);
     return result;
 }
@@ -265,7 +265,7 @@
 {
     tABC_Error error;
     [self copyOBJCtoABC];
-    ABC_SpendGetFee([self.wallet.user.name UTF8String],
+    ABC_SpendGetFee([self.wallet.account.name UTF8String],
         [walletUUID UTF8String], self.pSpend, totalFees, &error);
     return [self.abcError setLastErrors:error];
 }
@@ -274,7 +274,7 @@
             complete:(void (^)(uint64_t totalFees)) completionHandler
                error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
 {
-    [self.wallet.user postToMiscQueue:^
+    [self.wallet.account postToMiscQueue:^
     {
         uint64_t totalFees = 0;
         ABCConditionCode ccode = [self calcSendFees:walletUUID totalFees:&totalFees];

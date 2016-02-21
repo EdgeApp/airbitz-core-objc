@@ -65,8 +65,8 @@
     
     char *pRequestID = (char *)[self.address UTF8String];
 
-    ABC_ModifyReceiveRequest([self.wallet.user.name UTF8String],
-                             [self.wallet.user.password UTF8String],
+    ABC_ModifyReceiveRequest([self.wallet.account.name UTF8String],
+                             [self.wallet.account.password UTF8String],
                              [self.wallet.strUUID UTF8String],
                              pRequestID,
                              &details,
@@ -76,8 +76,8 @@
         goto exitnow;
     
     unsigned int width = 0;
-    ABC_GenerateRequestQRCode([self.wallet.user.name UTF8String],
-                              [self.wallet.user.password UTF8String],
+    ABC_GenerateRequestQRCode([self.wallet.account.name UTF8String],
+                              [self.wallet.account.password UTF8String],
                               [self.wallet.strUUID UTF8String],
                               pRequestID,
                               &pszURI,
