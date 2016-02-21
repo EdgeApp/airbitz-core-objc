@@ -90,9 +90,15 @@
 /// access the array while in the main queue.
 @property (atomic, strong) NSMutableArray            *arrayWalletNames;
 
+/// Helper property that points to the "currentWallet" in the account. This can be used by
+/// GUI as the default wallet used for spending and receive requests. This value is automatically
+/// set to a different wallet if the wallet pointed to by currentWallet is deleted.
 @property (atomic, strong) ABCWallet                 *currentWallet;
+
+/// Array of NSString* categories with which a user to could choose to tag a transaction with.
+/// Categories must start with "Income", "Expense", "Transfer" or "Exchange" plus a ":" and then
+/// an arbitrary subcategory such as "Food & Dining". ie. "Expense:Rent"
 @property (atomic, strong) NSArray                   *arrayCategories;
-@property (atomic)         int                       currentWalletID;
 @property (atomic)         BOOL                      bAllWalletsLoaded;
 @property (atomic)         int                       numWalletsLoaded;
 @property (atomic)         int                       numTotalWallets;

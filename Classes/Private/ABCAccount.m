@@ -346,12 +346,10 @@ static const int notifySyncDelay          = 1;
     if ([self.arrayWallets containsObject:wallet])
     {
         self.currentWallet = wallet;
-        self.currentWalletID = (int) [self.arrayWallets indexOfObject:self.currentWallet];
     }
     else if ([self.arrayArchivedWallets containsObject:wallet])
     {
         self.currentWallet = wallet;
-        self.currentWalletID = (int) [self.arrayArchivedWallets indexOfObject:self.currentWallet];
     }
     
     [self postNotificationWalletsChanged];
@@ -376,7 +374,6 @@ static const int notifySyncDelay          = 1;
         if ([self.arrayWallets count] > indexPath.row)
         {
             self.currentWallet = [self.arrayWallets objectAtIndex:indexPath.row];
-            self.currentWalletID = (int) [self.arrayWallets indexOfObject:self.currentWallet];
             
         }
     }
@@ -385,7 +382,6 @@ static const int notifySyncDelay          = 1;
         if ([self.arrayArchivedWallets count] > indexPath.row)
         {
             self.currentWallet = [self.arrayArchivedWallets objectAtIndex:indexPath.row];
-            self.currentWalletID = (int) [self.arrayArchivedWallets indexOfObject:self.currentWallet];
         }
     }
     
@@ -399,7 +395,6 @@ static const int notifySyncDelay          = 1;
     self.arrayArchivedWallets = nil;
     self.arrayWalletNames = nil;
     self.currentWallet = nil;
-    self.currentWalletID = 0;
     self.numWalletsLoaded = 0;
     self.numTotalWallets = 0;
     self.bAllWalletsLoaded = NO;
@@ -465,13 +460,11 @@ static const int notifySyncDelay          = 1;
                     {
                         self.currentWallet = [arrayWallets objectAtIndex:0];
                     }
-                    self.currentWalletID = 0;
                 }
                 else
                 {
                     NSString *lastCurrentWalletUUID = self.currentWallet.strUUID;
                     self.currentWallet = [self selectWalletWithUUID:lastCurrentWalletUUID];
-                    self.currentWalletID = (int) [self.arrayWallets indexOfObject:self.currentWallet];
                 }
                 [self checkWalletsLoadingNotification];
                 [self postNotificationWalletsChanged];
