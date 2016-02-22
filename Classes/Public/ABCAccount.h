@@ -277,27 +277,26 @@
 - (NSError *)removeOTPResetRequest;
 
 /*
- * setRecoveryQuestions
- * @param NSString* password: password of currently logged in user
- * @param NSString* questions: concatenated string of recovery questions separated by '\n' after each question
- * @param NSString* answers: concatenated string of recovery answers separated by '\n' after each answer
+ * Sets account recovery questions and answers in case use forgets their password
+ * @param password NSString* password of currently logged in user
+ * @param questions NSString* concatenated string of recovery questions separated by '\n' after each question
+ * @param answers NSString* concatenated string of recovery answers separated by '\n' after each answer
  *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param complete: completion handler code block which is called with void
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
+ * @param completionHandler code block which is called with void
+ * (Optional. If used, method returns immediately with void)
+ * @param errorHandler (Optional) Code block called on error with parameters<br>
+ * - *param* NSError*
+ * @return NSError* or nil if no error. Returns void if using completionHandler
  */
 
-- (ABCConditionCode)setRecoveryQuestions:(NSString *)password
-                               questions:(NSString *)questions
-                                 answers:(NSString *)answers;
-- (ABCConditionCode)setRecoveryQuestions:(NSString *)password
+- (NSError *)setRecoveryQuestions:(NSString *)password
+                        questions:(NSString *)questions
+                          answers:(NSString *)answers;
+- (void)setRecoveryQuestions:(NSString *)password
                                questions:(NSString *)questions
                                  answers:(NSString *)answers
                                 complete:(void (^)(void)) completionHandler
-                                   error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                                   error:(void (^)(NSError *error)) errorHandler;
 
 
 

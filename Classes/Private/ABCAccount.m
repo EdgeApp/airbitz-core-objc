@@ -2242,9 +2242,9 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return ccode;
 }
 
-- (ABCConditionCode)setRecoveryQuestions:(NSString *)password
-                               questions:(NSString *)questions
-                                 answers:(NSString *)answers;
+- (NSError *)setRecoveryQuestions:(NSString *)password
+                        questions:(NSString *)questions
+                          answers:(NSString *)answers;
 {
     tABC_Error error;
     ABC_SetAccountRecoveryQuestions([self.name UTF8String],
@@ -2252,32 +2252,30 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
                                     [questions UTF8String],
                                     [answers UTF8String],
                                     &error);
-    return [self setLastErrors:error];
+    return [ABCError makeNSError:error];
 }
 
-- (ABCConditionCode)setRecoveryQuestions:(NSString *)password
+- (void)setRecoveryQuestions:(NSString *)password
                                questions:(NSString *)questions
                                  answers:(NSString *)answers
                                 complete:(void (^)(void)) completionHandler
-                                   error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                                   error:(void (^)(NSError *error)) errorHandler;
 {
     [self postToMiscQueue:^
      {
-         ABCConditionCode ccode = [self setRecoveryQuestions:password questions:questions answers:answers];
-         NSString *errorString  = [self getLastErrorString];
+         NSError *error = [self setRecoveryQuestions:password questions:questions answers:answers];
          
          dispatch_async(dispatch_get_main_queue(), ^(void) {
-             if (ABCConditionCodeOk == ccode)
+             if (!error)
              {
                  if (completionHandler) completionHandler();
              }
              else
              {
-                 if (errorHandler) errorHandler(ccode, errorString);
+                 if (errorHandler) errorHandler(error);
              }
          });
      }];
-    return ABCConditionCodeOk;
 }
 
 #pragma Data Methods
