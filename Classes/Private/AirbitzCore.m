@@ -1180,16 +1180,6 @@
     return NO;
 }
 
-- (ABCConditionCode) getLastConditionCode;
-{
-    return [abcError getLastConditionCode];
-}
-
-- (NSString *) getLastErrorString;
-{
-    return [abcError getLastErrorString];
-}
-
 - (BOOL) hasDeviceCapability:(ABCDeviceCaps) caps
 {
     switch (caps) {

@@ -522,14 +522,14 @@ typedef enum eABCDeviceCaps
  */
 + (UIImage *)encodeStringToQRImage:(NSString *)string;
 
+/// ------------------------------------------------------------------
 /// @name Class methods to retrieve constant parameters from ABC
+/// ------------------------------------------------------------------
 
 + (int) getMinimumUsernamedLength;
 + (int) getMinimumPasswordLength;
 + (int) getMinimumPINLength;
 + (int) getDefaultCurrencyNum;
-- (NSString *) getLastErrorString;
-- (ABCConditionCode) getLastConditionCode;
 
 
 
