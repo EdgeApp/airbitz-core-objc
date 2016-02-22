@@ -24,8 +24,8 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 
 @interface ABCWallet : NSObject
 
-@property (nonatomic, copy)     NSString        *strUUID;
-@property (nonatomic, copy)     NSString        *strName;
+@property (nonatomic, copy)     NSString        *uuid;
+@property (nonatomic, copy)     NSString        *name;
 @property (nonatomic, assign)   int             currencyNum;
 @property (nonatomic, copy)     NSString        *currencyAbbrev;
 @property (nonatomic, copy)     NSString        *currencySymbol;

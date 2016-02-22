@@ -78,7 +78,7 @@
     // Delegate method called when bitcoin is received
     - (void) abcAccountIncomingBitcoin:(ABCWallet *)wallet txid:(NSString *)txid;
     {
-        NSLog(@"Yay, my wallet just received bitcoin", wallet.strName);
+        NSLog(@"Yay, my wallet just received bitcoin", wallet.name);
     }
  */
 

@@ -34,7 +34,7 @@
     }
     // Finalize this request so it isn't used elsewhere
     ABC_FinalizeReceiveRequest([self.user.name UTF8String],
-            [self.user.password UTF8String], [self.wallet.strUUID UTF8String],
+            [self.user.password UTF8String], [self.wallet.uuid UTF8String],
             [self.address UTF8String], &error);
     return [self.abcError setLastErrors:error];
 }
@@ -67,7 +67,7 @@
 
     ABC_ModifyReceiveRequest([self.wallet.account.name UTF8String],
                              [self.wallet.account.password UTF8String],
-                             [self.wallet.strUUID UTF8String],
+                             [self.wallet.uuid UTF8String],
                              pRequestID,
                              &details,
                              &error);
@@ -78,7 +78,7 @@
     unsigned int width = 0;
     ABC_GenerateRequestQRCode([self.wallet.account.name UTF8String],
                               [self.wallet.account.password UTF8String],
-                              [self.wallet.strUUID UTF8String],
+                              [self.wallet.uuid UTF8String],
                               pRequestID,
                               &pszURI,
                               &pData,

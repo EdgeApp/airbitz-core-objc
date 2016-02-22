@@ -33,8 +33,8 @@ static const int importTimeout                  = 30;
     self = [super init];
     if (self) 
 	{
-        self.strUUID = @"";
-        self.strName = @"";
+        self.uuid = @"";
+        self.name = @"";
         self.arrayTransactions = [[NSArray alloc] init];
         self.abcError = [[ABCError alloc] init];
         self.account = account;
@@ -53,7 +53,7 @@ static const int importTimeout                  = 30;
     tABC_Error error;
     ABC_RenameWallet([self.account.name UTF8String],
                      [self.account.password UTF8String],
-                     [self.strUUID UTF8String],
+                     [self.uuid UTF8String],
                      (char *)[newName UTF8String],
                      &error);
     [self.account refreshWallets];
@@ -63,13 +63,13 @@ static const int importTimeout                  = 30;
 - (NSError *)removeWallet
 {
     // Check if we are trying to delete the current wallet
-    if ([self.account.currentWallet.strUUID isEqualToString:self.strUUID])
+    if ([self.account.currentWallet.uuid isEqualToString:self.uuid])
     {
         // Find a non-archived wallet that isn't the wallet we're going to delete
         // and make it the current wallet
         for (ABCWallet *wallet in self.account.arrayWallets)
         {
-            if (![wallet.strUUID isEqualToString:self.strUUID])
+            if (![wallet.uuid isEqualToString:self.uuid])
             {
                 if (!wallet.archived)
                 {
@@ -79,10 +79,10 @@ static const int importTimeout                  = 30;
             }
         }
     }
-    ABCLog(1,@"Deleting wallet [%@]", self.strUUID);
+    ABCLog(1,@"Deleting wallet [%@]", self.uuid);
     tABC_Error error;
     
-    ABC_WalletRemove([self.account.name UTF8String], [self.strUUID UTF8String], &error);
+    ABC_WalletRemove([self.account.name UTF8String], [self.uuid UTF8String], &error);
     
     [self.account refreshWallets];
     return [ABCError makeNSError:error];
@@ -92,13 +92,13 @@ static const int importTimeout                  = 30;
                 error:(void (^)(NSError *error)) errorHandler;
 {
     // Check if we are trying to delete the current wallet
-    if ([self.account.currentWallet.strUUID isEqualToString:self.strUUID])
+    if ([self.account.currentWallet.uuid isEqualToString:self.uuid])
     {
         // Find a non-archived wallet that isn't the wallet we're going to delete
         // and make it the current wallet
         for (ABCWallet *w in self.account.arrayWallets)
         {
-            if (![w.strUUID isEqualToString:self.strUUID])
+            if (![w.uuid isEqualToString:self.uuid])
             {
                 if (!w.archived)
                 {
@@ -111,10 +111,10 @@ static const int importTimeout                  = 30;
     
     [self.account postToMiscQueue:^
      {
-         ABCLog(1,@"Deleting wallet [%@]", self.strUUID);
+         ABCLog(1,@"Deleting wallet [%@]", self.uuid);
          tABC_Error error;
          
-         ABC_WalletRemove([self.account.name UTF8String], [self.strUUID UTF8String], &error);
+         ABC_WalletRemove([self.account.name UTF8String], [self.uuid UTF8String], &error);
          NSError *nserror = [ABCError makeNSError:error];
          
          [self.account refreshWallets];
@@ -160,7 +160,7 @@ static const int importTimeout                  = 30;
     // create the request
     ABC_CreateReceiveRequest([self.account.name UTF8String],
                              [self.account.password UTF8String],
-                             [request.wallet.strUUID UTF8String],
+                             [request.wallet.uuid UTF8String],
                              &details,
                              &pRequestID,
                              &error);
@@ -171,7 +171,7 @@ static const int importTimeout                  = 30;
     
     ABC_ModifyReceiveRequest([self.account.name UTF8String],
                              [self.account.password UTF8String],
-                             [request.wallet.strUUID UTF8String],
+                             [request.wallet.uuid UTF8String],
                              pRequestID,
                              &details,
                              &error);
@@ -182,7 +182,7 @@ static const int importTimeout                  = 30;
     unsigned int width = 0;
     ABC_GenerateRequestQRCode([self.account.name UTF8String],
                               [self.account.password UTF8String],
-                              [request.wallet.strUUID UTF8String],
+                              [request.wallet.uuid UTF8String],
                               pRequestID,
                               &pszURI,
                               &pData,
@@ -282,7 +282,7 @@ exitnow:
     tABC_SpendTarget *pSpend = NULL;
     
     ABC_SpendNewTransfer([self.account.name UTF8String],
-                         [destWallet.strUUID UTF8String], 0, &pSpend, &error);
+                         [destWallet.uuid UTF8String], 0, &pSpend, &error);
     ABCConditionCode ccode = [self.abcError setLastErrors:error];
     if (ABCConditionCodeOk == ccode)
     {
@@ -328,7 +328,7 @@ exitnow:
     self.importCompletionHandler = completionHandler;
     self.importErrorHandler = errorHandler;
     
-    if (!privateKey || !self.strUUID)
+    if (!privateKey || !self.uuid)
     {
         error.code = ABC_CC_NULLPtr;
         ccode = [self.abcError setLastErrors:error];
@@ -366,7 +366,7 @@ exitnow:
         // attempt to sweep it
         NSString *address;
         ccode = [self sweepKey:privateKey
-                    intoWallet:self.strUUID
+                    intoWallet:self.uuid
                        address:&address];
         self.sweptAddress = address;
         
@@ -419,7 +419,7 @@ exitnow:
     ABCConditionCode ccode;
     ABC_CsvExport([self.account.name UTF8String],
                   [self.account.password UTF8String],
-                  [self.strUUID UTF8String],
+                  [self.uuid UTF8String],
                   startTime, endTime, &szCsvData, &error);
     ccode = [self.abcError setLastErrors:error];
     
@@ -439,7 +439,7 @@ exitnow:
     ABCConditionCode ccode;
     ABC_ExportWalletSeed([self.account.name UTF8String],
                          [self.account.password UTF8String],
-                         [self.strUUID UTF8String],
+                         [self.uuid UTF8String],
                          &szSeed, &error);
     ccode = [self.abcError setLastErrors:error];
     if (ccode == ABCConditionCodeOk)
@@ -455,7 +455,7 @@ exitnow:
     tABC_Error error;
     ABC_FinalizeReceiveRequest([self.account.name UTF8String],
                                [self.account.password UTF8String],
-                               [self.strUUID UTF8String],
+                               [self.uuid UTF8String],
                                [address UTF8String],
                                &error);
     return [self.abcError setLastErrors:error];
@@ -470,7 +470,7 @@ exitnow:
         tABC_Error Error;
         ABC_PrioritizeAddress([self.account.name UTF8String],
                               [self.account.password UTF8String],
-                              [self.strUUID UTF8String],
+                              [self.uuid UTF8String],
                               [address UTF8String],
                               &Error);
         [self.abcError setLastErrors:Error];
@@ -486,7 +486,7 @@ exitnow:
     
     tABC_CC result = ABC_GetTransaction([self.account.name UTF8String],
                                         [self.account.password UTF8String],
-                                        [self.strUUID UTF8String], [txId UTF8String],
+                                        [self.uuid UTF8String], [txId UTF8String],
                                         &pTrans, &Error);
     if (ABC_CC_Ok == result)
     {
@@ -531,7 +531,7 @@ exitnow:
     tABC_TxInfo **aTransactions = NULL;
     tABC_CC result = ABC_GetTransactions([self.account.name UTF8String],
                                          [self.account.password UTF8String],
-                                         [self.strUUID UTF8String],
+                                         [self.uuid UTF8String],
                                          ABC_GET_TX_ALL_TIMES,
                                          ABC_GET_TX_ALL_TIMES,
                                          &aTransactions,
@@ -567,30 +567,24 @@ exitnow:
 
 - (void)setTransaction:(ABCTransaction *) transaction coreTx:(tABC_TxInfo *) pTrans
 {
-    transaction.strID = [NSString stringWithUTF8String: pTrans->szID];
-    transaction.strName = [NSString stringWithUTF8String: pTrans->pDetails->szName];
-    transaction.strNotes = [NSString stringWithUTF8String: pTrans->pDetails->szNotes];
-    transaction.strCategory = [NSString stringWithUTF8String: pTrans->pDetails->szCategory];
+    transaction.txid = [NSString stringWithUTF8String: pTrans->szID];
+    transaction.payeeName = [NSString stringWithUTF8String: pTrans->pDetails->szName];
+    transaction.notes = [NSString stringWithUTF8String: pTrans->pDetails->szNotes];
+    transaction.category = [NSString stringWithUTF8String: pTrans->pDetails->szCategory];
     transaction.date = [self.account.abc dateFromTimestamp: pTrans->timeCreation];
     transaction.amountSatoshi = pTrans->pDetails->amountSatoshi;
     transaction.amountFiat = pTrans->pDetails->amountCurrency;
     transaction.abFees = pTrans->pDetails->amountFeesAirbitzSatoshi;
     transaction.minerFees = pTrans->pDetails->amountFeesMinersSatoshi;
-    transaction.strWalletName = self.strName;
     transaction.wallet = self;
     if (pTrans->szMalleableTxId) {
-        transaction.strMalleableID = [NSString stringWithUTF8String: pTrans->szMalleableTxId];
+        transaction.malleableTxid = [NSString stringWithUTF8String: pTrans->szMalleableTxId];
     }
     bool bSyncing = NO;
-    transaction.confirmations = [self calcTxConfirmations:transaction.strID
+    transaction.confirmations = [self calcTxConfirmations:transaction.txid
                                                 isSyncing:&bSyncing];
     transaction.bConfirmed = transaction.confirmations >= ABC_CONFIRMED_CONFIRMATION_COUNT;
     transaction.bSyncing = bSyncing;
-    if (transaction.strName) {
-        transaction.strAddress = transaction.strName;
-    } else {
-        transaction.strAddress = @"";
-    }
     NSMutableArray *outputs = [[NSMutableArray alloc] init];
     for (int i = 0; i < pTrans->countOutputs; ++i)
     {
@@ -611,10 +605,10 @@ exitnow:
     int txHeight = 0;
     int blockHeight = 0;
     *syncing = NO;
-    if ([self.strUUID length] == 0 || [txId length] == 0) {
+    if ([self.uuid length] == 0 || [txId length] == 0) {
         return 0;
     }
-    if (ABC_TxHeight([self.strUUID UTF8String], [txId UTF8String], &txHeight, &Error) != ABC_CC_Ok) {
+    if (ABC_TxHeight([self.uuid UTF8String], [txId UTF8String], &txHeight, &Error) != ABC_CC_Ok) {
         *syncing = YES;
         if (txHeight < 0)
         {
@@ -624,7 +618,7 @@ exitnow:
         else
             return 0;
     }
-    if (ABC_BlockHeight([self.strUUID UTF8String], &blockHeight, &Error) != ABC_CC_Ok) {
+    if (ABC_BlockHeight([self.uuid UTF8String], &blockHeight, &Error) != ABC_CC_Ok) {
         *syncing = YES;
         return 0;
     }
@@ -649,7 +643,7 @@ exitnow:
     tABC_TxInfo **aTransactions = NULL;
     tABC_CC result = ABC_SearchTransactions([self.account.name UTF8String],
                                             [self.account.password UTF8String],
-                                            [self.strUUID UTF8String], [term UTF8String],
+                                            [self.uuid UTF8String], [term UTF8String],
                                             &aTransactions, &tCount, &Error);
     if (ABC_CC_Ok == result)
     {
@@ -672,8 +666,8 @@ exitnow:
 - (void)loadWalletFromCore:(NSString *)uuid;
 {
     tABC_Error error;
-    self.strUUID = uuid;
-    self.strName = loadingText;
+    self.uuid = uuid;
+    self.name = loadingText;
     self.currencyNum = -1;
     self.balance = 0;
     self.loaded = NO;
@@ -683,7 +677,7 @@ exitnow:
         ABC_WalletName([self.account.name UTF8String], [uuid UTF8String], &szName, &error);
         
         if (error.code == ABC_CC_Ok) {
-            self.strName = [ABCUtil safeStringWithUTF8String:szName];
+            self.name = [ABCUtil safeStringWithUTF8String:szName];
         }
         
         if (szName) {
@@ -700,7 +694,7 @@ exitnow:
         } else {
             self.loaded = NO;
             self.currencyNum = -1;
-            self.strName = loadingText;
+            self.name = loadingText;
         }
         
         int64_t balance;
@@ -724,7 +718,7 @@ exitnow:
 //
 - (void)refreshServer:(BOOL)bData notify:(void(^)(void))cb;
 {
-    [self.account connectWatcher:self.strUUID];
+    [self.account connectWatcher:self.uuid];
     [self.account postToMiscQueue:^{
         // Reconnect the watcher for this wallet
         if (bData) {
@@ -738,7 +732,7 @@ exitnow:
                 bool bDirty = false;
                 ABC_DataSyncWallet([self.account.name UTF8String],
                                    [self.account.password UTF8String],
-                                   [self.strUUID UTF8String],
+                                   [self.uuid UTF8String],
                                    &bDirty,
                                    &error);
                 [self.abcError setLastErrors:error];
@@ -782,7 +776,7 @@ exitnow:
 	{
 		ABCWallet *walletOther = object;
 		
-        if ([self.strUUID isEqualToString:walletOther.strUUID])
+        if ([self.uuid isEqualToString:walletOther.uuid])
         {
 			return YES;
 		}
@@ -796,15 +790,15 @@ exitnow:
 // since we are overriding isEqual, we have to override hash to make sure they agree
 - (NSUInteger)hash
 {
-    return([self.strUUID hash]);
+    return([self.uuid hash]);
 }
 
 // overriding the description - used in debugging
 - (NSString *)description
 {
 	return([NSString stringWithFormat:@"Wallet - UUID: %@, Name: %@, CurrencyNum: %d, Attributes: %d, Balance: %lf, Transactions: %@",
-            self.strUUID,
-            self.strName,
+            self.uuid,
+            self.name,
 //            self.strUserName,
             self.currencyNum,
             self.archived,

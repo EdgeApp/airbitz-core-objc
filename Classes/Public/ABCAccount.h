@@ -115,8 +115,8 @@
 - (void)reorderWallets: (NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath;
 - (void)makeCurrentWallet:(ABCWallet *)wallet;
 - (void)makeCurrentWalletWithIndex:(NSIndexPath *)indexPath;
-- (void)makeCurrentWalletWithUUID:(NSString *)strUUID;
-- (ABCWallet *)selectWalletWithUUID:(NSString *)strUUID;
+- (void)makeCurrentWalletWithUUID:(NSString *)uuid;
+- (ABCWallet *)selectWalletWithUUID:(NSString *)uuid;
 - (void)addCategory:(NSString *)strCategory;
 - (void)loadCategories;
 - (void)saveCategories:(NSMutableArray *)saveArrayCategories;

@@ -264,7 +264,7 @@ static const int notifySyncDelay          = 1;
             {
                 for (ABCWallet *curWallet in self.arrayWallets)
                 {
-                    if ([strUUID isEqualToString:curWallet.strUUID])
+                    if ([strUUID isEqualToString:curWallet.uuid])
                     {
                         wallet = curWallet;
                         break;
@@ -277,7 +277,7 @@ static const int notifySyncDelay          = 1;
             {
                 for (ABCWallet *curWallet in self.arrayArchivedWallets)
                 {
-                    if ([strUUID isEqualToString:curWallet.strUUID])
+                    if ([strUUID isEqualToString:curWallet.uuid])
                     {
                         wallet = curWallet;
                         break;
@@ -423,7 +423,7 @@ static const int notifySyncDelay          = 1;
             for (int i = 0; i < [arrayWallets count]; i++)
             {
                 ABCWallet *wallet = [arrayWallets objectAtIndex:i];
-                [arrayWalletNames addObject:[NSString stringWithFormat:@"%@ (%@)", wallet.strName, [self formatSatoshi:wallet.balance]]];
+                [arrayWalletNames addObject:[NSString stringWithFormat:@"%@ (%@)", wallet.name, [self formatSatoshi:wallet.balance]]];
                 if (!wallet.loaded) {
                     loadingCount++;
                 }
@@ -463,7 +463,7 @@ static const int notifySyncDelay          = 1;
                 }
                 else
                 {
-                    NSString *lastCurrentWalletUUID = self.currentWallet.strUUID;
+                    NSString *lastCurrentWalletUUID = self.currentWallet.uuid;
                     self.currentWallet = [self selectWalletWithUUID:lastCurrentWalletUUID];
                 }
                 [self checkWalletsLoadingNotification];
@@ -596,15 +596,15 @@ static const int notifySyncDelay          = 1;
 
 - (ABCWallet *)getWallet: (NSString *)walletUUID
 {
-    for (ABCWallet *w in self.arrayWallets)
+    for (ABCWallet *wallet in self.arrayWallets)
     {
-        if ([w.strUUID isEqualToString:walletUUID])
-            return w;
+        if ([wallet.uuid isEqualToString:walletUUID])
+            return wallet;
     }
-    for (ABCWallet *w in self.arrayArchivedWallets)
+    for (ABCWallet *wallet in self.arrayArchivedWallets)
     {
-        if ([w.strUUID isEqualToString:walletUUID])
-            return w;
+        if ([wallet.uuid isEqualToString:walletUUID])
+            return wallet;
     }
     return nil;
 }
@@ -643,14 +643,14 @@ static const int notifySyncDelay          = 1;
     }
     
     NSMutableString *uuids = [[NSMutableString alloc] init];
-    for (ABCWallet *w in self.arrayWallets)
+    for (ABCWallet *wallet in self.arrayWallets)
     {
-        [uuids appendString:w.strUUID];
+        [uuids appendString:wallet.uuid];
         [uuids appendString:@"\n"];
     }
     for (ABCWallet *w in self.arrayArchivedWallets)
     {
-        [uuids appendString:w.strUUID];
+        [uuids appendString:wallet.uuid];
         [uuids appendString:@"\n"];
     }
     
@@ -672,7 +672,7 @@ static const int notifySyncDelay          = 1;
     tABC_Error Error;
     tABC_CC result = ABC_SetWalletArchived([self.name UTF8String],
                                            [self.password UTF8String],
-                                           [wallet.strUUID UTF8String],
+                                           [wallet.uuid UTF8String],
                                            wallet.archived, &Error);
     if (ABC_CC_Ok == result)
     {
@@ -1348,7 +1348,7 @@ static const int notifySyncDelay          = 1;
         bool bDirty = false;
         ABC_DataSyncWallet([self.name UTF8String],
                            [self.password UTF8String],
-                           [wallet.strUUID UTF8String],
+                           [wallet.uuid UTF8String],
                            &bDirty,
                            &error);
         [self setLastErrors:error];
@@ -2335,7 +2335,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     // stop watchers
     for (ABCWallet *wallet in self.arrayWallets) {
         tABC_Error error;
-        ABC_WatcherDeleteCache([wallet.strUUID UTF8String], &error);
+        ABC_WatcherDeleteCache([wallet.uuid UTF8String], &error);
     }
     [self startWatchers];
     return ABCConditionCodeOk;

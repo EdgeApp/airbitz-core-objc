@@ -14,11 +14,9 @@
 @interface ABCTransaction : NSObject
 
 @property (nonatomic, strong)   ABCWallet       *wallet;
-@property (nonatomic, copy)     NSString        *strID;
-@property (nonatomic, copy)     NSString        *strMalleableID;
-@property (nonatomic, copy)     NSString        *strWalletName;
-@property (nonatomic, copy)     NSString        *strName;
-@property (nonatomic, copy)     NSString        *strAddress;
+@property (nonatomic, copy)     NSString        *txid;
+@property (nonatomic, copy)     NSString        *malleableTxid;
+@property (nonatomic, copy)     NSString        *payeeName;
 @property (nonatomic, strong)   NSDate          *date;
 @property (nonatomic, assign)   BOOL            bConfirmed;
 @property (nonatomic, assign)   BOOL            bSyncing;
@@ -28,8 +26,8 @@
 @property (nonatomic, assign)   SInt64			minerFees;
 @property (nonatomic, assign)   SInt64			abFees;
 @property (nonatomic, assign)   SInt64          balance;
-@property (nonatomic, copy)     NSString        *strCategory;
-@property (nonatomic, copy)     NSString        *strNotes;
+@property (nonatomic, copy)     NSString        *category;
+@property (nonatomic, copy)     NSString        *notes;
 @property (nonatomic, strong)   NSArray         *outputs;
 @property (nonatomic, assign)   unsigned int    bizId;
 

@@ -66,7 +66,7 @@
     tABC_Error error;
 
     ABC_SpendSignTx([self.wallet.account.name UTF8String],
-            [self.srcWallet.strUUID UTF8String], _pSpend, &szRawTx, &error);
+            [self.srcWallet.uuid UTF8String], _pSpend, &szRawTx, &error);
     ABCConditionCode ccode = [self.abcError setLastErrors:error];
     if (ABCConditionCodeOk == ccode)
     {
@@ -130,7 +130,7 @@
 {
     tABC_Error error;
     ABC_SpendBroadcastTx([self.wallet.account.name UTF8String],
-        [self.srcWallet.strUUID UTF8String], _pSpend, (char *)[rawTx UTF8String], &error);
+        [self.srcWallet.uuid UTF8String], _pSpend, (char *)[rawTx UTF8String], &error);
     return [self.abcError setLastErrors:error];
 }
 
@@ -141,7 +141,7 @@
     tABC_Error error;
 
     ABC_SpendSaveTx([self.wallet.account.name UTF8String],
-        [self.srcWallet.strUUID UTF8String], _pSpend, (char *)[rawTx UTF8String], &szTxId, &error);
+        [self.srcWallet.uuid UTF8String], _pSpend, (char *)[rawTx UTF8String], &szTxId, &error);
     ABCConditionCode ccode = [self.abcError setLastErrors:error];
     if (ccode == ABCConditionCodeOk) {
         txidTemp = [NSString stringWithUTF8String:szTxId];
@@ -206,11 +206,11 @@
         NSAssert((self.destWallet), @"destWallet missing");
     }
     ABC_GetTransaction([self.wallet.account.name UTF8String], NULL,
-        [self.srcWallet.strUUID UTF8String], [txId UTF8String], &pTrans, &error);
+        [self.srcWallet.uuid UTF8String], [txId UTF8String], &pTrans, &error);
     if (ABC_CC_Ok == error.code) {
         if (self.destWallet) {
-            pTrans->pDetails->szName = strdup([self.destWallet.strName UTF8String]);
-            pTrans->pDetails->szCategory = strdup([[NSString stringWithFormat:@"%@%@", transferCategory, self.destWallet.strName] UTF8String]);
+            pTrans->pDetails->szName = strdup([self.destWallet.name UTF8String]);
+            pTrans->pDetails->szCategory = strdup([[NSString stringWithFormat:@"%@%@", transferCategory, self.destWallet.name] UTF8String]);
         } else {
             if (!pTrans->pDetails->szCategory) {
                 pTrans->pDetails->szCategory = strdup([[NSString stringWithFormat:@"%@", spendCategory] UTF8String]);
@@ -223,7 +223,7 @@
             pTrans->pDetails->bizId = (unsigned int)_bizId;
         }
         ABC_SetTransactionDetails([self.wallet.account.name UTF8String], NULL,
-            [self.srcWallet.strUUID UTF8String], [txId UTF8String],
+            [self.srcWallet.uuid UTF8String], [txId UTF8String],
             pTrans->pDetails, &error);
     }
     ABC_FreeTransaction(pTrans);
@@ -232,13 +232,13 @@
     // This was a transfer
     if (self.destWallet) {
         ABC_GetTransaction([self.wallet.account.name UTF8String], NULL,
-            [self.destWallet.strUUID UTF8String], [txId UTF8String], &pTrans, &error);
+            [self.destWallet.uuid UTF8String], [txId UTF8String], &pTrans, &error);
         if (ABC_CC_Ok == error.code) {
-            pTrans->pDetails->szName = strdup([self.srcWallet.strName UTF8String]);
-            pTrans->pDetails->szCategory = strdup([[NSString stringWithFormat:@"%@%@", transferCategory, self.srcWallet.strName] UTF8String]);
+            pTrans->pDetails->szName = strdup([self.srcWallet.name UTF8String]);
+            pTrans->pDetails->szCategory = strdup([[NSString stringWithFormat:@"%@%@", transferCategory, self.srcWallet.name] UTF8String]);
 
             ABC_SetTransactionDetails([self.wallet.account.name UTF8String], NULL,
-                [self.destWallet.strUUID UTF8String], [txId UTF8String],
+                [self.destWallet.uuid UTF8String], [txId UTF8String],
                 pTrans->pDetails, &error);
         }
         ABC_FreeTransaction(pTrans);
@@ -256,7 +256,7 @@
     tABC_Error error;
     uint64_t result = 0;
     ABC_SpendGetMax([self.wallet.account.name UTF8String],
-        [self.wallet.strUUID UTF8String], _pSpend, &result, &error);
+        [self.wallet.uuid UTF8String], _pSpend, &result, &error);
     return result;
 }
 
