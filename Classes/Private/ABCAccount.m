@@ -2168,42 +2168,45 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return key;
 }
 
-- (ABCConditionCode)removeOTPKey;
+- (NSError *)removeOTPKey;
 {
     tABC_Error error;
     ABC_OtpKeyRemove([self.name UTF8String], &error);
-    return [self setLastErrors:error];
+    return [ABCError makeNSError:error];
 }
 
-- (ABCConditionCode)getOTPDetails:(bool *)enabled
-                          timeout:(long *)timeout;
+- (NSError *)getOTPDetails:(bool *)enabled
+                   timeout:(long *)timeout;
 {
     tABC_Error error;
     ABC_OtpAuthGet([self.name UTF8String], [self.password UTF8String], enabled, timeout, &error);
-    return [self setLastErrors:error];
+    return [ABCError makeNSError:error];
 }
 
-- (ABCConditionCode)setOTPAuth:(long)timeout;
+- (NSError *)setOTPAuth:(long)timeout;
 {
     tABC_Error error;
     ABC_OtpAuthSet([self.name UTF8String], [self.password UTF8String], timeout, &error);
-    return [self setLastErrors:error];
+    return [ABCError makeNSError:error];
 }
 
-- (ABCConditionCode)removeOTPAuth;
+- (NSError *)removeOTPAuth;
 {
     tABC_Error error;
     ABC_OtpAuthRemove([self.name UTF8String], [self.password UTF8String], &error);
-    [self removeOTPKey];
-    return [self setLastErrors:error];
+    NSError *nserror = [ABCError makeNSError:error];
+    NSError *nserror2 = [self removeOTPKey];
+    
+    if (nserror)
+        return nserror;
+    return nserror2;
 }
 
-- (ABCConditionCode)removeOTPResetRequest;
+- (NSError *)removeOTPResetRequest;
 {
     tABC_Error error;
     ABC_OtpResetRemove([self.name UTF8String], [self.password UTF8String], &error);
-    [self removeOTPKey];
-    return [self setLastErrors:error];
+    return [ABCError makeNSError:error];
 }
 
 - (ABCConditionCode)getNumWalletsInAccount:(int *)numWallets

@@ -235,49 +235,46 @@
 - (NSString *)getOTPLocalKey;
 
 /**
- * removeOTPKey
  * Removes the OTP key for current user.
  * This will remove the key from disk as well.
- * @return ABCConditionCode
+ * @return NSError* or nil if no error
  */
-- (ABCConditionCode)removeOTPKey;
+- (NSError *)removeOTPKey;
 
 /**
- * getOTPDetails
- * Reads the OTP configuration from the server.
- * This will remove the key from disk as well.
- * @param     bool*  enabled: enabled flag if OTP is enabled for this user
- * @param     long*  timeout: number seconds required after a reset is requested
- * @return ABCConditionCode
+ * Reads the OTP configuration from the server. Gets information on whether OTP
+ * is enabled for the current account, and how long a reset request will take.
+ * An OTP reset is a request to disable OTP made through the method
+ * [AirbitzCore requestOTPReset]
+ * @param enabled bool* enabled flag if OTP is enabled for this user
+ * @param timeout long* number seconds required after a reset is requested
+ * @return NSError* or nil if no error
  */
-- (ABCConditionCode)getOTPDetails:(bool *)enabled
-                          timeout:(long *)timeout;
+- (NSError *)getOTPDetails:(bool *)enabled
+                   timeout:(long *)timeout;
 
 /**
- * setOTPAuth
  * Sets up OTP authentication on the server for currently logged in user
  * This will generate a new token if the username doesn't already have one.
- * @param     long   timeout: number seconds required after a reset is requested
- *                            before OTP is disabled.
- * @return ABCConditionCode
+ * @param timeout long number seconds required after a reset is requested
+ * before OTP is disabled.
+ * @return NSError* or nil if no error
  */
-- (ABCConditionCode)setOTPAuth:(long)timeout;
+- (NSError *)setOTPAuth:(long)timeout;
 
 /**
- * removeOTPAuth
  * Removes the OTP authentication requirement from the server for the
  * currently logged in user
- * @return ABCConditionCode
+ * @return NSError* or nil if no error
  */
-- (ABCConditionCode)removeOTPAuth;
+- (NSError *)removeOTPAuth;
 
 /**
- * removeOTPResetRequest
  * Removes the OTP reset request from the server for the
  * currently logged in user
- * @return ABCConditionCode
+ * @return NSError* or nil if no error
  */
-- (ABCConditionCode)removeOTPResetRequest;
+- (NSError *)removeOTPResetRequest;
 
 /*
  * setRecoveryQuestions
