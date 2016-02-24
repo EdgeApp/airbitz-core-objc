@@ -12,5 +12,6 @@
 @interface ABCWallet (Internal)
 
 - (id)initWithUser:(ABCAccount *) user;
+- (void)handleSweepCallback:(NSString *)txid amount:(uint64_t)amount error:(NSError *)error;
 
 @end

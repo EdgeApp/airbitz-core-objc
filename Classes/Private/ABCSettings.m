@@ -112,21 +112,21 @@
             settingsChanged = YES;
         }
 
-        if (pinLoginChanged)
-        {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
-
-                if (self.bDisablePINLogin)
-                {
-                    [self deletePINLogin];
-                }
-                else
-                {
-                    [self setupLoginPIN];
-                }
-            });
-        }
-
+//        if (pinLoginChanged)
+//        {
+//            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
+//
+//                if (!self.bDisablePINLogin)
+//                {
+//                    [self deletePINLogin];
+//                }
+//                else
+//                {
+//                    [self.user setupLoginPIN];
+//                }
+//            });
+//        }
+//
         if (settingsChanged)
         {
             [self doSetDenominationLabel];
@@ -152,41 +152,20 @@
     return (ABCConditionCode) error.code;
 }
 
-- (void)deletePINLogin
-{
-    NSString *username = NULL;
-    if ([self.user isLoggedIn])
-    {
-        username = self.user.name;
-    }
-
-    tABC_Error error;
-    if (username && 0 < username.length)
-    {
-        tABC_CC result = ABC_PinLoginDelete([username UTF8String],
-                &error);
-        if (ABC_CC_Ok != result)
-        {
-            [self.abcError setLastErrors:error];
-        }
-    }
-}
-
-
-
-- (void)setupLoginPIN
-{
-    if (!self.bDisablePINLogin)
-    {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
-            tABC_Error error;
-            ABC_PinSetup([self.user.name UTF8String],
-                    [self.user.password length] > 0 ? [self.user.password UTF8String] : nil,
-                    &error);
-        });
-    }
-}
-
+//- (void)deletePINLogin
+//{
+//    NSString *username = NULL;
+//    if ([self.user isLoggedIn])
+//    {
+//        username = self.user.name;
+//    }
+//
+//    tABC_Error error;
+//    if (username && 0 < username.length)
+//    {
+//    }
+//}
+//
 - (BOOL) touchIDEnabled;
 {
     if ([self.local.touchIDUsersDisabled indexOfObject:self.user.name] == NSNotFound &&

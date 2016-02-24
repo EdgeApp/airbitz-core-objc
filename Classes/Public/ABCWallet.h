@@ -132,14 +132,13 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  * - *param* txid NSString* txid of transaction that swept funds<br>
  * - *param* amount uint64_t amount of satoshis swept into wallet
  * @param error Code block called on error with parameters<br>
- * - *param* ABCCondition code<br>
- * - *param* NSString* errorString
+ * - *param* NSError* error
  * @return void
  */
 - (void)importPrivateKey:(NSString *)privateKey
                importing:(void (^)(NSString *address)) importingHandler
                 complete:(void (^)(ABCImportDataModel dataModel, NSString *address, NSString *txid, uint64_t amount)) completionHandler
-                   error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                   error:(void (^)(NSError *)) errorHandler;
 
 - (void)prioritizeAddress:(NSString *)address;
 - (void) loadTransactions;

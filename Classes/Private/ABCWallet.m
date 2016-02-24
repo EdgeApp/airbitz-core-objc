@@ -16,7 +16,7 @@ static const int importTimeout                  = 30;
 
 @property (nonatomic, strong)   ABCError                    *abcError;
 @property (nonatomic, strong)   void                        (^importCompletionHandler)(ABCImportDataModel dataModel, NSString *address, NSString *txid, uint64_t amount);
-@property (nonatomic, strong)   void                        (^importErrorHandler)(ABCConditionCode ccode, NSString *errorString);
+@property (nonatomic, strong)   void                        (^importErrorHandler)(NSError *error);
 @property                       ABCImportDataModel          importDataModel;
 @property (nonatomic, strong)   NSString                    *sweptAddress;
 @property (nonatomic, strong)   NSTimer                     *importCallbackTimer;
@@ -318,7 +318,7 @@ exitnow:
 - (void)importPrivateKey:(NSString *)privateKey
                importing:(void (^)(NSString *address)) importingHandler
                 complete:(void (^)(ABCImportDataModel dataModel, NSString *address, NSString *txid, uint64_t amount)) completionHandler
-                   error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                   error:(void (^)(NSError *error)) errorHandler;
 {
     bool bSuccess = NO;
     tABC_Error error;
@@ -331,9 +331,9 @@ exitnow:
     if (!privateKey || !self.uuid)
     {
         error.code = ABC_CC_NULLPtr;
-        ccode = [self.abcError setLastErrors:error];
+        NSError *nserror = [ABCError makeNSError:error];
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (errorHandler) errorHandler(ccode, [self getLastErrorString]);
+            if (errorHandler) errorHandler(nserror);
         });
         return;
     }
@@ -385,9 +385,10 @@ exitnow:
         else
         {
             // no address associated with the private key, must be invalid
-            ccode = [self.abcError setLastErrors:error];
+            error.code = ABC_CC_ParseError;
+            NSError *nserror = [ABCError makeNSError:error];
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (errorHandler) errorHandler(ccode, [self getLastErrorString]);
+                if (errorHandler) errorHandler(nserror);
             });
             return;
         }
@@ -396,9 +397,9 @@ exitnow:
     if (!bSuccess)
     {
         error.code = ABC_CC_ParseError;
-        ccode = [self.abcError setLastErrors:error];
+        NSError *nserror = [ABCError makeNSError:error];
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (errorHandler) errorHandler(ccode, [self getLastErrorString]);
+            if (errorHandler) errorHandler(nserror);
         });
         return;
     }
@@ -813,14 +814,11 @@ exitnow:
 {
     tABC_Error error;
     char *pszAddress = NULL;
-    void *pData = (__bridge void *) self;
     ABC_SweepKey([self.account.name UTF8String],
                  [self.account.password UTF8String],
                  [walletUUID UTF8String],
                  [privateKey UTF8String],
                  &pszAddress,
-                 ABC_Sweep_Complete_Callback,
-                 pData,
                  &error);
     ABCConditionCode ccode = [self.abcError setLastErrors:error];
     if (ABCConditionCodeOk == ccode && pszAddress)
@@ -831,40 +829,39 @@ exitnow:
     return ccode;
 }
 
-void ABC_Sweep_Complete_Callback(void *pData, tABC_CC cc, const char *szID, uint64_t amount)
+- (void)handleSweepCallback:(NSString *)txid amount:(uint64_t)amount error:(NSError *)error;
 {
-    ABCWallet *wallet = (__bridge ABCWallet *) pData;
-    [wallet cancelImportExpirationTimer];
-    
-    tABC_Error error;
-    ABCConditionCode ccode;
-    error.code = cc;
-    ccode = [wallet.abcError setLastErrors:error];
-    
-    NSString *txid = nil;
-    if (szID)
-    {
-        txid = [NSString stringWithUTF8String:szID];
-    }
-    else
-    {
-        txid = @"";
-    }
-    
-    if (ABCConditionCodeOk == ccode)
+    [self cancelImportExpirationTimer];
+//    
+//    tABC_Error error;
+//    ABCConditionCode ccode;
+//    error.code = cc;
+//    ccode = [wallet.abcError setLastErrors:error];
+//    
+//    NSString *txid = nil;
+//    if (szID)
+//    {
+//        txid = [NSString stringWithUTF8String:szID];
+//    }
+//    else
+//    {
+//        txid = @"";
+//    }
+//    
+    if (!error)
     {
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (wallet.importCompletionHandler) wallet.importCompletionHandler(wallet.importDataModel, wallet.sweptAddress, txid, amount);
-            wallet.importErrorHandler = nil;
-            wallet.importCompletionHandler = nil;
+            if (self.importCompletionHandler) self.importCompletionHandler(self.importDataModel, self.sweptAddress, txid, amount);
+            self.importErrorHandler = nil;
+            self.importCompletionHandler = nil;
         });
     }
     else
     {
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (wallet.importErrorHandler) wallet.importErrorHandler(ccode, [wallet getLastErrorString]);
-            wallet.importErrorHandler = nil;
-            wallet.importCompletionHandler = nil;
+            if (self.importErrorHandler) self.importErrorHandler(error);
+            self.importErrorHandler = nil;
+            self.importCompletionHandler = nil;
         });
     }
     
@@ -875,9 +872,9 @@ void ABC_Sweep_Complete_Callback(void *pData, tABC_CC cc, const char *szID, uint
     self.importCallbackTimer = nil;
     tABC_Error error;
     error.code = ABC_CC_NoTransaction;
-    ABCConditionCode ccode = [self.abcError setLastErrors:error];
+    NSError *nserror = [ABCError makeNSError:error];
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.importErrorHandler) self.importErrorHandler(ccode, [self getLastErrorString]);
+        if (self.importErrorHandler) self.importErrorHandler(nserror);
         self.importErrorHandler = nil;
         self.importCompletionHandler = nil;
     });

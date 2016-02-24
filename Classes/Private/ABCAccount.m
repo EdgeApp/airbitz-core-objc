@@ -1882,14 +1882,19 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     ABCAccount *user = (__bridge id) pInfo->pData;
     ABCWallet *wallet = nil;
     NSString *txid = nil;
+    NSError *error = [ABCError makeNSError:pInfo->status];
+    uint64_t amount = (uint64_t) pInfo->sweepSatoshi;
+
+    if (pInfo)
+    {
+        if (pInfo->szWalletUUID)
+            wallet = [user getWallet:[NSString stringWithUTF8String:pInfo->szWalletUUID]];
+        if (pInfo->szTxID)
+            txid = [NSString stringWithUTF8String:pInfo->szTxID];
+    }
     
     if (ABC_AsyncEventType_IncomingBitCoin == pInfo->eventType) {
-        if (pInfo->szWalletUUID)
-        {
-            wallet = [user getWallet:[NSString stringWithUTF8String:pInfo->szWalletUUID]];
-            txid = [NSString stringWithUTF8String:pInfo->szTxID];
-        }
-        if (!wallet || !txid || !pInfo->szWalletUUID) {
+        if (!wallet || !txid) {
             ABCLog(1, @"EventCallback: NULL pointer from ABC");
         }
         [user refreshWallets:^
@@ -1911,12 +1916,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
          }];
         
     } else if (ABC_AsyncEventType_BalanceUpdate == pInfo->eventType) {
-        if (pInfo->szWalletUUID)
-        {
-            wallet = [user getWallet:[NSString stringWithUTF8String:pInfo->szWalletUUID]];
-            txid = [NSString stringWithUTF8String:pInfo->szTxID];
-        }
-        if (!wallet || !txid || !pInfo->szWalletUUID) {
+        if (!wallet || !txid) {
             ABCLog(1, @"EventCallback: NULL pointer from ABC");
         }
         [user refreshWallets:^
@@ -1927,8 +1927,20 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
                  }
              }
          }];
+    } else if (ABC_AsyncEventType_IncomingSweep == pInfo->eventType) {
+        if (!wallet || !txid) {
+            ABCLog(1, @"EventCallback: NULL pointer from ABC");
+        }
+        [wallet handleSweepCallback:txid amount:amount error:error];
+    } else if (ABC_AsyncEventType_FailedSweep == pInfo->eventType) {
+        if (!wallet) {
+            ABCLog(1, @"EventCallback: NULL pointer from ABC");
+        }
+        [wallet handleSweepCallback:txid amount:amount error:error];
     }
 }
+
+
 
 /////////////////////////////////////////////////////////////////
 //////////////////// New ABCAccount methods ////////////////////
@@ -1944,16 +1956,11 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     }
     const char * passwd = [self.password length] > 0 ? [self.password UTF8String] : nil;
     
-    ABC_SetPIN([self.name UTF8String], passwd, [pin UTF8String], &error);
-    NSError *nserror = [ABCError makeNSError:error];
-    if (! nserror)
-    {
-        ABC_PinSetup([self.name UTF8String],
-                     passwd,
-                     &error);
-        nserror = [ABCError makeNSError:error];
-    }
-    return nserror;
+    ABC_PinSetup([self.name UTF8String],
+                 passwd,
+                 [pin UTF8String],
+                 &error);
+    return [ABCError makeNSError:error];
 }
 
 - (void)changePIN:(NSString *)pin
@@ -2433,7 +2440,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return username;
 }
 
-- (void)setupLoginPIN
+- (void)setupLoginPIN;
 {
     if (!self.settings.bDisablePINLogin)
     {
@@ -2441,6 +2448,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
             tABC_Error error;
             ABC_PinSetup([self.name UTF8String],
                          [self.password length] > 0 ? [self.password UTF8String] : nil,
+                         [self.settings.strPIN UTF8String],
                          &error);
         });
     }
