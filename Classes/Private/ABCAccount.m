@@ -2216,21 +2216,20 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return [ABCError makeNSError:error];
 }
 
-- (ABCConditionCode)getNumWalletsInAccount:(int *)numWallets
+- (int) getNumWalletsInAccount:(NSError **)nserror;
 {
     tABC_Error error;
     char **aUUIDS = NULL;
-    unsigned int nCount;
+    NSError *nserror2 = nil;
+    unsigned int nCount = 0;
     
     ABC_GetWalletUUIDs([self.name UTF8String],
                        [self.password UTF8String],
                        &aUUIDS, &nCount, &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
+    nserror2 = [ABCError makeNSError:error];
     
-    if (ABCConditionCodeOk == ccode)
+    if (!nserror2)
     {
-        *numWallets = nCount;
-        
         if (aUUIDS)
         {
             unsigned int i;
@@ -2246,7 +2245,11 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
             free(aUUIDS);
         }
     }
-    return ccode;
+    
+    if (nserror)
+        *nserror = nserror2;
+    
+    return nCount;
 }
 
 - (NSError *)setRecoveryQuestions:(NSString *)password
@@ -2337,55 +2340,68 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return [self setLastErrors:error];
 }
 
-- (ABCConditionCode)clearBlockchainCache;
+- (NSError *)clearBlockchainCache;
 {
     [self stopWatchers];
     // stop watchers
+    NSError *nserror = nil;
+    NSError *retError = nil;
     for (ABCWallet *wallet in self.arrayWallets) {
         tABC_Error error;
         ABC_WatcherDeleteCache([wallet.uuid UTF8String], &error);
+        nserror = [ABCError makeNSError:error];
+        if (nserror) retError = nserror;
     }
     [self startWatchers];
-    return ABCConditionCodeOk;
+    return retError;
 }
 
-- (ABCConditionCode)clearBlockchainCache:(void (^)(void)) completionHandler
-                                   error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler
+- (void)clearBlockchainCache:(void (^)(void)) completionHandler
+                                   error:(void (^)(NSError *error)) errorHandler
 {
     [self postToWalletsQueue:^{
-        ABCConditionCode ccode = [self clearBlockchainCache];
-        NSString *errorString = [self getLastErrorString];
+        NSError *error = [self clearBlockchainCache];
         dispatch_async(dispatch_get_main_queue(),^{
-            if (ABCConditionCodeOk == ccode) {
+            if (!error) {
                 if (completionHandler) completionHandler();
             } else {
-                if (errorHandler) errorHandler(ccode, errorString);
+                if (errorHandler) errorHandler(error);
             }
         });
     }];
-    return ABCConditionCodeOk;
 }
 
 
 
-- (ABCConditionCode) satoshiToCurrency:(uint64_t) satoshi
-                           currencyNum:(int)currencyNum
-                              currency:(double *)pCurrency;
+- (double) satoshiToCurrency:(uint64_t) satoshi
+                 currencyNum:(int)currencyNum
+                       error:(NSError *__autoreleasing *)nserror;
 {
     tABC_Error error;
+    NSError *nserror2 = nil;
+    double currency = 0.0;
     
     ABC_SatoshiToCurrency([self.name UTF8String], [self.password UTF8String],
-                          satoshi, pCurrency, currencyNum, &error);
-    return [self setLastErrors:error];
+                          satoshi, &currency, currencyNum, &error);
+    nserror2 = [ABCError makeNSError:error];
+    if (nserror) *nserror = nserror2;
+
+    return currency;
 }
 
-- (ABCConditionCode) currencyToSatoshi:(double)currency
-                           currencyNum:(int)currencyNum
-                               satoshi:(int64_t *)pSatoshi;
+- (uint64_t) currencyToSatoshi:(double)currency
+                  currencyNum:(int)currencyNum
+                        error:(NSError *__autoreleasing *)nserror;
 {
     tABC_Error error;
-    ABC_CurrencyToSatoshi([self.name UTF8String], [self.password UTF8String], currency, currencyNum, pSatoshi, &error);
-    return [self setLastErrors:error];
+    NSError *nserror2 = nil;
+    int64_t satoshi = 0;
+
+    ABC_CurrencyToSatoshi([self.name UTF8String], [self.password UTF8String], currency, currencyNum, &satoshi, &error);
+    nserror2 = [ABCError makeNSError:error];
+    if (nserror) *nserror = nserror2;
+
+    return (uint64_t) satoshi;
 }
 
 - (ABCConditionCode) getLastConditionCode;

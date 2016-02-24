@@ -208,16 +208,16 @@
 /// @name Wallet Management
 /// -----------------------------------------------------------------------------
 
-/*
- * createWallet
+/**
+ * Create a wallet in the current account.
  * @param walletName NSString* Name of wallet or set to nil to use default wallet name
  * @param currency NSString* ISO 3 digit currency code for wallet. Set to nil to use default currency from
  *  settings or the global default currency if settings unavailable. ie. "USD, EUR, CAD, PHP"
  * (Optional. If used, method returns immediately with void
  * @param error NSError** May be set to nil. Only used when not using completion handler
- * @param complete (Optional) Code block called on success. Returns void if used<br>
+ * @param completionHandler (Optional) Code block called on success. Returns void if used<br>
  * - *param* ABCWallet* User object.<br>
- * @param error (Optional) Code block called on error with parameters<br>
+ * @param errorHandler (Optional) Code block called on error with parameters<br>
  * - *param* NSError*
  * @return ABCWallet* wallet object or nil if failure. If using completion handler, returns void.
  */
@@ -229,7 +229,13 @@
 
 
 - (NSError *)createFirstWalletIfNeeded;
-- (ABCConditionCode) getNumWalletsInAccount:(int *)numWallets;
+
+/**
+ * Returns the number of wallets in the account
+ * @param error NSError**
+ * @return int number of wallets
+ */
+- (int) getNumWalletsInAccount:(NSError **)error;
 
 - (BOOL)hasOTPResetPending;
 
@@ -286,8 +292,7 @@
  * @param password NSString* password of currently logged in user
  * @param questions NSString* concatenated string of recovery questions separated by '\n' after each question
  * @param answers NSString* concatenated string of recovery answers separated by '\n' after each answer
- *
- * @param completionHandler code block which is called with void
+ * @param completionHandler (Optional) code block which is called upon success with void
  * (Optional. If used, method returns immediately with void)
  * @param errorHandler (Optional) Code block called on error with parameters<br>
  * - *param* NSError*
@@ -306,45 +311,39 @@
 
 
 /*
- * clearBlockchainCache
- * clears the local cache of blockchain info and force a re-download. This will cause wallets
+ * Clears the local cache of blockchain information and force a re-download. This will cause wallets
  * to report incorrect balances which the blockchain is resynced
- *
- * @param complete: completion handler code block which is called with ABCSpend *
- *                          @param ABCSpend *    abcSpend: ABCSpend object
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCodeOk (always returns Ok)
+ * @param completionHandler (Optional) code block which is called upon success with void
+ * (Optional. If used, method returns immediately with void)
+ * @param errorHandler (Optional) Code block called on error with parameters<br>
+ * - *param* NSError*
+ * @return NSError* or nil if no error. Returns void if using completionHandler
  */
-- (ABCConditionCode)clearBlockchainCache;
-- (ABCConditionCode)clearBlockchainCache:(void (^)(void)) completionHandler
-                                   error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+- (NSError *)clearBlockchainCache;
+- (void)clearBlockchainCache:(void (^)(void)) completionHandler
+                       error:(void (^)(NSError *error)) errorHandler;
 
 
 /*
- * satoshiToCurrency
- *      Convert bitcoin amount in satoshis to a fiat currency amount
- * @param uint_64t     satoshi: amount to convert in satoshis
- * @param int      currencyNum: ISO currency number of fiat currency to convert to
- * @param double    *pCurrency: pointer to resulting value
- * @return ABCConditionCode
+ * Convert bitcoin amount in satoshis to a fiat currency amount
+ * @param satoshi uint_64t amount to convert in satoshis
+ * @param currencyNum int ISO currency number of fiat currency to convert to
+ * @param error NSError** pointer to NSError object
+ * @return double resulting fiat currency value
  */
-- (ABCConditionCode) satoshiToCurrency:(uint64_t) satoshi
-                           currencyNum:(int)currencyNum
-                              currency:(double *)pCurrency;
-
+- (double) satoshiToCurrency:(uint64_t) satoshi
+                 currencyNum:(int)currencyNum
+                       error:(NSError **)error;
 /*
- * currencyToSatoshi
- *      Convert fiat amount to a satoshi amount
- * @param double      currency: amount to convert in satoshis
- * @param int      currencyNum: ISO currency number of fiat currency to convert from
- * @param uint_64t   *pSatoshi: pointer to resulting value
- * @return ABCConditionCode
+ * Convert fiat currency amount to a bitcoin amount in satoshis
+ * @param double Amount in fiat value to convert
+ * @param currencyNum int ISO currency number of fiat currency to convert to
+ * @param error NSError** pointer to NSError object
+ * @return uint_64t Resulting value in satoshis
  */
-- (ABCConditionCode) currencyToSatoshi:(double)currency
-                           currencyNum:(int)currencyNum
-                               satoshi:(int64_t *)pSatoshi;
+- (uint64_t) currencyToSatoshi:(double)currency
+                   currencyNum:(int)currencyNum
+                         error:(NSError **)error;
 
 /*
  * shouldAskUserToEnableTouchID
