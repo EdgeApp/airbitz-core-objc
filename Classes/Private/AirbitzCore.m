@@ -1055,23 +1055,6 @@
     return usernameArray;
 }
 
-- (ABCConditionCode)getOTPLocalKey:(NSString *)username
-                               key:(NSString **)key;
-{
-    tABC_Error error;
-    char *szSecret = NULL;
-    ABC_OtpKeyGet([username UTF8String], &szSecret, &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
-    if (ABCConditionCodeOk == ccode && szSecret) {
-        *key = [NSString stringWithUTF8String:szSecret];
-    }
-    if (szSecret) {
-        free(szSecret);
-    }
-    ABCLog(2,@("SECRET: %@"), *key);
-    return ccode;
-}
-
 - (NSError *)setOTPKey:(NSString *)username
                    key:(NSString *)key;
 {

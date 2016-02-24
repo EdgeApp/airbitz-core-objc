@@ -1421,9 +1421,9 @@ static const int notifySyncDelay          = 1;
         if (ABCConditionCodeInvalidOTP == ccode)
         {
             NSString *key = nil;
-            key = [self getOTPLocalKey];
-            ABCConditionCode ccode = [self getLastConditionCode];
-            if (key != nil && ccode == ABCConditionCodeOk)
+            NSError *error = nil;
+            key = [self getOTPLocalKey:&error];
+            if (key != nil && !error)
             {
                 [self performSelectorOnMainThread:@selector(notifyOtpSkew:)
                                        withObject:nil
@@ -2136,16 +2136,19 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 /* === OTP authentication: === */
 
 
-- (BOOL)hasOTPResetPending;
+- (BOOL) hasOTPResetPending:(NSError **)nserror;
 {
     char *szUsernames = NULL;
     NSString *usernames = nil;
     BOOL needsReset = NO;
     tABC_Error error;
+    NSError *nserror2 = nil;
+    
     ABC_OtpResetGet(&szUsernames, &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
+    nserror2 = [ABCError makeNSError:error];
+    
     NSMutableArray *usernameArray = [[NSMutableArray alloc] init];
-    if (ABCConditionCodeOk == ccode && szUsernames)
+    if (!nserror2 && szUsernames)
     {
         usernames = [NSString stringWithUTF8String:szUsernames];
         usernames = [self formatUsername:usernames];
@@ -2155,22 +2158,27 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     }
     if (szUsernames)
         free(szUsernames);
+    
+    if (nserror) *nserror = nserror2;
     return needsReset;
 }
 
-- (NSString *)getOTPLocalKey;
+- (NSString *)getOTPLocalKey:(NSError **)nserror;
 {
     tABC_Error error;
     char *szSecret = NULL;
     NSString *key = nil;
+    NSError *nserror2 = nil;
+
     ABC_OtpKeyGet([self.name UTF8String], &szSecret, &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
-    if (ABCConditionCodeOk == ccode && szSecret) {
+    nserror2 = [ABCError makeNSError:error];
+    if (nserror2 && szSecret) {
         key = [NSString stringWithUTF8String:szSecret];
     }
     if (szSecret) {
         free(szSecret);
     }
+    if (nserror) *nserror = nserror2;
     ABCLog(2,@("SECRET: %@"), key);
     return key;
 }
@@ -2402,16 +2410,6 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     if (nserror) *nserror = nserror2;
 
     return (uint64_t) satoshi;
-}
-
-- (ABCConditionCode) getLastConditionCode;
-{
-    return [abcError getLastConditionCode];
-}
-
-- (NSString *) getLastErrorString;
-{
-    return [abcError getLastErrorString];
 }
 
 - (BOOL) shouldAskUserToEnableTouchID;

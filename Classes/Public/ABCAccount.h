@@ -237,13 +237,20 @@
  */
 - (int) getNumWalletsInAccount:(NSError **)error;
 
-- (BOOL)hasOTPResetPending;
+/**
+ * Checks if the current account has a pending request to reset (disable)
+ * OTP.
+ * @param error NSError** error object or nil if success
+ * @return BOOL YES if account has pending reset
+ */
+- (BOOL) hasOTPResetPending:(NSError **)error;
 
 /**
  * Gets the locally saved OTP key for the current user.
+ * @param error NSError** error object or nil if success
  * @return key NSString* OTP key
  */
-- (NSString *)getOTPLocalKey;
+- (NSString *)getOTPLocalKey:(NSError **)nserror;
 
 /**
  * Removes the OTP key for current user.
@@ -362,9 +369,6 @@
 - (ABCConditionCode)accountDataSet:(NSString *)folder withKey:(NSString *)key withValue:(NSString *)value;
 - (ABCConditionCode)accountDataRemove:(NSString *)folder withKey:(NSString *)key;
 - (ABCConditionCode)accountDataClear:(NSString *)folder;
-
-- (ABCConditionCode) getLastConditionCode;
-- (NSString *) getLastErrorString;
 
 
 @end
