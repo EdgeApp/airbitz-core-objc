@@ -70,6 +70,10 @@
 		
 		<option value="//api/name/newSpendTransfer:">- newSpendTransfer:</option>
 		
+		<option value="//api/name/removeWallet:error:">- removeWallet:error:</option>
+		
+		<option value="//api/name/renameWallet:">- renameWallet:</option>
+		
 	</optgroup>
 	
 	
@@ -112,6 +116,134 @@
 
 						<div class="task-list">
 							<div class="section-method">
+	<a name="//api/name/renameWallet:" title="renameWallet:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/renameWallet:">&ndash;&nbsp;renameWallet:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>NSString<em> new name of wallet
+NSError</em> error code</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (NSError *)renameWallet:(NSString *)<em>newName</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>newName</code></th>
+						<td><p>NSString<em> new name of wallet
+NSError</em> error code</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+
+			
+
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCWallet.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/removeWallet:error:" title="removeWallet:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/removeWallet:error:">&ndash;&nbsp;removeWallet:error:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Deletes wallet from user&rsquo;s account. This will render wallet completely inaccessible including any
+future funds that may be sent to any addresses in this wallet. Give users ample warning before
+calling this routine.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)removeWallet:(void ( ^ ) ( void ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *error ))<em>errorHandler</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>Error handler code block which is called with the following args</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>complete</code></th>
+						<td><p>Completion handler code block which is called with void. (Optional. If used, method
+returns immediately with void)</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>NSError* or nil if no error. Returns void if completion handlers are used.</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Deletes wallet from user&rsquo;s account. This will render wallet completely inaccessible including any
+future funds that may be sent to any addresses in this wallet. Give users ample warning before
+calling this routine.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCWallet.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
 	<a name="//api/name/createReceiveRequestWithDetails:" title="createReceiveRequestWithDetails:"></a>
 	<h3 class="method-title"><code><a href="#//api/name/createReceiveRequestWithDetails:">&ndash;&nbsp;createReceiveRequestWithDetails:</a></code>
 </h3>
@@ -162,7 +294,7 @@ The object will have a uri, address, and QRcode UIImage filled in when method co
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>ABCUser* User object or nil if failure</p>
+				<p>ABCAccount* User object or nil if failure</p>
 			</div>
 			
 
@@ -465,7 +597,7 @@ after sweep.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)importPrivateKey:(NSString *)<em>privateKey</em> importing:(void ( ^ ) ( NSString *address ))<em>importingHandler</em> complete:(void ( ^ ) ( ABCImportDataModel dataModel , NSString *address , NSString *txid , uint64_t amount ))<em>completionHandler</em> error:(void ( ^ ) ( ABCConditionCode ccode , NSString *errorString ))<em>errorHandler</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)importPrivateKey:(NSString *)<em>privateKey</em> importing:(void ( ^ ) ( NSString *address ))<em>importingHandler</em> complete:(void ( ^ ) ( ABCImportDataModel dataModel , NSString *address , NSString *txid , uint64_t amount ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *))<em>errorHandler</em></code></div>
 
 		    
 			
@@ -496,8 +628,7 @@ after sweep.</p>
 					<tr>
 						<th scope="row" class="argument-name"><code>error</code></th>
 						<td><p>Code block called on error with parameters<br>
-- <em>param</em> ABCCondition code<br>
-- <em>param</em> NSString* errorString</p></td>
+- <em>param</em> NSError* error</p></td>
 					</tr>
 				
 				</table>
@@ -549,7 +680,7 @@ after sweep.</p>
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-02-10</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-02-24</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

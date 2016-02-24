@@ -24,14 +24,14 @@
  third party application to generate payment requests or send funds for the users' account
  that may have been created on the Airbitz Mobile Bitcoin Wallet or any other Airbitz SDK
  application.
- 
+
     - (void) exampleMethod
     {
         // Create an account
         AirbitzCore *abc  = [[AirbitzCore alloc] init:@"YourAPIKeyHere"];
-        ABCAccount *abcAccount  = [abc createAccount:@"myUsername" password:@"MyPa55w0rd!&" pin:@"4283" delegate:self];
+        ABCAccount *abcAccount = [abc createAccount:@"myUsername" password:@"MyPa55w0rd!&" pin:@"4283" delegate:self error:nil];
         // New account is auto logged in after creation
-
+    
         // Create a wallet in the user account
         ABCWallet *wallet = [abcAccount createWallet:@"My Awesome Bitcoins" currency:nil];
 
@@ -39,7 +39,7 @@
         [abc logout:abcAccount];
 
         // Log back in with full credentials
-        abcAccount = [abc signIn:@"myUsername" password:@"MyPa55w0rd!&" delegate:self otp:nil];
+        abcAccount = [abc signIn:@"myUsername" password:@"MyPa55w0rd!&" delegate:self otp:nil resetDate:nil error:nil];
         [abc logout:abcAccount];
 
         // Log back in with PIN using completion handler codeblock
@@ -52,27 +52,27 @@
 
             // Create a bitcoin request
             ABCRequest *request = [[ABCRequest alloc] init];
-            
+
             // Put in some optional meta data into this request so incoming funds are automatically tagged
             request.payeeName     = @"William Swanson"; // Name of the person receiving request
             request.category      = @"Income:Rent";     // Category of payment. Auto tags category when funds come in
             request.notes         = @"Rent payment for Jan 2016";
             request.amountSatoshi = 12345000;
-            
+
             [wallet createReceiveRequestWithDetails:request];
 
             // Use the request results
             NSString *bitcoinAddress = request.address;
             NSString *bitcoinURI     = request.uri;
             UIImage  *bitcoinQRCode  = request.qrCode;
-            
+
             // Now go and display the QR code or send payment to address in some other way.
 
-        } error:^(ABCConditionCode ccode, NSString *errorString)
+        } error:^(NSError *error)
         {
-            NSLog(@"Argh! Error code: %d. Error string:%@", ccode, errorString);
+            NSLog(@"Argh! Error code: %d. Error string:%@", error.code, error.userInfo[NSLocalizedDescriptionKey]);
         }];
-        
+
     }
 
     // Delegate method called when bitcoin is received
@@ -80,7 +80,7 @@
     {
         NSLog(@"Yay, my wallet just received bitcoin", wallet.name);
     }
- */
+*/
 
 // Number of confirmations before Airbitz considers a transaction confirmed
 #define ABCConfirmedConfirmationCount    6
