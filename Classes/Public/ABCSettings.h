@@ -10,7 +10,7 @@
 @class ABCKeychain;
 @class ABCAccount;
 
-#define ABC_ARRAY_EXCHANGES     @[@"Bitstamp", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
+#define ABCArrayExchanges     @[@"Bitstamp", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
 
 typedef NS_ENUM(NSUInteger, ABCDenomination) {
     ABCDenominationBTC = 0,

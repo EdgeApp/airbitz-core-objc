@@ -82,9 +82,11 @@
     }
  */
 
-#define ABC_CONFIRMED_CONFIRMATION_COUNT    6
-#define ABC_ARRAY_EXCHANGES     @[@"Bitstamp", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
+// Number of confirmations before Airbitz considers a transaction confirmed
+#define ABCConfirmedConfirmationCount    6
 
+// Generic logging routine that gets saved in local storage and optionally sent
+// to Airbitz to troubleshoot
 #define ABCLog(level, format_string,...) \
 ((abcDebugLog(level, [NSString stringWithFormat:format_string,##__VA_ARGS__])))
 
@@ -93,10 +95,6 @@
 void abcDebugLog(int level, NSString *string);
 void abcSetDebugLevel(int level);
 
-/**
- * Device capabilities enum
- * ABCDeviceCapsTouchID: Device supported TouchID fingerprint login
- */
 typedef enum eABCDeviceCaps
 {
     ABCDeviceCapsTouchID,
@@ -109,16 +107,23 @@ typedef enum eABCDeviceCaps
 
 @interface AirbitzCore : NSObject
 
+/// -----------------------------------------------------------------------------
 /// @name AirbitzCore currency public read-only variables
+/// -----------------------------------------------------------------------------
 
+/// Array of NSString* ISO currency codes. ie 'USD, CAD, JPY, PHP, EUR'
 @property (nonatomic, strong) NSArray                   *arrayCurrencyCodes;
+
+/// Array of NSNumber ISO currency numbers
 @property (nonatomic, strong) NSArray                   *arrayCurrencyNums;
+
+/// Array of NSString currency names. ie. 'US Dollar, Philippine Peso'
 @property (nonatomic, strong) NSArray                   *arrayCurrencyStrings;
 
 
-- (NSString *)currencyAbbrevLookup:(int) currencyNum;
-- (NSString *)currencySymbolLookup:(int)currencyNum;
-
+/// -----------------------------------------------------------------------------
+/// @name AirbitzCore initialization / free routines
+/// -----------------------------------------------------------------------------
 
 /**
  * Initialize the AirbitzCore object. Required for functionality of ABC SDK.
@@ -142,18 +147,17 @@ typedef enum eABCDeviceCaps
 /// @name Account Management
 /// -----------------------------------------------------------------------------
 
-/** Create an Airbitz account with specified username, password, and PIN.
+/** Create an Airbitz account with specified username, password, and PIN with 
+ * callback handler
  * @param username NSString*
  * @param password NSString*
  * @param pin NSString*
  * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
- * @param error NSError** May be set to nil. Only used when not using completion handler
- * @param complete (Optional) Code block called on success. Returns void if used<br>
+ * @param completionHandler (Optional) Code block called on success. Returns void if used<br>
  * - *param* ABCAccount* Account object.<br>
- * @param error (Optional) Code block called on error with parameters<br>
+ * @param errorHandler (Optional) Code block called on error with parameters<br>
  * - *param* NSError*
- * @return ABCAccount* Account object or nil if failure. Return void if using completion
- *  handler
+ * @return void
  */
 - (void)createAccount:(NSString *)username
              password:(NSString *)password
@@ -161,6 +165,16 @@ typedef enum eABCDeviceCaps
              delegate:(id)delegate
              complete:(void (^)(ABCAccount *account)) completionHandler
                 error:(void (^)(NSError *)) errorHandler;
+
+
+/** Create an Airbitz account with specified username, password, and PIN.
+ * @param username NSString*
+ * @param password NSString*
+ * @param pin NSString*
+ * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
+ * @param error NSError** May be set to nil. Only used when not using completion handler
+ * @return ABCAccount* Account object or nil if failure. 
+ */
 - (ABCAccount *)createAccount:(NSString *)username
                      password:(NSString *)password
                           pin:(NSString *)pin
@@ -176,9 +190,9 @@ typedef enum eABCDeviceCaps
  *  or if OTP token has already been saved in this account from prior login
  * @param resetDate NSDate** If login fails due to invalid or unset OTP key, and an OTP reset has been
  * @param error NSError** May be set to nil. Only used when not using completion handler
- * @param complete (Optional) Code block called on success. Returns void if used<br>
+ * @param completionHandler (Optional) Code block called on success. Returns void if used<br>
  * - *param* ABCAccount* Account object created from SignIn call
- * @param error (Optional) Code block called on error with parameters<br>
+ * @param errorHandler (Optional) Code block called on error with parameters<br>
  * - *param* NSError*<br>
  * - *param* NSDate* resetDate If login fails due to invalid or unset OTP key, and an OTP reset has been
  *  requested, the data that the reset will occur will be returned in this argument
@@ -205,9 +219,9 @@ typedef enum eABCDeviceCaps
  * @param pin NSString*
  * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
  * @param error NSError** May be set to nil. Only used when not using completion handler
- * @param complete (Optional) Code block called on success.<br>
+ * @param completionHandler (Optional) Code block called on success.<br>
  * - *param* ABCAccount* User object.
- * @param error (Optional) Code block called on error with parameters<br>
+ * @param errorHandler (Optional) Code block called on error with parameters<br>
  * - *param* NSError*
  *  requested, the data that the reset will occur will be returned in this argument
  * @return ABCAccount* Account object or nil if failure. Return void if using completion
@@ -522,6 +536,20 @@ typedef enum eABCDeviceCaps
  */
 + (UIImage *)encodeStringToQRImage:(NSString *)string;
 
+/**
+ * Given a currency code, returns the 3 digit currency code. ie. "USD, CAD, EUR"
+ * @param currencyNum int - ISO currency num to lookup
+ * @return NSString* 3 digit ISO currency code
+ */
+- (NSString *)currencyAbbrevLookup:(int)currencyNum;
+
+/**
+ * Given a currency code, returns the currency symbol. ie "$"
+ * @param currencyNum int - ISO currency num to lookup
+ * @return NSString* symbol
+ */
+- (NSString *)currencySymbolLookup:(int)currencyNum;
+
 /// ------------------------------------------------------------------
 /// @name Class methods to retrieve constant parameters from ABC
 /// ------------------------------------------------------------------
@@ -530,6 +558,7 @@ typedef enum eABCDeviceCaps
 + (int) getMinimumPasswordLength;
 + (int) getMinimumPINLength;
 + (int) getDefaultCurrencyNum;
+
 
 
 

@@ -16,7 +16,9 @@
 @property (nonatomic, strong) NSString *signature;
 @end
 
+///----------------------------------------------------------
 /// @name ABCAccount Delegate callbacks
+///----------------------------------------------------------
 
 @protocol ABCAccountDelegate <NSObject>
 
@@ -53,6 +55,7 @@
 /// device or user's time clock is skewed.
 - (void) abcAccountOTPSkew;
 
+/// The current blockheight has changed. Use should refresh GUI by rereading ABCAccount.arrayWallets
 - (void) abcAccountBlockHeightChanged;
 
 /// This device has just sync'ed a transaction to the specified wallet from another device
@@ -66,8 +69,9 @@
 @end
 
 @interface ABCAccount : NSObject
-
-/// @name AirbitzCore read/write public object variables
+///----------------------------------------------------------
+/// @name ABCAccount read/write public object variables
+///----------------------------------------------------------
 
 /// Delegate object to handle delegate callbacks
 @property (assign)            id<ABCAccountDelegate>    delegate;
@@ -76,7 +80,9 @@
 /// to make sure they are loaded and [ABCSettings saveSettings] to ensure modified settings are latched
 @property (atomic, strong) ABCSettings               *settings;
 
-/// @name AirbitzCore read-only public object variables
+///----------------------------------------------------------
+/// @name ABCAccount read-only public object variables
+///----------------------------------------------------------
 
 /// Array of Wallet objects currently loaded into account. This array is read-only and app should only
 /// access the array while in the main queue.
@@ -184,7 +190,6 @@
 /**
  * Check if this user has a password on the account or if it is
  * a PIN-only account.
- * @param username NSString* user to check
  * @return BOOL true if user has a password
  */
 - (BOOL)passwordExists;

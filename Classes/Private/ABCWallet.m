@@ -583,7 +583,7 @@ exitnow:
     bool bSyncing = NO;
     transaction.confirmations = [self calcTxConfirmations:transaction.txid
                                                 isSyncing:&bSyncing];
-    transaction.bConfirmed = transaction.confirmations >= ABC_CONFIRMED_CONFIRMATION_COUNT;
+    transaction.bConfirmed = transaction.confirmations >= ABCConfirmedConfirmationCount;
     transaction.bSyncing = bSyncing;
     NSMutableArray *outputs = [[NSMutableArray alloc] init];
     for (int i = 0; i < pTrans->countOutputs; ++i)
