@@ -413,47 +413,52 @@ exitnow:
     }
 }
 
-- (NSString *)exportTransactionsToCSV
+- (NSError *)exportTransactionsToCSV:(NSMutableString *) csv;
 {
-    NSString *csv;
-    
     char *szCsvData = nil;
     tABC_Error error;
     int64_t startTime = 0; // Need to pull this from GUI
     int64_t endTime = 0x0FFFFFFFFFFFFFFF; // Need to pull this from GUI
     
-    ABCConditionCode ccode;
+    if (!csv)
+    {
+        error.code = ABC_CC_NULLPtr;
+        return [ABCError makeNSError:error];
+    }
     ABC_CsvExport([self.account.name UTF8String],
                   [self.account.password UTF8String],
                   [self.uuid UTF8String],
                   startTime, endTime, &szCsvData, &error);
-    ccode = [self.abcError setLastErrors:error];
-    
-    if (ccode == ABCConditionCodeOk)
+    NSError *nserror = [ABCError makeNSError:error];
+    if (!nserror)
     {
-        csv = [NSString stringWithCString:szCsvData encoding:NSASCIIStringEncoding];
+        [csv setString:[NSString stringWithCString:szCsvData encoding:NSASCIIStringEncoding]];
     }
+    
     if (szCsvData) free(szCsvData);
-    return csv;
+    return nserror;
 }
 
-- (NSString *)exportWalletPrivateSeed
+- (NSError *)exportWalletPrivateSeed:(NSMutableString *) seed
 {
-    NSString *seed;
     tABC_Error error;
     char *szSeed = NULL;
-    ABCConditionCode ccode;
+    if (!seed)
+    {
+        error.code = ABC_CC_NULLPtr;
+        return [ABCError makeNSError:error];
+    }
     ABC_ExportWalletSeed([self.account.name UTF8String],
                          [self.account.password UTF8String],
                          [self.uuid UTF8String],
                          &szSeed, &error);
-    ccode = [self.abcError setLastErrors:error];
-    if (ccode == ABCConditionCodeOk)
+    NSError *nserror = [ABCError makeNSError:error];
+    if (!nserror)
     {
-        seed = [NSString stringWithUTF8String:szSeed];
+        [seed setString:[NSString stringWithUTF8String:szSeed]];
     }
     if (szSeed) free(szSeed);
-    return seed;
+    return nserror;
 }
 
 - (ABCConditionCode)finalizeRequestWithAddress:(NSString *)address;

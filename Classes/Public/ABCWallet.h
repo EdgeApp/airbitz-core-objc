@@ -118,15 +118,19 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 
 /**
  * Export a wallet's transactions to CSV format
- * @return NSString* full CSV export in a single NSString
+ * @param csv NSMutableString* allocated and initialized mutable string to receive CSV contents.
+ *  Must not be nil.
+ * @return NSError* error object. nil if success
  */
-- (NSString *)exportTransactionsToCSV;
+- (NSError *)exportTransactionsToCSV:(NSMutableString *) csv;
 
 /*
  * Export a wallet's private seed in raw entropy format
- * @return NSString* private seed
+ * @param seed NSMutableString* allocated and initialized mutable string to receive private seed contents.
+ *  Must not be nil.
+ * @return NSError* error object. nil if success
  */
-- (NSString *)exportWalletPrivateSeed;
+- (NSError *)exportWalletPrivateSeed:(NSMutableString *) seed;
 
 /**
  * Import (sweep) private key funds into this wallet. Private key is discarded
