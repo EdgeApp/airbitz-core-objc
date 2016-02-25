@@ -346,10 +346,12 @@ static const int notifySyncDelay          = 1;
     if ([self.arrayWallets containsObject:wallet])
     {
         self.currentWallet = wallet;
+        self.currentWalletIndex = (int) [self.arrayWallets indexOfObject:self.currentWallet];
     }
     else if ([self.arrayArchivedWallets containsObject:wallet])
     {
         self.currentWallet = wallet;
+        self.currentWalletIndex = (int) [self.arrayArchivedWallets indexOfObject:self.currentWallet];
     }
     
     [self postNotificationWalletsChanged];
@@ -395,6 +397,7 @@ static const int notifySyncDelay          = 1;
     self.arrayArchivedWallets = nil;
     self.arrayWalletNames = nil;
     self.currentWallet = nil;
+    self.currentWalletIndex = 0;
     self.numWalletsLoaded = 0;
     self.numTotalWallets = 0;
     self.bAllWalletsLoaded = NO;
@@ -460,11 +463,13 @@ static const int notifySyncDelay          = 1;
                     {
                         self.currentWallet = [arrayWallets objectAtIndex:0];
                     }
+                    self.currentWalletIndex = 0;
                 }
                 else
                 {
                     NSString *lastCurrentWalletUUID = self.currentWallet.uuid;
                     self.currentWallet = [self selectWalletWithUUID:lastCurrentWalletUUID];
+                    self.currentWalletIndex = (int) [self.arrayWallets indexOfObject:self.currentWallet];
                 }
                 [self checkWalletsLoadingNotification];
                 [self postNotificationWalletsChanged];

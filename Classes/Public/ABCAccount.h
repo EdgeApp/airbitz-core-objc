@@ -101,6 +101,10 @@
 /// set to a different wallet if the wallet pointed to by currentWallet is deleted.
 @property (atomic, strong) ABCWallet                 *currentWallet;
 
+/// Index into arrayWallets to where currentWallet is set to.<br>
+/// arrayWallets[currentWalletIndex] = currentWallet
+@property (atomic)         int                       currentWalletIndex;
+
 /// Array of NSString* categories with which a user to could choose to tag a transaction with.
 /// Categories must start with "Income", "Expense", "Transfer" or "Exchange" plus a ":" and then
 /// an arbitrary subcategory such as "Food & Dining". ie. "Expense:Rent"
