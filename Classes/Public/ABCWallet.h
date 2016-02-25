@@ -149,14 +149,11 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
                    error:(void (^)(NSError *)) errorHandler;
 
 - (void)prioritizeAddress:(NSString *)address;
-- (void) loadTransactions;
 - (ABCTransaction *)getTransaction:(NSString *) txId;
 - (int64_t)getTotalSentToday;
 - (void)refreshServer:(BOOL)bData notify:(void(^)(void))cb;
 - (NSString *)conversionString;
 - (NSMutableArray *)searchTransactionsIn:(NSString *)term addTo:(NSMutableArray *) arrayTransactions;
-- (ABCConditionCode) getLastConditionCode;
-- (NSString *) getLastErrorString;
 - (void)loadWalletFromCore:(NSString *)uuid;
 
 
