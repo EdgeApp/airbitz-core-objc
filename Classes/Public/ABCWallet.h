@@ -105,9 +105,10 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  * Creates a ABCSpend object from a wallet to wallet transfer. Transfer goes from
  * current object wallet to [ABCWallet] destWallet
  * @param destWallet ABCWallet* of destination wallet for transfer
+ * @param error NSError** Pointer to error object.
  * @return ABCSpend* ABCSpend object or nil if failure
  */
-- (ABCSpend *)newSpendTransfer:(ABCWallet *)destWallet;
+- (ABCSpend *)newSpendTransfer:(ABCWallet *)destWallet error:(NSError **)error;
 
 - (ABCSpend *)newSpendInternal:(NSString *)address
                          label:(NSString *)label
