@@ -130,11 +130,11 @@ static const int importTimeout                  = 30;
 }
 
 
-- (ABCConditionCode)createReceiveRequestWithDetails:(ABCRequest *)request;
+- (NSError *)createReceiveRequestWithDetails:(ABCRequest *)request;
 {
     tABC_Error error;
     tABC_TxDetails details;
-    ABCConditionCode ccode;
+    NSError *nserror = nil;
     unsigned char *pData = NULL;
     char *szRequestAddress = NULL;
     char *pszURI = NULL;
@@ -164,9 +164,9 @@ static const int importTimeout                  = 30;
                              &details,
                              &pRequestID,
                              &error);
-    ccode = [self.abcError setLastErrors:error];
-    if (ABCConditionCodeOk != ccode)
-        goto exitnow;
+    nserror = [ABCError makeNSError:error];
+    if (nserror) goto exitnow;
+
     request.address = [NSString stringWithUTF8String:pRequestID];
     
     ABC_ModifyReceiveRequest([self.account.name UTF8String],
@@ -175,9 +175,8 @@ static const int importTimeout                  = 30;
                              pRequestID,
                              &details,
                              &error);
-    ccode = [self.abcError setLastErrors:error];
-    if (ABCConditionCodeOk != ccode)
-        goto exitnow;
+    nserror = [ABCError makeNSError:error];
+    if (nserror) goto exitnow;
     
     unsigned int width = 0;
     ABC_GenerateRequestQRCode([self.account.name UTF8String],
@@ -188,9 +187,9 @@ static const int importTimeout                  = 30;
                               &pData,
                               &width,
                               &error);
-    ccode = [self.abcError setLastErrors:error];
-    if (ABCConditionCodeOk != ccode)
-        goto exitnow;
+    nserror = [ABCError makeNSError:error];
+    if (nserror) goto exitnow;
+
     request.qrCode = [ABCUtil dataToImage:pData withWidth:width andHeight:width];
     request.uri    = [NSString stringWithUTF8String:pszURI];
     
@@ -201,96 +200,105 @@ exitnow:
     if (pData) free(pData);
     if (pszURI) free(pszURI);
     
-    return ccode;
+    return nserror;
 }
 
 - (void)createReceiveRequestWithDetails:(ABCRequest *)request
                                complete:(void (^)(void)) completionHandler
-                                  error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler
+                                  error:(void (^)(NSError *error)) errorHandler
 {
     [self.account postToGenQRQueue:^(void)
      {
-         ABCConditionCode ccode = [self createReceiveRequestWithDetails:request];
-         NSString *errorString = [self.abcError getLastErrorString];
+         NSError *error = [self createReceiveRequestWithDetails:request];
          dispatch_async(dispatch_get_main_queue(), ^(void)
                         {
-                            if (ABCConditionCodeOk == ccode)
+                            if (!error)
                             {
                                 if (completionHandler) completionHandler();
                             }
                             else
                             {
-                                if (errorHandler) errorHandler(ccode, errorString);
+                                if (errorHandler) errorHandler(error);
                             }
                         });
          
      }];
 }
 
-- (ABCSpend *)newSpendFromText:(NSString *)uri;
+- (ABCSpend *)newSpendFromText:(NSString *)uri error:(NSError *__autoreleasing *)nserror;
 {
     tABC_Error error;
+    NSError *nserror2 = nil;
+    ABCSpend *abcSpend = nil;
+    
     if (!uri)
     {
         error.code = (tABC_CC)ABCConditionCodeNULLPtr;
-        [self.abcError setLastErrors:error];
-        return nil;
+        nserror2 = [ABCError makeNSError:error];
     }
-    ABCSpend *abcSpend = [[ABCSpend alloc] init:self];
-    tABC_SpendTarget *pSpend = NULL;
-    
-    ABC_SpendNewDecode([uri UTF8String], &pSpend, &error);
-    ABCConditionCode ccode = [self.abcError setLastErrors:error];
-    if (ABCConditionCodeOk == ccode)
+    else
     {
-        [abcSpend spendObjectSet:(void *)pSpend];
-        return abcSpend;
+        tABC_SpendTarget *pSpend = NULL;
+        
+        ABC_SpendNewDecode([uri UTF8String], &pSpend, &error);
+        nserror2 = [ABCError makeNSError:error];
+        
+        if (!nserror2)
+        {
+            abcSpend = [[ABCSpend alloc] init:self];
+            [abcSpend spendObjectSet:(void *)pSpend];
+        }
     }
-    return nil;
+    if (nserror) *nserror = nserror2;
+    return abcSpend;
 }
 
 - (void)newSpendFromText:(NSString *)uri
                 complete:(void(^)(ABCSpend *sp))completionHandler
-                   error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                   error:(void (^)(NSError *error)) errorHandler;
 {
     [self.account postToMiscQueue:^{
         ABCSpend *abcSpend;
-        abcSpend = [self newSpendFromText:uri];
-        NSString *errorString = [self getLastErrorString];
-        ABCConditionCode ccode = [self getLastConditionCode];
+        NSError *error;
+        abcSpend = [self newSpendFromText:uri error:&error];
         
         dispatch_async(dispatch_get_main_queue(),^{
-            if (ABCConditionCodeOk == ccode) {
+            if (!error) {
                 if (completionHandler) completionHandler(abcSpend);
             } else {
-                if (errorHandler) errorHandler(ccode, errorString);
+                if (errorHandler) errorHandler(error);
             }
         });
     }];
 }
 
-- (ABCSpend *)newSpendTransfer:(ABCWallet *)destWallet;
+- (ABCSpend *)newSpendTransfer:(ABCWallet *)destWallet error:(NSError **)nserror;
 {
     tABC_Error error;
+    NSError *nserror2 = nil;
+    ABCSpend *abcSpend = nil;
+    
     if (!destWallet)
     {
         error.code = (tABC_CC)ABCConditionCodeNULLPtr;
         [self.abcError setLastErrors:error];
         return nil;
     }
-    ABCSpend *abcSpend = [[ABCSpend alloc] init:self];
-    tABC_SpendTarget *pSpend = NULL;
-    
-    ABC_SpendNewTransfer([self.account.name UTF8String],
-                         [destWallet.uuid UTF8String], 0, &pSpend, &error);
-    ABCConditionCode ccode = [self.abcError setLastErrors:error];
-    if (ABCConditionCodeOk == ccode)
+    else
     {
-        abcSpend.destWallet = destWallet;
-        [abcSpend spendObjectSet:(void *)pSpend];
-        return abcSpend;
+        tABC_SpendTarget *pSpend = NULL;
+        ABC_SpendNewTransfer([self.account.name UTF8String],
+                             [destWallet.uuid UTF8String], 0, &pSpend, &error);
+        nserror2 = [ABCError makeNSError:error];
+        if (!nserror2)
+        {
+            abcSpend = [[ABCSpend alloc] init:self];
+            abcSpend.destWallet = destWallet;
+            [abcSpend spendObjectSet:(void *)pSpend];
+        }
     }
-    return nil;
+    if (nserror) *nserror = nserror2;
+    return abcSpend;
 }
 
 - (ABCSpend *)newSpendInternal:(NSString *)address
@@ -322,7 +330,7 @@ exitnow:
 {
     bool bSuccess = NO;
     tABC_Error error;
-    ABCConditionCode ccode;
+    NSError *nserror = nil;
     
     // We will use the sweep callback to call these GUI handlers when done.
     self.importCompletionHandler = completionHandler;
@@ -331,7 +339,7 @@ exitnow:
     if (!privateKey || !self.uuid)
     {
         error.code = ABC_CC_NULLPtr;
-        NSError *nserror = [ABCError makeNSError:error];
+        nserror = [ABCError makeNSError:error];
         dispatch_async(dispatch_get_main_queue(), ^{
             if (errorHandler) errorHandler(nserror);
         });
@@ -365,9 +373,9 @@ exitnow:
         // private key is a valid format
         // attempt to sweep it
         NSString *address;
-        ccode = [self sweepKey:privateKey
-                    intoWallet:self.uuid
-                       address:&address];
+        nserror = [self sweepKey:privateKey
+                      intoWallet:self.uuid
+                         address:&address];
         self.sweptAddress = address;
         
         if (nil != self.sweptAddress && self.sweptAddress.length)
@@ -386,7 +394,7 @@ exitnow:
         {
             // no address associated with the private key, must be invalid
             error.code = ABC_CC_ParseError;
-            NSError *nserror = [ABCError makeNSError:error];
+            nserror = [ABCError makeNSError:error];
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (errorHandler) errorHandler(nserror);
             });
@@ -397,16 +405,13 @@ exitnow:
     if (!bSuccess)
     {
         error.code = ABC_CC_ParseError;
-        NSError *nserror = [ABCError makeNSError:error];
+        nserror = [ABCError makeNSError:error];
         dispatch_async(dispatch_get_main_queue(), ^{
             if (errorHandler) errorHandler(nserror);
         });
         return;
     }
 }
-
-
-
 
 - (NSString *)exportTransactionsToCSV
 {
@@ -810,9 +815,10 @@ exitnow:
 
 #pragma mark - Private Key Sweep helper methods
 
-- (ABCConditionCode)sweepKey:(NSString *)privateKey intoWallet:(NSString *)walletUUID address:(NSString **)address
+- (NSError *)sweepKey:(NSString *)privateKey intoWallet:(NSString *)walletUUID address:(NSString **)address
 {
     tABC_Error error;
+    NSError *nserror = nil;
     char *pszAddress = NULL;
     ABC_SweepKey([self.account.name UTF8String],
                  [self.account.password UTF8String],
@@ -820,13 +826,13 @@ exitnow:
                  [privateKey UTF8String],
                  &pszAddress,
                  &error);
-    ABCConditionCode ccode = [self.abcError setLastErrors:error];
-    if (ABCConditionCodeOk == ccode && pszAddress)
+    nserror = [ABCError makeNSError:error];
+    if (!nserror && pszAddress)
     {
         *address = [NSString stringWithUTF8String:pszAddress];
         free(pszAddress);
     }
-    return ccode;
+    return nserror;
 }
 
 - (void)handleSweepCallback:(NSString *)txid amount:(uint64_t)amount error:(NSError *)error;
