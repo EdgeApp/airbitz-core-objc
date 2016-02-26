@@ -2086,9 +2086,6 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
         error.code = ABC_CC_BadPassword;
         return [ABCError makeNSError:error];
     }
-    [self stopWatchers];
-    [self stopQueues];
-    
     
     ABC_ChangePassword([self.name UTF8String], [@"ignore" UTF8String], [password UTF8String], &error);
     nserror = [ABCError makeNSError:error];
@@ -2108,10 +2105,6 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
                                         useTouchID:YES];
         }
     }
-    
-    [self startWatchers];
-    [self startQueues];
-    
     
     return nserror;
 }
