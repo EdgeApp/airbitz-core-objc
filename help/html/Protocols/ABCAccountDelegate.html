@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 
-	<title>ABCUserDelegate Protocol Reference</title>
+	<title>ABCAccountDelegate Protocol Reference</title>
 
 	<link rel="stylesheet" href="../css/style.css">
 	<meta name="viewport" content="initial-scale=1, maximum-scale=1.4">
@@ -58,27 +58,29 @@
 	
 	<optgroup label="Instance Methods">
 		
-		<option value="//api/name/abcUserAccountChanged">- abcUserAccountChanged</option>
+		<option value="//api/name/abcAccountAccountChanged">- abcAccountAccountChanged</option>
 		
-		<option value="//api/name/abcUserBalanceUpdate:txid:">- abcUserBalanceUpdate:txid:</option>
+		<option value="//api/name/abcAccountBalanceUpdate:txid:">- abcAccountBalanceUpdate:txid:</option>
 		
-		<option value="//api/name/abcUserIncomingBitcoin:txid:">- abcUserIncomingBitcoin:txid:</option>
+		<option value="//api/name/abcAccountBlockHeightChanged">- abcAccountBlockHeightChanged</option>
 		
-		<option value="//api/name/abcUserLoggedOut:">- abcUserLoggedOut:</option>
+		<option value="//api/name/abcAccountIncomingBitcoin:txid:">- abcAccountIncomingBitcoin:txid:</option>
 		
-		<option value="//api/name/abcUserOTPRequired">- abcUserOTPRequired</option>
+		<option value="//api/name/abcAccountLoggedOut:">- abcAccountLoggedOut:</option>
 		
-		<option value="//api/name/abcUserOTPSkew">- abcUserOTPSkew</option>
+		<option value="//api/name/abcAccountOTPRequired">- abcAccountOTPRequired</option>
 		
-		<option value="//api/name/abcUserRemotePasswordChange">- abcUserRemotePasswordChange</option>
+		<option value="//api/name/abcAccountOTPSkew">- abcAccountOTPSkew</option>
 		
-		<option value="//api/name/abcUserWalletChanged:">- abcUserWalletChanged:</option>
+		<option value="//api/name/abcAccountRemotePasswordChange">- abcAccountRemotePasswordChange</option>
 		
-		<option value="//api/name/abcUserWalletsChanged">- abcUserWalletsChanged</option>
+		<option value="//api/name/abcAccountWalletChanged:">- abcAccountWalletChanged:</option>
 		
-		<option value="//api/name/abcUserWalletsLoaded">- abcUserWalletsLoaded</option>
+		<option value="//api/name/abcAccountWalletsChanged">- abcAccountWalletsChanged</option>
 		
-		<option value="//api/name/abcUserWalletsLoading">- abcUserWalletsLoading</option>
+		<option value="//api/name/abcAccountWalletsLoaded">- abcAccountWalletsLoaded</option>
+		
+		<option value="//api/name/abcAccountWalletsLoading">- abcAccountWalletsLoading</option>
 		
 	</optgroup>
 	
@@ -95,7 +97,7 @@
 		<div id="overview_contents" class="container">
 			<div id="content">
 				<main role="main">
-					<h1 class="title">ABCUserDelegate Protocol Reference</h1>
+					<h1 class="title">ABCAccountDelegate Protocol Reference</h1>
 
 					
 					<div class="section section-specification"><table cellspacing="0"><tbody>
@@ -104,7 +106,7 @@
 	<td>NSObject</td>
 </tr><tr>
 	<th>Declared in</th>
-	<td>ABCUser.h</td>
+	<td>ABCAccount.h</td>
 </tr>
 						</tbody></table></div>
 					
@@ -122,8 +124,8 @@
 
 						<div class="task-list">
 							<div class="section-method">
-	<a name="//api/name/abcUserRemotePasswordChange" title="abcUserRemotePasswordChange"></a>
-	<h3 class="method-title"><code><a href="#//api/name/abcUserRemotePasswordChange">&ndash;&nbsp;abcUserRemotePasswordChange</a></code>
+	<a name="//api/name/abcAccountRemotePasswordChange" title="abcAccountRemotePasswordChange"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountRemotePasswordChange">&ndash;&nbsp;abcAccountRemotePasswordChange</a></code>
 </h3>
 
 	<div class="method-info">
@@ -139,7 +141,7 @@ with old password. One user logs in with new password, old password will cease t
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)abcUserRemotePasswordChange</code></div>
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountRemotePasswordChange</code></div>
 
 		    
 			
@@ -163,15 +165,15 @@ with old password. One user logs in with new password, old password will cease t
 			
 			<div class="method-subsection declared-in-section">
 				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCUser.h</code></p>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
 			</div>
 			
 			
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/abcUserLoggedOut:" title="abcUserLoggedOut:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/abcUserLoggedOut:">&ndash;&nbsp;abcUserLoggedOut:</a></code>
+	<a name="//api/name/abcAccountLoggedOut:" title="abcAccountLoggedOut:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountLoggedOut:">&ndash;&nbsp;abcAccountLoggedOut:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -181,13 +183,13 @@ with old password. One user logs in with new password, old password will cease t
 			
 			
 			<div class="method-subsection brief-description">
-				<p>User has been logged out. Always called after [ABCUser logout] once Core has finished logout
+				<p>User has been logged out. Always called after [ABCAccount logout] once Core has finished logout
 Also called under some error conditions such as corrupt local data.</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)abcUserLoggedOut:(ABCUser *)<em>user</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountLoggedOut:(ABCAccount *)<em>user</em></code></div>
 
 		    
 			
@@ -199,7 +201,7 @@ Also called under some error conditions such as corrupt local data.</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>User has been logged out. Always called after [ABCUser logout] once Core has finished logout
+				<p>User has been logged out. Always called after [ABCAccount logout] once Core has finished logout
 Also called under some error conditions such as corrupt local data.</p>
 			</div>
 			
@@ -211,15 +213,15 @@ Also called under some error conditions such as corrupt local data.</p>
 			
 			<div class="method-subsection declared-in-section">
 				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCUser.h</code></p>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
 			</div>
 			
 			
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/abcUserAccountChanged" title="abcUserAccountChanged"></a>
-	<h3 class="method-title"><code><a href="#//api/name/abcUserAccountChanged">&ndash;&nbsp;abcUserAccountChanged</a></code>
+	<a name="//api/name/abcAccountAccountChanged" title="abcAccountAccountChanged"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountAccountChanged">&ndash;&nbsp;abcAccountAccountChanged</a></code>
 </h3>
 
 	<div class="method-info">
@@ -234,7 +236,7 @@ Also called under some error conditions such as corrupt local data.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)abcUserAccountChanged</code></div>
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountAccountChanged</code></div>
 
 		    
 			
@@ -257,15 +259,15 @@ Also called under some error conditions such as corrupt local data.</p>
 			
 			<div class="method-subsection declared-in-section">
 				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCUser.h</code></p>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
 			</div>
 			
 			
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/abcUserWalletChanged:" title="abcUserWalletChanged:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/abcUserWalletChanged:">&ndash;&nbsp;abcUserWalletChanged:</a></code>
+	<a name="//api/name/abcAccountWalletChanged:" title="abcAccountWalletChanged:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountWalletChanged:">&ndash;&nbsp;abcAccountWalletChanged:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -280,7 +282,7 @@ Also called under some error conditions such as corrupt local data.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)abcUserWalletChanged:(ABCWallet *)<em>wallet</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountWalletChanged:(ABCWallet *)<em>wallet</em></code></div>
 
 		    
 			
@@ -303,15 +305,15 @@ Also called under some error conditions such as corrupt local data.</p>
 			
 			<div class="method-subsection declared-in-section">
 				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCUser.h</code></p>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
 			</div>
 			
 			
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/abcUserWalletsLoading" title="abcUserWalletsLoading"></a>
-	<h3 class="method-title"><code><a href="#//api/name/abcUserWalletsLoading">&ndash;&nbsp;abcUserWalletsLoading</a></code>
+	<a name="//api/name/abcAccountWalletsLoading" title="abcAccountWalletsLoading"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountWalletsLoading">&ndash;&nbsp;abcAccountWalletsLoading</a></code>
 </h3>
 
 	<div class="method-info">
@@ -326,7 +328,7 @@ Also called under some error conditions such as corrupt local data.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)abcUserWalletsLoading</code></div>
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountWalletsLoading</code></div>
 
 		    
 			
@@ -349,15 +351,15 @@ Also called under some error conditions such as corrupt local data.</p>
 			
 			<div class="method-subsection declared-in-section">
 				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCUser.h</code></p>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
 			</div>
 			
 			
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/abcUserWalletsLoaded" title="abcUserWalletsLoaded"></a>
-	<h3 class="method-title"><code><a href="#//api/name/abcUserWalletsLoaded">&ndash;&nbsp;abcUserWalletsLoaded</a></code>
+	<a name="//api/name/abcAccountWalletsLoaded" title="abcAccountWalletsLoaded"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountWalletsLoaded">&ndash;&nbsp;abcAccountWalletsLoaded</a></code>
 </h3>
 
 	<div class="method-info">
@@ -372,7 +374,7 @@ Also called under some error conditions such as corrupt local data.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)abcUserWalletsLoaded</code></div>
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountWalletsLoaded</code></div>
 
 		    
 			
@@ -395,15 +397,15 @@ Also called under some error conditions such as corrupt local data.</p>
 			
 			<div class="method-subsection declared-in-section">
 				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCUser.h</code></p>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
 			</div>
 			
 			
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/abcUserWalletsChanged" title="abcUserWalletsChanged"></a>
-	<h3 class="method-title"><code><a href="#//api/name/abcUserWalletsChanged">&ndash;&nbsp;abcUserWalletsChanged</a></code>
+	<a name="//api/name/abcAccountWalletsChanged" title="abcAccountWalletsChanged"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountWalletsChanged">&ndash;&nbsp;abcAccountWalletsChanged</a></code>
 </h3>
 
 	<div class="method-info">
@@ -418,7 +420,7 @@ Also called under some error conditions such as corrupt local data.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)abcUserWalletsChanged</code></div>
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountWalletsChanged</code></div>
 
 		    
 			
@@ -441,15 +443,15 @@ Also called under some error conditions such as corrupt local data.</p>
 			
 			<div class="method-subsection declared-in-section">
 				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCUser.h</code></p>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
 			</div>
 			
 			
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/abcUserOTPRequired" title="abcUserOTPRequired"></a>
-	<h3 class="method-title"><code><a href="#//api/name/abcUserOTPRequired">&ndash;&nbsp;abcUserOTPRequired</a></code>
+	<a name="//api/name/abcAccountOTPRequired" title="abcAccountOTPRequired"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountOTPRequired">&ndash;&nbsp;abcAccountOTPRequired</a></code>
 </h3>
 
 	<div class="method-info">
@@ -465,7 +467,7 @@ OTP authenticated device.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)abcUserOTPRequired</code></div>
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountOTPRequired</code></div>
 
 		    
 			
@@ -489,15 +491,15 @@ OTP authenticated device.</p>
 			
 			<div class="method-subsection declared-in-section">
 				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCUser.h</code></p>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
 			</div>
 			
 			
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/abcUserOTPSkew" title="abcUserOTPSkew"></a>
-	<h3 class="method-title"><code><a href="#//api/name/abcUserOTPSkew">&ndash;&nbsp;abcUserOTPSkew</a></code>
+	<a name="//api/name/abcAccountOTPSkew" title="abcAccountOTPSkew"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountOTPSkew">&ndash;&nbsp;abcAccountOTPSkew</a></code>
 </h3>
 
 	<div class="method-info">
@@ -513,7 +515,7 @@ device or user&rsquo;s time clock is skewed.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)abcUserOTPSkew</code></div>
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountOTPSkew</code></div>
 
 		    
 			
@@ -537,15 +539,61 @@ device or user&rsquo;s time clock is skewed.</p>
 			
 			<div class="method-subsection declared-in-section">
 				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCUser.h</code></p>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
 			</div>
 			
 			
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/abcUserBalanceUpdate:txid:" title="abcUserBalanceUpdate:txid:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/abcUserBalanceUpdate:txid:">&ndash;&nbsp;abcUserBalanceUpdate:txid:</a></code>
+	<a name="//api/name/abcAccountBlockHeightChanged" title="abcAccountBlockHeightChanged"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountBlockHeightChanged">&ndash;&nbsp;abcAccountBlockHeightChanged</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>The current blockheight has changed. Use should refresh GUI by rereading <a href="../Classes/ABCAccount.html">ABCAccount</a>.arrayWallets</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountBlockHeightChanged</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>The current blockheight has changed. Use should refresh GUI by rereading <a href="../Classes/ABCAccount.html">ABCAccount</a>.arrayWallets</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/abcAccountBalanceUpdate:txid:" title="abcAccountBalanceUpdate:txid:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountBalanceUpdate:txid:">&ndash;&nbsp;abcAccountBalanceUpdate:txid:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -557,12 +605,12 @@ device or user&rsquo;s time clock is skewed.</p>
 			<div class="method-subsection brief-description">
 				<p>This device has just sync'ed a transaction to the specified wallet from another device
 causing a change in balance. This happens if two devices share a wallet. First device will see
-abcUserIncomingBitcoin. The second device will see abcUserBalanceUpdate</p>
+abcAccountIncomingBitcoin. The second device will see abcAccountBalanceUpdate</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)abcUserBalanceUpdate:(ABCWallet *)<em>wallet</em> txid:(NSString *)<em>txid</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountBalanceUpdate:(ABCWallet *)<em>wallet</em> txid:(NSString *)<em>txid</em></code></div>
 
 		    
 			
@@ -576,7 +624,7 @@ abcUserIncomingBitcoin. The second device will see abcUserBalanceUpdate</p>
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>This device has just sync'ed a transaction to the specified wallet from another device
 causing a change in balance. This happens if two devices share a wallet. First device will see
-abcUserIncomingBitcoin. The second device will see abcUserBalanceUpdate</p>
+abcAccountIncomingBitcoin. The second device will see abcAccountBalanceUpdate</p>
 			</div>
 			
 
@@ -587,15 +635,15 @@ abcUserIncomingBitcoin. The second device will see abcUserBalanceUpdate</p>
 			
 			<div class="method-subsection declared-in-section">
 				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCUser.h</code></p>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
 			</div>
 			
 			
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/abcUserIncomingBitcoin:txid:" title="abcUserIncomingBitcoin:txid:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/abcUserIncomingBitcoin:txid:">&ndash;&nbsp;abcUserIncomingBitcoin:txid:</a></code>
+	<a name="//api/name/abcAccountIncomingBitcoin:txid:" title="abcAccountIncomingBitcoin:txid:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountIncomingBitcoin:txid:">&ndash;&nbsp;abcAccountIncomingBitcoin:txid:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -610,7 +658,7 @@ abcUserIncomingBitcoin. The second device will see abcUserBalanceUpdate</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)abcUserIncomingBitcoin:(ABCWallet *)<em>wallet</em> txid:(NSString *)<em>txid</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountIncomingBitcoin:(ABCWallet *)<em>wallet</em> txid:(NSString *)<em>txid</em></code></div>
 
 		    
 			
@@ -633,7 +681,7 @@ abcUserIncomingBitcoin. The second device will see abcUserBalanceUpdate</p>
 			
 			<div class="method-subsection declared-in-section">
 				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCUser.h</code></p>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
 			</div>
 			
 			
@@ -654,7 +702,7 @@ abcUserIncomingBitcoin. The second device will see abcUserBalanceUpdate</p>
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-02-10</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-02-24</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

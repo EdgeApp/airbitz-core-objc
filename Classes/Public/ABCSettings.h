@@ -10,7 +10,7 @@
 @class ABCKeychain;
 @class ABCAccount;
 
-#define ABC_ARRAY_EXCHANGES     @[@"Bitstamp", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
+#define ABCArrayExchanges     @[@"Bitstamp", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
 
 typedef NS_ENUM(NSUInteger, ABCDenomination) {
     ABCDenominationBTC = 0,
@@ -46,10 +46,10 @@ typedef NS_ENUM(NSUInteger, ABCDenomination) {
 @property (nonatomic) bool bDisablePINLogin;
 
 /// Loads all settings into [ABCSettings] structure
-- (ABCConditionCode)loadSettings;
+- (NSError *)loadSettings;
 
 /// Saves all settings from [ABCSettings] structure
-- (ABCConditionCode)saveSettings;
+- (NSError *)saveSettings;
 
 - (BOOL) touchIDEnabled;
 - (BOOL) enableTouchID;

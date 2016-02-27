@@ -16,7 +16,9 @@
 @property (nonatomic, strong) NSString *signature;
 @end
 
+///----------------------------------------------------------
 /// @name ABCAccount Delegate callbacks
+///----------------------------------------------------------
 
 @protocol ABCAccountDelegate <NSObject>
 
@@ -53,7 +55,7 @@
 /// device or user's time clock is skewed.
 - (void) abcAccountOTPSkew;
 
-- (void) abcAccountExchangeRateChanged; // XXX remove me and move to GUI
+/// The current blockheight has changed. Use should refresh GUI by rereading ABCAccount.arrayWallets
 - (void) abcAccountBlockHeightChanged;
 
 /// This device has just sync'ed a transaction to the specified wallet from another device
@@ -67,8 +69,9 @@
 @end
 
 @interface ABCAccount : NSObject
-
-/// @name AirbitzCore read/write public object variables
+///----------------------------------------------------------
+/// @name ABCAccount read/write public object variables
+///----------------------------------------------------------
 
 /// Delegate object to handle delegate callbacks
 @property (assign)            id<ABCAccountDelegate>    delegate;
@@ -77,7 +80,9 @@
 /// to make sure they are loaded and [ABCSettings saveSettings] to ensure modified settings are latched
 @property (atomic, strong) ABCSettings               *settings;
 
-/// @name AirbitzCore read-only public object variables
+///----------------------------------------------------------
+/// @name ABCAccount read-only public object variables
+///----------------------------------------------------------
 
 /// Array of Wallet objects currently loaded into account. This array is read-only and app should only
 /// access the array while in the main queue.
@@ -91,9 +96,19 @@
 /// access the array while in the main queue.
 @property (atomic, strong) NSMutableArray            *arrayWalletNames;
 
+/// Helper property that points to the "currentWallet" in the account. This can be used by
+/// GUI as the default wallet used for spending and receive requests. This value is automatically
+/// set to a different wallet if the wallet pointed to by currentWallet is deleted.
 @property (atomic, strong) ABCWallet                 *currentWallet;
+
+/// Index into arrayWallets to where currentWallet is set to.<br>
+/// arrayWallets[currentWalletIndex] = currentWallet
+@property (atomic)         int                       currentWalletIndex;
+
+/// Array of NSString* categories with which a user to could choose to tag a transaction with.
+/// Categories must start with "Income", "Expense", "Transfer" or "Exchange" plus a ":" and then
+/// an arbitrary subcategory such as "Food & Dining". ie. "Expense:Rent"
 @property (atomic, strong) NSArray                   *arrayCategories;
-@property (atomic)         int                       currentWalletID;
 @property (atomic)         BOOL                      bAllWalletsLoaded;
 @property (atomic)         int                       numWalletsLoaded;
 @property (atomic)         int                       numTotalWallets;
@@ -107,19 +122,14 @@
 
 
 // New methods
-- (void)reorderWallets: (NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath;
 - (void)makeCurrentWallet:(ABCWallet *)wallet;
 - (void)makeCurrentWalletWithIndex:(NSIndexPath *)indexPath;
-- (void)makeCurrentWalletWithUUID:(NSString *)strUUID;
-- (ABCWallet *)selectWalletWithUUID:(NSString *)strUUID;
-- (void)addCategory:(NSString *)strCategory;
+- (void)makeCurrentWalletWithUUID:(NSString *)uuid;
+- (ABCWallet *)selectWalletWithUUID:(NSString *)uuid;
 - (void)loadCategories;
 - (void)saveCategories:(NSMutableArray *)saveArrayCategories;
 - (BOOL) isLoggedIn;
 
-
-
-- (ABCWallet *)getWallet: (NSString *)walletUUID;
 
 - (bool)setWalletAttributes: (ABCWallet *) wallet;
 
@@ -147,19 +157,18 @@
 
 /*
  * changePassword
- * @param NSString* password: new password for currently logged in user
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler: completion handler code block
- * @param errorHandler: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
+ * @param password NSString* new password for currently logged in user
+ * (Optional. If used, method returns immediately with void)
+ * @param completionHandler (Optional) completion handler code block
+ * @param errorHandler (Optional) Code block called on error with parameters<br>
+ * - *param* NSError*
+ * @return NSError object or nil if failure. Return void if using completion
+ *  handler
  */
-- (ABCConditionCode)changePassword:(NSString *)password;
-- (ABCConditionCode)changePassword:(NSString *)password
-                          complete:(void (^)(void)) completionHandler
-                             error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+- (NSError *)changePassword:(NSString *)password;
+- (void)changePassword:(NSString *)password
+              complete:(void (^)(void)) completionHandler
+                 error:(void (^)(NSError *)) errorHandler;
 
 /*
  * changePIN
@@ -180,9 +189,9 @@
 /**
  * Check if this user has a password on the account or if it is
  * a PIN-only account.
- * @param username NSString* user to check
  * @return BOOL true if user has a password
  */
+- (BOOL)passwordExists:(NSError **)error;
 - (BOOL)passwordExists;
 
 /**
@@ -199,231 +208,168 @@
 /// @name Wallet Management
 /// -----------------------------------------------------------------------------
 
-/*
- * createWallet
+/**
+ * Create a wallet in the current account.
  * @param walletName NSString* Name of wallet or set to nil to use default wallet name
- * @param currencyNum int ISO currency number for wallet. set to 0 to use defaultCurrencyNum from
- *                               settings or the global default currency number if settings unavailable
+ * @param currency NSString* ISO 3 digit currency code for wallet. Set to nil to use default currency from
+ *  settings or the global default currency if settings unavailable. ie. "USD, EUR, CAD, PHP"
  * (Optional. If used, method returns immediately with void
- * @param complete (Optional) Code block called on success. Returns void if used<br>
+ * @param error NSError** May be set to nil. Only used when not using completion handler
+ * @param completionHandler (Optional) Code block called on success. Returns void if used<br>
  * - *param* ABCWallet* User object.<br>
- * @param error (Optional) Code block called on error with parameters<br>
+ * @param errorHandler (Optional) Code block called on error with parameters<br>
  * - *param* NSError*
- * @return void or ABCWallet* User object or nil if failure
+ * @return ABCWallet* wallet object or nil if failure. If using completion handler, returns void.
  */
-- (ABCWallet *) createWallet:(NSString *)walletName currencyNum:(int) currencyNum error:(NSError **)nserror;
-- (void) createWallet:(NSString *)walletName currencyNum:(int) currencyNum
+- (ABCWallet *) createWallet:(NSString *)walletName currency:(NSString *)currency;
+- (ABCWallet *) createWallet:(NSString *)walletName currency:(NSString *)currency error:(NSError **)nserror;
+- (void) createWallet:(NSString *)walletName currency:(NSString *)currency
              complete:(void (^)(ABCWallet *)) completionHandler
                 error:(void (^)(NSError *)) errorHandler;
 
 
-/*
- * renameWallet
- * @param NSString* walletUUID: UUID of wallet to rename
- * @param NSString*    newName: new name of wallet
- * @return ABCConditionCode
- */
-- (ABCConditionCode) renameWallet:(NSString *)walletUUID
-                          newName:(NSString *)walletName;
-
 - (NSError *)createFirstWalletIfNeeded;
-- (ABCConditionCode) getNumWalletsInAccount:(int *)numWallets;
 
-- (BOOL)hasOTPResetPending;
+/**
+ * Returns an ABCWallet object looked up by walletUUID
+ * @param walletUUID NSString* uuid of wallet to find
+ * @return ABCWallet* Returned wallet object or nil if not found
+ */
+- (ABCWallet *)getWallet:(NSString *)walletUUID;
+
+/**
+ * Changes the order of wallets in [ABCAccount arrayWallets] & [ABCAccount arrayArchivedWallets]
+ * The wallet to move is specified by the 'section' and 'row' of the indexPath. Section 0 specifies wallets
+ * in arrayWallets. Section 1 specifies arrayArchivedWallet. The 'row' specifies the position within the
+ * array. Wallets are reordered by specifying the source wallet
+ * position in sourceIndexPath and destination position in destinationIndexPath.
+ * @param sourceIndexPath NSIndexPath* The position of the wallet to move
+ * @return destinationIndexPath NSIndexPath* The destination array position of the wallet
+ */
+- (NSError *)reorderWallets:(NSIndexPath *)sourceIndexPath
+                toIndexPath:(NSIndexPath *)destinationIndexPath;
+
+/**
+ * Returns the number of wallets in the account
+ * @param error NSError**
+ * @return int number of wallets
+ */
+- (int) getNumWalletsInAccount:(NSError **)error;
+
+/**
+ * Checks if the current account has a pending request to reset (disable)
+ * OTP.
+ * @param error NSError** error object or nil if success
+ * @return BOOL YES if account has pending reset
+ */
+- (BOOL) hasOTPResetPending:(NSError **)error;
 
 /**
  * Gets the locally saved OTP key for the current user.
+ * @param error NSError** error object or nil if success
  * @return key NSString* OTP key
  */
-- (NSString *)getOTPLocalKey;
+- (NSString *)getOTPLocalKey:(NSError **)nserror;
 
 /**
- * setOTPKey
- * Associates an OTP key with the given username.
- * This will not write to disk until the user has successfully logged in
- * at least once.
- * @param NSString* username: user to set the OTP key for
- * @param NSString*      key: key to set
- * @return ABCConditionCode
- */
-- (ABCConditionCode)setOTPKey:(NSString *)username
-                          key:(NSString *)key;
-
-/**
- * removeOTPKey
  * Removes the OTP key for current user.
  * This will remove the key from disk as well.
- * @return ABCConditionCode
+ * @return NSError* or nil if no error
  */
-- (ABCConditionCode)removeOTPKey;
+- (NSError *)removeOTPKey;
 
 /**
- * getOTPDetails
- * Reads the OTP configuration from the server.
- * This will remove the key from disk as well.
- * @param     bool*  enabled: enabled flag if OTP is enabled for this user
- * @param     long*  timeout: number seconds required after a reset is requested
- * @return ABCConditionCode
+ * Reads the OTP configuration from the server. Gets information on whether OTP
+ * is enabled for the current account, and how long a reset request will take.
+ * An OTP reset is a request to disable OTP made through the method
+ * [AirbitzCore requestOTPReset]
+ * @param enabled bool* enabled flag if OTP is enabled for this user
+ * @param timeout long* number seconds required after a reset is requested
+ * @return NSError* or nil if no error
  */
-- (ABCConditionCode)getOTPDetails:(bool *)enabled
-                          timeout:(long *)timeout;
+- (NSError *)getOTPDetails:(bool *)enabled
+                   timeout:(long *)timeout;
 
 /**
- * setOTPAuth
  * Sets up OTP authentication on the server for currently logged in user
  * This will generate a new token if the username doesn't already have one.
- * @param     long   timeout: number seconds required after a reset is requested
- *                            before OTP is disabled.
- * @return ABCConditionCode
+ * @param timeout long number seconds required after a reset is requested
+ * before OTP is disabled.
+ * @return NSError* or nil if no error
  */
-- (ABCConditionCode)setOTPAuth:(long)timeout;
+- (NSError *)setOTPAuth:(long)timeout;
 
 /**
- * removeOTPAuth
  * Removes the OTP authentication requirement from the server for the
  * currently logged in user
- * @return ABCConditionCode
+ * @return NSError* or nil if no error
  */
-- (ABCConditionCode)removeOTPAuth;
+- (NSError *)removeOTPAuth;
 
 /**
- * getOTPResetDateForLastFailedAccountLogin
- *
- * Returns the OTP reset date for the last account that failed to log in,
- * if any. Returns an empty string otherwise.
- * @param NSDate   **date: pointer to NSDate for return value date
- * @return ABCConditionCode
- */
-- (ABCConditionCode)getOTPResetDateForLastFailedAccountLogin:(NSDate **)date;
-
-/**
- * requestOTPReset
- * Launches an OTP reset timer on the server,
- * which will disable the OTP authentication requirement when it expires.
- *
- * This only works after the caller has successfully authenticated
- * with the server, such as through a password login,
- * but has failed to fully log in due to a missing OTP key.
- * @param NSString   *username:
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler: completion handler code block
- * @param errorHandler: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
- */
-- (ABCConditionCode)requestOTPReset:(NSString *)username;
-- (ABCConditionCode)requestOTPReset:(NSString *)username
-                           complete:(void (^)(void)) completionHandler
-                              error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-/**
- * removeOTPResetRequest
  * Removes the OTP reset request from the server for the
  * currently logged in user
- * @return ABCConditionCode
+ * @return NSError* or nil if no error
  */
-- (ABCConditionCode)removeOTPResetRequest;
+- (NSError *)removeOTPResetRequest;
 
 /*
- * uploadLogs
- * @param NSString* userText: text to send to support staff
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param complete: completion handler code block which is called with void
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
- */
-- (ABCConditionCode)uploadLogs:(NSString *)userText;
-- (ABCConditionCode)uploadLogs:(NSString *)userText
-                      complete:(void(^)(void))completionHandler
-                         error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-/*
- * walletRemove
- * @param NSString* uuid: UUID of wallet to delete
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param complete: completion handler code block which is called with void
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
+ * Sets account recovery questions and answers in case use forgets their password
+ * @param password NSString* password of currently logged in user
+ * @param questions NSString* concatenated string of recovery questions separated by '\n' after each question
+ * @param answers NSString* concatenated string of recovery answers separated by '\n' after each answer
+ * @param completionHandler (Optional) code block which is called upon success with void
+ * (Optional. If used, method returns immediately with void)
+ * @param errorHandler (Optional) Code block called on error with parameters<br>
+ * - *param* NSError*
+ * @return NSError* or nil if no error. Returns void if using completionHandler
  */
 
-- (ABCConditionCode)walletRemove:(NSString *)uuid;
-- (ABCConditionCode)walletRemove:(NSString *)uuid
-                        complete:(void(^)(void))completionHandler
-                           error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-/*
- * setRecoveryQuestions
- * @param NSString* password: password of currently logged in user
- * @param NSString* questions: concatenated string of recovery questions separated by '\n' after each question
- * @param NSString* answers: concatenated string of recovery answers separated by '\n' after each answer
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param complete: completion handler code block which is called with void
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
- */
-
-- (ABCConditionCode)setRecoveryQuestions:(NSString *)password
-                               questions:(NSString *)questions
-                                 answers:(NSString *)answers;
-- (ABCConditionCode)setRecoveryQuestions:(NSString *)password
+- (NSError *)setRecoveryQuestions:(NSString *)password
+                        questions:(NSString *)questions
+                          answers:(NSString *)answers;
+- (void)setRecoveryQuestions:(NSString *)password
                                questions:(NSString *)questions
                                  answers:(NSString *)answers
                                 complete:(void (^)(void)) completionHandler
-                                   error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                                   error:(void (^)(NSError *error)) errorHandler;
 
 
 
 /*
- * clearBlockchainCache
- * clears the local cache of blockchain info and force a re-download. This will cause wallets
+ * Clears the local cache of blockchain information and force a re-download. This will cause wallets
  * to report incorrect balances which the blockchain is resynced
- *
- * @param complete: completion handler code block which is called with ABCSpend *
- *                          @param ABCSpend *    abcSpend: ABCSpend object
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCodeOk (always returns Ok)
+ * @param completionHandler (Optional) code block which is called upon success with void
+ * (Optional. If used, method returns immediately with void)
+ * @param errorHandler (Optional) Code block called on error with parameters<br>
+ * - *param* NSError*
+ * @return NSError* or nil if no error. Returns void if using completionHandler
  */
-- (ABCConditionCode)clearBlockchainCache;
-- (ABCConditionCode)clearBlockchainCache:(void (^)(void)) completionHandler
-                                   error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+- (NSError *)clearBlockchainCache;
+- (void)clearBlockchainCache:(void (^)(void)) completionHandler
+                       error:(void (^)(NSError *error)) errorHandler;
 
 
 /*
- * satoshiToCurrency
- *      Convert bitcoin amount in satoshis to a fiat currency amount
- * @param uint_64t     satoshi: amount to convert in satoshis
- * @param int      currencyNum: ISO currency number of fiat currency to convert to
- * @param double    *pCurrency: pointer to resulting value
- * @return ABCConditionCode
+ * Convert bitcoin amount in satoshis to a fiat currency amount
+ * @param satoshi uint_64t amount to convert in satoshis
+ * @param currencyNum int ISO currency number of fiat currency to convert to
+ * @param error NSError** pointer to NSError object
+ * @return double resulting fiat currency value
  */
-- (ABCConditionCode) satoshiToCurrency:(uint64_t) satoshi
-                           currencyNum:(int)currencyNum
-                              currency:(double *)pCurrency;
-
+- (double) satoshiToCurrency:(uint64_t) satoshi
+                 currencyNum:(int)currencyNum
+                       error:(NSError **)error;
 /*
- * currencyToSatoshi
- *      Convert fiat amount to a satoshi amount
- * @param double      currency: amount to convert in satoshis
- * @param int      currencyNum: ISO currency number of fiat currency to convert from
- * @param uint_64t   *pSatoshi: pointer to resulting value
- * @return ABCConditionCode
+ * Convert fiat currency amount to a bitcoin amount in satoshis
+ * @param double Amount in fiat value to convert
+ * @param currencyNum int ISO currency number of fiat currency to convert to
+ * @param error NSError** pointer to NSError object
+ * @return uint_64t Resulting value in satoshis
  */
-- (ABCConditionCode) currencyToSatoshi:(double)currency
-                           currencyNum:(int)currencyNum
-                               satoshi:(int64_t *)pSatoshi;
+- (uint64_t) currencyToSatoshi:(double)currency
+                   currencyNum:(int)currencyNum
+                         error:(NSError **)error;
 
 /*
  * shouldAskUserToEnableTouchID
@@ -438,13 +384,12 @@
  */
 - (BOOL) shouldAskUserToEnableTouchID;
 
-- (ABCConditionCode)accountDataGet:(NSString *)folder withKey:(NSString *)key data:(NSMutableString *)data;
-- (ABCConditionCode)accountDataSet:(NSString *)folder withKey:(NSString *)key withValue:(NSString *)value;
-- (ABCConditionCode)accountDataRemove:(NSString *)folder withKey:(NSString *)key;
-- (ABCConditionCode)accountDataClear:(NSString *)folder;
+- (NSError *)addCategory:(NSString *)strCategory;
 
-- (ABCConditionCode) getLastConditionCode;
-- (NSString *) getLastErrorString;
+- (NSError *)accountDataGet:(NSString *)folder withKey:(NSString *)key data:(NSMutableString *)data;
+- (NSError *)accountDataSet:(NSString *)folder withKey:(NSString *)key withValue:(NSString *)value;
+- (NSError *)accountDataRemove:(NSString *)folder withKey:(NSString *)key;
+- (NSError *)accountDataClear:(NSString *)folder;
 
 
 @end

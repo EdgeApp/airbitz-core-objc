@@ -30,7 +30,7 @@
     return self;
 }
 
-- (ABCConditionCode)loadSettings;
+- (NSError *)loadSettings;
 {
     tABC_Error error;
     tABC_AccountSettings *pSettings = NULL;
@@ -77,10 +77,10 @@
     ABC_FreeAccountSettings(pSettings);
     [self.local loadAll];
 
-    return [self.abcError setLastErrors:error];
+    return [ABCError makeNSError:error];
 }
 
-- (ABCConditionCode)saveSettings;
+- (NSError *)saveSettings;
 {
     tABC_Error error;
     tABC_AccountSettings *pSettings;
@@ -88,8 +88,9 @@
     BOOL settingsChanged = NO;
 
     ABC_LoadAccountSettings([self.user.name UTF8String], [self.user.password UTF8String], &pSettings, &error);
+    NSError *nserror = [ABCError makeNSError:error];
 
-    if (ABCConditionCodeOk == [self.abcError setLastErrors:error])
+    if (!nserror)
     {
         if (pSettings->bDisablePINLogin != self.bDisablePINLogin)
             pinLoginChanged = settingsChanged = YES;
@@ -112,26 +113,13 @@
             settingsChanged = YES;
         }
 
-        if (pinLoginChanged)
-        {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
-
-                if (self.bDisablePINLogin)
-                {
-                    [self deletePINLogin];
-                }
-                else
-                {
-                    [self setupLoginPIN];
-                }
-            });
-        }
-
         if (settingsChanged)
         {
             [self doSetDenominationLabel];
             ABC_UpdateAccountSettings([self.user.name UTF8String], [self.user.password UTF8String], pSettings, &error);
-            if (ABCConditionCodeOk == [self.abcError setLastErrors:error])
+            NSError *nserror = [ABCError makeNSError:error];
+            
+            if (!nserror)
             {
                 ABC_FreeAccountSettings(pSettings);
                 [self.keyChain disableKeychainBasedOnSettings:self.user.name];
@@ -149,42 +137,7 @@
         }
     }
 
-    return (ABCConditionCode) error.code;
-}
-
-- (void)deletePINLogin
-{
-    NSString *username = NULL;
-    if ([self.user isLoggedIn])
-    {
-        username = self.user.name;
-    }
-
-    tABC_Error error;
-    if (username && 0 < username.length)
-    {
-        tABC_CC result = ABC_PinLoginDelete([username UTF8String],
-                &error);
-        if (ABC_CC_Ok != result)
-        {
-            [self.abcError setLastErrors:error];
-        }
-    }
-}
-
-
-
-- (void)setupLoginPIN
-{
-    if (!self.bDisablePINLogin)
-    {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
-            tABC_Error error;
-            ABC_PinSetup([self.user.name UTF8String],
-                    [self.user.password length] > 0 ? [self.user.password UTF8String] : nil,
-                    &error);
-        });
-    }
+    return nserror;
 }
 
 - (BOOL) touchIDEnabled;

@@ -21,20 +21,6 @@
     return self;
 }
 
-- (ABCConditionCode)setLastErrors:(tABC_Error)error;
-{
-    self.lastConditionCode = (ABCConditionCode) error.code;
-    if (ABCConditionCodeOk == self.lastConditionCode)
-    {
-        self.lastErrorString = @"";
-    }
-    else
-    {
-        self.lastErrorString = [ABCError errorMap:error];
-    }
-    return self.lastConditionCode;
-}
-
 + (NSError *)makeNSError:(tABC_Error)error;
 {
     if (ABCConditionCodeOk == error.code)
@@ -53,16 +39,6 @@
                                userInfo:@{ NSLocalizedDescriptionKey:[ABCError errorMap:error] ,
                                            NSLocalizedFailureReasonErrorKey:failureReason}];
     }
-}
-
-- (ABCConditionCode) getLastConditionCode;
-{
-    return self.lastConditionCode;
-}
-
-- (NSString *) getLastErrorString;
-{
-    return self.lastErrorString;
 }
 
 + (NSString *)errorMap:(tABC_Error)error;

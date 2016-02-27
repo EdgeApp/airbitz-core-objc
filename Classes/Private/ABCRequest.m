@@ -10,7 +10,7 @@
 
 }
 @property (nonatomic, strong) ABCError          *abcError;
-@property (nonatomic, strong) ABCAccount           *user; // pointer to ABCAccount object that created request
+@property (nonatomic, strong) ABCAccount        *account; // pointer to ABCAccount object that created request
 @property (nonatomic, strong) ABCWallet         *wallet;
 
 @end
@@ -23,30 +23,30 @@
     return self;
 }
 
-- (ABCConditionCode)finalizeRequest
+- (NSError *)finalizeRequest
 {
     tABC_Error error;
     
-    if (!self.wallet || !self.user || !self.address)
+    if (!self.wallet || !self.account || !self.address)
     {
         error.code = ABC_CC_NULLPtr;
-        return [self.abcError setLastErrors:error];
+        return [ABCError makeNSError:error];
     }
     // Finalize this request so it isn't used elsewhere
-    ABC_FinalizeReceiveRequest([self.user.name UTF8String],
-            [self.user.password UTF8String], [self.wallet.strUUID UTF8String],
+    ABC_FinalizeReceiveRequest([self.account.name UTF8String],
+            [self.account.password UTF8String], [self.wallet.uuid UTF8String],
             [self.address UTF8String], &error);
-    return [self.abcError setLastErrors:error];
+    return [ABCError makeNSError:error];
 }
 
-- (ABCConditionCode)modifyRequestWithDetails;
+- (NSError *)modifyRequestWithDetails;
 {
     tABC_Error error;
     tABC_TxDetails details;
-    ABCConditionCode ccode;
     unsigned char *pData = NULL;
     char *szRequestAddress = NULL;
     char *pszURI = NULL;
+    NSError *nserror = nil;
     
     //first need to create a transaction details struct
     memset(&details, 0, sizeof(tABC_TxDetails));
@@ -65,28 +65,27 @@
     
     char *pRequestID = (char *)[self.address UTF8String];
 
-    ABC_ModifyReceiveRequest([self.wallet.user.name UTF8String],
-                             [self.wallet.user.password UTF8String],
-                             [self.wallet.strUUID UTF8String],
+    ABC_ModifyReceiveRequest([self.wallet.account.name UTF8String],
+                             [self.wallet.account.password UTF8String],
+                             [self.wallet.uuid UTF8String],
                              pRequestID,
                              &details,
                              &error);
-    ccode = [self.abcError setLastErrors:error];
-    if (ABCConditionCodeOk != ccode)
-        goto exitnow;
+    nserror = [ABCError makeNSError:error];
+    if (nserror) goto exitnow;
     
     unsigned int width = 0;
-    ABC_GenerateRequestQRCode([self.wallet.user.name UTF8String],
-                              [self.wallet.user.password UTF8String],
-                              [self.wallet.strUUID UTF8String],
+    ABC_GenerateRequestQRCode([self.wallet.account.name UTF8String],
+                              [self.wallet.account.password UTF8String],
+                              [self.wallet.uuid UTF8String],
                               pRequestID,
                               &pszURI,
                               &pData,
                               &width,
                               &error);
-    ccode = [self.abcError setLastErrors:error];
-    if (ABCConditionCodeOk != ccode)
-        goto exitnow;
+    nserror = [ABCError makeNSError:error];
+    if (nserror) goto exitnow;
+    
     self.qrCode = [ABCUtil dataToImage:pData withWidth:width andHeight:width];
     self.uri    = [NSString stringWithUTF8String:pszURI];
     
@@ -96,7 +95,7 @@ exitnow:
     if (pData) free(pData);
     if (pszURI) free(pszURI);
     
-    return ccode;
+    return nserror;
 }
 
 

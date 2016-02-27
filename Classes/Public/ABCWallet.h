@@ -24,8 +24,8 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 
 @interface ABCWallet : NSObject
 
-@property (nonatomic, copy)     NSString        *strUUID;
-@property (nonatomic, copy)     NSString        *strName;
+@property (nonatomic, copy)     NSString        *uuid;
+@property (nonatomic, copy)     NSString        *name;
 @property (nonatomic, assign)   int             currencyNum;
 @property (nonatomic, copy)     NSString        *currencyAbbrev;
 @property (nonatomic, copy)     NSString        *currencySymbol;
@@ -33,54 +33,82 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 @property (nonatomic, assign)   double          balance;
 @property (nonatomic, strong)   NSArray         *arrayTransactions;
 @property (nonatomic, assign)   BOOL            loaded;
-@property (nonatomic, strong)   ABCAccount         *user;
+@property (nonatomic, strong)   ABCAccount      *account;
+
+/**
+ * @param newName NSString* new name of wallet
+ * NSError* error code
+ */
+- (NSError *) renameWallet:(NSString *)newName;
+
+/**
+ * Deletes wallet from user's account. This will render wallet completely inaccessible including any
+ * future funds that may be sent to any addresses in this wallet. Give users ample warning before
+ * calling this routine.
+ * @param completionHandler Completion handler code block which is called with void. (Optional. If used, method
+ * returns immediately with void)
+ * @param errorHandler Error handler code block which is called with the following args<br>
+ * - *param* NSError* error object
+ * @return NSError* or nil if no error. Returns void if completion handlers are used.
+ */
+- (void)removeWallet:(void(^)(void))completionHandler
+               error:(void (^)(NSError *error)) errorHandler;
+- (NSError *)removeWallet;
+
 
 
 /** Create a receive request from the current wallet. User should pass in an allocated
  * ABCRequest object with optional values set for amountSatoshi, payee, category, notes, or bizID.
  * The object will have a uri, address, and QRcode UIImage filled in when method completes
  * @param request ABCRequest*
- * @param complete (Optional) Code block called on success. Returns void if used
- * @param error (Optional) Code block called on error with parameters<br>
- * - *param* ABCCondition code<br>
- * - *param* NSString* errorString
- * @return ABCAccount* User object or nil if failure
+ * @param completionHandler Completion handler code block which is called with void. (Optional. If used, method
+ * returns immediately with void)
+ * @param errorHandler Error handler code block which is called with the following args<br>
+ * - *param* NSError* error object
+ * @return NSError* or nil if no error. Returns void if completion handlers are used.
  */
-- (ABCConditionCode)createReceiveRequestWithDetails:(ABCRequest *)request;
+- (NSError *)createReceiveRequestWithDetails:(ABCRequest *)request;
 - (void)createReceiveRequestWithDetails:(ABCRequest *)request
                                complete:(void (^)(void)) completionHandler
-                                  error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                                  error:(void (^)(NSError *error)) errorHandler;
 
 /**
  * Finalizes the request so the address cannot be used by future requests. Forces address
  * rotation so the next request gets a different address
  * @param requestID NSString* Bitcoin address to finalize
- * @return ABCConditionCode
+ * @return NSError* error object
  */
-- (ABCConditionCode)finalizeRequestWithAddress:(NSString *)address;
+- (NSError *)finalizeRequestWithAddress:(NSString *)address;
 
 /**
  * Create an ABCSpend object from text. Text could be a bitcoin address or BIP21/BIP70 URI.
- * @param uri NSString*  bitcoin address or full BIP21/BIP70 uri
- * @param complete (Optional) Code block called on success. Method returns void if used
- * - *param* ABCSpend* ABCSpend object.
- * @param error (Optional) Code block called on error with parameters<br>
- * - *param* ABCCondition code<br>
- * - *param* NSString* errorString
- * @return ABCSpend* ABCSpend object or nil if failure
+ * @param uri NSString*  Bitcoin address or full BIP21/BIP70 uri
+ * @param error NSError** Pointer to error object.
+ * @return ABCSpend* ABCSpend object or nil if failure.
  */
-- (ABCSpend *)newSpendFromText:(NSString *)uri;
+- (ABCSpend *)newSpendFromText:(NSString *)uri error:(NSError **)error;
+
+/**
+ * Create an ABCSpend object from text. Text could be a bitcoin address or BIP21/BIP70 URI.
+ * @param uri NSString*  Bitcoin address or full BIP21/BIP70 uri
+ * @param completionHandler Completion handler code block which is called with ABCSpend*.<br>
+ * - *param* ABCSpend* ABCSpend object.
+ * @param errorHandler Error handler code block which is called with the following args<br>
+ * - *param* NSError* error object
+ * @return void
+ */
 - (void)newSpendFromText:(NSString *)uri
                 complete:(void(^)(ABCSpend *sp))completionHandler
-                   error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                   error:(void (^)(NSError *error)) errorHandler;
 
 /**
  * Creates a ABCSpend object from a wallet to wallet transfer. Transfer goes from
  * current object wallet to [ABCWallet] destWallet
  * @param destWallet ABCWallet* of destination wallet for transfer
+ * @param error NSError** Pointer to error object.
  * @return ABCSpend* ABCSpend object or nil if failure
  */
-- (ABCSpend *)newSpendTransfer:(ABCWallet *)destWallet;
+- (ABCSpend *)newSpendTransfer:(ABCWallet *)destWallet error:(NSError **)error;
 
 - (ABCSpend *)newSpendInternal:(NSString *)address
                          label:(NSString *)label
@@ -90,15 +118,19 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 
 /**
  * Export a wallet's transactions to CSV format
- * @return csv NSString* full CSV export in a single NSString
+ * @param csv NSMutableString* allocated and initialized mutable string to receive CSV contents.
+ *  Must not be nil.
+ * @return NSError* error object. nil if success
  */
-- (NSString *)exportTransactionsToCSV;
+- (NSError *)exportTransactionsToCSV:(NSMutableString *) csv;
 
 /*
  * Export a wallet's private seed in raw entropy format
- * @return seed NSString*
+ * @param seed NSMutableString* allocated and initialized mutable string to receive private seed contents.
+ *  Must not be nil.
+ * @return NSError* error object. nil if success
  */
-- (NSString *)exportWalletPrivateSeed;
+- (NSError *)exportWalletPrivateSeed:(NSMutableString *) seed;
 
 /**
  * Import (sweep) private key funds into this wallet. Private key is discarded
@@ -111,25 +143,21 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  * - *param* address NSString* public address of private key<br>
  * - *param* txid NSString* txid of transaction that swept funds<br>
  * - *param* amount uint64_t amount of satoshis swept into wallet
- * @param error Code block called on error with parameters<br>
- * - *param* ABCCondition code<br>
- * - *param* NSString* errorString
+ * @param errorHandler Error code block called on error with parameters<br>
+ * - *param* NSError* error
  * @return void
  */
 - (void)importPrivateKey:(NSString *)privateKey
                importing:(void (^)(NSString *address)) importingHandler
                 complete:(void (^)(ABCImportDataModel dataModel, NSString *address, NSString *txid, uint64_t amount)) completionHandler
-                   error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                   error:(void (^)(NSError *)) errorHandler;
 
 - (void)prioritizeAddress:(NSString *)address;
-- (void) loadTransactions;
 - (ABCTransaction *)getTransaction:(NSString *) txId;
 - (int64_t)getTotalSentToday;
 - (void)refreshServer:(BOOL)bData notify:(void(^)(void))cb;
 - (NSString *)conversionString;
 - (NSMutableArray *)searchTransactionsIn:(NSString *)term addTo:(NSMutableArray *) arrayTransactions;
-- (ABCConditionCode) getLastConditionCode;
-- (NSString *) getLastErrorString;
 - (void)loadWalletFromCore:(NSString *)uuid;
 
 
