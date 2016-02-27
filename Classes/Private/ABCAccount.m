@@ -1930,11 +1930,6 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
             ABCLog(1, @"EventCallback: NULL pointer from ABC");
         }
         [wallet handleSweepCallback:txid amount:amount error:error];
-    } else if (ABC_AsyncEventType_FailedSweep == pInfo->eventType) {
-        if (!wallet) {
-            ABCLog(1, @"EventCallback: NULL pointer from ABC");
-        }
-        [wallet handleSweepCallback:txid amount:amount error:error];
     }
 }
 

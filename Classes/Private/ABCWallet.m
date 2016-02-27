@@ -161,7 +161,6 @@ static const int importTimeout                  = 30;
     ABC_CreateReceiveRequest([self.account.name UTF8String],
                              [self.account.password UTF8String],
                              [request.wallet.uuid UTF8String],
-                             &details,
                              &pRequestID,
                              &error);
     nserror = [ABCError makeNSError:error];

@@ -842,12 +842,11 @@
 - (void)signInWithRecoveryAnswers:(NSString *)username
                           answers:(NSString *)answers
                               otp:(NSString *)otp
-                         complete:(void (^)(BOOL validAnswers)) completionHandler
+                         complete:(void (^)(void)) completionHandler
                             error:(void (^)(NSError *, NSDate *resetDate)) errorHandler;
 {
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
-        bool bABCValid = false;
         tABC_Error error;
         NSError *nserror;
         NSDate *resetDate;
@@ -856,12 +855,11 @@
         {
             nserror = [self setOTPKey:username key:otp];
         }
-        
+
         // This actually logs in the user
-        ABC_CheckRecoveryAnswers([username UTF8String],
-                                 [answers UTF8String],
-                                 &bABCValid,
-                                 &error);
+        ABC_RecoveryLogin([username UTF8String],
+                          [answers UTF8String],
+                          &error);
         nserror = [ABCError makeNSError:error];
         
         if (ABCConditionCodeInvalidOTP == nserror.code)
@@ -894,7 +892,7 @@
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             if (!nserror)
             {
-                if (completionHandler) completionHandler(bABCValid);
+                if (completionHandler) completionHandler();
             }
             else
             {

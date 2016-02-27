@@ -243,9 +243,8 @@ typedef enum eABCDeviceCaps
  * @param username NSString*
  * @param answers  NSString* concatenated string of recovery answers separated by '\n' after each answer
  * @param otp NSString* OTP token if needed to login. May be set to nil.
- * @param complete: completion handler code block<br>
- * - *param* BOOL validAnswers TRUE if recovery answers are correct
- * @param error: error handler code block which is called with the following args<br>
+ * @param completionHandler Completion handler code block<br>
+ * @param errorHandler Error handler code block which is called with the following args<br>
  * - *param* NSError*<br>
  * - *param* NSDate* resetDate If login fails due to OTP and a reset has been requested, this contains
  *  the date that the reset will occur.
@@ -254,7 +253,7 @@ typedef enum eABCDeviceCaps
 - (void)signInWithRecoveryAnswers:(NSString *)username
                           answers:(NSString *)answers
                               otp:(NSString *)otp
-                         complete:(void (^)(BOOL validAnswers)) completionHandler
+                         complete:(void (^)(void)) completionHandler
                             error:(void (^)(NSError *, NSDate *resetDate)) errorHandler;
 
 /**
