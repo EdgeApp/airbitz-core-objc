@@ -122,19 +122,14 @@
 
 
 // New methods
-- (void)reorderWallets: (NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath;
 - (void)makeCurrentWallet:(ABCWallet *)wallet;
 - (void)makeCurrentWalletWithIndex:(NSIndexPath *)indexPath;
 - (void)makeCurrentWalletWithUUID:(NSString *)uuid;
 - (ABCWallet *)selectWalletWithUUID:(NSString *)uuid;
-- (void)addCategory:(NSString *)strCategory;
 - (void)loadCategories;
 - (void)saveCategories:(NSMutableArray *)saveArrayCategories;
 - (BOOL) isLoggedIn;
 
-
-
-- (ABCWallet *)getWallet: (NSString *)walletUUID;
 
 - (bool)setWalletAttributes: (ABCWallet *) wallet;
 
@@ -196,6 +191,7 @@
  * a PIN-only account.
  * @return BOOL true if user has a password
  */
+- (BOOL)passwordExists:(NSError **)error;
 - (BOOL)passwordExists;
 
 /**
@@ -233,6 +229,25 @@
 
 
 - (NSError *)createFirstWalletIfNeeded;
+
+/**
+ * Returns an ABCWallet object looked up by walletUUID
+ * @param walletUUID NSString* uuid of wallet to find
+ * @return ABCWallet* Returned wallet object or nil if not found
+ */
+- (ABCWallet *)getWallet:(NSString *)walletUUID;
+
+/**
+ * Changes the order of wallets in [ABCAccount arrayWallets] & [ABCAccount arrayArchivedWallets]
+ * The wallet to move is specified by the 'section' and 'row' of the indexPath. Section 0 specifies wallets
+ * in arrayWallets. Section 1 specifies arrayArchivedWallet. The 'row' specifies the position within the
+ * array. Wallets are reordered by specifying the source wallet
+ * position in sourceIndexPath and destination position in destinationIndexPath.
+ * @param sourceIndexPath NSIndexPath* The position of the wallet to move
+ * @return destinationIndexPath NSIndexPath* The destination array position of the wallet
+ */
+- (NSError *)reorderWallets:(NSIndexPath *)sourceIndexPath
+                toIndexPath:(NSIndexPath *)destinationIndexPath;
 
 /**
  * Returns the number of wallets in the account
@@ -369,10 +384,12 @@
  */
 - (BOOL) shouldAskUserToEnableTouchID;
 
-- (ABCConditionCode)accountDataGet:(NSString *)folder withKey:(NSString *)key data:(NSMutableString *)data;
-- (ABCConditionCode)accountDataSet:(NSString *)folder withKey:(NSString *)key withValue:(NSString *)value;
-- (ABCConditionCode)accountDataRemove:(NSString *)folder withKey:(NSString *)key;
-- (ABCConditionCode)accountDataClear:(NSString *)folder;
+- (NSError *)addCategory:(NSString *)strCategory;
+
+- (NSError *)accountDataGet:(NSString *)folder withKey:(NSString *)key data:(NSMutableString *)data;
+- (NSError *)accountDataSet:(NSString *)folder withKey:(NSString *)key withValue:(NSString *)value;
+- (NSError *)accountDataRemove:(NSString *)folder withKey:(NSString *)key;
+- (NSError *)accountDataClear:(NSString *)folder;
 
 
 @end

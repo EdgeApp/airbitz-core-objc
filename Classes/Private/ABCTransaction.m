@@ -53,8 +53,6 @@
                                                    [self.txid UTF8String],
                                                    &pDetails, &Error);
         if (ABC_CC_Ok != result) {
-            [self.abcError setLastErrors:Error];
-            //            return false;
             return;
         }
         
@@ -71,17 +69,12 @@
                                            pDetails, &Error);
         
         if (ABC_CC_Ok != result) {
-            [self.abcError setLastErrors:Error];
-            //            return false;
             return;
         }
         
         [self.wallet.account refreshWallets];
-        //        return true;
         return;
     }];
-    
-    return; // This might as well be a void. async task return value can't ever really be tested
 }
 
 

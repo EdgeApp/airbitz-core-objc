@@ -46,10 +46,10 @@ typedef NS_ENUM(NSUInteger, ABCDenomination) {
 @property (nonatomic) bool bDisablePINLogin;
 
 /// Loads all settings into [ABCSettings] structure
-- (ABCConditionCode)loadSettings;
+- (NSError *)loadSettings;
 
 /// Saves all settings from [ABCSettings] structure
-- (ABCConditionCode)saveSettings;
+- (NSError *)saveSettings;
 
 - (BOOL) touchIDEnabled;
 - (BOOL) enableTouchID;

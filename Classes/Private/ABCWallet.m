@@ -281,8 +281,7 @@ exitnow:
     if (!destWallet)
     {
         error.code = (tABC_CC)ABCConditionCodeNULLPtr;
-        [self.abcError setLastErrors:error];
-        return nil;
+        nserror2 = [ABCError makeNSError:error];
     }
     else
     {
@@ -314,8 +313,8 @@ exitnow:
     ABC_SpendNewInternal([address UTF8String], [label UTF8String],
                          [category UTF8String], [notes UTF8String],
                          amountSatoshi, &pSpend, &error);
-    ABCConditionCode ccode = [self.abcError setLastErrors:error];
-    if (ABCConditionCodeOk == ccode)
+    NSError *nserror = [ABCError makeNSError:error];
+    if (!nserror)
     {
         [abcSpend spendObjectSet:(void *)pSpend];
         return abcSpend;
@@ -461,7 +460,7 @@ exitnow:
     return nserror;
 }
 
-- (ABCConditionCode)finalizeRequestWithAddress:(NSString *)address;
+- (NSError *)finalizeRequestWithAddress:(NSString *)address;
 {
     tABC_Error error;
     ABC_FinalizeReceiveRequest([self.account.name UTF8String],
@@ -469,9 +468,10 @@ exitnow:
                                [self.uuid UTF8String],
                                [address UTF8String],
                                &error);
-    return [self.abcError setLastErrors:error];
+    return [ABCError makeNSError:error];
 }
 
+/// XXX move to ABCAddress object
 - (void)prioritizeAddress:(NSString *)address;
 {
     if (!address)
@@ -484,8 +484,6 @@ exitnow:
                               [self.uuid UTF8String],
                               [address UTF8String],
                               &Error);
-        [self.abcError setLastErrors:Error];
-        
     }];
 }
 
@@ -507,7 +505,6 @@ exitnow:
     else
     {
         ABCLog(2,@("Error: AirbitzCore.loadTransactions:  %s\n"), Error.szDescription);
-        [self.abcError setLastErrors:Error];
     }
     ABC_FreeTransaction(pTrans);
     return transaction;
@@ -571,7 +568,6 @@ exitnow:
     else
     {
         ABCLog(2,@("Error: AirbitzCore.loadTransactions:  %s\n"), Error.szDescription);
-        [self.abcError setLastErrors:Error];
     }
     ABC_FreeTransactions(aTransactions, tCount);
 }
@@ -668,7 +664,6 @@ exitnow:
     else
     {
         ABCLog(2,@("Error: AirbitzCore.searchTransactionsIn:  %s\n"), Error.szDescription);
-        [self.abcError setLastErrors:Error];
     }
     ABC_FreeTransactions(aTransactions, tCount);
     return arrayTransactions;
@@ -746,7 +741,6 @@ exitnow:
                                    [self.uuid UTF8String],
                                    &bDirty,
                                    &error);
-                [self.abcError setLastErrors:error];
                 dispatch_async(dispatch_get_main_queue(),^{
                     if (cb) cb();
                 });
@@ -764,20 +758,6 @@ exitnow:
 {
     return [self.account conversionStringFromNum:self.currencyNum withAbbrev:YES];
 }
-
-
-
-- (ABCConditionCode) getLastConditionCode;
-{
-    return [self.abcError getLastConditionCode];
-}
-
-- (NSString *) getLastErrorString;
-{
-    return [self.abcError getLastErrorString];
-}
-
-
 
 // overriding the NSObject isEqual
 // allows us to call things like removeObject in array's of these
@@ -843,22 +823,7 @@ exitnow:
 - (void)handleSweepCallback:(NSString *)txid amount:(uint64_t)amount error:(NSError *)error;
 {
     [self cancelImportExpirationTimer];
-//    
-//    tABC_Error error;
-//    ABCConditionCode ccode;
-//    error.code = cc;
-//    ccode = [wallet.abcError setLastErrors:error];
-//    
-//    NSString *txid = nil;
-//    if (szID)
-//    {
-//        txid = [NSString stringWithUTF8String:szID];
-//    }
-//    else
-//    {
-//        txid = @"";
-//    }
-//    
+    
     if (!error)
     {
         dispatch_async(dispatch_get_main_queue(), ^{

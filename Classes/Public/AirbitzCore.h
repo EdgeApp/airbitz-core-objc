@@ -275,9 +275,10 @@ typedef enum eABCDeviceCaps
  * Check if specified username has a password on the account or if it is
  * a PIN-only account.
  * @param username NSString* user to check
+ * @param error NSError**
  * @return BOOL true if user has a password
  */
-- (BOOL)passwordExists:(NSString *)username;
+- (BOOL)passwordExists:(NSString *)username error:(NSError **)error;
 
 /** Checks a password for valid entropy looking for correct minimum
  *  requirements such as upper, lowercase letters, numbers, and # of digits. This should be used
@@ -430,16 +431,15 @@ typedef enum eABCDeviceCaps
 /**
  * Returns an array of usernames of accounts local to device that
  * have a pending OTP reset on the server. 
+ * @param error NSError object
  * @return NSArray* of NSString* of usernames
  */
-- (NSArray *)getOTPResetUsernames;
+- (NSArray *)getOTPResetUsernames:(NSError **)error;
 
 /**
  * Launches an OTP reset timer on the server,
  * which will disable the OTP authentication requirement when it expires.
- *
  * @param username NSString*
- *
  * (Optional. If used, method returns immediately with void)
  * @param completionHandler: completion handler code block
  * @param error error handler code block which is called with the following args<br>
@@ -450,8 +450,7 @@ typedef enum eABCDeviceCaps
 - (void)requestOTPReset:(NSString *)username
                complete:(void (^)(void)) completionHandler
                   error:(void (^)(NSError *error)) errorHandler;
-- (NSError *)requestOTPReset:(NSString *)username
-                    password:(NSString *)password;
+- (NSError *)requestOTPReset:(NSString *)username;
 
 #pragma mark - System Calls and Queries
 /// ------------------------------------------------------------------
@@ -527,14 +526,14 @@ typedef enum eABCDeviceCaps
  * This collapses spaces, converts things to lowercase,
  * and checks for invalid characters.
  */
-+ (NSString *)fixUsername:(NSString *)username;
+//+ (NSString *)fixUsername:(NSString *)username;
 
 /**
  * Encodes a string into a QR code returned as UIImage *
  * @param string NSString* string to encode
  * @return UIImage* returned image
  */
-+ (UIImage *)encodeStringToQRImage:(NSString *)string;
++ (UIImage *)encodeStringToQRImage:(NSString *)string error:(NSError **)error;
 
 /**
  * Given a currency code, returns the 3 digit currency code. ie. "USD, CAD, EUR"

@@ -43,56 +43,47 @@
 
 /*
  * signTx
- * @param NSString *txData: pointer to string return signed tx
- *
- * @return ABCConditionCode
+ * @param txData NSMutableString* pointer to string return signed tx. Must be initialized and non-nil.
+ * @return NSError* Error object. nil if success
 */
-- (ABCConditionCode)signTx:(NSString **)txData;
+- (NSError *)signTx:(NSMutableString *)txData;
 
 /*
  * signTx
- * @param complete: completion handler code block which is called with uint64_t totalFees
- *                          @param NSString *txData: signed transaction data
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
+ * @param completionHandler Completion handler code block which is called with uint64_t totalFees
+ * - *param* txData NSString* Signed transaction data
+ * @param errorHandler Error handler code block which is called with the following args<br>
+ * - *param* NSError* error object
  * @return void
 */
 - (void)signTx:(void (^)(NSString * txData)) completionHandler
-        error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+        error:(void (^)(NSError *error)) errorHandler;
 
 
-- (ABCConditionCode)broadcastTx:(NSString *)rawTx;
-- (ABCConditionCode)saveTx:(NSString *)rawTx txId:(NSString **)txId;
+- (NSError *)broadcastTx:(NSString *)rawTx;
+- (NSError *)saveTx:(NSString *)rawTx txId:(NSMutableString *)txId;
 - (void)signAndSaveTx:(void (^)(NSString * rawTx)) completionHandler
-                error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-- (ABCConditionCode)signBroadcastSaveTx:(NSString **)txId;
+                error:(void (^)(NSError *error)) errorHandler;
+- (NSError *)signBroadcastSaveTx:(NSMutableString *)txId;
 - (void)signBroadcastSaveTx:(void (^)(NSString * txId)) completionHandler
-        error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                      error:(void (^)(NSError *error)) errorHandler;
 
 
 /*
- * calcSendFees
- * @param NSString *walletUUID:
+ * Calculate the amount of fees needed to send this transaction
  * @param uint64_t *totalFees: pointer to populate with total fees
- *
- * @return ABCConditionCode
+ * @return NSError*
 */
-- (ABCConditionCode)calcSendFees:(NSString *)walletUUID
-                       totalFees:(uint64_t *)totalFees;
+- (NSError *)calcSendFees:(uint64_t *)totalFees;
 
 /*
- * calcSendFeesAsync
- * @param NSString *walletUUID:
- * @param complete: completion handler code block which is called with uint64_t totalFees
- *                          @param uint64_t           totalFees: total transaction fees
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
+ * @param completionHandler Code block which is called with uint64_t totalFees
+ * - *param* uint64_t totalFees total transaction fees
+ * @param errorHandler Code block which is called with the following args
+ * - *param* NSError* error object
  * @return void
 */
-- (void)calcSendFees:(NSString *)walletUUID
-            complete:(void (^)(uint64_t totalFees)) completionHandler
-               error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+- (void)calcSendFees:(void (^)(uint64_t totalFees)) completionHandler
+               error:(void (^)(NSError *error)) errorHandler;
 
 @end

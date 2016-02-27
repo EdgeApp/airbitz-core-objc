@@ -9,7 +9,6 @@
 
 @property (nonatomic)               tABC_SpendTarget        *pSpend;
 @property (nonatomic, strong)       ABCWallet               *wallet;
-@property (nonatomic, strong)       ABCError                *abcError;
 
 @end
 
@@ -22,7 +21,7 @@
         self.pSpend = NULL;
         self.bizId = 0;
         self.wallet = wallet;
-        self.abcError = [[ABCError alloc] init];
+//        self.abcError = [[ABCError alloc] init];
     }
     return self;
 }
@@ -59,136 +58,144 @@
 }
 
 
-- (ABCConditionCode)signTx:(NSString **)txData;
+- (NSError *)signTx:(NSMutableString *)txData;
 {
     NSString *rawTx = nil;
     char *szRawTx = NULL;
     tABC_Error error;
+    
+    if (!txData)
+    {
+        error.code = ABC_CC_NULLPtr;
+        return [ABCError makeNSError:error];
+    }
 
     ABC_SpendSignTx([self.wallet.account.name UTF8String],
             [self.srcWallet.uuid UTF8String], _pSpend, &szRawTx, &error);
-    ABCConditionCode ccode = [self.abcError setLastErrors:error];
-    if (ABCConditionCodeOk == ccode)
+    NSError *nserror = [ABCError makeNSError:error];
+    if (!nserror)
     {
         rawTx = [NSString stringWithUTF8String:szRawTx];
         free(szRawTx);
-        *txData = rawTx;
+        [txData setString:rawTx];
     }
-    return ccode;
+    return nserror;
 }
 - (void)signTx:(void (^)(NSString * txData)) completionHandler
-        error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+        error:(void (^)(NSError *error)) errorHandler;
 {
     [self.wallet.account postToMiscQueue:^
     {
-        NSString *txData;
-        ABCConditionCode ccode = [self signTx:&txData];
-        NSString *errorString  = [self.abcError getLastErrorString];
+        NSMutableString *txData = [[NSMutableString alloc] init];
+        NSError *error = [self signTx:txData];
 
         dispatch_async(dispatch_get_main_queue(), ^(void) {
-            if (ABCConditionCodeOk == ccode)
+            if (!error)
             {
                 if (completionHandler) completionHandler(txData);
             }
             else
             {
-                if (errorHandler) errorHandler(ccode, errorString);
+                if (errorHandler) errorHandler(error);
             }
         });
     }];
 }
 
 - (void)signAndSaveTx:(void (^)(NSString * rawTx)) completionHandler
-         error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                error:(void (^)(NSError *error)) errorHandler;
 {
     [self.wallet.account postToMiscQueue:^
     {
-        NSString *rawTx;
-        NSString *txId;
+        NSMutableString *rawTx = [[NSMutableString alloc] init];
+        NSMutableString *txId = [[NSMutableString alloc] init];
 
-        ABCConditionCode ccode = [self signTx:&rawTx];
-        if (ABCConditionCodeOk == ccode)
+        NSError *error = [self signTx:rawTx];
+        if (!error)
         {
-            ccode = [self saveTx:rawTx txId:&txId];
+            error = [self saveTx:rawTx txId:txId];
         }
-        NSString *errorString  = [self.abcError getLastErrorString];
 
         dispatch_async(dispatch_get_main_queue(), ^(void) {
-            if (ABCConditionCodeOk == ccode)
+            if (!error)
             {
                 if (completionHandler) completionHandler(rawTx);
             }
             else
             {
-                if (errorHandler) errorHandler(ccode, errorString);
+                if (errorHandler) errorHandler(error);
             }
         });
     }];
 }
 
-- (ABCConditionCode)broadcastTx:(NSString *)rawTx;
+- (NSError *)broadcastTx:(NSString *)rawTx;
 {
     tABC_Error error;
     ABC_SpendBroadcastTx([self.wallet.account.name UTF8String],
         [self.srcWallet.uuid UTF8String], _pSpend, (char *)[rawTx UTF8String], &error);
-    return [self.abcError setLastErrors:error];
+    return [ABCError makeNSError:error];
 }
 
-- (ABCConditionCode)saveTx:(NSString *)rawTx txId:(NSString **)txId
+- (NSError *)saveTx:(NSString *)rawTx txId:(NSMutableString *)txId;
 {
     NSString *txidTemp = nil;
     char *szTxId = NULL;
     tABC_Error error;
+    NSError *nserror = nil;
 
     ABC_SpendSaveTx([self.wallet.account.name UTF8String],
         [self.srcWallet.uuid UTF8String], _pSpend, (char *)[rawTx UTF8String], &szTxId, &error);
-    ABCConditionCode ccode = [self.abcError setLastErrors:error];
-    if (ccode == ABCConditionCodeOk) {
+    nserror = [ABCError makeNSError:error];
+    if (!nserror)
+    {
         txidTemp = [NSString stringWithUTF8String:szTxId];
         free(szTxId);
         [self updateTransaction:txidTemp];
-        *txId = txidTemp;
+        if (txId)
+        {
+            [txId setString:txidTemp];
+        }
     }
-    return ccode;
+    return nserror;
 }
 
-- (ABCConditionCode)signBroadcastSaveTx:(NSString **)txId;
+- (NSError *)signBroadcastSaveTx:(NSMutableString *)txId;
 {
-    NSString *txIdTemp = nil;
-    NSString *rawTx;
-    ABCConditionCode ccode = [self signTx:&rawTx];
-    if (nil != rawTx)
+    NSMutableString *rawTx = [[NSMutableString alloc] init];
+    NSError *nserror = [self signTx:rawTx];
+    if (!nserror)
     {
-        ccode = [self broadcastTx:rawTx];
-        if (ABCConditionCodeOk == ccode)
+        nserror = [self broadcastTx:rawTx];
+        if (!nserror)
         {
-            ccode = [self saveTx:rawTx txId:&txIdTemp];
-            if (ABCConditionCodeOk == ccode)
+            NSMutableString *txIdTemp = [[NSMutableString alloc] init];
+            nserror = [self saveTx:rawTx txId:txIdTemp];
+            if (!nserror && txId)
             {
-                *txId = txIdTemp;
+                [txId setString:txIdTemp];
             }
         }
     }
-    return ccode;
+    return nserror;
 }
 
 - (void)signBroadcastSaveTx:(void (^)(NSString * txId)) completionHandler
-         error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                      error:(void (^)(NSError *error)) errorHandler;
 {
     [self.wallet.account postToMiscQueue:^
     {
-        NSString *txId;
-        ABCConditionCode ccode = [self signBroadcastSaveTx:&txId];
-        NSString *errorString  = [self.abcError getLastErrorString];
+        NSMutableString *txId = [[NSMutableString alloc] init];
+        NSError *error = [self signBroadcastSaveTx:txId];
 
         dispatch_async(dispatch_get_main_queue(), ^(void) {
-            if (ABCConditionCodeOk == ccode)
+            if (!error)
             {
                 if (completionHandler) completionHandler(txId);
             }
             else
             {
-                if (errorHandler) errorHandler(ccode, errorString);
+                if (errorHandler) errorHandler(error);
             }
         });
     }];
@@ -260,34 +267,31 @@
     return result;
 }
 
-- (ABCConditionCode)calcSendFees:(NSString *)walletUUID
-                       totalFees:(uint64_t *)totalFees
+- (NSError *)calcSendFees:(uint64_t *)totalFees
 {
     tABC_Error error;
     [self copyOBJCtoABC];
     ABC_SpendGetFee([self.wallet.account.name UTF8String],
-        [walletUUID UTF8String], self.pSpend, totalFees, &error);
-    return [self.abcError setLastErrors:error];
+        [self.wallet.uuid UTF8String], self.pSpend, totalFees, &error);
+    return [ABCError makeNSError:error];
 }
 
-- (void)calcSendFees:(NSString *)walletUUID
-            complete:(void (^)(uint64_t totalFees)) completionHandler
-               error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+- (void)calcSendFees:(void (^)(uint64_t totalFees)) completionHandler
+               error:(void (^)(NSError *error)) errorHandler;
 {
     [self.wallet.account postToMiscQueue:^
     {
         uint64_t totalFees = 0;
-        ABCConditionCode ccode = [self calcSendFees:walletUUID totalFees:&totalFees];
-        NSString *errorString  = [self.abcError getLastErrorString];
+        NSError *error = [self calcSendFees:&totalFees];
 
         dispatch_async(dispatch_get_main_queue(), ^(void) {
-            if (ABCConditionCodeOk == ccode)
+            if (!error)
             {
                 if (completionHandler) completionHandler(totalFees);
             }
             else
             {
-                if (errorHandler) errorHandler(ccode, errorString);
+                if (errorHandler) errorHandler(error);
             }
         });
     }];

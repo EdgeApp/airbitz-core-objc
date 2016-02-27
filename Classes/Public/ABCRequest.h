@@ -54,15 +54,15 @@
 /**
  * Finalizes the request so the address cannot be used by future requests. Forces address
  * rotation so the next request gets a different address
- * @return ABCConditionCode
+ * @return NSError*
  */
-- (ABCConditionCode)finalizeRequest;
+- (NSError *)finalizeRequest;
 
 /**
  * Modify a request based on the values in the ABCRequest structure
- * @return ABCConditionCode
+ * @return NSError*
  */
-- (ABCConditionCode)modifyRequestWithDetails;
+- (NSError *)modifyRequestWithDetails;
 
 - (id)init;
 @end

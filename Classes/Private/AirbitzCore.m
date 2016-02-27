@@ -98,13 +98,12 @@
                 (unsigned char *)[seedData bytes],
                 (unsigned int)[seedData length],
                 &Error);
-        [self setLastErrors:Error];
+        if ([ABCError makeNSError:Error]) return nil;
 
         // Fetch general info as soon as possible
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             tABC_Error error;
             ABC_GeneralInfoUpdate(&error);
-            [self setLastErrors:Error];
         });
 
         Error.code = ABC_CC_Ok;
@@ -112,7 +111,7 @@
         // get the currencies
         aCurrencies = NULL;
         ABC_GetCurrencies(&aCurrencies, &currencyCount, &Error);
-        [self setLastErrors:Error];
+        if ([ABCError makeNSError:Error]) return nil;
 
         // set up our internal currency arrays
         NSMutableArray *arrayCurrencyCodes = [[NSMutableArray alloc] initWithCapacity:currencyCount];
@@ -419,9 +418,8 @@
     bool result = false;
     tABC_Error Error;
 
-    if (ABC_IsTestNet(&result, &Error) != ABC_CC_Ok) {
-        [self setLastErrors:Error];
-    }
+    ABC_IsTestNet(&result, &Error);
+    
     return result;
 }
 
@@ -795,9 +793,9 @@
             ABC_PinLogin([username UTF8String],
                          [pin UTF8String],
                          &error);
-            *nserror = [ABCError makeNSError:error];
+            lnserror = [ABCError makeNSError:error];
             
-            if (!*nserror)
+            if (!lnserror)
             {
                 account = [[ABCAccount alloc] initWithCore:self];
                 account.delegate = delegate;
@@ -1035,15 +1033,16 @@
 /* === OTP authentication: === */
 
 
-- (NSArray *)getOTPResetUsernames;
+- (NSArray *)getOTPResetUsernames:(NSError **)nserror;
 {
     char *szUsernames = NULL;
     NSString *usernames = nil;
     NSArray *usernameArray = nil;
     tABC_Error error;
+    NSError *nserror2 = nil;
     ABC_OtpResetGet(&szUsernames, &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
-    if (ABCConditionCodeOk == ccode && szUsernames)
+    nserror2 = [ABCError makeNSError:error];
+    if (!nserror2)
     {
         usernames = [NSString stringWithUTF8String:szUsernames];
         usernames = [usernames stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -1052,6 +1051,8 @@
     }
     if (szUsernames)
         free(szUsernames);
+    if (nserror)
+        *nserror = nserror2;
     return usernameArray;
 }
 
@@ -1089,16 +1090,17 @@
     });
 }
 
-- (UIImage *)encodeStringToQRImage:(NSString *)string;
++ (UIImage *)encodeStringToQRImage:(NSString *)string error:(NSError **)nserror;
 {
     unsigned char *pData = NULL;
     unsigned int width;
     tABC_Error error;
-    UIImage *image = nil;;
+    UIImage *image = nil;
+    NSError *nserror2 = nil;
     
     ABC_QrEncode([string UTF8String], &pData, &width, &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
-    if (ABCConditionCodeOk == ccode)
+    nserror2 = [ABCError makeNSError:error];
+    if (!nserror2)
     {
         image = [ABCUtil dataToImage:pData withWidth:width andHeight:width];
     }
@@ -1106,6 +1108,7 @@
     if (pData) {
         free(pData);
     }
+    if (nserror) *nserror = nserror2;
     return image;;
 }
 
@@ -1151,16 +1154,16 @@
     });
 }
 
-- (BOOL)passwordExists:(NSString *)username;
+- (BOOL)passwordExists:(NSString *)username error:(NSError **)nserror;
 {
     tABC_Error error;
+    NSError *nserror2 = nil;
     bool exists = false;
     ABC_PasswordExists([username UTF8String], &exists, &error);
-    ABCConditionCode ccode = [self setLastErrors:error];
-    if (ccode == ABCConditionCodeOk) {
-        return exists == true ? YES : NO;
-    }
-    return NO;
+    nserror2 = [ABCError makeNSError:error];
+    if (nserror) *nserror = nserror2;
+    
+    return exists == true ? YES : NO;
 }
 
 - (BOOL) hasDeviceCapability:(ABCDeviceCaps) caps
@@ -1271,12 +1274,6 @@ void abcDebugLog(int level, NSString *statement)
             ABC_Log([log UTF8String]);
         }
     }
-}
-
-- (ABCConditionCode)setLastErrors:(tABC_Error)error;
-{
-    ABCConditionCode ccode = [abcError setLastErrors:error];
-    return ccode;
 }
 
 - (void)fillSeedData:(NSMutableData *)data
