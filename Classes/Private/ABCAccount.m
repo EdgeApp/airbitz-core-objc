@@ -1459,15 +1459,15 @@ static const int notifySyncDelay          = 1;
     }];
 }
 
-- (ABCConditionCode)setDefaultCurrencyNum:(int)currencyNum
+- (NSError *)setDefaultCurrencyNum:(int)currencyNum
 {
-    ABCConditionCode ccode = [self.settings loadSettings];
-    if (ABCConditionCodeOk == ccode)
+    NSError *error = [self.settings loadSettings];
+    if (!error)
     {
         self.settings.defaultCurrencyNum = currencyNum;
-        ccode = [self.settings saveSettings];
+        error = [self.settings saveSettings];
     }
-    return ccode;
+    return error;
 }
 
 - (NSError *)createFirstWalletIfNeeded;

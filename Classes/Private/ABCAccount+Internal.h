@@ -18,7 +18,7 @@
 - (void)postToMiscQueue:(void(^)(void))cb;
 - (void)postToWatcherQueue:(void(^)(void))cb;
 - (void)postToDataQueue:(void(^)(void))cb;
-- (ABCConditionCode)setDefaultCurrencyNum:(int)currencyNum;
+- (NSError *)setDefaultCurrencyNum:(int)currencyNum;
 - (void)restoreConnectivity;
 - (void)lostConnectivity;
 - (void)setupLoginPIN;
