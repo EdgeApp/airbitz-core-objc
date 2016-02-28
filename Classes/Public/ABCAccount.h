@@ -127,7 +127,7 @@
 - (void)makeCurrentWalletWithUUID:(NSString *)uuid;
 - (ABCWallet *)selectWalletWithUUID:(NSString *)uuid;
 - (void)loadCategories;
-- (void)saveCategories:(NSMutableArray *)saveArrayCategories;
+- (NSError *)saveCategories:(NSMutableArray *)saveArrayCategories;
 - (BOOL) isLoggedIn;
 
 

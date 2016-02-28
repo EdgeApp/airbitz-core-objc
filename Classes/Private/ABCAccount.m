@@ -1730,6 +1730,7 @@ static const int notifySyncDelay          = 1;
             // it doesn't exist in our new list so delete it from the core
             ABC_RemoveCategory([self.name UTF8String], [self.password UTF8String], (char *)[strCategory UTF8String], &error);
             nserror = [ABCError makeNSError:error];
+            if (nserror) nserrorRet = nserror;
         }
     }
     
@@ -1738,9 +1739,10 @@ static const int notifySyncDelay          = 1;
     {
         ABC_AddCategory([self.name UTF8String], [self.password UTF8String], (char *)[strCategory UTF8String], &error);
         nserror = [ABCError makeNSError:error];
+        if (nserror) nserrorRet = nserror;
     }
     [self loadCategories];
-    return nserror;
+    return nserrorRet;
 }
 
 #pragma mark - ABC Callbacks
