@@ -10,7 +10,9 @@
 
 @interface ABCSettings (Internal)
 
-@property (nonatomic, copy)   NSString              *strPIN;
+@property (nonatomic, copy)     NSString                *strPIN;
+@property (nonatomic)           bool                    bDisablePINLogin;
+
 
 - (id)init:(ABCAccount *)user localSettings:(id)local keyChain:(id)keyChain;
 

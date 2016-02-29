@@ -9,12 +9,12 @@
 
 @interface ABCSettings ()
 
-@property (nonatomic, strong) ABCAccount            *account;
-@property (nonatomic, strong) ABCLocalSettings      *local;
-@property (nonatomic, strong) ABCKeychain           *keyChain;
-@property (nonatomic, strong) ABCError              *abcError;
-@property (nonatomic, copy)   NSString              *strPIN;
-
+@property (nonatomic, strong)   ABCAccount              *account;
+@property (nonatomic, strong)   ABCLocalSettings        *local;
+@property (nonatomic, strong)   ABCKeychain             *keyChain;
+@property (nonatomic, strong)   ABCError                *abcError;
+@property (nonatomic, copy)     NSString                *strPIN;
+@property (nonatomic)           bool                    bDisablePINLogin;
 
 @end
 
@@ -54,10 +54,10 @@
             self.strPIN               = pSettings->szPIN                ? [NSString stringWithUTF8String:pSettings->szPIN] : nil;
             self.exchangeRateSource   = pSettings->szExchangeRateSource ? [NSString stringWithUTF8String:pSettings->szExchangeRateSource] : nil;
 
-            self.bNameOnPayments = pSettings->bNameOnPayments;
-            self.bSpendRequirePin = pSettings->bSpendRequirePin;
-            self.spendRequirePinSatoshis = pSettings->spendRequirePinSatoshis;
-            self.bDisablePINLogin = pSettings->bDisablePINLogin;
+            self.bNameOnPayments            = pSettings->bNameOnPayments;
+            self.bSpendRequirePin           = pSettings->bSpendRequirePin;
+            self.spendRequirePinSatoshis    = pSettings->spendRequirePinSatoshis;
+            self.bDisablePINLogin           = pSettings->bDisablePINLogin;
 
             if (self.account.delegate)
             {
@@ -99,6 +99,7 @@
             pSettings->bNameOnPayments                        = self.bNameOnPayments           ;
             pSettings->bSpendRequirePin                       = self.bSpendRequirePin          ;
             pSettings->spendRequirePinSatoshis                = self.spendRequirePinSatoshis   ;
+            pSettings->bDisablePINLogin                       = self.bDisablePINLogin          ;
 
             self.firstName          ? [ABCUtil replaceString:&(pSettings->szFirstName         ) withString:[self.firstName          UTF8String]] : nil;
             self.lastName           ? [ABCUtil replaceString:&(pSettings->szLastName          ) withString:[self.lastName           UTF8String]] : nil;

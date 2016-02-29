@@ -33,7 +33,6 @@
 @property (nonatomic) bool bNameOnPayments;
 @property (nonatomic) bool bSpendRequirePin;
 @property (nonatomic) int64_t spendRequirePinSatoshis;
-@property (nonatomic) bool bDisablePINLogin;
 
 /// Loads all settings into [ABCSettings] structure
 - (NSError *)loadSettings;

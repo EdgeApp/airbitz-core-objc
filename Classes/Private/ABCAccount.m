@@ -1948,6 +1948,17 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
      }];
 }
 
+- (BOOL) isPINLoginEnabled;
+{
+    return !self.settings.bDisablePINLogin;
+}
+
+- (NSError *) pinLoginSetup:(BOOL)enable;
+{
+    self.settings.bDisablePINLogin = !enable;
+    return [self.settings saveSettings];
+}
+
 /* === OTP authentication: === */
 
 

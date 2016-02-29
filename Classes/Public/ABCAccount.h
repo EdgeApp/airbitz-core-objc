@@ -214,7 +214,24 @@
 - (BOOL) pinCheck:(NSString *)pin;
 - (BOOL) pinCheck:(NSString *)pin error:(NSError **)error;
 
+/**
+ * Enable or disable PIN login on this account. Set enable = YES to allow
+ * PIN login. Enabling PIN login creates a local account decryption key that
+ * is split with one have in local device storage and the other half on Airbitz
+ * servers. When using [AirbitzCore signInWithPIN] the PIN is sent to Airbitz servers
+ * to authenticate the user. If the PIN is correct, the second half of the decryption
+ * key is sent back to the device. Combined with the locally saved key, the two
+ * are then used to decrypt the local account thereby loggin in the user.
+ * @param enable BOOL set to YES to enable PIN login
+ * @return NSError* Nil if success
+ */
+- (NSError *) pinLoginSetup:(BOOL)enable;
 
+/**
+ * Check if this account is allowed to login via PIN
+ * @return BOOL YES if PIN login is enabled
+ */
+- (BOOL) isPINLoginEnabled;
 
 /// -----------------------------------------------------------------------------
 /// @name Wallet Management
