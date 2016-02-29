@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 AirBitz. All rights reserved.
 //
 
+#import "ABCTxOutput.h"
 #import "AirbitzCore+Internal.h"
 
 @interface ABCTxOutput ()

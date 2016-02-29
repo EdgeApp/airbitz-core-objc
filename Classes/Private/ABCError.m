@@ -8,18 +8,9 @@
 
 @interface ABCError ()
 
-@property (atomic)              ABCConditionCode        lastConditionCode;
-@property (atomic, strong)      NSString                *lastErrorString;
-
 @end
 
 @implementation ABCError
-
-- (id)init;
-{
-    self = [super init];
-    return self;
-}
 
 + (NSError *)makeNSError:(tABC_Error)error;
 {

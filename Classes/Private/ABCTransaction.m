@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 AirBitz. All rights reserved.
 //
 
+#import "ABCTransaction.h"
 #import "AirbitzCore+Internal.h"
 
 @interface ABCTransaction ()

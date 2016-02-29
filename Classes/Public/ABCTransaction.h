@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 AirBitz. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "ABCWallet.h"
 
 @class ABCWallet;

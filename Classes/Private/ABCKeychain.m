@@ -8,6 +8,7 @@
 
 #import "NSMutableData+Secure.h"
 #import <LocalAuthentication/LocalAuthentication.h>
+#import "ABCKeychain+Internal.h"
 #import "AirbitzCore+Internal.h"
 
 @interface ABCKeychain ()

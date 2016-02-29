@@ -25,8 +25,6 @@ static const int notifySyncDelay          = 1;
     NSOperationQueue                                *watcherQueue;
     NSLock                                          *watcherLock;
     NSMutableDictionary                             *watchers;
-    NSMutableDictionary                             *currencyCodesCache;
-    NSMutableDictionary                             *currencySymbolCache;
     
     NSTimer                                         *exchangeTimer;
     NSTimer                                         *dataSyncTimer;
@@ -34,8 +32,8 @@ static const int notifySyncDelay          = 1;
     
 }
 
-@property (atomic, strong)   AirbitzCore             *abc;
-@property (nonatomic, strong) NSTimer               *walletLoadingTimer;
+@property (atomic, strong)      AirbitzCore         *abc;
+@property (nonatomic, strong)   NSTimer             *walletLoadingTimer;
 
 @end
 
@@ -49,6 +47,8 @@ static const int notifySyncDelay          = 1;
         if (!airbitzCore) return nil;
         
         self.abc = airbitzCore;
+        self.exchangeCache = [self.abc exchangeCacheGet];
+        
         abcError = [[ABCError alloc] init];
         
         exchangeQueue = [[NSOperationQueue alloc] init];
@@ -66,9 +66,6 @@ static const int notifySyncDelay          = 1;
         
         watchers = [[NSMutableDictionary alloc] init];
         watcherLock = [[NSLock alloc] init];
-        
-        currencySymbolCache = [[NSMutableDictionary alloc] init];
-        currencyCodesCache = [[NSMutableDictionary alloc] init];
         
         bInitialized = YES;
         bHasSentWalletsLoaded = NO;
@@ -426,7 +423,9 @@ static const int notifySyncDelay          = 1;
             for (int i = 0; i < [arrayWallets count]; i++)
             {
                 ABCWallet *wallet = [arrayWallets objectAtIndex:i];
-                [arrayWalletNames addObject:[NSString stringWithFormat:@"%@ (%@)", wallet.name, [self formatSatoshi:wallet.balance]]];
+//                [arrayWalletNames addObject:[NSString stringWithFormat:@"%@ (%@)", wallet.name, [self formatSatoshi:wallet.balance]]];
+                [arrayWalletNames addObject:[NSString stringWithFormat:@"%@ (%@)", wallet.name,
+                                             [self.settings.denomination satoshiToBTCString:wallet.balance]]];
                 if (!wallet.loaded) {
                     loadingCount++;
                 }
@@ -694,198 +693,46 @@ static const int notifySyncDelay          = 1;
     }
 }
 
-- (NSNumberFormatter *)generateNumberFormatter
-{
-    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
-    [f setMinimumFractionDigits:2];
-    [f setMaximumFractionDigits:2];
-    [f setLocale:[NSLocale localeWithLocaleIdentifier:@"USD"]];
-    return f;
-}
-
 - (NSDate *)dateFromTimestamp:(int64_t) intDate
 {
     return [NSDate dateWithTimeIntervalSince1970: intDate];
 }
 
-- (NSString *)formatCurrency:(double) currency withCurrencyNum:(int) currencyNum
+- (NSString *)createExchangeRateString:(ABCCurrency *)currency
+                   includeCurrencyCode:(bool)includeCurrencyCode;
 {
-    return [self formatCurrency:currency withCurrencyNum:currencyNum withSymbol:true];
-}
-
-- (NSString *)formatCurrency:(double) currency withCurrencyNum:(int) currencyNum withSymbol:(bool) symbol
-{
-    NSNumberFormatter *f = [self generateNumberFormatter];
-    [f setNumberStyle: NSNumberFormatterCurrencyStyle];
-    if (symbol) {
-        NSString *symbol = [self.abc currencySymbolLookup:currencyNum];
-        [f setNegativePrefix:[NSString stringWithFormat:@"-%@ ",symbol]];
-        [f setNegativeSuffix:@""];
-        [f setCurrencySymbol:[NSString stringWithFormat:@"%@ ", symbol]];
-    } else {
-        [f setCurrencySymbol:@""];
-    }
-    return [f stringFromNumber:[NSNumber numberWithFloat:currency]];
-}
-
-- (int) currencyDecimalPlaces
-{
-    int decimalPlaces = 5;
-    switch (self.settings.denominationType) {
-        case ABCDenominationBTC:
-            decimalPlaces = 6;
-            break;
-        case ABCDenominationMBTC:
-            decimalPlaces = 3;
-            break;
-        case ABCDenominationUBTC:
-            decimalPlaces = 0;
-            break;
-    }
-    return decimalPlaces;
-}
-
-- (int) maxDecimalPlaces
-{
-    int decimalPlaces = 8;
-    switch (self.settings.denominationType) {
-        case ABCDenominationBTC:
-            decimalPlaces = 8;
-            break;
-        case ABCDenominationMBTC:
-            decimalPlaces = 5;
-            break;
-        case ABCDenominationUBTC:
-            decimalPlaces = 2;
-            break;
-    }
-    return decimalPlaces;
-}
-
-- (NSString *)formatSatoshi: (int64_t) amount
-{
-    return [self formatSatoshi:amount withSymbol:true];
-}
-
-- (NSString *)formatSatoshi: (int64_t) amount withSymbol:(bool) symbol
-{
-    return [self formatSatoshi:amount withSymbol:symbol cropDecimals:-1];
-}
-
-- (NSString *)formatSatoshi: (int64_t) amount withSymbol:(bool) symbol forceDecimals:(int) forcedecimals
-{
-    return [self formatSatoshi:amount withSymbol:symbol cropDecimals:-1 forceDecimals:forcedecimals];
-}
-
-- (NSString *)formatSatoshi: (int64_t) amount withSymbol:(bool) symbol cropDecimals:(int) decimals
-{
-    return [self formatSatoshi:amount withSymbol:symbol cropDecimals:decimals forceDecimals:-1];
-}
-
-/**
- * formatSatoshi
- *
- * forceDecimals specifies the number of decimals to shift to
- * the left when converting from satoshi to BTC/mBTC/uBTC etc.
- * ie. for BTC decimals = 8
- *
- * formatSatoshi will use the settings by default if
- * forceDecimals is not supplied
- *
- * cropDecimals will crop the maximum number of digits to the
- * right of the decimal. cropDecimals = 3 will make
- * "1234.12345" -> "1234.123"
- *
- **/
-
-- (NSString *)formatSatoshi: (int64_t) amount withSymbol:(bool) symbol cropDecimals:(int) decimals forceDecimals:(int) forcedecimals
-{
-    tABC_Error error;
-    char *pFormatted = NULL;
-    int decimalPlaces = forcedecimals > -1 ? forcedecimals : [self maxDecimalPlaces];
-    bool negative = amount < 0;
-    amount = llabs(amount);
-    if (ABC_FormatAmount(amount, &pFormatted, decimalPlaces, false, &error) != ABC_CC_Ok)
-    {
-        return nil;
-    }
-    else
-    {
-        decimalPlaces = decimals > -1 ? decimals : decimalPlaces;
-        NSMutableString *formatted = [[NSMutableString alloc] init];
-        if (negative)
-            [formatted appendString: @"-"];
-        if (symbol)
-        {
-            [formatted appendString: self.settings.denominationLabelShort];
-            [formatted appendString: @" "];
-        }
-        const char *p = pFormatted;
-        const char *decimal = strstr(pFormatted, ".");
-        const char *start = (decimal == NULL) ? p + strlen(p) : decimal;
-        int offset = (start - pFormatted) % 3;
-        NSNumberFormatter *f = [self generateNumberFormatter];
-        
-        for (int i = 0; i < strlen(pFormatted) && p - start <= decimalPlaces; ++i, ++p)
-        {
-            if (p < start)
-            {
-                if (i != 0 && (i - offset) % 3 == 0)
-                    [formatted appendString:[f groupingSeparator]];
-                [formatted appendFormat: @"%c", *p];
-            }
-            else if (p == decimal)
-                [formatted appendString:[f currencyDecimalSeparator]];
-            else
-                [formatted appendFormat: @"%c", *p];
-        }
-        free(pFormatted);
-        return formatted;
-    }
-}
-
-- (int64_t) denominationToSatoshi: (NSString *) amount
-{
-    uint64_t parsedAmount;
-    int decimalPlaces = [self maxDecimalPlaces];
-    NSString *cleanAmount = [amount stringByReplacingOccurrencesOfString:@"," withString:@""];
-    if (ABC_ParseAmount([cleanAmount UTF8String], &parsedAmount, decimalPlaces) != ABC_CC_Ok) {
-    }
-    return (int64_t) parsedAmount;
-}
-
-- (NSString *)conversionStringFromNum:(int) currencyNum withAbbrev:(bool) includeAbbrev
-{
-    double currency;
-    tABC_Error error;
+    NSError *error = nil;
+    double fCurrency;
+    ABCDenomination *denomination = self.settings.denomination;
     
-    double denomination = self.settings.denomination;
-    NSString *denominationLabel = self.settings.denominationLabel;
-    tABC_CC result = ABC_SatoshiToCurrency([self.name UTF8String],
-                                           [self.password UTF8String],
-                                           denomination, &currency, currencyNum, &error);
-    if (result == ABC_CC_Ok)
+    fCurrency = [self.exchangeCache satoshiToCurrency:denomination.multiplier
+                                         currencyCode:currency.code
+                                                error:&error];
+    
+    if (!error)
     {
-        NSString *abbrev = [self.abc currencyAbbrevLookup:currencyNum];
-        NSString *symbol = [self.abc currencySymbolLookup:currencyNum];
-        if (self.settings.denominationType == ABCDenominationUBTC)
+        if (denomination.multiplier == ABCDenominationMultiplierUBTC)
         {
-            if(includeAbbrev) {
-                return [NSString stringWithFormat:@"1000 %@ = %@ %.3f %@", denominationLabel, symbol, currency*1000, abbrev];
+            if(includeCurrencyCode) {
+                return [NSString stringWithFormat:@"1000 %@ = %@ %.3f %@",
+                        denomination.symbol, currency.symbol, fCurrency*1000, currency.code];
             }
             else
             {
-                return [NSString stringWithFormat:@"1000 %@ = %@ %.3f", denominationLabel, symbol, currency*1000];
+                return [NSString stringWithFormat:@"1000 %@ = %@ %.3f",
+                        denomination.symbol, currency.symbol, fCurrency*1000];
             }
         }
         else
         {
-            if(includeAbbrev) {
-                return [NSString stringWithFormat:@"1 %@ = %@ %.3f %@", denominationLabel, symbol, currency, abbrev];
+            if(includeCurrencyCode) {
+                return [NSString stringWithFormat:@"1 %@ = %@ %.3f %@",
+                        denomination.symbol, currency.symbol, fCurrency, currency.code];
             }
             else
             {
-                return [NSString stringWithFormat:@"1 %@ = %@ %.3f", denominationLabel, symbol, currency];
+                return [NSString stringWithFormat:@"1 %@ = %@ %.3f",
+                        denomination.symbol, currency.symbol, fCurrency];
             }
         }
     }
@@ -1296,47 +1143,31 @@ static const int notifySyncDelay          = 1;
 {
     dispatch_async(dispatch_get_main_queue(),^
                    {
-                       NSMutableArray *arrayCurrencyNums= [[NSMutableArray alloc] init];
+                       NSMutableArray *arrayCurrency = [[NSMutableArray alloc] init];
                        
                        for (ABCWallet *w in self.arrayWallets)
                        {
                            if (w.loaded) {
-                               [arrayCurrencyNums addObject:[NSNumber numberWithInteger:w.currencyNum]];
+                               [arrayCurrency addObject:w.currency];
                            }
                        }
                        for (ABCWallet *w in self.arrayArchivedWallets)
                        {
                            if (w.loaded) {
-                               [arrayCurrencyNums addObject:[NSNumber numberWithInteger:w.currencyNum]];
+                               [arrayCurrency addObject:w.currency];
                            }
                        }
+                       [arrayCurrency addObject:self.settings.defaultCurrency];
                        
                        [exchangeQueue addOperationWithBlock:^{
                            [[NSThread currentThread] setName:@"Exchange Rate Update"];
-                           [self requestExchangeUpdateBlocking:arrayCurrencyNums];
+                           NSMutableArray *exchanges = [NSMutableArray arrayWithObject:self.settings.exchangeRateSource];
+                           [exchanges addObjectsFromArray:ABCArrayExchanges];
+                           NSArray *arrayExchanges = [exchanges copy];
+                           [self.exchangeCache requestExchangeUpdateBlocking:arrayExchanges
+                                                               arrayCurrency:arrayCurrency];
                        }];
                    });
-}
-
-- (void)requestExchangeUpdateBlocking:(NSMutableArray *)currencyNums
-{
-    if ([self isLoggedIn])
-    {
-        tABC_Error error;
-        // Check the default currency for updates
-        ABC_RequestExchangeRateUpdate([self.name UTF8String],
-                                      [self.password UTF8String],
-                                      self.settings.defaultCurrencyNum, &error);
-        
-        // Check each wallet is up to date
-        for (NSNumber *n in currencyNums)
-        {
-            // We pass no callback so this call is blocking
-            ABC_RequestExchangeRateUpdate([self.name UTF8String],
-                                          [self.password UTF8String],
-                                          [n intValue], &error);
-        }
-    }
 }
 
 - (void)requestWalletDataSync:(ABCWallet *)wallet;
@@ -1459,12 +1290,12 @@ static const int notifySyncDelay          = 1;
     }];
 }
 
-- (NSError *)setDefaultCurrencyNum:(int)currencyNum
+- (NSError *)setDefaultCurrency:(NSString *)currencyCode;
 {
     NSError *error = [self.settings loadSettings];
     if (!error)
     {
-        self.settings.defaultCurrencyNum = currencyNum;
+        self.settings.defaultCurrency = [self.exchangeCache getCurrencyFromCode:currencyCode];
         error = [self.settings saveSettings];
     }
     return error;
@@ -1981,36 +1812,27 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return [self createWallet:walletName currency:currency error:nil];
 }
 
-- (ABCWallet *) createWallet:(NSString *)walletName currency:(NSString *)currency error:(NSError **)nserror;
+- (ABCWallet *) createWallet:(NSString *)walletName currency:(NSString *)currencyCode error:(NSError **)nserror;
 {
     NSError *lnserror;
     [self clearDataQueue];
-    int currencyNum = 0;
+    ABCCurrency *currency;
     ABCWallet *wallet = nil;
     
-    if (nil == currency)
+    if (nil == currencyCode)
     {
         if (self.settings)
         {
-            currencyNum = self.settings.defaultCurrencyNum;
+            currency = self.settings.defaultCurrency;
         }
-        if (0 == currencyNum)
+        if (!currency)
         {
-            currencyNum = [AirbitzCore getDefaultCurrencyNum];
+            currency = [ABCCurrency defaultCurrency];
         }
     }
     else
     {
-        if (!self.abc.arrayCurrencyNums || [self.abc.arrayCurrencyCodes indexOfObject:currency] == NSNotFound)
-        {
-            currencyNum = [AirbitzCore getDefaultCurrencyNum];
-        }
-        else
-        {
-            // Get currencyNum from currency code
-            int idx = (int) [self.abc.arrayCurrencyCodes indexOfObject:currency];
-            currencyNum = [self.abc.arrayCurrencyNums[idx] integerValue];
-        }
+        currency = [self.exchangeCache getCurrencyFromCode:currencyCode];
     }
     
     NSString *defaultWallet = [NSString stringWithString:defaultWalletName];
@@ -2024,7 +1846,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     ABC_CreateWallet([self.name UTF8String],
                      [self.password UTF8String],
                      [walletName UTF8String],
-                     currencyNum,
+                     currency.currencyNum,
                      &szUUID,
                      &error);
     lnserror = [ABCError makeNSError:error];
@@ -2362,39 +2184,6 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
             }
         });
     }];
-}
-
-
-
-- (double) satoshiToCurrency:(uint64_t) satoshi
-                 currencyNum:(int)currencyNum
-                       error:(NSError *__autoreleasing *)nserror;
-{
-    tABC_Error error;
-    NSError *nserror2 = nil;
-    double currency = 0.0;
-    
-    ABC_SatoshiToCurrency([self.name UTF8String], [self.password UTF8String],
-                          satoshi, &currency, currencyNum, &error);
-    nserror2 = [ABCError makeNSError:error];
-    if (nserror) *nserror = nserror2;
-
-    return currency;
-}
-
-- (uint64_t) currencyToSatoshi:(double)currency
-                  currencyNum:(int)currencyNum
-                        error:(NSError *__autoreleasing *)nserror;
-{
-    tABC_Error error;
-    NSError *nserror2 = nil;
-    int64_t satoshi = 0;
-
-    ABC_CurrencyToSatoshi([self.name UTF8String], [self.password UTF8String], currency, currencyNum, &satoshi, &error);
-    nserror2 = [ABCError makeNSError:error];
-    if (nserror) *nserror = nserror2;
-
-    return (uint64_t) satoshi;
 }
 
 - (BOOL) shouldAskUserToEnableTouchID;

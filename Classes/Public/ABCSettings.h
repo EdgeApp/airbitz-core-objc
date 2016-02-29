@@ -3,20 +3,14 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "AirbitzCore.h"
 
 @class AirbitzCore;
 @class ABCKeychain;
 @class ABCAccount;
+@class ABCDenomination;
 
 #define ABCArrayExchanges     @[@"Bitstamp", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
-
-typedef NS_ENUM(NSUInteger, ABCDenomination) {
-    ABCDenominationBTC = 0,
-    ABCDenominationMBTC = 1,
-    ABCDenominationUBTC = 2,
-};
 
 @interface ABCSettings : NSObject
 
@@ -27,12 +21,10 @@ typedef NS_ENUM(NSUInteger, ABCDenomination) {
 /// How many seconds after the app is backgrounded before the user should be auto logged out
 @property (nonatomic) int secondsAutoLogout;
 
-/// Default ISO currency number for new wallets and for the account total on Wallets screen
-@property (nonatomic) int defaultCurrencyNum;
+/// Default currency code for new wallets and for the account total on Wallets screen
+@property (nonatomic) ABCCurrency          *defaultCurrency;
 
-@property (nonatomic) int64_t denomination;
-@property (nonatomic, copy) NSString* denominationLabel;
-@property (nonatomic) ABCDenomination denominationType;
+@property (nonatomic, strong) ABCDenomination *denomination;
 @property (nonatomic, copy) NSString* firstName;
 @property (nonatomic, copy) NSString* lastName;
 @property (nonatomic, copy) NSString* nickName;
@@ -40,7 +32,6 @@ typedef NS_ENUM(NSUInteger, ABCDenomination) {
 @property (nonatomic, copy) NSString* strPIN;
 @property (nonatomic, copy) NSString* exchangeRateSource;
 @property (nonatomic) bool bNameOnPayments;
-@property (nonatomic, copy) NSString* denominationLabelShort;
 @property (nonatomic) bool bSpendRequirePin;
 @property (nonatomic) int64_t spendRequirePinSatoshis;
 @property (nonatomic) bool bDisablePINLogin;

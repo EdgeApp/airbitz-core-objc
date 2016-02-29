@@ -3,6 +3,7 @@
 //  Airbitz
 //
 
+#import "ABCAccount.h"
 #import "AirbitzCore+Internal.h"
 
 @interface ABCAccount (Internal)
@@ -18,7 +19,7 @@
 - (void)postToMiscQueue:(void(^)(void))cb;
 - (void)postToWatcherQueue:(void(^)(void))cb;
 - (void)postToDataQueue:(void(^)(void))cb;
-- (NSError *)setDefaultCurrencyNum:(int)currencyNum;
+- (NSError *)setDefaultCurrency:(NSString *)currencyCode;
 - (void)restoreConnectivity;
 - (void)lostConnectivity;
 - (void)setupLoginPIN;
@@ -33,6 +34,5 @@
 - (void)stopQueues;
 - (int)dataOperationCount;
 - (long) saveLogoutDate;
-- (int) maxDecimalPlaces;
 
 @end

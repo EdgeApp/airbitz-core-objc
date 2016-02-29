@@ -5,10 +5,11 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
+#import "ABCRequest.h"
 #import "AirbitzCore+Internal.h"
 
 @interface ABCRequest (Internal)
 
-@property (nonatomic, strong) ABCWallet         *wallet;
+@property (atomic, strong) ABCWallet         *wallet;
 
 @end
