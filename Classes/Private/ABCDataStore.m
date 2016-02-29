@@ -19,7 +19,7 @@
 
 #pragma Data Methods
 
-- (NSError *)dataGet:(NSString *)folder withKey:(NSString *)key data:(NSMutableString *)data;
+- (NSError *)dataRead:(NSString *)folder withKey:(NSString *)key data:(NSMutableString *)data;
 {
     [data setString:@""];
     tABC_Error error;
@@ -38,7 +38,7 @@
     return nserror;
 }
 
-- (NSError *)dataSet:(NSString *)folder withKey:(NSString *)key withValue:(NSString *)value;
+- (NSError *)dataWrite:(NSString *)folder withKey:(NSString *)key withValue:(NSString *)value;
 {
     tABC_Error error;
     ABC_PluginDataSet([self.account.name UTF8String],
