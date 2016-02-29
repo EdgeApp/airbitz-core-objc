@@ -202,6 +202,19 @@
 - (BOOL)recentlyLoggedIn;
 
 
+/**
+ * Checks a PIN for correctness. This checks against the PIN used
+ * during account creation in [AirbitzCore createAccount] or the PIN changed
+ * with [ABCAccount changePIN]<br>
+ * This is used to guard access to certain actions in the GUI.
+ * @param pin NSString* Pin to check
+ * @param error (Optional) NSError* Error object. Nil if success
+ * @return BOOL YES if PIN is correct
+ */
+- (BOOL) pinCheck:(NSString *)pin;
+- (BOOL) pinCheck:(NSString *)pin error:(NSError **)error;
+
+
 
 /// -----------------------------------------------------------------------------
 /// @name Wallet Management

@@ -13,6 +13,8 @@
 @property (nonatomic, strong) ABCLocalSettings      *local;
 @property (nonatomic, strong) ABCKeychain           *keyChain;
 @property (nonatomic, strong) ABCError              *abcError;
+@property (nonatomic, copy)   NSString              *strPIN;
+
 
 @end
 

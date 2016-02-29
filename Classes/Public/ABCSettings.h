@@ -29,7 +29,6 @@
 @property (nonatomic, copy) NSString* lastName;
 @property (nonatomic, copy) NSString* nickName;
 @property (nonatomic, copy) NSString* fullName;
-@property (nonatomic, copy) NSString* strPIN;
 @property (nonatomic, copy) NSString* exchangeRateSource;
 @property (nonatomic) bool bNameOnPayments;
 @property (nonatomic) bool bSpendRequirePin;

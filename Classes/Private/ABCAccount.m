@@ -772,6 +772,28 @@ static const int notifySyncDelay          = 1;
     return bResult;
 }
 
+- (BOOL) pinCheck:(NSString *)pin
+{
+    return [self pinCheck:pin error:nil];
+}
+- (BOOL) pinCheck:(NSString *)pin error:(NSError **)nserror;
+{
+    tABC_Error error;
+    bool result = false;
+    
+    ABC_PinCheck([self.name UTF8String],
+                 [self.password UTF8String],
+                 [pin UTF8String],
+                 &result,
+                 &error);
+    NSError *lnserror = [ABCError makeNSError:error];
+    
+    if (nserror) *nserror = lnserror;
+    
+    return result;
+}
+
+
 #define ABC_PIN_REQUIRED_PERIOD_SECONDS     120
 
 - (BOOL)recentlyLoggedIn

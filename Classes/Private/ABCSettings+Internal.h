@@ -10,6 +10,8 @@
 
 @interface ABCSettings (Internal)
 
+@property (nonatomic, copy)   NSString              *strPIN;
+
 - (id)init:(ABCAccount *)user localSettings:(id)local keyChain:(id)keyChain;
 
 @end
