@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 AirBitz. All rights reserved.
 //
 
+#import "AirbitzCore.h"
+
 @interface ABCTxOutput : NSObject
 
 @property (nonatomic, copy)     NSString        *strAddress;

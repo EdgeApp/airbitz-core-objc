@@ -8,6 +8,7 @@
 #import "ABCAccount.h"
 #import "ABCConditionCode.h"
 #import "ABCCurrency.h"
+#import "ABCDataStore.h"
 #import "ABCDenomination.h"
 #import "ABCExchangeCache.h"
 #import "ABCKeychain.h"

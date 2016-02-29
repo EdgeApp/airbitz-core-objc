@@ -8,6 +8,7 @@
 @class AirbitzCore;
 @class ABCAccount;
 @class ABCCurrency;
+@class ABCDataStore;
 @class ABCDenomination;
 @class ABCExchangeCache;
 @class ABCSpend;
@@ -116,6 +117,11 @@
 /// Categories must start with "Income", "Expense", "Transfer" or "Exchange" plus a ":" and then
 /// an arbitrary subcategory such as "Food & Dining". ie. "Expense:Rent"
 @property (atomic, strong) NSArray                   *arrayCategories;
+
+/// DataStore object for allowing arbitrary Edge Secure data storage and retrieval on this
+/// ABCAccount
+@property                  ABCDataStore              *dataStore;
+
 @property (atomic)         BOOL                      bAllWalletsLoaded;
 @property (atomic)         int                       numWalletsLoaded;
 @property (atomic)         int                       numTotalWallets;
@@ -394,10 +400,6 @@
 
 - (NSError *)addCategory:(NSString *)strCategory;
 
-- (NSError *)accountDataGet:(NSString *)folder withKey:(NSString *)key data:(NSMutableString *)data;
-- (NSError *)accountDataSet:(NSString *)folder withKey:(NSString *)key withValue:(NSString *)value;
-- (NSError *)accountDataRemove:(NSString *)folder withKey:(NSString *)key;
-- (NSError *)accountDataClear:(NSString *)folder;
 
 
 @end

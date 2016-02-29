@@ -47,6 +47,7 @@
 		DA5E8E661C643A23005E3093 /* libzmq.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5E8E501C643A23005E3093 /* libzmq.a */; };
 		DA78DC401C828D3800F17F13 /* ABCCurrency.m in Sources */ = {isa = PBXBuildFile; fileRef = DA78DC3F1C828D3800F17F13 /* ABCCurrency.m */; };
 		DA78DC441C82AF3B00F17F13 /* ABCDenomination.m in Sources */ = {isa = PBXBuildFile; fileRef = DA78DC431C82AF3B00F17F13 /* ABCDenomination.m */; };
+		DAF16DD11C844106004642B9 /* ABCDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = DAF16DD01C844106004642B9 /* ABCDataStore.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -131,6 +132,9 @@
 		DAC0C70D1C6B0BEB006013A7 /* ABCWallet+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ABCWallet+Internal.h"; path = "Classes/Private/ABCWallet+Internal.h"; sourceTree = SOURCE_ROOT; };
 		DAD186471C62FAC60082CB21 /* libAirbitzCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAirbitzCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		DAF16DCE1C82B8F0004642B9 /* ABCDenomination.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCDenomination.h; path = Classes/Public/ABCDenomination.h; sourceTree = SOURCE_ROOT; };
+		DAF16DD01C844106004642B9 /* ABCDataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCDataStore.m; path = Classes/Private/ABCDataStore.m; sourceTree = SOURCE_ROOT; };
+		DAF16DD21C844112004642B9 /* ABCDataStore+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ABCDataStore+Internal.h"; path = "Classes/Private/ABCDataStore+Internal.h"; sourceTree = SOURCE_ROOT; };
+		DAF16DD31C84411A004642B9 /* ABCDataStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCDataStore.h; path = Classes/Public/ABCDataStore.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -172,6 +176,7 @@
 				DA21952A1C6EA139009A2CF5 /* ABCAccount.h */,
 				DA5E8DD91C633960005E3093 /* ABCConditionCode.h */,
 				DA78DC3E1C8283A000F17F13 /* ABCCurrency.h */,
+				DAF16DD31C84411A004642B9 /* ABCDataStore.h */,
 				DAF16DCE1C82B8F0004642B9 /* ABCDenomination.h */,
 				DA252AC71C8269E6008F046A /* ABCExchangeCache.h */,
 				DA1D271A1C6874ED00B76EB0 /* ABCKeychain.h */,
@@ -194,6 +199,7 @@
 				DAC0C6FE1C6AE15B006013A7 /* AirbitzCore+Internal.h */,
 				DA2195281C6EA126009A2CF5 /* ABCAccount+Internal.h */,
 				DA78DC411C82A1E600F17F13 /* ABCCurrency+Internal.h */,
+				DAF16DD21C844112004642B9 /* ABCDataStore+Internal.h */,
 				DA5E8D8E1C633950005E3093 /* ABCError.h */,
 				DA252AC51C8269D0008F046A /* ABCExchangeCache+Internal.h */,
 				DAC0C7081C6B0A21006013A7 /* ABCKeychain+Internal.h */,
@@ -206,6 +212,7 @@
 				DA2195271C6EA126009A2CF5 /* ABCAccount.m */,
 				DA78DC3F1C828D3800F17F13 /* ABCCurrency.m */,
 				DA5E8D8F1C633950005E3093 /* ABCError.m */,
+				DAF16DD01C844106004642B9 /* ABCDataStore.m */,
 				DA78DC431C82AF3B00F17F13 /* ABCDenomination.m */,
 				DA252AC41C8269D0008F046A /* ABCExchangeCache.m */,
 				DA5E8D911C633950005E3093 /* ABCKeychain.m */,
@@ -344,6 +351,7 @@
 				DA5E8DB91C633950005E3093 /* ABCRequest.m in Sources */,
 				DA5E8DBB1C633950005E3093 /* ABCSpend.m in Sources */,
 				DA78DC441C82AF3B00F17F13 /* ABCDenomination.m in Sources */,
+				DAF16DD11C844106004642B9 /* ABCDataStore.m in Sources */,
 				DA5E8DBA1C633950005E3093 /* ABCSettings.m in Sources */,
 				DA5E8DBC1C633950005E3093 /* ABCStrings.m in Sources */,
 				DA78DC401C828D3800F17F13 /* ABCCurrency.m in Sources */,

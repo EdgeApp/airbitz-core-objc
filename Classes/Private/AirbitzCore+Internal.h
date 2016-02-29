@@ -9,6 +9,7 @@
 #import "AirbitzCore.h"
 #import "ABCAccount+Internal.h"
 #import "ABCCurrency+Internal.h"
+#import "ABCDataStore+Internal.h"
 #import "ABCError.h"
 #import "ABCExchangeCache+Internal.h"
 #import "ABCKeychain+Internal.h"

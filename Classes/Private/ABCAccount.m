@@ -3,7 +3,6 @@
 #import <pthread.h>
 
 static const int   fileSyncFrequencySeconds   = 30;
-static const float walletLoadingTimerInterval = 20.0;     // How long to wait between wallet updates on new device logins before we consider the account fully loaded
 static const int64_t recoveryReminderAmount   = 10000000;
 static const int recoveryReminderCount        = 2;
 static const int notifySyncDelay          = 1;
@@ -49,6 +48,8 @@ static const int notifySyncDelay          = 1;
         
         self.abc = airbitzCore;
         self.exchangeCache = [self.abc exchangeCacheGet];
+        self.dataStore      = [ABCDataStore alloc];
+        self.dataStore.account = self;
         
         abcError = [[ABCError alloc] init];
         
@@ -2120,57 +2121,6 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
              }
          });
      }];
-}
-
-#pragma Data Methods
-
-- (NSError *)accountDataGet:(NSString *)folder withKey:(NSString *)key data:(NSMutableString *)data;
-{
-    [data setString:@""];
-    tABC_Error error;
-    char *szData = NULL;
-    ABC_PluginDataGet([self.name UTF8String],
-                      [self.password UTF8String],
-                      [folder UTF8String], [key UTF8String],
-                      &szData, &error);
-    NSError *nserror = [ABCError makeNSError:error];
-    if (!nserror) {
-        [data setString:[NSString stringWithUTF8String:szData]];
-    }
-    if (szData != NULL) {
-        free(szData);
-    }
-    return nserror;
-}
-
-- (NSError *)accountDataSet:(NSString *)folder withKey:(NSString *)key withValue:(NSString *)value;
-{
-    tABC_Error error;
-    ABC_PluginDataSet([self.name UTF8String],
-                      [self.password UTF8String],
-                      [folder UTF8String],
-                      [key UTF8String],
-                      [value UTF8String],
-                      &error);
-    return [ABCError makeNSError:error];
-}
-
-- (NSError *)accountDataRemove:(NSString *)folder withKey:(NSString *)key;
-{
-    tABC_Error error;
-    ABC_PluginDataRemove([self.name UTF8String],
-                         [self.password UTF8String],
-                         [folder UTF8String], [key UTF8String], &error);
-    return [ABCError makeNSError:error];
-}
-
-- (NSError *)accountDataClear:(NSString *)folder;
-{
-    tABC_Error error;
-    ABC_PluginDataClear([self.name UTF8String],
-                        [self.password UTF8String],
-                        [folder UTF8String], &error);
-    return [ABCError makeNSError:error];
 }
 
 - (NSError *)clearBlockchainCache;
