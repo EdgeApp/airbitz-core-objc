@@ -60,15 +60,17 @@
 		
 		<option value="//api/name/createReceiveRequestWithDetails:">- createReceiveRequestWithDetails:</option>
 		
-		<option value="//api/name/exportTransactionsToCSV">- exportTransactionsToCSV</option>
+		<option value="//api/name/exportTransactionsToCSV:">- exportTransactionsToCSV:</option>
 		
 		<option value="//api/name/finalizeRequestWithAddress:">- finalizeRequestWithAddress:</option>
 		
 		<option value="//api/name/importPrivateKey:importing:complete:error:">- importPrivateKey:importing:complete:error:</option>
 		
-		<option value="//api/name/newSpendFromText:">- newSpendFromText:</option>
+		<option value="//api/name/newSpendFromText:complete:error:">- newSpendFromText:complete:error:</option>
 		
-		<option value="//api/name/newSpendTransfer:">- newSpendTransfer:</option>
+		<option value="//api/name/newSpendFromText:error:">- newSpendFromText:error:</option>
+		
+		<option value="//api/name/newSpendTransfer:error:">- newSpendTransfer:error:</option>
 		
 		<option value="//api/name/removeWallet:error:">- removeWallet:error:</option>
 		
@@ -198,14 +200,15 @@ calling this routine.</p>
 				<table class="argument-def parameter-def">
 				
 					<tr>
-						<th scope="row" class="argument-name"><code>error</code></th>
-						<td><p>Error handler code block which is called with the following args</p></td>
+						<th scope="row" class="argument-name"><code>completionHandler</code></th>
+						<td><p>Completion handler code block which is called with void. (Optional. If used, method
+returns immediately with void)</p></td>
 					</tr>
 				
 					<tr>
-						<th scope="row" class="argument-name"><code>complete</code></th>
-						<td><p>Completion handler code block which is called with void. (Optional. If used, method
-returns immediately with void)</p></td>
+						<th scope="row" class="argument-name"><code>errorHandler</code></th>
+						<td><p>Error handler code block which is called with the following args<br>
+- <em>param</em> NSError* error object</p></td>
 					</tr>
 				
 				</table>
@@ -262,7 +265,7 @@ The object will have a uri, address, and QRcode UIImage filled in when method co
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)createReceiveRequestWithDetails:(ABCRequest *)<em>request</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (NSError *)createReceiveRequestWithDetails:(ABCRequest *)<em>request</em></code></div>
 
 		    
 			
@@ -276,15 +279,15 @@ The object will have a uri, address, and QRcode UIImage filled in when method co
 					</tr>
 				
 					<tr>
-						<th scope="row" class="argument-name"><code>complete</code></th>
-						<td><p>(Optional) Code block called on success. Returns void if used</p></td>
+						<th scope="row" class="argument-name"><code>completionHandler</code></th>
+						<td><p>Completion handler code block which is called with void. (Optional. If used, method
+returns immediately with void)</p></td>
 					</tr>
 				
 					<tr>
-						<th scope="row" class="argument-name"><code>error</code></th>
-						<td><p>(Optional) Code block called on error with parameters<br>
-- <em>param</em> ABCCondition code<br>
-- <em>param</em> NSString* errorString</p></td>
+						<th scope="row" class="argument-name"><code>errorHandler</code></th>
+						<td><p>Error handler code block which is called with the following args<br>
+- <em>param</em> NSError* error object</p></td>
 					</tr>
 				
 				</table>
@@ -294,7 +297,7 @@ The object will have a uri, address, and QRcode UIImage filled in when method co
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>ABCAccount* User object or nil if failure</p>
+				<p>NSError* or nil if no error. Returns void if completion handlers are used.</p>
 			</div>
 			
 
@@ -340,7 +343,7 @@ rotation so the next request gets a different address</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (ABCConditionCode)finalizeRequestWithAddress:(NSString *)<em>address</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (NSError *)finalizeRequestWithAddress:(NSString *)<em>address</em></code></div>
 
 		    
 			
@@ -360,7 +363,7 @@ rotation so the next request gets a different address</p>
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>ABCConditionCode</p>
+				<p>NSError* error object</p>
 			</div>
 			
 
@@ -388,8 +391,8 @@ rotation so the next request gets a different address</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/newSpendFromText:" title="newSpendFromText:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/newSpendFromText:">&ndash;&nbsp;newSpendFromText:</a></code>
+	<a name="//api/name/newSpendFromText:error:" title="newSpendFromText:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/newSpendFromText:error:">&ndash;&nbsp;newSpendFromText:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -404,7 +407,7 @@ rotation so the next request gets a different address</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (ABCSpend *)newSpendFromText:(NSString *)<em>uri</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (ABCSpend *)newSpendFromText:(NSString *)<em>uri</em> error:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -414,20 +417,12 @@ rotation so the next request gets a different address</p>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>uri</code></th>
-						<td><p>NSString*  bitcoin address or full BIP21/BIP70 uri</p></td>
-					</tr>
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>complete</code></th>
-						<td><p>(Optional) Code block called on success. Method returns void if used
-- <em>param</em> ABCSpend* <a href="../Classes/ABCSpend.html">ABCSpend</a> object.</p></td>
+						<td><p>NSString*  Bitcoin address or full BIP21/BIP70 uri</p></td>
 					</tr>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>error</code></th>
-						<td><p>(Optional) Code block called on error with parameters<br>
-- <em>param</em> ABCCondition code<br>
-- <em>param</em> NSString* errorString</p></td>
+						<td><p>NSError** Pointer to error object.</p></td>
 					</tr>
 				
 				</table>
@@ -437,7 +432,7 @@ rotation so the next request gets a different address</p>
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>ABCSpend* <a href="../Classes/ABCSpend.html">ABCSpend</a> object or nil if failure</p>
+				<p>ABCSpend* <a href="../Classes/ABCSpend.html">ABCSpend</a> object or nil if failure.</p>
 			</div>
 			
 
@@ -464,8 +459,83 @@ rotation so the next request gets a different address</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/newSpendTransfer:" title="newSpendTransfer:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/newSpendTransfer:">&ndash;&nbsp;newSpendTransfer:</a></code>
+	<a name="//api/name/newSpendFromText:complete:error:" title="newSpendFromText:complete:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/newSpendFromText:complete:error:">&ndash;&nbsp;newSpendFromText:complete:error:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Create an <a href="../Classes/ABCSpend.html">ABCSpend</a> object from text. Text could be a bitcoin address or BIP21/BIP70 URI.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)newSpendFromText:(NSString *)<em>uri</em> complete:(void ( ^ ) ( ABCSpend *sp ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *error ))<em>errorHandler</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>uri</code></th>
+						<td><p>NSString*  Bitcoin address or full BIP21/BIP70 uri</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>completionHandler</code></th>
+						<td><p>Completion handler code block which is called with <a href="../Classes/ABCSpend.html">ABCSpend</a><em>.<br>
+- </em>param<em> <a href="../Classes/ABCSpend.html">ABCSpend</a></em> <a href="../Classes/ABCSpend.html">ABCSpend</a> object.</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>errorHandler</code></th>
+						<td><p>Error handler code block which is called with the following args<br>
+- <em>param</em> NSError* error object</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>void</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Create an <a href="../Classes/ABCSpend.html">ABCSpend</a> object from text. Text could be a bitcoin address or BIP21/BIP70 URI.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCWallet.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/newSpendTransfer:error:" title="newSpendTransfer:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/newSpendTransfer:error:">&ndash;&nbsp;newSpendTransfer:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -481,7 +551,7 @@ current object wallet to [ABCWallet] destWallet</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (ABCSpend *)newSpendTransfer:(ABCWallet *)<em>destWallet</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (ABCSpend *)newSpendTransfer:(ABCWallet *)<em>destWallet</em> error:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -494,6 +564,11 @@ current object wallet to [ABCWallet] destWallet</p>
 						<td><p>ABCWallet* of destination wallet for transfer</p></td>
 					</tr>
 				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>NSError** Pointer to error object.</p></td>
+					</tr>
+				
 				</table>
 			</div>
 			
@@ -529,8 +604,8 @@ current object wallet to [ABCWallet] destWallet</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/exportTransactionsToCSV" title="exportTransactionsToCSV"></a>
-	<h3 class="method-title"><code><a href="#//api/name/exportTransactionsToCSV">&ndash;&nbsp;exportTransactionsToCSV</a></code>
+	<a name="//api/name/exportTransactionsToCSV:" title="exportTransactionsToCSV:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/exportTransactionsToCSV:">&ndash;&nbsp;exportTransactionsToCSV:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -545,15 +620,28 @@ current object wallet to [ABCWallet] destWallet</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (NSString *)exportTransactionsToCSV</code></div>
+			<div class="method-subsection method-declaration"><code>- (NSError *)exportTransactionsToCSV:(NSMutableString *)<em>csv</em></code></div>
 
 		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>csv</code></th>
+						<td><p>NSMutableString* allocated and initialized mutable string to receive CSV contents.
+Must not be nil.</p></td>
+					</tr>
+				
+				</table>
+			</div>
 			
 
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>csv NSString* full CSV export in a single NSString</p>
+				<p>NSError* error object. nil if success</p>
 			</div>
 			
 
@@ -626,8 +714,8 @@ after sweep.</p>
 					</tr>
 				
 					<tr>
-						<th scope="row" class="argument-name"><code>error</code></th>
-						<td><p>Code block called on error with parameters<br>
+						<th scope="row" class="argument-name"><code>errorHandler</code></th>
+						<td><p>Error code block called on error with parameters<br>
 - <em>param</em> NSError* error</p></td>
 					</tr>
 				
@@ -680,7 +768,7 @@ after sweep.</p>
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-02-24</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-02-29</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

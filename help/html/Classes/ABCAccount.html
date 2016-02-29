@@ -64,6 +64,10 @@
 		
 		<option value="//api/name/currentWallet">currentWallet</option>
 		
+		<option value="//api/name/currentWalletIndex">currentWalletIndex</option>
+		
+		<option value="//api/name/dataStore">dataStore</option>
+		
 		<option value="//api/name/delegate">delegate</option>
 		
 		<option value="//api/name/settings">settings</option>
@@ -84,9 +88,17 @@
 		
 		<option value="//api/name/getOTPLocalKey:">- getOTPLocalKey:</option>
 		
+		<option value="//api/name/getWallet:">- getWallet:</option>
+		
 		<option value="//api/name/hasOTPResetPending:">- hasOTPResetPending:</option>
 		
-		<option value="//api/name/passwordExists">- passwordExists</option>
+		<option value="//api/name/isPINLoginEnabled">- isPINLoginEnabled</option>
+		
+		<option value="//api/name/passwordExists:">- passwordExists:</option>
+		
+		<option value="//api/name/pinCheck:">- pinCheck:</option>
+		
+		<option value="//api/name/pinLoginSetup:">- pinLoginSetup:</option>
 		
 		<option value="//api/name/recentlyLoggedIn">- recentlyLoggedIn</option>
 		
@@ -95,6 +107,8 @@
 		<option value="//api/name/removeOTPKey">- removeOTPKey</option>
 		
 		<option value="//api/name/removeOTPResetRequest">- removeOTPResetRequest</option>
+		
+		<option value="//api/name/reorderWallets:toIndexPath:">- reorderWallets:toIndexPath:</option>
 		
 		<option value="//api/name/setOTPAuth:">- setOTPAuth:</option>
 		
@@ -436,6 +450,54 @@ set to a different wallet if the wallet pointed to by currentWallet is deleted.<
 		</div>
 	</div>
 </div><div class="section-method">
+	<a name="//api/name/currentWalletIndex" title="currentWalletIndex"></a>
+	<h3 class="method-title"><code><a href="#//api/name/currentWalletIndex">&nbsp;&nbsp;currentWalletIndex</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Index into <a href="#//api/name/arrayWallets">arrayWallets</a> to where <a href="#//api/name/currentWallet">currentWallet</a> is set to.<br>
+arrayWallets[currentWalletIndex] = <a href="#//api/name/currentWallet">currentWallet</a></p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>@property (atomic) int currentWalletIndex</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Index into <a href="#//api/name/arrayWallets">arrayWallets</a> to where <a href="#//api/name/currentWallet">currentWallet</a> is set to.<br>
+arrayWallets[currentWalletIndex] = <a href="#//api/name/currentWallet">currentWallet</a></p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
 	<a name="//api/name/arrayCategories" title="arrayCategories"></a>
 	<h3 class="method-title"><code><a href="#//api/name/arrayCategories">&nbsp;&nbsp;arrayCategories</a></code>
 </h3>
@@ -485,6 +547,54 @@ an arbitrary subcategory such as &ldquo;Food &amp; Dining&rdquo;. ie. &ldquo;Exp
 			
 		</div>
 	</div>
+</div><div class="section-method">
+	<a name="//api/name/dataStore" title="dataStore"></a>
+	<h3 class="method-title"><code><a href="#//api/name/dataStore">&nbsp;&nbsp;dataStore</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>DataStore object for allowing arbitrary Edge Secure data storage and retrieval on this
+ABCAccount</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>@property ABCDataStore *dataStore</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>DataStore object for allowing arbitrary Edge Secure data storage and retrieval on this
+ABCAccount</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
 </div>
 						</div>
 						
@@ -494,8 +604,8 @@ an arbitrary subcategory such as &ldquo;Food &amp; Dining&rdquo;. ie. &ldquo;Exp
 
 						<div class="task-list">
 							<div class="section-method">
-	<a name="//api/name/passwordExists" title="passwordExists"></a>
-	<h3 class="method-title"><code><a href="#//api/name/passwordExists">&ndash;&nbsp;passwordExists</a></code>
+	<a name="//api/name/passwordExists:" title="passwordExists:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/passwordExists:">&ndash;&nbsp;passwordExists:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -511,7 +621,7 @@ a PIN-only account.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (BOOL)passwordExists</code></div>
+			<div class="method-subsection method-declaration"><code>- (BOOL)passwordExists:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -585,6 +695,206 @@ on spend.</p>
 				<p>Check if this user has logged in &ldquo;recently&rdquo;. Currently fixed to return TRUE
 within 120 seconds of login. Useful for requiring less security for spending such as a PIN
 on spend.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/pinCheck:" title="pinCheck:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/pinCheck:">&ndash;&nbsp;pinCheck:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Checks a PIN for correctness. This checks against the PIN used
+during account creation in [AirbitzCore createAccount] or the PIN changed
+with [ABCAccount changePIN]<br>
+This is used to guard access to certain actions in the GUI.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (BOOL)pinCheck:(NSString *)<em>pin</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>pin</code></th>
+						<td><p>NSString* Pin to check</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>(Optional) NSError* Error object. Nil if success</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>BOOL YES if PIN is correct</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Checks a PIN for correctness. This checks against the PIN used
+during account creation in [AirbitzCore createAccount] or the PIN changed
+with [ABCAccount changePIN]<br>
+This is used to guard access to certain actions in the GUI.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/pinLoginSetup:" title="pinLoginSetup:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/pinLoginSetup:">&ndash;&nbsp;pinLoginSetup:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Enable or disable PIN login on this account. Set enable = YES to allow
+PIN login. Enabling PIN login creates a local account decryption key that
+is split with one have in local device storage and the other half on Airbitz
+servers. When using [AirbitzCore signInWithPIN] the PIN is sent to Airbitz servers
+to authenticate the user. If the PIN is correct, the second half of the decryption
+key is sent back to the device. Combined with the locally saved key, the two
+are then used to decrypt the local account thereby loggin in the user.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (NSError *)pinLoginSetup:(BOOL)<em>enable</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>enable</code></th>
+						<td><p>BOOL set to YES to enable PIN login</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>NSError* Nil if success</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Enable or disable PIN login on this account. Set enable = YES to allow
+PIN login. Enabling PIN login creates a local account decryption key that
+is split with one have in local device storage and the other half on Airbitz
+servers. When using [AirbitzCore signInWithPIN] the PIN is sent to Airbitz servers
+to authenticate the user. If the PIN is correct, the second half of the decryption
+key is sent back to the device. Combined with the locally saved key, the two
+are then used to decrypt the local account thereby loggin in the user.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/isPINLoginEnabled" title="isPINLoginEnabled"></a>
+	<h3 class="method-title"><code><a href="#//api/name/isPINLoginEnabled">&ndash;&nbsp;isPINLoginEnabled</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Check if this account is allowed to login via PIN</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (BOOL)isPINLoginEnabled</code></div>
+
+		    
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>BOOL YES if PIN login is enabled</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Check if this account is allowed to login via PIN</p>
 			</div>
 			
 
@@ -680,6 +990,140 @@ on spend.</p>
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>Create a wallet in the current account.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/getWallet:" title="getWallet:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/getWallet:">&ndash;&nbsp;getWallet:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Returns an <a href="../Classes/ABCWallet.html">ABCWallet</a> object looked up by walletUUID</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCWallet *)getWallet:(NSString *)<em>walletUUID</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>walletUUID</code></th>
+						<td><p>NSString* uuid of wallet to find</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCWallet* Returned wallet object or nil if not found</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Returns an <a href="../Classes/ABCWallet.html">ABCWallet</a> object looked up by walletUUID</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/reorderWallets:toIndexPath:" title="reorderWallets:toIndexPath:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/reorderWallets:toIndexPath:">&ndash;&nbsp;reorderWallets:toIndexPath:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Changes the order of wallets in <a href="#//api/name/arrayWallets">[ABCAccount arrayWallets]</a> &amp; <a href="#//api/name/arrayArchivedWallets">[ABCAccount arrayArchivedWallets]</a>
+The wallet to move is specified by the &lsquo;section&rsquo; and &lsquo;row&rsquo; of the indexPath. Section 0 specifies wallets
+in <a href="#//api/name/arrayWallets">arrayWallets</a>. Section 1 specifies arrayArchivedWallet. The &lsquo;row&rsquo; specifies the position within the
+array. Wallets are reordered by specifying the source wallet
+position in sourceIndexPath and destination position in destinationIndexPath.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (NSError *)reorderWallets:(NSIndexPath *)<em>sourceIndexPath</em> toIndexPath:(NSIndexPath *)<em>destinationIndexPath</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>sourceIndexPath</code></th>
+						<td><p>NSIndexPath* The position of the wallet to move</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>destinationIndexPath NSIndexPath* The destination array position of the wallet</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Changes the order of wallets in <a href="#//api/name/arrayWallets">[ABCAccount arrayWallets]</a> &amp; <a href="#//api/name/arrayArchivedWallets">[ABCAccount arrayArchivedWallets]</a>
+The wallet to move is specified by the &lsquo;section&rsquo; and &lsquo;row&rsquo; of the indexPath. Section 0 specifies wallets
+in <a href="#//api/name/arrayWallets">arrayWallets</a>. Section 1 specifies arrayArchivedWallet. The &lsquo;row&rsquo; specifies the position within the
+array. Wallets are reordered by specifying the source wallet
+position in sourceIndexPath and destination position in destinationIndexPath.</p>
 			</div>
 			
 
@@ -1201,7 +1645,7 @@ currently logged in user</p>
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-02-24</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-02-29</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

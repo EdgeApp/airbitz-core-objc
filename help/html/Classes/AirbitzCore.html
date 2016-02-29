@@ -54,25 +54,17 @@
 
 	
 	
-	<optgroup label="Properties">
-		
-		<option value="//api/name/arrayCurrencyCodes">arrayCurrencyCodes</option>
-		
-		<option value="//api/name/arrayCurrencyNums">arrayCurrencyNums</option>
-		
-		<option value="//api/name/arrayCurrencyStrings">arrayCurrencyStrings</option>
-		
-	</optgroup>
-	
 
 	
 	<optgroup label="Class Methods">
 		
 		<option value="//api/name/checkPasswordRules:secondsToCrack:count:ruleDescription:rulePassed:checkResultsMessage:">+ checkPasswordRules:secondsToCrack:count:ruleDescription:rulePassed:checkResultsMessage:</option>
 		
-		<option value="//api/name/encodeStringToQRImage:">+ encodeStringToQRImage:</option>
+		<option value="//api/name/encodeStringToQRImage:error:">+ encodeStringToQRImage:error:</option>
 		
-		<option value="//api/name/fixUsername:">+ fixUsername:</option>
+		<option value="//api/name/fixUsername:error:">+ fixUsername:error:</option>
+		
+		<option value="//api/name/listRecoveryQuestionsChoices:error:">+ listRecoveryQuestionsChoices:error:</option>
 		
 	</optgroup>
 	
@@ -90,25 +82,19 @@
 		
 		<option value="//api/name/createAccount:password:pin:delegate:error:">- createAccount:password:pin:delegate:error:</option>
 		
-		<option value="//api/name/currencyAbbrevLookup:">- currencyAbbrevLookup:</option>
-		
-		<option value="//api/name/currencySymbolLookup:">- currencySymbolLookup:</option>
+		<option value="//api/name/deleteLocalAccount:">- deleteLocalAccount:</option>
 		
 		<option value="//api/name/enterBackground">- enterBackground</option>
 		
 		<option value="//api/name/enterForeground">- enterForeground</option>
 		
+		<option value="//api/name/exchangeCacheGet">- exchangeCacheGet</option>
+		
 		<option value="//api/name/free">- free</option>
 		
 		<option value="//api/name/getLastAccessedAccount">- getLastAccessedAccount</option>
 		
-		<option value="//api/name/getLocalAccounts:">- getLocalAccounts:</option>
-		
 		<option value="//api/name/getLoggedInUser:">- getLoggedInUser:</option>
-		
-		<option value="//api/name/getOTPResetUsernames">- getOTPResetUsernames</option>
-		
-		<option value="//api/name/getRecoveryQuestionsChoices:error:">- getRecoveryQuestionsChoices:error:</option>
 		
 		<option value="//api/name/getRecoveryQuestionsForUserName:error:">- getRecoveryQuestionsForUserName:error:</option>
 		
@@ -120,13 +106,15 @@
 		
 		<option value="//api/name/isTestNet">- isTestNet</option>
 		
+		<option value="//api/name/listLocalAccounts:">- listLocalAccounts:</option>
+		
+		<option value="//api/name/listPendingOTPResetUsernames:">- listPendingOTPResetUsernames:</option>
+		
 		<option value="//api/name/logout:">- logout:</option>
 		
 		<option value="//api/name/lostConnectivity">- lostConnectivity</option>
 		
-		<option value="//api/name/passwordExists:">- passwordExists:</option>
-		
-		<option value="//api/name/removeLocalAccount:">- removeLocalAccount:</option>
+		<option value="//api/name/passwordExists:error:">- passwordExists:error:</option>
 		
 		<option value="//api/name/requestOTPReset:complete:error:">- requestOTPReset:complete:error:</option>
 		
@@ -140,7 +128,7 @@
 		
 		<option value="//api/name/signInWithPIN:pin:delegate:complete:error:">- signInWithPIN:pin:delegate:complete:error:</option>
 		
-		<option value="//api/name/signInWithRecoveryAnswers:answers:otp:complete:error:">- signInWithRecoveryAnswers:answers:otp:complete:error:</option>
+		<option value="//api/name/signInWithRecoveryAnswers:answers:delegate:otp:complete:error:">- signInWithRecoveryAnswers:answers:delegate:otp:complete:error:</option>
 		
 	</optgroup>
 	
@@ -250,152 +238,6 @@ application.</p>
 					
 					<div class="section section-tasks">
 						<a title="Tasks" name="tasks"></a>
-						
-
-						<a title="AirbitzCore currency public read-only variables" name="task_AirbitzCore currency public read-only variables"></a>
-						<h2 class="task-title">AirbitzCore currency public read-only variables</h2>
-
-						<div class="task-list">
-							<div class="section-method">
-	<a name="//api/name/arrayCurrencyCodes" title="arrayCurrencyCodes"></a>
-	<h3 class="method-title"><code><a href="#//api/name/arrayCurrencyCodes">&nbsp;&nbsp;arrayCurrencyCodes</a></code>
-</h3>
-
-	<div class="method-info">
-		<div class="pointy-thing"></div>
-
-		<div class="method-info-container">
-			
-			
-			<div class="method-subsection brief-description">
-				<p>Array of NSString* ISO currency codes. ie &lsquo;USD, CAD, JPY, PHP, EUR&rsquo;</p>
-			</div>
-			
-		    
-
-			<div class="method-subsection method-declaration"><code>@property (nonatomic, strong) NSArray *arrayCurrencyCodes</code></div>
-
-		    
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection discussion-section">
-				<h4 class="method-subtitle">Discussion</h4>
-				<p>Array of NSString* ISO currency codes. ie &lsquo;USD, CAD, JPY, PHP, EUR&rsquo;</p>
-			</div>
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection declared-in-section">
-				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
-			</div>
-			
-			
-		</div>
-	</div>
-</div><div class="section-method">
-	<a name="//api/name/arrayCurrencyNums" title="arrayCurrencyNums"></a>
-	<h3 class="method-title"><code><a href="#//api/name/arrayCurrencyNums">&nbsp;&nbsp;arrayCurrencyNums</a></code>
-</h3>
-
-	<div class="method-info">
-		<div class="pointy-thing"></div>
-
-		<div class="method-info-container">
-			
-			
-			<div class="method-subsection brief-description">
-				<p>Array of NSNumber ISO currency numbers</p>
-			</div>
-			
-		    
-
-			<div class="method-subsection method-declaration"><code>@property (nonatomic, strong) NSArray *arrayCurrencyNums</code></div>
-
-		    
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection discussion-section">
-				<h4 class="method-subtitle">Discussion</h4>
-				<p>Array of NSNumber ISO currency numbers</p>
-			</div>
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection declared-in-section">
-				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
-			</div>
-			
-			
-		</div>
-	</div>
-</div><div class="section-method">
-	<a name="//api/name/arrayCurrencyStrings" title="arrayCurrencyStrings"></a>
-	<h3 class="method-title"><code><a href="#//api/name/arrayCurrencyStrings">&nbsp;&nbsp;arrayCurrencyStrings</a></code>
-</h3>
-
-	<div class="method-info">
-		<div class="pointy-thing"></div>
-
-		<div class="method-info-container">
-			
-			
-			<div class="method-subsection brief-description">
-				<p>Array of NSString currency names. ie. &lsquo;US Dollar, Philippine Peso&rsquo;</p>
-			</div>
-			
-		    
-
-			<div class="method-subsection method-declaration"><code>@property (nonatomic, strong) NSArray *arrayCurrencyStrings</code></div>
-
-		    
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection discussion-section">
-				<h4 class="method-subtitle">Discussion</h4>
-				<p>Array of NSString currency names. ie. &lsquo;US Dollar, Philippine Peso&rsquo;</p>
-			</div>
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection declared-in-section">
-				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
-			</div>
-			
-			
-		</div>
-	</div>
-</div>
-						</div>
 						
 
 						<a title="AirbitzCore initialization / free routines" name="task_AirbitzCore initialization / free routines"></a>
@@ -899,8 +741,8 @@ been logged into using a full username &amp; password</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/signInWithRecoveryAnswers:answers:otp:complete:error:" title="signInWithRecoveryAnswers:answers:otp:complete:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/signInWithRecoveryAnswers:answers:otp:complete:error:">&ndash;&nbsp;signInWithRecoveryAnswers:answers:otp:complete:error:</a></code>
+	<a name="//api/name/signInWithRecoveryAnswers:answers:delegate:otp:complete:error:" title="signInWithRecoveryAnswers:answers:delegate:otp:complete:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/signInWithRecoveryAnswers:answers:delegate:otp:complete:error:">&ndash;&nbsp;signInWithRecoveryAnswers:answers:delegate:otp:complete:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -911,12 +753,12 @@ been logged into using a full username &amp; password</p>
 			
 			<div class="method-subsection brief-description">
 				<p>Log in a user using recovery answers. Will only succeed if user has recovery questions and answers
-set in their account. Use [ABCAccount setRecoveryQuestions] to set questions and answers</p>
+set in their account. Use [ABCAccount setupRecoveryQuestions] to set questions and answers</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)signInWithRecoveryAnswers:(NSString *)<em>username</em> answers:(NSString *)<em>answers</em> otp:(NSString *)<em>otp</em> complete:(void ( ^ ) ( BOOL validAnswers ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *, NSDate *resetDate ))<em>errorHandler</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)signInWithRecoveryAnswers:(NSString *)<em>username</em> answers:(NSString *)<em>answers</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> complete:(void ( ^ ) ( ABCAccount *account ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *, NSDate *resetDate ))<em>errorHandler</em></code></div>
 
 		    
 			
@@ -940,14 +782,13 @@ set in their account. Use [ABCAccount setRecoveryQuestions] to set questions and
 					</tr>
 				
 					<tr>
-						<th scope="row" class="argument-name"><code>complete:</code></th>
-						<td><p>completion handler code block<br>
-- <em>param</em> BOOL validAnswers TRUE if recovery answers are correct</p></td>
+						<th scope="row" class="argument-name"><code>completionHandler</code></th>
+						<td><p>Completion handler code block<br></p></td>
 					</tr>
 				
 					<tr>
-						<th scope="row" class="argument-name"><code>error:</code></th>
-						<td><p>error handler code block which is called with the following args<br>
+						<th scope="row" class="argument-name"><code>errorHandler</code></th>
+						<td><p>Error handler code block which is called with the following args<br>
 - <em>param</em> NSError<em><br>
 - </em>param<em> NSDate</em> resetDate If login fails due to OTP and a reset has been requested, this contains
 the date that the reset will occur.</p></td>
@@ -970,7 +811,7 @@ the date that the reset will occur.</p></td>
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>Log in a user using recovery answers. Will only succeed if user has recovery questions and answers
-set in their account. Use [ABCAccount setRecoveryQuestions] to set questions and answers</p>
+set in their account. Use [ABCAccount setupRecoveryQuestions] to set questions and answers</p>
 			</div>
 			
 
@@ -1114,8 +955,8 @@ set in their account. Use [ABCAccount setRecoveryQuestions] to set questions and
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/passwordExists:" title="passwordExists:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/passwordExists:">&ndash;&nbsp;passwordExists:</a></code>
+	<a name="//api/name/passwordExists:error:" title="passwordExists:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/passwordExists:error:">&ndash;&nbsp;passwordExists:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1131,7 +972,7 @@ a PIN-only account.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (BOOL)passwordExists:(NSString *)<em>username</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (BOOL)passwordExists:(NSString *)<em>username</em> error:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -1142,6 +983,11 @@ a PIN-only account.</p>
 					<tr>
 						<th scope="row" class="argument-name"><code>username</code></th>
 						<td><p>NSString* user to check</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>NSError**</p></td>
 					</tr>
 				
 				</table>
@@ -1271,8 +1117,8 @@ by app to give feedback to user before creating a new account.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/getLocalAccounts:" title="getLocalAccounts:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/getLocalAccounts:">&ndash;&nbsp;getLocalAccounts:</a></code>
+	<a name="//api/name/listLocalAccounts:" title="listLocalAccounts:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/listLocalAccounts:">&ndash;&nbsp;listLocalAccounts:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1287,7 +1133,7 @@ by app to give feedback to user before creating a new account.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (NSError *)getLocalAccounts:(NSMutableArray *)<em>accounts</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (NSError *)listLocalAccounts:(NSMutableArray *)<em>accounts</em></code></div>
 
 		    
 			
@@ -1534,8 +1380,8 @@ there is a local PIN package on the device from a prior login</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/removeLocalAccount:" title="removeLocalAccount:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/removeLocalAccount:">&ndash;&nbsp;removeLocalAccount:</a></code>
+	<a name="//api/name/deleteLocalAccount:" title="deleteLocalAccount:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/deleteLocalAccount:">&ndash;&nbsp;deleteLocalAccount:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1547,12 +1393,12 @@ there is a local PIN package on the device from a prior login</p>
 			<div class="method-subsection brief-description">
 				<p>Deletes named account from local device. Account is recoverable if it contains a password.
 Use [AirbitzCore passwordExists] to determine if account has a password. Recommend warning
-user before executing removeLocalAccount if passwordExists returns FALSE.</p>
+user before executing deleteLocalAccount if passwordExists returns FALSE.</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (NSError *)removeLocalAccount:(NSString *)<em>username</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (NSError *)deleteLocalAccount:(NSString *)<em>username</em></code></div>
 
 		    
 			
@@ -1583,7 +1429,7 @@ user before executing removeLocalAccount if passwordExists returns FALSE.</p>
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>Deletes named account from local device. Account is recoverable if it contains a password.
 Use [AirbitzCore passwordExists] to determine if account has a password. Recommend warning
-user before executing removeLocalAccount if passwordExists returns FALSE.</p>
+user before executing deleteLocalAccount if passwordExists returns FALSE.</p>
 			</div>
 			
 
@@ -1735,7 +1581,7 @@ returns the username of another local account. This can be overridden by calling
 			<div class="method-subsection brief-description">
 				<p>Gets the recovery questions set for the specified username. Questions are
 returned as an NSArray of NSString*. Recovery questions need to have been previously set
-with a call to [ABCAccount setRecoveryQuestions]</p>
+with a call to [ABCAccount setupRecoveryQuestions]</p>
 			</div>
 			
 		    
@@ -1772,7 +1618,7 @@ have been set.</p>
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>Gets the recovery questions set for the specified username. Questions are
 returned as an NSArray of NSString*. Recovery questions need to have been previously set
-with a call to [ABCAccount setRecoveryQuestions]</p>
+with a call to [ABCAccount setupRecoveryQuestions]</p>
 			</div>
 			
 
@@ -1790,8 +1636,8 @@ with a call to [ABCAccount setRecoveryQuestions]</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/getRecoveryQuestionsChoices:error:" title="getRecoveryQuestionsChoices:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/getRecoveryQuestionsChoices:error:">&ndash;&nbsp;getRecoveryQuestionsChoices:error:</a></code>
+	<a name="//api/name/listRecoveryQuestionsChoices:error:" title="listRecoveryQuestionsChoices:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/listRecoveryQuestionsChoices:error:">+&nbsp;listRecoveryQuestionsChoices:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1807,7 +1653,7 @@ servers, but app is <a href="#//api/name/free">free</a> to choose its own to pre
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)getRecoveryQuestionsChoices:(void ( ^ ) ( NSMutableArray *arrayCategoryString , NSMutableArray *arrayCategoryNumeric , NSMutableArray *arrayCategoryMust ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *error ))<em>errorHandler</em></code></div>
+			<div class="method-subsection method-declaration"><code>+ (void)listRecoveryQuestionsChoices:(void ( ^ ) ( NSMutableArray *arrayCategoryString , NSMutableArray *arrayCategoryNumeric , NSMutableArray *arrayCategoryMust ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *error ))<em>errorHandler</em></code></div>
 
 		    
 			
@@ -1944,8 +1790,8 @@ at least once.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/getOTPResetUsernames" title="getOTPResetUsernames"></a>
-	<h3 class="method-title"><code><a href="#//api/name/getOTPResetUsernames">&ndash;&nbsp;getOTPResetUsernames</a></code>
+	<a name="//api/name/listPendingOTPResetUsernames:" title="listPendingOTPResetUsernames:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/listPendingOTPResetUsernames:">&ndash;&nbsp;listPendingOTPResetUsernames:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1961,9 +1807,21 @@ have a pending OTP reset on the server.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (NSArray *)getOTPResetUsernames</code></div>
+			<div class="method-subsection method-declaration"><code>- (NSArray *)listPendingOTPResetUsernames:(NSError **)<em>error</em></code></div>
 
 		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>NSError object</p></td>
+					</tr>
+				
+				</table>
+			</div>
 			
 
 			
@@ -2024,9 +1882,8 @@ which will disable the OTP authentication requirement when it expires.</p>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>username</code></th>
-						<td><p>NSString*</p>
-
-<p>(Optional. If used, method returns immediately with void)</p></td>
+						<td><p>NSString*
+(Optional. If used, method returns immediately with void)</p></td>
 					</tr>
 				
 					<tr>
@@ -2059,6 +1916,65 @@ handler</p>
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>Launches an OTP reset timer on the server,
 which will disable the OTP authentication requirement when it expires.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div>
+						</div>
+						
+
+						<a title="ABCExchange Calls" name="task_ABCExchange Calls"></a>
+						<h2 class="task-title">ABCExchange Calls</h2>
+
+						<div class="task-list">
+							<div class="section-method">
+	<a name="//api/name/exchangeCacheGet" title="exchangeCacheGet"></a>
+	<h3 class="method-title"><code><a href="#//api/name/exchangeCacheGet">&ndash;&nbsp;exchangeCacheGet</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Gets an <a href="../Classes/ABCExchangeCache.html">ABCExchangeCache</a> object for use in doing currency conversion</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCExchangeCache *)exchangeCacheGet</code></div>
+
+		    
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCExchangeCache*</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Gets an <a href="../Classes/ABCExchangeCache.html">ABCExchangeCache</a> object for use in doing currency conversion</p>
 			</div>
 			
 
@@ -2437,8 +2353,8 @@ re-initiate networking</p>
 
 						<div class="task-list">
 							<div class="section-method">
-	<a name="//api/name/fixUsername:" title="fixUsername:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/fixUsername:">+&nbsp;fixUsername:</a></code>
+	<a name="//api/name/fixUsername:error:" title="fixUsername:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/fixUsername:error:">+&nbsp;fixUsername:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -2449,13 +2365,13 @@ re-initiate networking</p>
 			
 			<div class="method-subsection brief-description">
 				<p>Transforms a username into the internal format used for hashing.
-This collapses spaces, converts things to lowercase,
+This collapses spaces, converts to lowercase,
 and checks for invalid characters.</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>+ (NSString *)fixUsername:(NSString *)<em>username</em></code></div>
+			<div class="method-subsection method-declaration"><code>+ (NSString *)fixUsername:(NSString *)<em>username</em> error:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -2468,7 +2384,7 @@ and checks for invalid characters.</p>
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>Transforms a username into the internal format used for hashing.
-This collapses spaces, converts things to lowercase,
+This collapses spaces, converts to lowercase,
 and checks for invalid characters.</p>
 			</div>
 			
@@ -2487,8 +2403,8 @@ and checks for invalid characters.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/encodeStringToQRImage:" title="encodeStringToQRImage:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/encodeStringToQRImage:">+&nbsp;encodeStringToQRImage:</a></code>
+	<a name="//api/name/encodeStringToQRImage:error:" title="encodeStringToQRImage:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/encodeStringToQRImage:error:">+&nbsp;encodeStringToQRImage:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -2503,7 +2419,7 @@ and checks for invalid characters.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>+ (UIImage *)encodeStringToQRImage:(NSString *)<em>string</em></code></div>
+			<div class="method-subsection method-declaration"><code>+ (UIImage *)encodeStringToQRImage:(NSString *)<em>string</em> error:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -2549,132 +2465,6 @@ and checks for invalid characters.</p>
 			
 		</div>
 	</div>
-</div><div class="section-method">
-	<a name="//api/name/currencyAbbrevLookup:" title="currencyAbbrevLookup:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/currencyAbbrevLookup:">&ndash;&nbsp;currencyAbbrevLookup:</a></code>
-</h3>
-
-	<div class="method-info">
-		<div class="pointy-thing"></div>
-
-		<div class="method-info-container">
-			
-			
-			<div class="method-subsection brief-description">
-				<p>Given a currency code, returns the 3 digit currency code. ie. &ldquo;USD, CAD, EUR&rdquo;</p>
-			</div>
-			
-		    
-
-			<div class="method-subsection method-declaration"><code>- (NSString *)currencyAbbrevLookup:(int)<em>currencyNum</em></code></div>
-
-		    
-			
-			<div class="method-subsection arguments-section parameters">
-				<h4 class="method-subtitle parameter-title">Parameters</h4>
-				<table class="argument-def parameter-def">
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>currencyNum</code></th>
-						<td><p>int - ISO currency num to lookup</p></td>
-					</tr>
-				
-				</table>
-			</div>
-			
-
-			
-			<div class="method-subsection return">
-				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>NSString* 3 digit ISO currency code</p>
-			</div>
-			
-
-			
-
-			
-			<div class="method-subsection discussion-section">
-				<h4 class="method-subtitle">Discussion</h4>
-				<p>Given a currency code, returns the 3 digit currency code. ie. &ldquo;USD, CAD, EUR&rdquo;</p>
-			</div>
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection declared-in-section">
-				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
-			</div>
-			
-			
-		</div>
-	</div>
-</div><div class="section-method">
-	<a name="//api/name/currencySymbolLookup:" title="currencySymbolLookup:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/currencySymbolLookup:">&ndash;&nbsp;currencySymbolLookup:</a></code>
-</h3>
-
-	<div class="method-info">
-		<div class="pointy-thing"></div>
-
-		<div class="method-info-container">
-			
-			
-			<div class="method-subsection brief-description">
-				<p>Given a currency code, returns the currency symbol. ie &ldquo;$&rdquo;</p>
-			</div>
-			
-		    
-
-			<div class="method-subsection method-declaration"><code>- (NSString *)currencySymbolLookup:(int)<em>currencyNum</em></code></div>
-
-		    
-			
-			<div class="method-subsection arguments-section parameters">
-				<h4 class="method-subtitle parameter-title">Parameters</h4>
-				<table class="argument-def parameter-def">
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>currencyNum</code></th>
-						<td><p>int - ISO currency num to lookup</p></td>
-					</tr>
-				
-				</table>
-			</div>
-			
-
-			
-			<div class="method-subsection return">
-				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>NSString* symbol</p>
-			</div>
-			
-
-			
-
-			
-			<div class="method-subsection discussion-section">
-				<h4 class="method-subtitle">Discussion</h4>
-				<p>Given a currency code, returns the currency symbol. ie &ldquo;$&rdquo;</p>
-			</div>
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection declared-in-section">
-				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
-			</div>
-			
-			
-		</div>
-	</div>
 </div>
 						</div>
 						
@@ -2690,7 +2480,7 @@ and checks for invalid characters.</p>
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-02-24</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-02-29</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>
