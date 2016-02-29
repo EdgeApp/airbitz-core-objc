@@ -674,7 +674,7 @@ exitnow:
     tABC_Error error;
     self.uuid = uuid;
     self.name = loadingText;
-    self.currency = nil;
+    self.currency = [ABCCurrency noCurrency];
     self.balance = 0;
     self.loaded = NO;
     

@@ -31,6 +31,10 @@
 - (int) getCurrencyNumFromCode:(NSString *)code;
 {
     int index = (int) [[ABCCurrency listCurrencyCodes] indexOfObject:code];
+    if (index < 0)
+    {
+        return 0;
+    }
     NSNumber *currencyNum = [ABCCurrency listCurrencyNums][index];
     
     return (int)[currencyNum integerValue];
@@ -39,12 +43,15 @@
 - (ABCCurrency *) getCurrencyFromCode:(NSString *)code;
 {
     int index = (int) [[ABCCurrency listCurrencyCodes] indexOfObject:code];
+    if (index < 0) return [ABCCurrency noCurrency];
+    
     return [ABCCurrency listCurrencies][index];
 }
 
 - (NSString *) getCurrencyCodeFromNum:(int) num;
 {
     int index = (int) [[ABCCurrency listCurrencyNums] indexOfObject:[NSNumber numberWithInt:num]];
+    if (index < 0) return @"";
     
     return [ABCCurrency listCurrencyCodes][index];
 }
@@ -52,6 +59,7 @@
 - (ABCCurrency *) getCurrencyFromNum:(int) num;
 {
     int index = (int) [[ABCCurrency listCurrencyNums] indexOfObject:[NSNumber numberWithInt:num]];
+    if (index < 0) return [ABCCurrency noCurrency];
     
     return [ABCCurrency listCurrencies][index];
 }
