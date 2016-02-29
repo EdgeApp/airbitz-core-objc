@@ -2075,9 +2075,9 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return nCount;
 }
 
-- (NSError *)setRecoveryQuestions:(NSString *)password
-                        questions:(NSString *)questions
-                          answers:(NSString *)answers;
+- (NSError *)setupRecoveryQuestions:(NSString *)password
+                          questions:(NSString *)questions
+                            answers:(NSString *)answers;
 {
     tABC_Error error;
     ABC_SetAccountRecoveryQuestions([self.name UTF8String],
@@ -2088,15 +2088,15 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return [ABCError makeNSError:error];
 }
 
-- (void)setRecoveryQuestions:(NSString *)password
-                               questions:(NSString *)questions
-                                 answers:(NSString *)answers
-                                complete:(void (^)(void)) completionHandler
-                                   error:(void (^)(NSError *error)) errorHandler;
+- (void)setupRecoveryQuestions:(NSString *)password
+                     questions:(NSString *)questions
+                       answers:(NSString *)answers
+                      complete:(void (^)(void)) completionHandler
+                         error:(void (^)(NSError *error)) errorHandler;
 {
     [self postToMiscQueue:^
      {
-         NSError *error = [self setRecoveryQuestions:password questions:questions answers:answers];
+         NSError *error = [self setupRecoveryQuestions:password questions:questions answers:answers];
          
          dispatch_async(dispatch_get_main_queue(), ^(void) {
              if (!error)

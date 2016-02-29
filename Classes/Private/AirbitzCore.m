@@ -387,7 +387,7 @@
 }
 
 
-- (NSError *) getLocalAccounts:(NSMutableArray *) accounts;
+- (NSError *) listLocalAccounts:(NSMutableArray *) accounts;
 {
     char * pszUserNames;
     NSArray *arrayAccounts = nil;
@@ -487,7 +487,7 @@
     });
 }
 
-- (NSError *)removeLocalAccount:(NSString *)account;
+- (NSError *)deleteLocalAccount:(NSString *)account;
 {
     tABC_Error error;
     NSError *nserror = nil;
@@ -500,7 +500,7 @@
             // If we deleted the account we most recently logged into,
             // set the lastLoggedInAccount to the top most account in the list.
             NSMutableArray *accounts = [[NSMutableArray alloc] init];
-            nserror = [self getLocalAccounts:accounts];
+            nserror = [self listLocalAccounts:accounts];
             [self setLastAccessedAccount:accounts[0]];
         }
     }
@@ -961,7 +961,7 @@
 /* === OTP authentication: === */
 
 
-- (NSArray *)getOTPResetUsernames:(NSError **)nserror;
+- (NSArray *)listPendingOTPResetUsernames:(NSError **)nserror;
 {
     char *szUsernames = NULL;
     NSString *usernames = nil;
@@ -1041,7 +1041,7 @@
 }
 
 
-- (void)getRecoveryQuestionsChoices: (void (^)(
++ (void)listRecoveryQuestionsChoices: (void (^)(
                                                NSMutableArray *arrayCategoryString,
                                                NSMutableArray *arrayCategoryNumeric,
                                                NSMutableArray *arrayCategoryMust)) completionHandler
@@ -1145,7 +1145,7 @@ void abcDebugLog(int level, NSString *statement)
     return username;
 }
 
-- (void)categorizeQuestionChoices:(tABC_QuestionChoices *)pChoices
++ (void)categorizeQuestionChoices:(tABC_QuestionChoices *)pChoices
                    categoryString:(NSMutableArray **)arrayCategoryString
                   categoryNumeric:(NSMutableArray **)arrayCategoryNumeric
                      categoryMust:(NSMutableArray **)arrayCategoryMust

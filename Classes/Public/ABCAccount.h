@@ -337,10 +337,10 @@
  * @return NSError* or nil if no error. Returns void if using completionHandler
  */
 
-- (NSError *)setRecoveryQuestions:(NSString *)password
+- (NSError *)setupRecoveryQuestions:(NSString *)password
                         questions:(NSString *)questions
                           answers:(NSString *)answers;
-- (void)setRecoveryQuestions:(NSString *)password
+- (void)setupRecoveryQuestions:(NSString *)password
                                questions:(NSString *)questions
                                  answers:(NSString *)answers
                                 complete:(void (^)(void)) completionHandler

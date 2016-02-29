@@ -230,7 +230,7 @@ typedef enum eABCDeviceCaps
 
 /**
  * Log in a user using recovery answers. Will only succeed if user has recovery questions and answers
- * set in their account. Use [ABCAccount setRecoveryQuestions] to set questions and answers
+ * set in their account. Use [ABCAccount setupRecoveryQuestions] to set questions and answers
  * @param username NSString*
  * @param answers  NSString* concatenated string of recovery answers separated by '\n' after each answer
  * @param otp NSString* OTP token if needed to login. May be set to nil.
@@ -294,7 +294,7 @@ typedef enum eABCDeviceCaps
  * @param accounts NSMutableArray* array of strings of account names
  * @return NSError* error code
  */
-- (NSError *) getLocalAccounts:(NSMutableArray *) accounts;
+- (NSError *) listLocalAccounts:(NSMutableArray *) accounts;
 
 /**
  * Checks if an account with the specified username exists locally on the current device.
@@ -351,11 +351,11 @@ typedef enum eABCDeviceCaps
 /**
  * Deletes named account from local device. Account is recoverable if it contains a password.
  * Use [AirbitzCore passwordExists] to determine if account has a password. Recommend warning
- * user before executing removeLocalAccount if passwordExists returns FALSE.
+ * user before executing deleteLocalAccount if passwordExists returns FALSE.
  * @param username NSString*  username of account to delete
  * @return NSError* nil if method succeeds
  */
-- (NSError *)removeLocalAccount:(NSString *)username;
+- (NSError *)deleteLocalAccount:(NSString *)username;
 
 /**
  * Returns the NSString* of the last account that was logged into. If that account was deleted,
@@ -379,7 +379,7 @@ typedef enum eABCDeviceCaps
 /**
  * Gets the recovery questions set for the specified username. Questions are
  * returned as an NSArray of NSString*. Recovery questions need to have been previously set
- * with a call to [ABCAccount setRecoveryQuestions]
+ * with a call to [ABCAccount setupRecoveryQuestions]
  * @param username NSString* username to query
  * @return NSArray* Array of questions in NSString format. Returns nil if no questions
  * have been set.
@@ -397,7 +397,7 @@ typedef enum eABCDeviceCaps
  * - *param* NSError* error
  * @return void
  */
-- (void)getRecoveryQuestionsChoices: (void (^)(
++ (void)listRecoveryQuestionsChoices: (void (^)(
                                                NSMutableArray *arrayCategoryString,
                                                NSMutableArray *arrayCategoryNumeric,
                                                NSMutableArray *arrayCategoryMust)) completionHandler
@@ -425,7 +425,7 @@ typedef enum eABCDeviceCaps
  * @param error NSError object
  * @return NSArray* of NSString* of usernames
  */
-- (NSArray *)getOTPResetUsernames:(NSError **)error;
+- (NSArray *)listPendingOTPResetUsernames:(NSError **)error;
 
 /**
  * Launches an OTP reset timer on the server,
