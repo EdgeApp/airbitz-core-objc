@@ -2,19 +2,7 @@
 #import "AirbitzCore+Internal.h"
 #import <pthread.h>
 
-#define CURRENCY_NUM_AUD                 36
-#define CURRENCY_NUM_CAD                124
-#define CURRENCY_NUM_CNY                156
-#define CURRENCY_NUM_CUP                192
-#define CURRENCY_NUM_HKD                344
-#define CURRENCY_NUM_MXN                484
-#define CURRENCY_NUM_NZD                554
-#define CURRENCY_NUM_PHP                608
-#define CURRENCY_NUM_GBP                826
-#define CURRENCY_NUM_USD                840
-#define CURRENCY_NUM_EUR                978
-
-#define DEFAULT_CURRENCY_NUM CURRENCY_NUM_USD // USD
+#define DEFAULT_CURRENCY @"USD"
 
 @class ABCUtil;
 
@@ -28,17 +16,14 @@
 
 @interface AirbitzCore ()
 {
-    NSDictionary                                    *localeAsCurrencyNum;
     BOOL                                            bInitialized;
-    BOOL                                            bNewDeviceLogin;
-    NSMutableDictionary                             *currencyCodesCache;
-    NSMutableDictionary                             *currencySymbolCache;
     ABCError                                        *abcError;
 }
 
 @property (atomic, strong) ABCLocalSettings         *localSettings;
 @property (atomic, strong) ABCKeychain              *keyChain;
 @property (atomic, strong) NSMutableArray           *loggedInUsers;
+@property (atomic, strong) ABCExchangeCache         *exchangeCache;
 
 @end
 
@@ -56,30 +41,12 @@
     {
         abcError = [[ABCError alloc] init];
 
-        currencySymbolCache = [[NSMutableDictionary alloc] init];
-        currencyCodesCache = [[NSMutableDictionary alloc] init];
         
         self.loggedInUsers = [[NSMutableArray alloc] init];
-
-        localeAsCurrencyNum = @{
-            @"AUD" : @CURRENCY_NUM_AUD,
-            @"CAD" : @CURRENCY_NUM_CAD,
-            @"CNY" : @CURRENCY_NUM_CNY,
-            @"CUP" : @CURRENCY_NUM_CUP,
-            @"HKD" : @CURRENCY_NUM_HKD,
-            @"MXN" : @CURRENCY_NUM_MXN,
-            @"NZD" : @CURRENCY_NUM_NZD,
-            @"PHP" : @CURRENCY_NUM_PHP,
-            @"GBP" : @CURRENCY_NUM_GBP,
-            @"USD" : @CURRENCY_NUM_USD,
-            @"EUR" : @CURRENCY_NUM_EUR,
-        };
 
         bInitialized = YES;
 
         tABC_Error Error;
-        tABC_Currency       *aCurrencies;
-        int                 currencyCount;
 
         Error.code = ABC_CC_Ok;
 
@@ -107,28 +74,6 @@
         });
 
         Error.code = ABC_CC_Ok;
-
-        // get the currencies
-        aCurrencies = NULL;
-        ABC_GetCurrencies(&aCurrencies, &currencyCount, &Error);
-        if ([ABCError makeNSError:Error]) return nil;
-
-        // set up our internal currency arrays
-        NSMutableArray *arrayCurrencyCodes = [[NSMutableArray alloc] initWithCapacity:currencyCount];
-        NSMutableArray *arrayCurrencyNums = [[NSMutableArray alloc] initWithCapacity:currencyCount];
-        NSMutableArray *arrayCurrencyStrings = [[NSMutableArray alloc] init];
-        
-        for (int i = 0; i < currencyCount; i++)
-        {
-            [arrayCurrencyStrings addObject:[NSString stringWithFormat:@"%s - %@",
-                                                                       aCurrencies[i].szCode,
-                                                                       [NSString stringWithUTF8String:aCurrencies[i].szDescription]]];
-            [arrayCurrencyNums addObject:[NSNumber numberWithInt:aCurrencies[i].num]];
-            [arrayCurrencyCodes addObject:[NSString stringWithUTF8String:aCurrencies[i].szCode]];
-        }
-        self.arrayCurrencyStrings = arrayCurrencyStrings;
-        self.arrayCurrencyNums    = arrayCurrencyNums;
-        self.arrayCurrencyCodes   = arrayCurrencyCodes;
         
         self.localSettings = [[ABCLocalSettings alloc] init:self];
         self.keyChain = [[ABCKeychain alloc] init:self];
@@ -147,56 +92,19 @@
     }
 }
 
-- (void)enterBackground
+- (ABCExchangeCache *) exchangeCacheGet;
 {
-    for (ABCAccount *user in self.loggedInUsers)
+//    if (!self.exchangeCache)
     {
-        [user enterBackground];
+        self.exchangeCache = [[ABCExchangeCache alloc] init:self];
     }
+    return self.exchangeCache;
 }
 
-- (void)enterForeground
-{
-    [self checkLoginExpired];
-    
-    for (ABCAccount *user in self.loggedInUsers)
-    {
-        [user enterForeground];
-    }
-}
-
-- (NSNumberFormatter *)generateNumberFormatter
-{
-    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
-    [f setMinimumFractionDigits:2];
-    [f setMaximumFractionDigits:2];
-    [f setLocale:[NSLocale localeWithLocaleIdentifier:@"USD"]];
-    return f;
-}
 
 - (NSDate *)dateFromTimestamp:(int64_t) intDate;
 {
     return [NSDate dateWithTimeIntervalSince1970: intDate];
-}
-
-- (NSString *)formatCurrency:(double) currency withCurrencyNum:(int) currencyNum
-{
-    return [self formatCurrency:currency withCurrencyNum:currencyNum withSymbol:true];
-}
-
-- (NSString *)formatCurrency:(double) currency withCurrencyNum:(int) currencyNum withSymbol:(bool) symbol
-{
-    NSNumberFormatter *f = [self generateNumberFormatter];
-    [f setNumberStyle: NSNumberFormatterCurrencyStyle];
-    if (symbol) {
-        NSString *symbol = [self currencySymbolLookup:currencyNum];
-        [f setNegativePrefix:[NSString stringWithFormat:@"-%@ ",symbol]];
-        [f setNegativeSuffix:@""];
-        [f setCurrencySymbol:[NSString stringWithFormat:@"%@ ", symbol]];
-    } else {
-        [f setCurrencySymbol:@""];
-    }
-    return [f stringFromNumber:[NSNumber numberWithFloat:currency]];
 }
 
 // gets the recover questions for a given account
@@ -413,6 +321,24 @@
     }
 }
 
+- (void)enterBackground
+{
+    for (ABCAccount *user in self.loggedInUsers)
+    {
+        [user enterBackground];
+    }
+}
+
+- (void)enterForeground
+{
+    [self checkLoginExpired];
+    
+    for (ABCAccount *user in self.loggedInUsers)
+    {
+        [user enterForeground];
+    }
+}
+
 - (bool)isTestNet
 {
     bool result = false;
@@ -433,58 +359,33 @@
     return version;
 }
 
-- (NSString *)currencyAbbrevLookup:(int)currencyNum
++ (NSString *)fixUsername:(NSString *)username
+                    error:(NSError **)nserror
 {
-    ABCLog(2,@"ENTER currencyAbbrevLookup: %@", [NSThread currentThread].name);
-    NSNumber *c = [NSNumber numberWithInt:currencyNum];
-    NSString *cached = [currencyCodesCache objectForKey:c];
-    if (cached != nil) {
-        ABCLog(2,@"EXIT currencyAbbrevLookup CACHED code:%@ thread:%@", cached, [NSThread currentThread].name);
-        return cached;
-    }
+    NSString *fixedUsername = nil;
+    char *szFixedUsername = NULL;
+    
     tABC_Error error;
-    int currencyCount;
-    tABC_Currency *currencies = NULL;
-    ABC_GetCurrencies(&currencies, &currencyCount, &error);
-    ABCLog(2,@"CALLED ABC_GetCurrencies: %@ currencyCount:%d", [NSThread currentThread].name, currencyCount);
-    if (error.code == ABC_CC_Ok) {
-        for (int i = 0; i < currencyCount; ++i) {
-            if (currencyNum == currencies[i].num) {
-                NSString *code = [NSString stringWithUTF8String:currencies[i].szCode];
-                [currencyCodesCache setObject:code forKey:c];
-                ABCLog(2,@"EXIT currencyAbbrevLookup code:%@ thread:%@", code, [NSThread currentThread].name);
-                return code;
-            }
-        }
+    ABC_FixUsername(&szFixedUsername,
+                    [username UTF8String],
+                    &error);
+    NSError *nserror2 = [ABCError makeNSError:error];
+    if (!nserror2)
+    {
+        fixedUsername = [NSString stringWithUTF8String:szFixedUsername];
     }
-    ABCLog(2,@"EXIT currencyAbbrevLookup code:NULL thread:%@", [NSThread currentThread].name);
-    return @"";
+    
+    if (szFixedUsername)
+    {
+        free(szFixedUsername);
+    }
+    
+    if (nserror)
+        *nserror = nserror2;
+    
+    return fixedUsername;
 }
 
-- (NSString *)currencySymbolLookup:(int)currencyNum
-{
-    NSNumber *c = [NSNumber numberWithInt:currencyNum];
-    NSString *cached = [currencySymbolCache objectForKey:c];
-    if (cached != nil) {
-        return cached;
-    }
-    NSNumberFormatter *formatter = nil;
-    NSString *code = [self currencyAbbrevLookup:currencyNum];
-    for (NSString *l in NSLocale.availableLocaleIdentifiers) {
-        NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
-        f.locale = [NSLocale localeWithLocaleIdentifier:l];
-        if ([f.currencyCode isEqualToString:code]) {
-            formatter = f;
-            break;
-        }
-    }
-    if (formatter != nil) {
-        [currencySymbolCache setObject:formatter.currencySymbol forKey:c];
-        return formatter.currencySymbol;
-    } else {
-        return @"";
-    }
-}
 
 - (NSError *) getLocalAccounts:(NSMutableArray *) accounts;
 {
@@ -539,9 +440,10 @@
     if (username == nil) {
         return NO;
     }
+    NSString *fixedUsername = [AirbitzCore fixUsername:username error:nil];
     tABC_Error error;
     bool result;
-    ABC_AccountSyncExists([username UTF8String],
+    ABC_AccountSyncExists([fixedUsername UTF8String],
                           &result,
                           &error);
     return (BOOL)result;
@@ -635,9 +537,9 @@
 
             [self setLastAccessedAccount:username];
             // update user's default currency num to match their locale
-            int currencyNum = [self getCurrencyNumOfLocale];
+            NSString *currencyCode = [self getCurrencyCodeOfLocale];
             [account.settings enableTouchID];
-            [account setDefaultCurrencyNum:currencyNum];
+            [account setDefaultCurrency:currencyCode];
             [account login];
         }
     }
@@ -680,7 +582,7 @@
     ABCAccount *account = nil;
 
     tABC_Error error;
-    bNewDeviceLogin = NO;
+    BOOL bNewDeviceLogin = NO;
     
     if (resetDate) *resetDate = nil;
     
@@ -708,6 +610,7 @@
             if (!lnserror)
             {
                 account = [[ABCAccount alloc] initWithCore:self];
+                account.bNewDeviceLogin = bNewDeviceLogin;
                 account.delegate = delegate;
                 [self.loggedInUsers addObject:account];
                 account.name = username;
@@ -841,8 +744,9 @@
 
 - (void)signInWithRecoveryAnswers:(NSString *)username
                           answers:(NSString *)answers
+                         delegate:(id)delegate
                               otp:(NSString *)otp
-                         complete:(void (^)(void)) completionHandler
+                         complete:(void (^)(ABCAccount *account)) completionHandler
                             error:(void (^)(NSError *, NSDate *resetDate)) errorHandler;
 {
     
@@ -850,49 +754,76 @@
         tABC_Error error;
         NSError *nserror;
         NSDate *resetDate;
+        ABCAccount *account = nil;
+        BOOL bNewDeviceLogin = NO;
         
-        if (otp)
+        if (!username || !answers)
         {
-            nserror = [self setOTPKey:username key:otp];
+            error.code = (tABC_CC) ABCConditionCodeNULLPtr;
+            nserror = [ABCError makeNSError:error];
         }
-
-        // This actually logs in the user
-        ABC_RecoveryLogin([username UTF8String],
-                          [answers UTF8String],
-                          &error);
-        nserror = [ABCError makeNSError:error];
-        
-        if (ABCConditionCodeInvalidOTP == nserror.code)
+        else
         {
-            char *szDate = NULL;
-            ABC_OtpResetDate(&szDate, &error);
-            NSError *nserror2 = [ABCError makeNSError:error];
-            if (!nserror2)
+            if (![self accountExistsLocal:username])
+                bNewDeviceLogin = YES;
+            
+            if (otp)
             {
-                if (szDate == NULL || strlen(szDate) == 0)
-                {
-                    resetDate = nil;
-                }
-                else
-                {
-                    NSString *dateStr = [NSString stringWithUTF8String:szDate];
-                    
-                    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-                    [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
-                    
-                    NSDate *dateTemp = [dateFormatter dateFromString:dateStr];
-                    resetDate = dateTemp;
-                }
+                nserror = [self setOTPKey:username key:otp];
             }
             
-            if (szDate) free(szDate);
+            if (![self accountExistsLocal:username])
+                bNewDeviceLogin = YES;
             
+            // This actually logs in the user
+            ABC_RecoveryLogin([username UTF8String],
+                              [answers UTF8String],
+                              &error);
+            nserror = [ABCError makeNSError:error];
+            
+            if (!nserror)
+            {
+                account = [[ABCAccount alloc] initWithCore:self];
+                account.bNewDeviceLogin = bNewDeviceLogin;
+                account.delegate = delegate;
+                [self.loggedInUsers addObject:account];
+                account.name = username;
+                account.password = nil;
+                [account login];
+                [account setupLoginPIN];
+            }
+            else if ((ABCConditionCodeInvalidOTP == nserror.code))
+            {
+                char *szDate = NULL;
+                ABC_OtpResetDate(&szDate, &error);
+                NSError *nserror2 = [ABCError makeNSError:error];
+                if (!nserror2)
+                {
+                    if (szDate == NULL || strlen(szDate) == 0)
+                    {
+                        resetDate = nil;
+                    }
+                    else
+                    {
+                        NSString *dateStr = [NSString stringWithUTF8String:szDate];
+                        
+                        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
+                        
+                        NSDate *dateTemp = [dateFormatter dateFromString:dateStr];
+                        resetDate = dateTemp;
+                    }
+                }
+                
+                if (szDate) free(szDate);
+                
+            }
         }
         
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             if (!nserror)
             {
-                if (completionHandler) completionHandler();
+                if (completionHandler) completionHandler(account);
             }
             else
             {
@@ -1000,16 +931,15 @@
     });
 }
 
-- (int)getCurrencyNumOfLocale
+- (NSString *)getCurrencyCodeOfLocale
 {
     NSLocale *locale = [NSLocale autoupdatingCurrentLocale];
-    NSString *localCurrency = [locale objectForKey:NSLocaleCurrencyCode];
-    NSNumber *currencyNum = [localeAsCurrencyNum objectForKey:localCurrency];
-    if (currencyNum)
-    {
-        return [currencyNum intValue];
-    }
-    return CURRENCY_NUM_USD;
+    NSString *code = [locale objectForKey:NSLocaleCurrencyCode];
+    
+    if (code)
+        return code;
+    else
+        return DEFAULT_CURRENCY;
 }
 
 
@@ -1177,8 +1107,6 @@
 + (int) getMinimumUsernamedLength { return ABC_MIN_USERNAME_LENGTH; };
 + (int) getMinimumPasswordLength { return ABC_MIN_PASS_LENGTH; };
 + (int) getMinimumPINLength { return ABC_MIN_PIN_LENGTH; };
-+ (int) getDefaultCurrencyNum { return DEFAULT_CURRENCY_NUM; };
-
 
 static int debugLevel = 1;
 

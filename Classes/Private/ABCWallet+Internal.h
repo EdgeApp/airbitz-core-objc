@@ -5,6 +5,7 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
+#import "ABCWallet.h"
 #import "AirbitzCore+Internal.h"
 
 @class ABCAccount;

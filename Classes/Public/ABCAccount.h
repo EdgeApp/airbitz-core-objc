@@ -6,10 +6,15 @@
 #import "AirbitzCore.h"
 
 @class AirbitzCore;
+@class ABCAccount;
+@class ABCCurrency;
+@class ABCDenomination;
+@class ABCExchangeCache;
 @class ABCSpend;
 @class ABCSettings;
 @class ABCRequest;
 @class ABCTransaction;
+@class ABCWallet;
 
 @interface BitidSignature : NSObject
 @property (nonatomic, strong) NSString *address;
@@ -78,7 +83,9 @@
 
 /// ABC settings that can be set or viewed by app or ABC. Use method [ABCSettings loadSettings]
 /// to make sure they are loaded and [ABCSettings saveSettings] to ensure modified settings are latched
-@property (atomic, strong) ABCSettings               *settings;
+@property (atomic, strong) ABCSettings                  *settings;
+
+@property (atomic, strong) ABCExchangeCache             *exchangeCache;
 
 ///----------------------------------------------------------
 /// @name ABCAccount read-only public object variables
@@ -133,16 +140,8 @@
 
 - (bool)setWalletAttributes: (ABCWallet *) wallet;
 
-- (int) currencyDecimalPlaces;
-- (NSString *)formatCurrency:(double) currency withCurrencyNum:(int)currencyNum;
-- (NSString *)formatCurrency:(double) currency withCurrencyNum:(int)currencyNum withSymbol:(bool)symbol;
-- (NSString *)formatSatoshi:(int64_t) bitcoin;
-- (NSString *)formatSatoshi:(int64_t) bitcoin withSymbol:(bool) symbol;
-- (NSString *)formatSatoshi:(int64_t) bitcoin withSymbol:(bool) symbol cropDecimals:(int) decimals;
-- (NSString *)formatSatoshi:(int64_t) bitcoin withSymbol:(bool) symbol forceDecimals:(int) forcedecimals;
-- (NSString *)formatSatoshi:(int64_t) bitcoin withSymbol:(bool) symbol cropDecimals:(int) decimals forceDecimals:(int) forcedecimals;
-- (int64_t) denominationToSatoshi: (NSString *) amount;
-- (NSString *)conversionStringFromNum:(int) currencyNum withAbbrev:(bool) abbrev;
+- (NSString *)createExchangeRateString:(ABCCurrency *)currency
+                   includeCurrencyCode:(bool)includeCurrencyCode;
 - (BOOL)needsRecoveryQuestionsReminder;
 - (BOOL)passwordOk:(NSString *)password;
 - (NSString *) bitidParseURI:(NSString *)uri;
@@ -349,27 +348,6 @@
 - (void)clearBlockchainCache:(void (^)(void)) completionHandler
                        error:(void (^)(NSError *error)) errorHandler;
 
-
-/*
- * Convert bitcoin amount in satoshis to a fiat currency amount
- * @param satoshi uint_64t amount to convert in satoshis
- * @param currencyNum int ISO currency number of fiat currency to convert to
- * @param error NSError** pointer to NSError object
- * @return double resulting fiat currency value
- */
-- (double) satoshiToCurrency:(uint64_t) satoshi
-                 currencyNum:(int)currencyNum
-                       error:(NSError **)error;
-/*
- * Convert fiat currency amount to a bitcoin amount in satoshis
- * @param double Amount in fiat value to convert
- * @param currencyNum int ISO currency number of fiat currency to convert to
- * @param error NSError** pointer to NSError object
- * @return uint_64t Resulting value in satoshis
- */
-- (uint64_t) currencyToSatoshi:(double)currency
-                   currencyNum:(int)currencyNum
-                         error:(NSError **)error;
 
 /*
  * shouldAskUserToEnableTouchID

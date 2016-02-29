@@ -6,6 +6,7 @@
 //  Copyright (c) 2016 AirBitz. All rights reserved.
 //
 
+#import "ABCWallet+Internal.h"
 #import "AirbitzCore+Internal.h"
 
 
@@ -673,7 +674,7 @@ exitnow:
     tABC_Error error;
     self.uuid = uuid;
     self.name = loadingText;
-    self.currencyNum = -1;
+    self.currency = [ABCCurrency noCurrency];
     self.balance = 0;
     self.loaded = NO;
     
@@ -692,13 +693,11 @@ exitnow:
         int currencyNum;
         ABC_WalletCurrency([self.account.name UTF8String], [uuid UTF8String], &currencyNum, &error);
         if (error.code == ABC_CC_Ok) {
-            self.currencyNum = currencyNum;
-            self.currencyAbbrev = [self.account.abc currencyAbbrevLookup:self.currencyNum];
-            self.currencySymbol = [self.account.abc currencySymbolLookup:self.currencyNum];
+            self.currency = [self.account.exchangeCache getCurrencyFromNum:currencyNum];
             self.loaded = YES;
         } else {
             self.loaded = NO;
-            self.currencyNum = -1;
+            self.currency = [ABCCurrency noCurrency];
             self.name = loadingText;
         }
         
@@ -755,7 +754,7 @@ exitnow:
 
 - (NSString *)conversionString
 {
-    return [self.account conversionStringFromNum:self.currencyNum withAbbrev:YES];
+    return [self.account createExchangeRateString:self.currency includeCurrencyCode:YES];
 }
 
 // overriding the NSObject isEqual
@@ -786,11 +785,11 @@ exitnow:
 // overriding the description - used in debugging
 - (NSString *)description
 {
-	return([NSString stringWithFormat:@"Wallet - UUID: %@, Name: %@, CurrencyNum: %d, Attributes: %d, Balance: %lf, Transactions: %@",
+	return([NSString stringWithFormat:@"Wallet - UUID: %@, Name: %@, CurrencyCode: %@, Attributes: %d, Balance: %lf, Transactions: %@",
             self.uuid,
             self.name,
 //            self.strUserName,
-            self.currencyNum,
+            self.currency.code,
             self.archived,
             self.balance,
             self.arrayTransactions

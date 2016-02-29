@@ -3,13 +3,13 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "ABCSettings+Internal.h"
 #import "AirbitzCore+Internal.h"
 
 
 @interface ABCSettings ()
 
-@property (nonatomic, strong) ABCAccount               *user;
+@property (nonatomic, strong) ABCAccount            *account;
 @property (nonatomic, strong) ABCLocalSettings      *local;
 @property (nonatomic, strong) ABCKeychain           *keyChain;
 @property (nonatomic, strong) ABCError              *abcError;
@@ -21,10 +21,10 @@
 
 }
 
-- (id)init:(ABCAccount *)user localSettings:(ABCLocalSettings *)local keyChain:(ABCKeychain *)keyChain;
+- (id)init:(ABCAccount *)account localSettings:(ABCLocalSettings *)local keyChain:(ABCKeychain *)keyChain;
 {
     self = [super init];
-    self.user = user;
+    self.account = account;
     self.local = local;
     self.keyChain = keyChain;
     return self;
@@ -34,8 +34,8 @@
 {
     tABC_Error error;
     tABC_AccountSettings *pSettings = NULL;
-    tABC_CC result = ABC_LoadAccountSettings([self.user.name UTF8String],
-            [self.user.password UTF8String],
+    tABC_CC result = ABC_LoadAccountSettings([self.account.name UTF8String],
+            [self.account.password UTF8String],
             &pSettings,
             &error);
     if (ABC_CC_Ok == result)
@@ -43,14 +43,8 @@
         if ([self haveSettingsChanged:pSettings])
         {
             self.secondsAutoLogout = pSettings->secondsAutoLogout;
-            self.defaultCurrencyNum = pSettings->currencyNum;
-            if (pSettings->bitcoinDenomination.satoshi > 0)
-            {
-                self.denomination = pSettings->bitcoinDenomination.satoshi;
-                self.denominationType = (ABCDenomination) pSettings->bitcoinDenomination.denominationType;
-
-                [self doSetDenominationLabel];
-            }
+            self.defaultCurrency = [self.account.exchangeCache getCurrencyFromNum:pSettings->currencyNum];
+            self.denomination = [ABCDenomination getDenominationForMultiplier:pSettings->bitcoinDenomination.satoshi];
             self.firstName            = pSettings->szFirstName          ? [NSString stringWithUTF8String:pSettings->szFirstName] : nil;
             self.lastName             = pSettings->szLastName           ? [NSString stringWithUTF8String:pSettings->szLastName] : nil;
             self.nickName             = pSettings->szNickname           ? [NSString stringWithUTF8String:pSettings->szNickname] : nil;
@@ -63,12 +57,12 @@
             self.spendRequirePinSatoshis = pSettings->spendRequirePinSatoshis;
             self.bDisablePINLogin = pSettings->bDisablePINLogin;
 
-            if (self.user.delegate)
+            if (self.account.delegate)
             {
-                if ([self.user.delegate respondsToSelector:@selector(abcAccountAccountChanged)])
+                if ([self.account.delegate respondsToSelector:@selector(abcAccountAccountChanged)])
                 {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [self.user.delegate abcAccountAccountChanged];
+                        [self.account.delegate abcAccountAccountChanged];
                     });
                 }
             }
@@ -87,19 +81,19 @@
     BOOL pinLoginChanged = NO;
     BOOL settingsChanged = NO;
 
-    ABC_LoadAccountSettings([self.user.name UTF8String], [self.user.password UTF8String], &pSettings, &error);
+    ABC_LoadAccountSettings([self.account.name UTF8String], [self.account.password UTF8String], &pSettings, &error);
     NSError *nserror = [ABCError makeNSError:error];
 
     if (!nserror)
     {
         if (pSettings->bDisablePINLogin != self.bDisablePINLogin)
             pinLoginChanged = settingsChanged = YES;
+        int currencyNum = self.defaultCurrency.currencyNum;
         if ([self haveSettingsChanged:pSettings])
         {
             pSettings->secondsAutoLogout                      = self.secondsAutoLogout         ;
-            pSettings->currencyNum                            = self.defaultCurrencyNum        ;
-            pSettings->bitcoinDenomination.satoshi            = self.denomination              ;
-            pSettings->bitcoinDenomination.denominationType   = (int) self.denominationType    ;
+            pSettings->currencyNum                            = currencyNum                    ;
+            pSettings->bitcoinDenomination.satoshi            = self.denomination.multiplier   ;
             pSettings->bNameOnPayments                        = self.bNameOnPayments           ;
             pSettings->bSpendRequirePin                       = self.bSpendRequirePin          ;
             pSettings->spendRequirePinSatoshis                = self.spendRequirePinSatoshis   ;
@@ -115,22 +109,21 @@
 
         if (settingsChanged)
         {
-            [self doSetDenominationLabel];
-            ABC_UpdateAccountSettings([self.user.name UTF8String], [self.user.password UTF8String], pSettings, &error);
+            ABC_UpdateAccountSettings([self.account.name UTF8String], [self.account.password UTF8String], pSettings, &error);
             NSError *nserror = [ABCError makeNSError:error];
             
             if (!nserror)
             {
                 ABC_FreeAccountSettings(pSettings);
-                [self.keyChain disableKeychainBasedOnSettings:self.user.name];
+                [self.keyChain disableKeychainBasedOnSettings:self.account.name];
                 [self.local saveAll];
             }
-            if (self.user.delegate)
+            if (self.account.delegate)
             {
-                if ([self.user.delegate respondsToSelector:@selector(abcAccountAccountChanged)])
+                if ([self.account.delegate respondsToSelector:@selector(abcAccountAccountChanged)])
                 {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [self.user.delegate abcAccountAccountChanged];
+                        [self.account.delegate abcAccountAccountChanged];
                     });
                 }
             }
@@ -142,8 +135,8 @@
 
 - (BOOL) touchIDEnabled;
 {
-    if ([self.local.touchIDUsersDisabled indexOfObject:self.user.name] == NSNotFound &&
-        [self.local.touchIDUsersEnabled  indexOfObject:self.user.name] != NSNotFound)
+    if ([self.local.touchIDUsersDisabled indexOfObject:self.account.name] == NSNotFound &&
+        [self.local.touchIDUsersEnabled  indexOfObject:self.account.name] != NSNotFound)
     {
         return YES;
     }
@@ -154,13 +147,13 @@
 - (BOOL) enableTouchID;
 {
     // Need a password to enable touchID until we get support for login handles
-    if (!self.user.password) return NO;
+    if (!self.account.password) return NO;
 
-    [self.local.touchIDUsersDisabled removeObject:self.user.name];
-    [self.local.touchIDUsersEnabled addObject:self.user.name];
+    [self.local.touchIDUsersDisabled removeObject:self.account.name];
+    [self.local.touchIDUsersEnabled addObject:self.account.name];
     [self.local saveAll];
-    [self.keyChain updateLoginKeychainInfo:self.user.name
-                             password:self.user.password
+    [self.keyChain updateLoginKeychainInfo:self.account.name
+                             password:self.account.password
                            useTouchID:YES];
 
     return YES;
@@ -169,13 +162,13 @@
 - (void) disableTouchID;
 {
     // Disable TouchID in LocalSettings
-    if (self.user.name)
+    if (self.account.name)
     {
-        [self.local.touchIDUsersDisabled addObject:self.user.name];
-        [self.local.touchIDUsersEnabled removeObject:self.user.name];
+        [self.local.touchIDUsersDisabled addObject:self.account.name];
+        [self.local.touchIDUsersEnabled removeObject:self.account.name];
         [self.local saveAll];
-        [self.keyChain updateLoginKeychainInfo:self.user.name
-                                 password:self.user.password
+        [self.keyChain updateLoginKeychainInfo:self.account.name
+                                 password:self.account.password
                                useTouchID:NO];
     }
 }
@@ -184,13 +177,14 @@
 {
     BOOL settingsChanged = NO;
 
+    int currencyNum = self.defaultCurrency.currencyNum;
+    
     if (
         !pSettings ||
         pSettings->bDisablePINLogin                       != self.bDisablePINLogin          ||
         pSettings->secondsAutoLogout                      != self.secondsAutoLogout         ||
-        pSettings->currencyNum                            != self.defaultCurrencyNum        ||
-        pSettings->bitcoinDenomination.satoshi            != self.denomination              ||
-        pSettings->bitcoinDenomination.denominationType   != (int) self.denominationType    ||
+        pSettings->currencyNum                            != currencyNum                    ||
+        pSettings->bitcoinDenomination.satoshi            != self.denomination.multiplier   ||
         pSettings->bNameOnPayments                        != self.bNameOnPayments           ||
         pSettings->bSpendRequirePin                       != self.bSpendRequirePin          ||
         pSettings->spendRequirePinSatoshis                != self.spendRequirePinSatoshis   ||
@@ -224,23 +218,5 @@
     return NO;
 }
 
-- (void)doSetDenominationLabel
-{
-    switch (self.denominationType) {
-        case ABCDenominationBTC:
-            self.denominationLabel = @"BTC";
-            self.denominationLabelShort = @"Ƀ ";
-            break;
-        case ABCDenominationMBTC:
-            self.denominationLabel = @"mBTC";
-            self.denominationLabelShort = @"mɃ ";
-            break;
-        case ABCDenominationUBTC:
-            self.denominationLabel = @"bits";
-            self.denominationLabelShort = @"ƀ ";
-            break;
-
-    }
-}
 
 @end

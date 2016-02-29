@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 #import <sys/sysctl.h>
+#import "ABCUtil.h"
 #import "AirbitzCore+Internal.h"
 
 
@@ -49,6 +50,7 @@
         free(aszStrings);
     }
 }
+
 
 + (UIImage *)dataToImage:(const unsigned char *)data withWidth:(int)width andHeight:(int)height
 {

@@ -5,6 +5,7 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
+#import "ABCKeychain.h"
 #import "AirbitzCore+Internal.h"
 
 #define PASSWORD_KEY            @"key_password"

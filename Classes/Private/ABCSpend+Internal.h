@@ -5,6 +5,7 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
+#import "ABCSpend.h"
 #import "AirbitzCore+Internal.h"
 
 @interface ABCSpend (Internal)

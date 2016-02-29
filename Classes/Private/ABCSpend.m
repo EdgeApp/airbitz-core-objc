@@ -3,6 +3,7 @@
 //  AirBitz
 //
 
+#import "ABCSpend+Internal.h"
 #import "AirbitzCore+Internal.h"
 
 @interface ABCSpend ()

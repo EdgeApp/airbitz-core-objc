@@ -4,14 +4,19 @@
 // Created by Paul P on 2016/02/09.
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
+#import <Foundation/Foundation.h>
+#import "ABCAccount.h"
 #import "ABCConditionCode.h"
+#import "ABCCurrency.h"
+#import "ABCDenomination.h"
+#import "ABCExchangeCache.h"
 #import "ABCKeychain.h"
 #import "ABCRequest.h"
 #import "ABCSettings.h"
 #import "ABCSpend.h"
 #import "ABCTransaction.h"
 #import "ABCTxOutput.h"
-#import "ABCAccount.h"
+#import "ABCUtil.h"
 #import "ABCWallet.h"
 
 /**
@@ -106,20 +111,6 @@ typedef enum eABCDeviceCaps
 @class ABCAccount;
 
 @interface AirbitzCore : NSObject
-
-/// -----------------------------------------------------------------------------
-/// @name AirbitzCore currency public read-only variables
-/// -----------------------------------------------------------------------------
-
-/// Array of NSString* ISO currency codes. ie 'USD, CAD, JPY, PHP, EUR'
-@property (nonatomic, strong) NSArray                   *arrayCurrencyCodes;
-
-/// Array of NSNumber ISO currency numbers
-@property (nonatomic, strong) NSArray                   *arrayCurrencyNums;
-
-/// Array of NSString currency names. ie. 'US Dollar, Philippine Peso'
-@property (nonatomic, strong) NSArray                   *arrayCurrencyStrings;
-
 
 /// -----------------------------------------------------------------------------
 /// @name AirbitzCore initialization / free routines
@@ -252,8 +243,9 @@ typedef enum eABCDeviceCaps
  */
 - (void)signInWithRecoveryAnswers:(NSString *)username
                           answers:(NSString *)answers
+                         delegate:(id)delegate
                               otp:(NSString *)otp
-                         complete:(void (^)(void)) completionHandler
+                         complete:(void (^)(ABCAccount *account)) completionHandler
                             error:(void (^)(NSError *, NSDate *resetDate)) errorHandler;
 
 /**
@@ -451,6 +443,17 @@ typedef enum eABCDeviceCaps
                   error:(void (^)(NSError *error)) errorHandler;
 - (NSError *)requestOTPReset:(NSString *)username;
 
+#pragma mark - ABCExchange Calls
+/// ------------------------------------------------------------------
+/// @name ABCExchange Calls
+/// ------------------------------------------------------------------
+
+/**
+ * Gets an ABCExchangeCache object for use in doing currency conversion
+ * @return ABCExchangeCache*
+ */
+- (ABCExchangeCache *) exchangeCacheGet;
+
 #pragma mark - System Calls and Queries
 /// ------------------------------------------------------------------
 /// @name System Calls and Queries
@@ -522,10 +525,10 @@ typedef enum eABCDeviceCaps
 
 /**
  * Transforms a username into the internal format used for hashing.
- * This collapses spaces, converts things to lowercase,
+ * This collapses spaces, converts to lowercase,
  * and checks for invalid characters.
  */
-//+ (NSString *)fixUsername:(NSString *)username;
++ (NSString *)fixUsername:(NSString *)username error:(NSError **)error;
 
 /**
  * Encodes a string into a QR code returned as UIImage *
@@ -534,20 +537,20 @@ typedef enum eABCDeviceCaps
  */
 + (UIImage *)encodeStringToQRImage:(NSString *)string error:(NSError **)error;
 
-/**
- * Given a currency code, returns the 3 digit currency code. ie. "USD, CAD, EUR"
- * @param currencyNum int - ISO currency num to lookup
- * @return NSString* 3 digit ISO currency code
- */
-- (NSString *)currencyAbbrevLookup:(int)currencyNum;
-
-/**
- * Given a currency code, returns the currency symbol. ie "$"
- * @param currencyNum int - ISO currency num to lookup
- * @return NSString* symbol
- */
-- (NSString *)currencySymbolLookup:(int)currencyNum;
-
+///**
+// * Given a currency code, returns the 3 digit currency code. ie. "USD, CAD, EUR"
+// * @param currencyNum int - ISO currency num to lookup
+// * @return NSString* 3 digit ISO currency code
+// */
+//- (NSString *)currencyAbbrevLookup:(int)currencyNum;
+//
+///**
+// * Given a currency code, returns the currency symbol. ie "$"
+// * @param currencyNum int - ISO currency num to lookup
+// * @return NSString* symbol
+// */
+//- (NSString *)currencySymbolLookup:(int)currencyNum;
+//
 /// ------------------------------------------------------------------
 /// @name Class methods to retrieve constant parameters from ABC
 /// ------------------------------------------------------------------
@@ -555,7 +558,6 @@ typedef enum eABCDeviceCaps
 + (int) getMinimumUsernamedLength;
 + (int) getMinimumPasswordLength;
 + (int) getMinimumPINLength;
-+ (int) getDefaultCurrencyNum;
 
 
 
