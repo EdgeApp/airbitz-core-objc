@@ -9,6 +9,7 @@
 @interface ABCAccount (Internal)
 
 @property (atomic, strong)   AirbitzCore             *abc;
+@property                       BOOL                bNewDeviceLogin;
 
 - (void)login;
 - (void)logout;

@@ -17,7 +17,6 @@
 @interface AirbitzCore ()
 {
     BOOL                                            bInitialized;
-    BOOL                                            bNewDeviceLogin;
     ABCError                                        *abcError;
 }
 
@@ -360,6 +359,34 @@
     return version;
 }
 
++ (NSString *)fixUsername:(NSString *)username
+                    error:(NSError **)nserror
+{
+    NSString *fixedUsername = nil;
+    char *szFixedUsername = NULL;
+    
+    tABC_Error error;
+    ABC_FixUsername(&szFixedUsername,
+                    [username UTF8String],
+                    &error);
+    NSError *nserror2 = [ABCError makeNSError:error];
+    if (!nserror2)
+    {
+        fixedUsername = [NSString stringWithUTF8String:szFixedUsername];
+    }
+    
+    if (szFixedUsername)
+    {
+        free(szFixedUsername);
+    }
+    
+    if (nserror)
+        *nserror = nserror2;
+    
+    return fixedUsername;
+}
+
+
 - (NSError *) getLocalAccounts:(NSMutableArray *) accounts;
 {
     char * pszUserNames;
@@ -413,9 +440,10 @@
     if (username == nil) {
         return NO;
     }
+    NSString *fixedUsername = [AirbitzCore fixUsername:username error:nil];
     tABC_Error error;
     bool result;
-    ABC_AccountSyncExists([username UTF8String],
+    ABC_AccountSyncExists([fixedUsername UTF8String],
                           &result,
                           &error);
     return (BOOL)result;
@@ -554,7 +582,7 @@
     ABCAccount *account = nil;
 
     tABC_Error error;
-    bNewDeviceLogin = NO;
+    BOOL bNewDeviceLogin = NO;
     
     if (resetDate) *resetDate = nil;
     
@@ -582,6 +610,7 @@
             if (!lnserror)
             {
                 account = [[ABCAccount alloc] initWithCore:self];
+                account.bNewDeviceLogin = bNewDeviceLogin;
                 account.delegate = delegate;
                 [self.loggedInUsers addObject:account];
                 account.name = username;
@@ -715,8 +744,9 @@
 
 - (void)signInWithRecoveryAnswers:(NSString *)username
                           answers:(NSString *)answers
+                         delegate:(id)delegate
                               otp:(NSString *)otp
-                         complete:(void (^)(void)) completionHandler
+                         complete:(void (^)(ABCAccount *account)) completionHandler
                             error:(void (^)(NSError *, NSDate *resetDate)) errorHandler;
 {
     
@@ -724,49 +754,76 @@
         tABC_Error error;
         NSError *nserror;
         NSDate *resetDate;
+        ABCAccount *account = nil;
+        BOOL bNewDeviceLogin = NO;
         
-        if (otp)
+        if (!username || !answers)
         {
-            nserror = [self setOTPKey:username key:otp];
+            error.code = (tABC_CC) ABCConditionCodeNULLPtr;
+            nserror = [ABCError makeNSError:error];
         }
-
-        // This actually logs in the user
-        ABC_RecoveryLogin([username UTF8String],
-                          [answers UTF8String],
-                          &error);
-        nserror = [ABCError makeNSError:error];
-        
-        if (ABCConditionCodeInvalidOTP == nserror.code)
+        else
         {
-            char *szDate = NULL;
-            ABC_OtpResetDate(&szDate, &error);
-            NSError *nserror2 = [ABCError makeNSError:error];
-            if (!nserror2)
+            if (![self accountExistsLocal:username])
+                bNewDeviceLogin = YES;
+            
+            if (otp)
             {
-                if (szDate == NULL || strlen(szDate) == 0)
-                {
-                    resetDate = nil;
-                }
-                else
-                {
-                    NSString *dateStr = [NSString stringWithUTF8String:szDate];
-                    
-                    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-                    [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
-                    
-                    NSDate *dateTemp = [dateFormatter dateFromString:dateStr];
-                    resetDate = dateTemp;
-                }
+                nserror = [self setOTPKey:username key:otp];
             }
             
-            if (szDate) free(szDate);
+            if (![self accountExistsLocal:username])
+                bNewDeviceLogin = YES;
             
+            // This actually logs in the user
+            ABC_RecoveryLogin([username UTF8String],
+                              [answers UTF8String],
+                              &error);
+            nserror = [ABCError makeNSError:error];
+            
+            if (!nserror)
+            {
+                account = [[ABCAccount alloc] initWithCore:self];
+                account.bNewDeviceLogin = bNewDeviceLogin;
+                account.delegate = delegate;
+                [self.loggedInUsers addObject:account];
+                account.name = username;
+                account.password = nil;
+                [account login];
+                [account setupLoginPIN];
+            }
+            else if ((ABCConditionCodeInvalidOTP == nserror.code))
+            {
+                char *szDate = NULL;
+                ABC_OtpResetDate(&szDate, &error);
+                NSError *nserror2 = [ABCError makeNSError:error];
+                if (!nserror2)
+                {
+                    if (szDate == NULL || strlen(szDate) == 0)
+                    {
+                        resetDate = nil;
+                    }
+                    else
+                    {
+                        NSString *dateStr = [NSString stringWithUTF8String:szDate];
+                        
+                        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
+                        
+                        NSDate *dateTemp = [dateFormatter dateFromString:dateStr];
+                        resetDate = dateTemp;
+                    }
+                }
+                
+                if (szDate) free(szDate);
+                
+            }
         }
         
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             if (!nserror)
             {
-                if (completionHandler) completionHandler();
+                if (completionHandler) completionHandler(account);
             }
             else
             {

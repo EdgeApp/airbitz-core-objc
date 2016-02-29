@@ -243,8 +243,9 @@ typedef enum eABCDeviceCaps
  */
 - (void)signInWithRecoveryAnswers:(NSString *)username
                           answers:(NSString *)answers
+                         delegate:(id)delegate
                               otp:(NSString *)otp
-                         complete:(void (^)(void)) completionHandler
+                         complete:(void (^)(ABCAccount *account)) completionHandler
                             error:(void (^)(NSError *, NSDate *resetDate)) errorHandler;
 
 /**
@@ -524,10 +525,10 @@ typedef enum eABCDeviceCaps
 
 /**
  * Transforms a username into the internal format used for hashing.
- * This collapses spaces, converts things to lowercase,
+ * This collapses spaces, converts to lowercase,
  * and checks for invalid characters.
  */
-//+ (NSString *)fixUsername:(NSString *)username;
++ (NSString *)fixUsername:(NSString *)username error:(NSError **)error;
 
 /**
  * Encodes a string into a QR code returned as UIImage *

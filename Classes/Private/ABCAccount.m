@@ -14,7 +14,6 @@ static const int notifySyncDelay          = 1;
     long long                                       logoutTimeStamp;
     
     BOOL                                            bInitialized;
-    BOOL                                            bNewDeviceLogin;
     BOOL                                            bHasSentWalletsLoaded;
     long                                            iLoginTimeSeconds;
     NSOperationQueue                                *exchangeQueue;
@@ -34,6 +33,8 @@ static const int notifySyncDelay          = 1;
 
 @property (atomic, strong)      AirbitzCore         *abc;
 @property (nonatomic, strong)   NSTimer             *walletLoadingTimer;
+@property                       BOOL                bCoreSentAddressesLoaded;
+@property                       BOOL                bNewDeviceLogin;
 
 @end
 
@@ -69,6 +70,7 @@ static const int notifySyncDelay          = 1;
         
         bInitialized = YES;
         bHasSentWalletsLoaded = NO;
+        self.bCoreSentAddressesLoaded = NO;
         
         [self cleanWallets];
         
@@ -491,40 +493,12 @@ static const int notifySyncDelay          = 1;
 //
 - (void)checkWalletsLoadingNotification
 {
-    if (bNewDeviceLogin)
+    if (self.bNewDeviceLogin)
     {
-        if (!self.bAllWalletsLoaded)
+        if (self.bCoreSentAddressesLoaded)
         {
-            //
-            // Wallets are loading from Git
-            //
-            [self postWalletsLoadingNotification];
+            [self postWalletsLoadedNotification];
         }
-        else
-        {
-            //
-            // Wallets are *kinda* loaded now. At least they're loaded from Git. But transactions still have to
-            // be loaded from the blockchain. Hack: set a timer that checks if we've received a WALLETS_CHANGED update
-            // within the past 15 seconds. If not, then assume the wallets have all been fully synced. If we get an
-            // update, then reset the timer and wait another 10 seconds.
-            //
-            [self postWalletsLoadingNotification];
-            if (self.walletLoadingTimer)
-            {
-                [self.walletLoadingTimer invalidate];
-                self.walletLoadingTimer = nil;
-            }
-            
-            ABCLog(1, @"************************************************");
-            ABCLog(1, @"*** Received Packet from Core. Reset timer******");
-            ABCLog(1, @"************************************************");
-            self.walletLoadingTimer = [NSTimer scheduledTimerWithTimeInterval:walletLoadingTimerInterval
-                                                                       target:self
-                                                                     selector:@selector(postWalletsLoadedNotification)
-                                                                     userInfo:nil
-                                                                      repeats:NO];
-        }
-        
     }
     else
     {
@@ -551,7 +525,7 @@ static const int notifySyncDelay          = 1;
 
 - (void)postWalletsLoadedNotification
 {
-    bNewDeviceLogin = NO;
+    self.bNewDeviceLogin = NO;
     if (self.delegate && !bHasSentWalletsLoaded) {
         bHasSentWalletsLoaded = YES;
         if ([self.delegate respondsToSelector:@selector(abcAccountWalletsLoaded)]) {
@@ -1761,6 +1735,15 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
             ABCLog(1, @"EventCallback: NULL pointer from ABC");
         }
         [wallet handleSweepCallback:txid amount:amount error:error];
+    } else if (ABC_AsyncEventType_AddressCheckDone == pInfo->eventType) {
+        if (!wallet) {
+            ABCLog(1, @"EventCallback: NULL pointer from ABC");
+        }
+        if (wallet == user.arrayWallets[0])
+        {
+            user.bCoreSentAddressesLoaded = YES;
+            [user refreshWallets];
+        }
     }
 }
 
