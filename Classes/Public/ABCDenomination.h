@@ -13,12 +13,19 @@ typedef NS_ENUM(NSUInteger, ABCDenominationMultiplier) {
 
 @interface ABCDenomination : NSObject
 
+/// Index of this denomination in the list of denominations.<br>
+/// 0 = BTC, 1 = mBTC, 2 = bits
+@property (nonatomic)       int             index;
+
 /// Number of satoshis to equal one unit of this  denomination<br>
 /// ie. 1 BTC -> multiplier = 100,000,000<br>
 /// 1 mBTC -> multipliers = 100,000
-@property (nonatomic)       int             index;
 @property (nonatomic)       int             multiplier;
+
+/// Denomination symbol such as "Ƀ"
 @property (nonatomic)       NSString        *symbol;
+
+/// Denomination label such as "BTC" or "bits"
 @property (nonatomic)       NSString        *label;
 
 + (ABCDenomination *) getDenominationForMultiplier:(ABCDenominationMultiplier)multiplier;

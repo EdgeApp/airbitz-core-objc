@@ -21,6 +21,7 @@
 {
     self = [super init];
     self.abcError = [[ABCError alloc] init];
+    self.metaData = [ABCMetaData alloc];
     return self;
 }
 
@@ -53,10 +54,10 @@
     memset(&details, 0, sizeof(tABC_TxDetails));
     
     details.amountSatoshi =          self.amountSatoshi;
-    details.szName = (char *)       [self.payeeName UTF8String];
-    details.szCategory = (char *)   [self.category UTF8String];
-    details.szNotes = (char *)      [self.notes UTF8String];
-    details.bizId = self.bizId;
+    details.szName = (char *)       [self.metaData.payeeName UTF8String];
+    details.szCategory = (char *)   [self.metaData.category UTF8String];
+    details.szNotes = (char *)      [self.metaData.notes UTF8String];
+    details.bizId = (unsigned int) self.metaData.bizId;
     details.attributes = 0x0; //for our own use (not used by the core)
     
     //the true fee values will be set by the core

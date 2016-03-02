@@ -56,6 +56,12 @@
 		
 		<option value="//api/name/index">index</option>
 		
+		<option value="//api/name/label">label</option>
+		
+		<option value="//api/name/multiplier">multiplier</option>
+		
+		<option value="//api/name/symbol">symbol</option>
+		
 	</optgroup>
 	
 
@@ -113,9 +119,8 @@
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Number of satoshis to equal one unit of this  denomination<br>
-ie. 1 BTC -> <a href="#//api/name/multiplier">multiplier</a> = 100,000,000<br>
-1 mBTC -> multipliers = 100,000</p>
+				<p>Index of this denomination in the list of denominations.<br>
+0 = BTC, 1 = mBTC, 2 = bits</p>
 			</div>
 			
 		    
@@ -132,9 +137,150 @@ ie. 1 BTC -> <a href="#//api/name/multiplier">multiplier</a> = 100,000,000<br>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
+				<p>Index of this denomination in the list of denominations.<br>
+0 = BTC, 1 = mBTC, 2 = bits</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCDenomination.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/multiplier" title="multiplier"></a>
+	<h3 class="method-title"><code><a href="#//api/name/multiplier">&nbsp;&nbsp;multiplier</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
 				<p>Number of satoshis to equal one unit of this  denomination<br>
-ie. 1 BTC -> <a href="#//api/name/multiplier">multiplier</a> = 100,000,000<br>
+ie. 1 BTC -> multiplier = 100,000,000<br>
 1 mBTC -> multipliers = 100,000</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>@property (nonatomic) int multiplier</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Number of satoshis to equal one unit of this  denomination<br>
+ie. 1 BTC -> multiplier = 100,000,000<br>
+1 mBTC -> multipliers = 100,000</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCDenomination.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/symbol" title="symbol"></a>
+	<h3 class="method-title"><code><a href="#//api/name/symbol">&nbsp;&nbsp;symbol</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Denomination symbol such as &ldquo;Ƀ&rdquo;</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>@property (nonatomic) NSString *symbol</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Denomination symbol such as &ldquo;Ƀ&rdquo;</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCDenomination.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/label" title="label"></a>
+	<h3 class="method-title"><code><a href="#//api/name/label">&nbsp;&nbsp;label</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Denomination label such as &ldquo;BTC&rdquo; or &ldquo;bits&rdquo;</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>@property (nonatomic) NSString *label</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Denomination label such as &ldquo;BTC&rdquo; or &ldquo;bits&rdquo;</p>
 			</div>
 			
 

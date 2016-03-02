@@ -24,13 +24,14 @@
     self = [super init];
     if (self) 
     {
+        self.metaData = [ABCMetaData alloc];
         self.txid = @"";
-        self.payeeName = @"";
         self.date = [NSDate date];
-        self.category = @"";
-        self.notes = @"";
         self.outputs = [[NSArray alloc] init];
-        self.bizId = 0;
+        self.metaData.payeeName = @"";
+        self.metaData.category = @"";
+        self.metaData.notes = @"";
+        self.metaData.bizId = 0;
         self.wallet = nil;
         self.abcError = [[ABCError alloc] init];
     }
@@ -57,11 +58,11 @@
             return;
         }
         
-        pDetails->szName = (char *) [self.payeeName UTF8String];
-        pDetails->szCategory = (char *) [self.category UTF8String];
-        pDetails->szNotes = (char *) [self.notes UTF8String];
-        pDetails->amountCurrency = self.amountFiat;
-        pDetails->bizId = self.bizId;
+        pDetails->szName = (char *) [self.metaData.payeeName UTF8String];
+        pDetails->szCategory = (char *) [self.metaData.category UTF8String];
+        pDetails->szNotes = (char *) [self.metaData.notes UTF8String];
+        pDetails->amountCurrency = self.metaData.amountFiat;
+        pDetails->bizId = self.metaData.bizId;
         
         result = ABC_SetTransactionDetails([self.wallet.account.name UTF8String],
                                            [self.wallet.account.password UTF8String],
@@ -111,15 +112,15 @@
     return([NSString stringWithFormat:@"ABCTransaction - ID: %@, WalletUUID: %@, PayeeName: %@, Date: %@, Confirmed: %@, Confirmations: %u, AmountSatoshi: %lli, AmountFiat: %lf, Balance: %lli, Category: %@, Notes: %@",
                                       self.txid,
                                       self.wallet.uuid,
-                                      self.payeeName,
+                                      self.metaData.payeeName,
                                       [self.date descriptionWithLocale:[NSLocale currentLocale]],
                                       (self.bConfirmed == YES ? @"Yes" : @"No"),
                                       self.confirmations,
                                       self.amountSatoshi,
-                                      self.amountFiat,
+                                      self.metaData.amountFiat,
                                       self.balance,
-                                      self.category,
-                                      self.notes
+                                      self.metaData.category,
+                                      self.metaData.notes
     ]);
 }
 

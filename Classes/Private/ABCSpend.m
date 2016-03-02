@@ -20,7 +20,8 @@
     self = [super init];
     if (self) {
         self.pSpend = NULL;
-        self.bizId = 0;
+        self.metaData = [ABCMetaData alloc];
+        self.metaData.bizId = 0;
         self.wallet = wallet;
 //        self.abcError = [[ABCError alloc] init];
     }
@@ -45,12 +46,12 @@
 {
     if (!self.pSpend) return;
 
-    self.amount         = self.pSpend->amount;
-    self.amountMutable  = self.pSpend->amountMutable;
-    self.bSigned        = self.pSpend->bSigned;
-    self.spendName      = self.pSpend->szName       ? [NSString stringWithUTF8String:self.pSpend->szName] : nil;
-    self.returnURL      = self.pSpend->szRet        ? [NSString stringWithUTF8String:self.pSpend->szRet] : nil;
-    self.destUUID       = self.pSpend->szDestUUID   ? [NSString stringWithUTF8String:self.pSpend->szDestUUID] : nil;
+    self.amount                 = self.pSpend->amount;
+    self.amountMutable          = self.pSpend->amountMutable;
+    self.bSigned                = self.pSpend->bSigned;
+    self.metaData.payeeName     = self.pSpend->szName       ? [NSString stringWithUTF8String:self.pSpend->szName] : nil;
+    self.returnURL              = self.pSpend->szRet        ? [NSString stringWithUTF8String:self.pSpend->szRet] : nil;
+    self.destUUID               = self.pSpend->szDestUUID   ? [NSString stringWithUTF8String:self.pSpend->szDestUUID] : nil;
 }
 
 - (void)copyOBJCtoABC
@@ -224,11 +225,11 @@
                 pTrans->pDetails->szCategory = strdup([[NSString stringWithFormat:@"%@", spendCategory] UTF8String]);
             }
         }
-        if (_amountFiat > 0) {
-            pTrans->pDetails->amountCurrency = _amountFiat;
+        if (self.metaData.amountFiat > 0) {
+            pTrans->pDetails->amountCurrency = self.metaData.amountFiat;
         }
-        if (0 < _bizId) {
-            pTrans->pDetails->bizId = (unsigned int)_bizId;
+        if (0 < self.metaData.bizId) {
+            pTrans->pDetails->bizId = (unsigned int)self.metaData.bizId;
         }
         ABC_SetTransactionDetails([self.wallet.account.name UTF8String], NULL,
             [self.srcWallet.uuid UTF8String], [txId UTF8String],

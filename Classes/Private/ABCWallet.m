@@ -144,10 +144,10 @@ static const int importTimeout                  = 30;
     memset(&details, 0, sizeof(tABC_TxDetails));
     
     details.amountSatoshi = request.amountSatoshi;
-    details.szName = (char *) [request.payeeName UTF8String];
-    details.szCategory = (char *) [request.category UTF8String];
-    details.szNotes = (char *) [request.notes UTF8String];
-    details.bizId = request.bizId;
+    details.szName = (char *) [request.metaData.payeeName UTF8String];
+    details.szCategory = (char *) [request.metaData.category UTF8String];
+    details.szNotes = (char *) [request.metaData.notes UTF8String];
+    details.bizId = request.metaData.bizId;
     details.attributes = 0x0; //for our own use (not used by the core)
     
     //the true fee values will be set by the core
@@ -575,12 +575,12 @@ exitnow:
 - (void)setTransaction:(ABCTransaction *) transaction coreTx:(tABC_TxInfo *) pTrans
 {
     transaction.txid = [NSString stringWithUTF8String: pTrans->szID];
-    transaction.payeeName = [NSString stringWithUTF8String: pTrans->pDetails->szName];
-    transaction.notes = [NSString stringWithUTF8String: pTrans->pDetails->szNotes];
-    transaction.category = [NSString stringWithUTF8String: pTrans->pDetails->szCategory];
+    transaction.metaData.payeeName = [NSString stringWithUTF8String: pTrans->pDetails->szName];
+    transaction.metaData.notes = [NSString stringWithUTF8String: pTrans->pDetails->szNotes];
+    transaction.metaData.category = [NSString stringWithUTF8String: pTrans->pDetails->szCategory];
     transaction.date = [self.account.abc dateFromTimestamp: pTrans->timeCreation];
     transaction.amountSatoshi = pTrans->pDetails->amountSatoshi;
-    transaction.amountFiat = pTrans->pDetails->amountCurrency;
+    transaction.metaData.amountFiat = pTrans->pDetails->amountCurrency;
     transaction.abFees = pTrans->pDetails->amountFeesAirbitzSatoshi;
     transaction.minerFees = pTrans->pDetails->amountFeesMinersSatoshi;
     transaction.wallet = self;
@@ -603,7 +603,7 @@ exitnow:
         [outputs addObject:output];
     }
     transaction.outputs = outputs;
-    transaction.bizId = pTrans->pDetails->bizId;
+    transaction.metaData.bizId = pTrans->pDetails->bizId;
 }
 
 - (int)calcTxConfirmations:(NSString *)txId isSyncing:(bool *)syncing

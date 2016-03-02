@@ -12,6 +12,7 @@
 #import "ABCDenomination.h"
 #import "ABCExchangeCache.h"
 #import "ABCKeychain.h"
+#import "ABCMetaData.h"
 #import "ABCRequest.h"
 #import "ABCSettings.h"
 #import "ABCSpend.h"

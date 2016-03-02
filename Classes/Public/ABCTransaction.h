@@ -6,29 +6,26 @@
 //  Copyright (c) 2014 AirBitz. All rights reserved.
 //
 
-#import "ABCWallet.h"
+#import "AirbitzCore.h"
 
 @class ABCWallet;
+@class ABCMetaData;
 
 @interface ABCTransaction : NSObject
 
 @property (nonatomic, strong)   ABCWallet       *wallet;
+@property (nonatomic, strong)   ABCMetaData     *metaData;
 @property (nonatomic, copy)     NSString        *txid;
 @property (nonatomic, copy)     NSString        *malleableTxid;
-@property (nonatomic, copy)     NSString        *payeeName;
 @property (nonatomic, strong)   NSDate          *date;
 @property (nonatomic, assign)   BOOL            bConfirmed;
 @property (nonatomic, assign)   BOOL            bSyncing;
 @property (nonatomic, assign)   int             confirmations;
 @property (nonatomic, assign)   SInt64			amountSatoshi;
-@property (nonatomic, assign)   double          amountFiat;
 @property (nonatomic, assign)   SInt64			minerFees;
 @property (nonatomic, assign)   SInt64			abFees;
 @property (nonatomic, assign)   SInt64          balance;
-@property (nonatomic, copy)     NSString        *category;
-@property (nonatomic, copy)     NSString        *notes;
 @property (nonatomic, strong)   NSArray         *outputs;
-@property (nonatomic, assign)   unsigned int    bizId;
 
 - (void)saveTransactionDetails;
 

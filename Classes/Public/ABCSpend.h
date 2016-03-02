@@ -11,17 +11,11 @@
 
 @property (nonatomic, strong)       ABCWallet               *srcWallet;
 @property (nonatomic, strong)       ABCWallet               *destWallet;
-@property (nonatomic)               long                    bizId;
-@property (nonatomic)               double                  amountFiat;
 
 @property (nonatomic)               uint64_t                amount;
 
 /** True if the GUI can change the amount. */
 @property (nonatomic)               bool                    amountMutable;
-
-/** The destination to show to the user. This is often an address,
- * but also could be something else like a wallet name. */
-@property (nonatomic)               NSString                *spendName;
 
 /** True if this is a signed bip70 payment request. */
 @property (nonatomic)               bool                    bSigned;
@@ -33,6 +27,8 @@
 /** The destination wallet if this is a transfer, otherwise NULL */
 @property (nonatomic)               NSString                *destUUID;
 
+/// Metadata to write into the transaction after the spend has been made
+@property (nonatomic, strong)       ABCMetaData             *metaData;
 
 - (id)init:(id)abc;
 - (void)spendObjectSet:(void *)o;

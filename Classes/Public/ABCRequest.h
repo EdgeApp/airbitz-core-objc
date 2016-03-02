@@ -19,32 +19,24 @@
 /// @name The following properties are passed into ABCRequest as details for the request
 
 /// Amount of satoshis to add to request. Optional
-@property (nonatomic)       int64_t  amountSatoshi;
+@property (nonatomic)               int64_t                 amountSatoshi;
 
-/// Payee name to specify in the request. This should be the name of the entity intended to
-/// pay the request. This is auto tagged to transaction meta data for all incoming
-/// transactions to the address from this request
-@property (nonatomic, copy) NSString *payeeName;
+/// Optional meta to add to this request. Once money is received into this request
+/// address, the transaction will be tagged with this metadata
+@property (nonatomic, strong)       ABCMetaData             *metaData;
 
-/// The category to tag all transactions incoming to this request's address
-@property (nonatomic, copy) NSString *category;
-
-/// Misc notes to tag all transactions incoming to this request's address
-@property (nonatomic, copy) NSString *notes;         // optional: will be added to URI/QRcode if given
-
-/// An Airbitz Directory bizid to tag all transactions incoming to this request's address
-@property (nonatomic)       unsigned int bizId;      // optional: will be added to URI/QRcode if given
-
+/// ------------------------------------------------------
 /// @name The following properties are returned by ABC
+/// ------------------------------------------------------
 
 /// Full request URI ie. "bitcoin:12kjhg9834gkjh4tjr1jhgSADG4GASf?amount=.2123&label=Airbitz&notes=Hello"
-@property (nonatomic, copy) NSString *uri;
+@property (nonatomic, copy)         NSString                *uri;
 
 /// Bitcoin public address for request
-@property (nonatomic, copy) NSString *address;
+@property (nonatomic, copy)         NSString                *address;
 
 /// QRCode of request.
-@property (nonatomic, copy) UIImage  *qrCode;
+@property (nonatomic, copy)         UIImage                 *qrCode;
 
 
 
