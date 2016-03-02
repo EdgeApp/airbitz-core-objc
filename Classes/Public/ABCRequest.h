@@ -8,6 +8,7 @@
 
 @class AirbitzCore;
 @class ABCAccount;
+@class ABCMetaData;
 @class ABCWallet;
 
 /// Object used to pass in address request details
