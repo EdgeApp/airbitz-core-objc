@@ -112,6 +112,15 @@ typedef enum eABCDeviceCaps
 @class ABCRequest;
 @class ABCAccount;
 
+@interface ABCPasswordRuleResult : NSObject
+@property       double      secondsToCrack;
+@property       BOOL        tooShort;
+@property       BOOL        noNumber;
+@property       BOOL        noUpperCase;
+@property       BOOL        noLowerCase;
+@property       BOOL        passed;
+@end
+
 @interface AirbitzCore : NSObject
 
 /// -----------------------------------------------------------------------------
@@ -273,23 +282,14 @@ typedef enum eABCDeviceCaps
  */
 - (BOOL)passwordExists:(NSString *)username error:(NSError **)error;
 
-/** Checks a password for valid entropy looking for correct minimum
- *  requirements such as upper, lowercase letters, numbers, and # of digits. This should be used
- *  by app to give feedback to user before creating a new account.
+/** 
+ * Checks a password for valid entropy looking for correct minimum
+ * requirements such as upper, lowercase letters, numbers, and # of digits. This should be used
+ * by app to give feedback to user before creating a new account.
  * @param password NSString* Password to check
- * @param secondsToCrack double* estimated time it takes to crack password
- * @param count int* pointer to number of rules used
- * @param ruleDescription NSMutableArray* array of NSString* with description of each rule
- * @param rulePassed NSMutableArray* array of NSNumber* with BOOL of whether rule passed
- * @param checkResultsMessage NSMutableString* message describing all failures
- * @return BOOL True if password passes all requirements
+ * @return ABCPasswordRuleResult* Results of password check. 
  */
-+ (BOOL)checkPasswordRules:(NSString *)password
-            secondsToCrack:(double *)secondsToCrack
-                     count:(unsigned int *)count
-           ruleDescription:(NSMutableArray *)ruleDescription
-                rulePassed:(NSMutableArray *)rulePassed
-       checkResultsMessage:(NSMutableString *)checkResultsMessage;
++ (ABCPasswordRuleResult *)checkPasswordRules:(NSString *)password;
 
 /**
  * Get a list of previously logged in usernames on this device

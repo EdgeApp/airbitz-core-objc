@@ -14,6 +14,18 @@
 }
 @end
 
+@implementation ABCPasswordRuleResult
+- (id)init
+{
+    self = [super init];
+    self.noUpperCase = YES;
+    self.noLowerCase = YES;
+    self.noNumber = YES;
+    self.tooShort = YES;
+    return self;
+}
+@end
+
 @interface AirbitzCore ()
 {
     BOOL                                            bInitialized;
@@ -850,49 +862,62 @@
     ABC_ClearKeyCache(&Error);
 }
 
-+ (BOOL)checkPasswordRules:(NSString *)password
-            secondsToCrack:(double *)secondsToCrack
-                     count:(unsigned int *)count
-           ruleDescription:(NSMutableArray *)ruleDescription
-                rulePassed:(NSMutableArray *)rulePassed
-       checkResultsMessage:(NSMutableString *)checkResultsMessage;
++ (ABCPasswordRuleResult *)checkPasswordRules:(NSString *)password;
 {
-    BOOL valid = YES;
+    ABCPasswordRuleResult *result;
     tABC_Error error;
     tABC_PasswordRule **aRules = NULL;
+    unsigned int count;
+    double secondsToCrack;
+    
     ABC_CheckPassword([password UTF8String],
-                      secondsToCrack,
+                      &secondsToCrack,
                       &aRules,
-                      count,
+                      &count,
                       &error);
     NSError *nserror = [ABCError makeNSError:error];
-    
+
     if (!nserror)
     {
-        [checkResultsMessage appendString:@"Your password...\n"];
-        for (int i = 0; i < *count; i++)
+        result = [[ABCPasswordRuleResult alloc] init];
+        result.secondsToCrack = secondsToCrack;
+        
+        for (int i = 0; i < count; i++)
         {
             tABC_PasswordRule *pRule = aRules[i];
-            [ruleDescription addObject:[NSString stringWithUTF8String:pRule->szDescription]];
-            if (!pRule->bPassed)
+            NSString *desc = [NSString stringWithUTF8String:pRule->szDescription];
+            
+            if ([desc containsString:@"upper case"])
             {
-                valid = NO;
-                [checkResultsMessage appendFormat:@"%s.\n", pRule->szDescription];
-                [rulePassed addObject:[NSNumber numberWithBool:NO]];
+                if (pRule->bPassed) result.noUpperCase = NO;
             }
-            else
+            else if ([desc containsString:@"lower case"])
             {
-                [rulePassed addObject:[NSNumber numberWithBool:YES]];
+                if (pRule->bPassed) result.noLowerCase = NO;
             }
+            else if ([desc containsString:@"one number"])
+            {
+                if (pRule->bPassed) result.noNumber = NO;
+            }
+            else if ([desc containsString:@"characters"])
+            {
+                if (pRule->bPassed) result.tooShort = NO;
+            }
+            
         }
+    }
+    
+    ABC_FreePasswordRuleArray(aRules, count);
+
+    if (result.noUpperCase || result.noNumber || result.noLowerCase || result.tooShort)
+    {
+        result.passed = NO;
     }
     else
     {
-        return NO;
+        result.passed = YES;
     }
-    
-    ABC_FreePasswordRuleArray(aRules, *count);
-    return valid;
+    return result;
 }
 
 - (NSError *)isAccountUsernameAvailable:(NSString *)username;
