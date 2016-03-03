@@ -586,7 +586,6 @@
               password:(NSString *)password
               delegate:(id)delegate
                    otp:(NSString *)otp
-             resetDate:(NSDate **)resetDate
                  error:(NSError **)nserror;
 {
     
@@ -595,8 +594,6 @@
 
     tABC_Error error;
     BOOL bNewDeviceLogin = NO;
-    
-    if (resetDate) *resetDate = nil;
     
     if (!username || !password)
     {
@@ -630,32 +627,6 @@
                 [account login];
                 [account setupLoginPIN];
             }
-            else if (resetDate &&
-                     (ABCConditionCodeInvalidOTP == lnserror.code))
-            {
-                char *szDate = NULL;
-                ABC_OtpResetDate(&szDate, &error);
-                NSError *nserror2 = [ABCError makeNSError:error];
-                if (!nserror2)
-                {
-                    if (szDate == NULL || strlen(szDate) == 0)
-                    {
-                        resetDate = nil;
-                    }
-                    else
-                    {
-                        NSString *dateStr = [NSString stringWithUTF8String:szDate];
-                        
-                        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-                        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
-                        
-                        NSDate *dateTemp = [dateFormatter dateFromString:dateStr];
-                        *resetDate = dateTemp;
-                    }
-                }
-                
-                if (szDate) free(szDate);
-            }
         }
     }
     
@@ -665,15 +636,46 @@
 }
 
 
-- (void)signIn:(NSString *)username password:(NSString *)password delegate:(id)delegate otp:(NSString *)otp
+
+
+
+- (void)signIn:(NSString *)username password:(NSString *)password
+      delegate:(id)delegate otp:(NSString *)otp
       complete:(void (^)(ABCAccount *account)) completionHandler
-         error:(void (^)(NSError *, NSDate *resetDate)) errorHandler;
+         error:(void (^)(NSError *, NSDate *resetDate, NSString *resetToken)) errorHandler;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-        NSError *error = nil;
-        NSDate *date;
-        ABCAccount *account = [self signIn:username password:password delegate:delegate otp:otp resetDate:&date error:&error];
-        
+        NSError *nserror = nil;
+        NSDate *resetDate;
+        NSString *resetToken = password;
+        ABCAccount *account = [self signIn:username password:password delegate:delegate otp:otp error:&nserror];
+        if (ABCConditionCodeInvalidOTP == nserror.code)
+        {
+            char *szDate = NULL;
+            tABC_Error error;
+            ABC_OtpResetDate(&szDate, &error);
+            NSError *nserror2 = [ABCError makeNSError:error];
+            if (!nserror2)
+            {
+                if (szDate == NULL || strlen(szDate) == 0)
+                {
+                    resetDate = nil;
+                }
+                else
+                {
+                    NSString *dateStr = [NSString stringWithUTF8String:szDate];
+                    
+                    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                    [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
+                    
+                    NSDate *dateTemp = [dateFormatter dateFromString:dateStr];
+                    resetDate = dateTemp;
+                }
+            }
+            
+            if (szDate) free(szDate);
+        }
+
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             if (account)
             {
@@ -681,7 +683,7 @@
             }
             else
             {
-                if (errorHandler) errorHandler(error, date);
+                if (errorHandler) errorHandler(nserror, resetDate, resetToken);
             }
         });
     });
@@ -759,13 +761,14 @@
                          delegate:(id)delegate
                               otp:(NSString *)otp
                          complete:(void (^)(ABCAccount *account)) completionHandler
-                            error:(void (^)(NSError *, NSDate *resetDate)) errorHandler;
+                            error:(void (^)(NSError *, NSDate *resetDate, NSString *resetToken)) errorHandler;
 {
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
         tABC_Error error;
         NSError *nserror;
         NSDate *resetDate;
+        NSString *resetToken = answers;
         ABCAccount *account = nil;
         BOOL bNewDeviceLogin = NO;
         
@@ -839,7 +842,7 @@
             }
             else
             {
-                if (errorHandler) errorHandler(nserror, resetDate);
+                if (errorHandler) errorHandler(nserror, resetDate, resetToken);
             }
         });
     });
@@ -945,7 +948,7 @@
             if (doBeforeLogin) doBeforeLogin();
             [self signIn:username password:password delegate:delegate otp:nil complete:^(ABCAccount *account){
                 if (completionWithLogin) completionWithLogin(account, usedTouchID);
-            } error:^(NSError *error, NSDate *resetDate) {
+            } error:^(NSError *error, NSDate *resetDate, NSString *resetToken) {
                 if (errorHandler) errorHandler(error);
             }];
         }
@@ -1017,7 +1020,7 @@
     return [ABCError makeNSError:error];
 }
 
-- (NSError *)requestOTPReset:(NSString *)username;
+- (NSError *)requestOTPReset:(NSString *)username token:(NSString *)token;
 {
     tABC_Error error;
     ABC_OtpResetSet([username UTF8String], &error);
@@ -1025,11 +1028,12 @@
 }
 
 - (void)requestOTPReset:(NSString *)username
-                           complete:(void (^)(void)) completionHandler
-                              error:(void (^)(NSError *error)) errorHandler
+                  token:(NSString *)token
+               complete:(void (^)(void)) completionHandler
+                  error:(void (^)(NSError *error)) errorHandler
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-        NSError *error = [self requestOTPReset:username];
+        NSError *error = [self requestOTPReset:username token:token];
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             if (!error)
             {

@@ -184,6 +184,31 @@ typedef enum eABCDeviceCaps
                         error:(NSError **)error;
 
 /**
+ * Sign In to an Airbitz account using completion handlers.
+ * @param username NSString*
+ * @param password NSString*
+ * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
+ * @param otp NSString* One Time Password token (optional). Send nil if logging in w/o OTP token
+ *  or if OTP token has already been saved in this account from prior login
+ * @param error NSError** May be set to nil. Only used when not using completion handler
+ * @param completionHandler (Optional) Code block called on success. Returns void if used<br>
+ * - *param* ABCAccount* Account object created from SignIn call
+ * @param errorHandler (Optional) Code block called on error with parameters<br>
+ * - *param* NSError*<br>
+ * - *param* NSDate* resetDate If login fails due to invalid or unset OTP key, and an OTP reset has been
+ *  requested, the data that the reset will occur will be returned in this argument<br>
+ * - *param* NSString* OTP reset token. If login fails due to OTP set on this account, use this token
+ *  in requestOTPReset to request a reset of OTP. The reset will take 7 days
+ * @return void
+ */
+- (void)signIn:(NSString *)username
+      password:(NSString *)password
+      delegate:(id)delegate
+           otp:(NSString *)otp
+      complete:(void (^)(ABCAccount *account)) completionHandler
+         error:(void (^)(NSError *, NSDate *resetDate, NSString *resetToken)) errorHandler;
+
+/**
  * Sign In to an Airbitz account.
  * @param username NSString*
  * @param password NSString*
@@ -192,26 +217,12 @@ typedef enum eABCDeviceCaps
  *  or if OTP token has already been saved in this account from prior login
  * @param resetDate NSDate** If login fails due to invalid or unset OTP key, and an OTP reset has been
  * @param error NSError** May be set to nil. Only used when not using completion handler
- * @param completionHandler (Optional) Code block called on success. Returns void if used<br>
- * - *param* ABCAccount* Account object created from SignIn call
- * @param errorHandler (Optional) Code block called on error with parameters<br>
- * - *param* NSError*<br>
- * - *param* NSDate* resetDate If login fails due to invalid or unset OTP key, and an OTP reset has been
- *  requested, the data that the reset will occur will be returned in this argument
- * @return ABCAccount* Account object or nil if failure. Return void if using completion
- *  handler
+ * @return ABCAccount* Account object or nil if failure.
  */
-- (void)signIn:(NSString *)username
-      password:(NSString *)password
-      delegate:(id)delegate
-           otp:(NSString *)otp
-      complete:(void (^)(ABCAccount *account)) completionHandler
-         error:(void (^)(NSError *, NSDate *resetDate)) errorHandler;
 - (ABCAccount *)signIn:(NSString *)username
               password:(NSString *)password
               delegate:(id)delegate
                    otp:(NSString *)otp
-             resetDate:(NSDate **)resetDate
                  error:(NSError **)error;
 
 /**
@@ -249,7 +260,8 @@ typedef enum eABCDeviceCaps
  * @param errorHandler Error handler code block which is called with the following args<br>
  * - *param* NSError*<br>
  * - *param* NSDate* resetDate If login fails due to OTP and a reset has been requested, this contains
- *  the date that the reset will occur.
+ *  the date that the reset will occur.<br>
+ * - *param* NSString* OTP reset token. If login fails due to OTP set on this account, use this token
  * @return void
  */
 - (void)signInWithRecoveryAnswers:(NSString *)username
@@ -257,7 +269,7 @@ typedef enum eABCDeviceCaps
                          delegate:(id)delegate
                               otp:(NSString *)otp
                          complete:(void (^)(ABCAccount *account)) completionHandler
-                            error:(void (^)(NSError *, NSDate *resetDate)) errorHandler;
+                            error:(void (^)(NSError *, NSDate *resetDate, NSString *resetToken)) errorHandler;
 
 /**
  * Get ABCAccount object for username if logged in.
@@ -330,8 +342,6 @@ typedef enum eABCDeviceCaps
  * @param errorHandler (Optional) Code block called on error with parameters<br>
  * - *param* NSError*
  * @return void
-
- 
  */
 - (void)autoReloginOrTouchIDIfPossible:(NSString *)username
                               delegate:(id)delegate
@@ -440,10 +450,10 @@ typedef enum eABCDeviceCaps
  * @return NSError object or nil if success. Return void if using completion
  *  handler
  */
-- (void)requestOTPReset:(NSString *)username
+- (void)requestOTPReset:(NSString *)username token:(NSString *)token
                complete:(void (^)(void)) completionHandler
                   error:(void (^)(NSError *error)) errorHandler;
-- (NSError *)requestOTPReset:(NSString *)username;
+- (NSError *)requestOTPReset:(NSString *)username token:(NSString *)token;
 
 #pragma mark - ABCExchange Calls
 /// ------------------------------------------------------------------
