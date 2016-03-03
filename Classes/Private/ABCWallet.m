@@ -16,7 +16,7 @@ static const int importTimeout                  = 30;
 @interface ABCWallet ()
 
 @property (nonatomic, strong)   ABCError                    *abcError;
-@property (nonatomic, strong)   void                        (^importCompletionHandler)(ABCImportDataModel dataModel, NSString *address, NSString *txid, uint64_t amount);
+@property (nonatomic, strong)   void                        (^importCompletionHandler)(ABCImportDataModel dataModel, NSString *address, ABCTransaction *transaction, uint64_t amount);
 @property (nonatomic, strong)   void                        (^importErrorHandler)(NSError *error);
 @property                       ABCImportDataModel          importDataModel;
 @property (nonatomic, strong)   NSString                    *sweptAddress;
@@ -324,7 +324,7 @@ exitnow:
 
 - (void)importPrivateKey:(NSString *)privateKey
                importing:(void (^)(NSString *address)) importingHandler
-                complete:(void (^)(ABCImportDataModel dataModel, NSString *address, NSString *txid, uint64_t amount)) completionHandler
+                complete:(void (^)(ABCImportDataModel dataModel, NSString *address, ABCTransaction *transaction, uint64_t amount)) completionHandler
                    error:(void (^)(NSError *error)) errorHandler;
 {
     bool bSuccess = NO;
@@ -818,14 +818,14 @@ exitnow:
     return nserror;
 }
 
-- (void)handleSweepCallback:(NSString *)txid amount:(uint64_t)amount error:(NSError *)error;
+- (void)handleSweepCallback:(ABCTransaction *)tx amount:(uint64_t)amount error:(NSError *)error;
 {
     [self cancelImportExpirationTimer];
     
     if (!error)
     {
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (self.importCompletionHandler) self.importCompletionHandler(self.importDataModel, self.sweptAddress, txid, amount);
+            if (self.importCompletionHandler) self.importCompletionHandler(self.importDataModel, self.sweptAddress, tx, amount);
             self.importErrorHandler = nil;
             self.importCompletionHandler = nil;
         });

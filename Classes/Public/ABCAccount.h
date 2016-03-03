@@ -67,10 +67,10 @@
 /// This device has just sync'ed a transaction to the specified wallet from another device
 /// causing a change in balance. This happens if two devices share a wallet. First device will see
 /// abcAccountIncomingBitcoin. The second device will see abcAccountBalanceUpdate
-- (void) abcAccountBalanceUpdate:(ABCWallet *)wallet txid:(NSString *)txid;
+- (void) abcAccountBalanceUpdate:(ABCWallet *)wallet transaction:(ABCTransaction *)transaction;
 
-/// The specified wallet has just received a new transaction with given txid.
-- (void) abcAccountIncomingBitcoin:(ABCWallet *)wallet txid:(NSString *)txid;
+/// The specified wallet has just received a new transaction.
+- (void) abcAccountIncomingBitcoin:(ABCWallet *)wallet transaction:(ABCTransaction *)transaction;
 
 @end
 
@@ -127,6 +127,7 @@
 @property (atomic)         int                       numTotalWallets;
 @property (atomic)         int                       numCategories;
 
+/// This account's username
 @property (atomic, copy)     NSString                *name;
 @property (atomic, copy)     NSString                *password;
 

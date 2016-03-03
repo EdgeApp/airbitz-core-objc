@@ -1709,27 +1709,33 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 {
     ABCAccount *user = (__bridge id) pInfo->pData;
     ABCWallet *wallet = nil;
-    NSString *txid = nil;
+    ABCTransaction *tx = nil;
     NSError *error = [ABCError makeNSError:pInfo->status];
     uint64_t amount = (uint64_t) pInfo->sweepSatoshi;
 
     if (pInfo)
     {
         if (pInfo->szWalletUUID)
+        {
             wallet = [user getWallet:[NSString stringWithUTF8String:pInfo->szWalletUUID]];
-        if (pInfo->szTxID)
-            txid = [NSString stringWithUTF8String:pInfo->szTxID];
+            if (pInfo->szTxID)
+            {
+                NSString *txid = nil;
+                txid = [NSString stringWithUTF8String:pInfo->szTxID];
+                tx = [wallet getTransaction:txid];
+            }
+        }
     }
     
     if (ABC_AsyncEventType_IncomingBitCoin == pInfo->eventType) {
-        if (!wallet || !txid) {
+        if (!wallet || !tx) {
             ABCLog(1, @"EventCallback: NULL pointer from ABC");
         }
         [user refreshWallets:^
          {
              if (user.delegate) {
-                 if ([user.delegate respondsToSelector:@selector(abcAccountIncomingBitcoin:txid:)]) {
-                     [user.delegate abcAccountIncomingBitcoin:wallet txid:txid];
+                 if ([user.delegate respondsToSelector:@selector(abcAccountIncomingBitcoin:transaction:)]) {
+                     [user.delegate abcAccountIncomingBitcoin:wallet transaction:tx];
                  }
              }
          }];
@@ -1744,22 +1750,22 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
          }];
         
     } else if (ABC_AsyncEventType_BalanceUpdate == pInfo->eventType) {
-        if (!wallet || !txid) {
+        if (!wallet || !tx) {
             ABCLog(1, @"EventCallback: NULL pointer from ABC");
         }
         [user refreshWallets:^
          {
              if (user.delegate) {
-                 if ([user.delegate respondsToSelector:@selector(abcAccountBalanceUpdate:txid:)]) {
-                     [user.delegate abcAccountBalanceUpdate:wallet txid:txid];
+                 if ([user.delegate respondsToSelector:@selector(abcAccountBalanceUpdate:transaction:)]) {
+                     [user.delegate abcAccountBalanceUpdate:wallet transaction:tx];
                  }
              }
          }];
     } else if (ABC_AsyncEventType_IncomingSweep == pInfo->eventType) {
-        if (!wallet || !txid) {
+        if (!wallet || !tx) {
             ABCLog(1, @"EventCallback: NULL pointer from ABC");
         }
-        [wallet handleSweepCallback:txid amount:amount error:error];
+        [wallet handleSweepCallback:tx amount:amount error:error];
     } else if (ABC_AsyncEventType_AddressCheckDone == pInfo->eventType) {
         if (!wallet) {
             ABCLog(1, @"EventCallback: NULL pointer from ABC");
