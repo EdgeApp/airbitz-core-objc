@@ -542,6 +542,7 @@ static const int importTimeout                  = 30;
         output.address = [NSString stringWithUTF8String: pTrans->aOutputs[i]->szAddress];
         output.isInput = pTrans->aOutputs[i]->input;
         output.amountSatoshi = pTrans->aOutputs[i]->value;
+        output.txid = [NSString stringWithUTF8String:pTrans->aOutputs[i]->szTxId];
         
         [outputs addObject:output];
     }
