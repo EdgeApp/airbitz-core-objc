@@ -150,7 +150,6 @@
 - (NSString *)createExchangeRateString:(ABCCurrency *)currency
                    includeCurrencyCode:(bool)includeCurrencyCode;
 - (BOOL)needsRecoveryQuestionsReminder;
-- (BOOL)passwordOk:(NSString *)password;
 - (NSString *) bitidParseURI:(NSString *)uri;
 - (BOOL) bitidLogin:(NSString *)uri;
 - (BitidSignature *) bitidSign:(NSString *)uri msg:(NSString *)msg;
@@ -218,8 +217,17 @@
  * @param error (Optional) NSError* Error object. Nil if success
  * @return BOOL YES if PIN is correct
  */
-- (BOOL) pinCheck:(NSString *)pin;
-- (BOOL) pinCheck:(NSString *)pin error:(NSError **)error;
+- (BOOL) checkPIN:(NSString *)pin;
+- (BOOL) checkPIN:(NSString *)pin error:(NSError **)error;
+
+/**
+ * Checks if password is the correct password for this account
+ * @param password NSString* Password to check
+ * @param error (Optional) NSError* Error object. Nil if success
+ * @return BOOL YES if PIN is correct
+ */
+- (BOOL)checkPassword:(NSString *)password;
+
 
 /**
  * Enable or disable PIN login on this account. Set enable = YES to allow

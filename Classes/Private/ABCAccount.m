@@ -773,11 +773,11 @@ static const int notifySyncDelay          = 1;
     return bResult;
 }
 
-- (BOOL) pinCheck:(NSString *)pin
+- (BOOL) checkPIN:(NSString *)pin
 {
-    return [self pinCheck:pin error:nil];
+    return [self checkPIN:pin error:nil];
 }
-- (BOOL) pinCheck:(NSString *)pin error:(NSError **)nserror;
+- (BOOL) checkPIN:(NSString *)pin error:(NSError **)nserror;
 {
     tABC_Error error;
     bool result = false;
@@ -971,7 +971,7 @@ static const int notifySyncDelay          = 1;
                    });
 }
 
-- (BOOL)passwordOk:(NSString *)password
+- (BOOL)checkPassword:(NSString *)password
 {
     NSString *name = self.name;
     bool ok = false;
