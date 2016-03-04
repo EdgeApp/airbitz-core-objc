@@ -26,6 +26,13 @@
 
 @interface ABCUtil : NSObject
 
+/**
+ * Encodes a string into a QR code returned as UIImage *
+ * @param string NSString* string to encode
+ * @return UIImage* returned image
+ */
++ (UIImage *)encodeStringToQRImage:(NSString *)string error:(NSError **)error;
+
 + (NSString *)platform;
 + (NSString *)platformString;
 + (NSString *)safeStringWithUTF8String:(const char *)bytes;

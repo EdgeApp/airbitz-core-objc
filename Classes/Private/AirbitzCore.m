@@ -1047,29 +1047,6 @@
     });
 }
 
-+ (UIImage *)encodeStringToQRImage:(NSString *)string error:(NSError **)nserror;
-{
-    unsigned char *pData = NULL;
-    unsigned int width;
-    tABC_Error error;
-    UIImage *image = nil;
-    NSError *nserror2 = nil;
-    
-    ABC_QrEncode([string UTF8String], &pData, &width, &error);
-    nserror2 = [ABCError makeNSError:error];
-    if (!nserror2)
-    {
-        image = [ABCUtil dataToImage:pData withWidth:width andHeight:width];
-    }
-    
-    if (pData) {
-        free(pData);
-    }
-    if (nserror) *nserror = nserror2;
-    return image;;
-}
-
-
 + (void)listRecoveryQuestionsChoices: (void (^)(
                                                NSMutableArray *arrayCategoryString,
                                                NSMutableArray *arrayCategoryNumeric,

@@ -562,14 +562,6 @@ typedef enum eABCDeviceCaps
  */
 + (NSString *)fixUsername:(NSString *)username error:(NSError **)error;
 
-/**
- * Encodes a string into a QR code returned as UIImage *
- * @param string NSString* string to encode
- * @return UIImage* returned image
- */
-+ (UIImage *)encodeStringToQRImage:(NSString *)string error:(NSError **)error;
-
-
 /// ------------------------------------------------------------------
 /// @name Class methods to retrieve constant parameters from ABC
 /// ------------------------------------------------------------------
