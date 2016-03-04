@@ -22,6 +22,8 @@
 
 /// An Airbitz Directory bizid to tag all transactions incoming to this request's address
 @property (nonatomic)               unsigned int            bizId;
+
+/// Amount of transaction in fiat (USD, EUR, CAD) value.
 @property (nonatomic)               double                  amountFiat;
 
 @end

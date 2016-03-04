@@ -26,8 +26,6 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 @property (nonatomic, copy)     NSString        *uuid;
 @property (nonatomic, copy)     NSString        *name;
 @property (nonatomic, assign)   ABCCurrency        *currency;
-//@property (nonatomic, copy)     NSString        *currencyAbbrev;
-//@property (nonatomic, copy)     NSString        *currencySymbol;
 @property (nonatomic, assign)   unsigned int    archived;
 @property (nonatomic, assign)   double          balance;
 @property (nonatomic, strong)   NSArray         *arrayTransactions;
@@ -54,30 +52,47 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
                error:(void (^)(NSError *error)) errorHandler;
 - (NSError *)removeWallet;
 
-
-
-/** Create a receive request from the current wallet. User should pass in an allocated
- * ABCReceiveAddress object with optional values set for amountSatoshi, payee, category, notes, or bizID.
- * The object will have a uri, address, and QRcode UIImage filled in when method completes
- * @param request ABCReceiveAddress*
+/** 
+ * Create a receive request from the current wallet.
+ * Caller may then optionally set the values in the following properties:<br>
+ * ABCReceiveAddress.metadata<br>
+ * ABCReceiveAddress.amountSatoshi<br>
+ * ABCReceiveAddress.uriMessage<br>
+ * ABCReceiveAddress.uriLabel<br>
+ * ABCReceiveAddress.uriCategory<br><br>
+ * Caller can then read the following properties<br>
+ * ABCReceiveAddress.address<br>
+ * ABCReceiveAddress.qrCode<br>
+ * ABCReceiveAddress.uri<br><br>
+ * Properties in the metadata object are permanently associated with the ABCReceiveAddress such that any
+ * future payments to this address will have that metadata automatically tagged in the transaction. User must
+ * read either the address, qrCode, or uri properties to ensure that modified fields in ABCReceiveAddress.metadata are
+ * saved. The qrCode and uri values will include the amountSatoshi, uriMessage, uriLabel, and uriCategory properties
+ * @param error NSError** (optional)
  * @param completionHandler Completion handler code block which is called with void. (Optional. If used, method
- * returns immediately with void)
+ * returns immediately with void)<br>
+ * - *param* ABCReceiveAddress* Receive address object
  * @param errorHandler Error handler code block which is called with the following args<br>
  * - *param* NSError* error object
  * @return NSError* or nil if no error. Returns void if completion handlers are used.
  */
-- (NSError *)createReceiveAddressWithDetails:(ABCReceiveAddress *)request;
-- (void)createReceiveAddressWithDetails:(ABCReceiveAddress *)request
-                               complete:(void (^)(void))completionHandler
-                                  error:(void (^)(NSError *error)) errorHandler;
+- (ABCReceiveAddress *)createNewReceiveAddress;
+- (ABCReceiveAddress *)createNewReceiveAddress:(NSError **)error;
+- (void)createNewReceiveAddress:(void (^)(ABCReceiveAddress *))completionHandler
+                          error:(void (^)(NSError *error)) errorHandler;
 
 /**
- * Finalizes the request so the address cannot be used by future requests. Forces address
- * rotation so the next request gets a different address
- * @param requestID NSString* Bitcoin address to finalize
- * @return NSError* error object
+ * Retrieves an ABCReceiveAddress object for the given public address
+ * At this time, metadata or amountSatoshi values previously associated with this
+ * receive address are not re-populated into this ABCReceiveAddress object even
+ * if they are still saved in the internal ABC database.
+ * @param address NSString* Bitcoin public address from a previous ABCReceiveAddress
+ * @param error NSError** Pointer to error object (optional)
+ * @return ABCReceiveAddress* ABCReceiveAddress object
  */
-- (NSError *)finalizeRequestWithAddress:(NSString *)address;
+- (ABCReceiveAddress *)getReceiveAddress:(NSString *)address error:(NSError **)error;
+- (ABCReceiveAddress *)getReceiveAddress:(NSString *)address;
+
 
 /**
  * Create an ABCSpend object from text. Text could be a bitcoin address or BIP21/BIP70 URI.
@@ -151,7 +166,7 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
                 complete:(void (^)(ABCImportDataModel dataModel, NSString *address, ABCTransaction *transaction, uint64_t amount)) completionHandler
                    error:(void (^)(NSError *)) errorHandler;
 
-- (void)prioritizeAddress:(NSString *)address;
+- (void)deprioritizeAllAddresses;
 - (ABCTransaction *)getTransaction:(NSString *) txId;
 - (int64_t)getTotalSentToday;
 - (void)refreshServer:(BOOL)bData notify:(void(^)(void))cb;

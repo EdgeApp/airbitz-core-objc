@@ -14,10 +14,12 @@
 #import "ABCExchangeCache+Internal.h"
 #import "ABCKeychain+Internal.h"
 #import "ABCLocalSettings.h"
+#import "ABCMetaData+Internal.h"
 #import "ABCReceiveAddress+Internal.h"
 #import "ABCSettings+Internal.h"
 #import "ABCSpend+Internal.h"
 #import "ABCStrings.h"
+#import "ABCTransaction+Internal.h"
 #import "ABCAccount+Internal.h"
 #import "ABCWallet+Internal.h"
 

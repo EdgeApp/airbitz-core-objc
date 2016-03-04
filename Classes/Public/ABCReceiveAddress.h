@@ -56,6 +56,10 @@
  */
 - (NSError *)modifyRequestWithDetails;
 
-- (id)init;
+
+- (void)prioritizeAddress:(BOOL)enable;
+
+
+- (id)initWithWallet:(ABCWallet *)wallet;
 @end
 

@@ -17,7 +17,7 @@
 		DA5E8DBB1C633950005E3093 /* ABCSpend.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D961C633950005E3093 /* ABCSpend.m */; };
 		DA5E8DBC1C633950005E3093 /* ABCStrings.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D981C633950005E3093 /* ABCStrings.m */; };
 		DA5E8DBD1C633950005E3093 /* ABCTransaction.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D991C633950005E3093 /* ABCTransaction.m */; };
-		DA5E8DBE1C633950005E3093 /* ABCTxOutput.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D9A1C633950005E3093 /* ABCTxOutput.m */; };
+		DA5E8DBE1C633950005E3093 /* ABCTxInOut.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D9A1C633950005E3093 /* ABCTxInOut.m */; };
 		DA5E8DBF1C633950005E3093 /* ABCUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D9B1C633950005E3093 /* ABCUtil.m */; };
 		DA5E8DC01C633950005E3093 /* ABCWallet.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D9C1C633950005E3093 /* ABCWallet.m */; };
 		DA5E8DC11C633950005E3093 /* AirbitzCore.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5E8D9D1C633950005E3093 /* AirbitzCore.m */; };
@@ -84,9 +84,9 @@
 		DA5E8D971C633950005E3093 /* ABCStrings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCStrings.h; path = Classes/Private/ABCStrings.h; sourceTree = SOURCE_ROOT; };
 		DA5E8D981C633950005E3093 /* ABCStrings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCStrings.m; path = Classes/Private/ABCStrings.m; sourceTree = SOURCE_ROOT; };
 		DA5E8D991C633950005E3093 /* ABCTransaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCTransaction.m; path = Classes/Private/ABCTransaction.m; sourceTree = SOURCE_ROOT; };
-		DA5E8D9A1C633950005E3093 /* ABCTxOutput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCTxOutput.m; path = Classes/Private/ABCTxOutput.m; sourceTree = SOURCE_ROOT; };
+		DA5E8D9A1C633950005E3093 /* ABCTxInOut.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = ABCTxInOut.m; path = Classes/Private/ABCTxInOut.m; sourceTree = SOURCE_ROOT; };
 		DA5E8D9B1C633950005E3093 /* ABCUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCUtil.m; path = Classes/Private/ABCUtil.m; sourceTree = SOURCE_ROOT; };
-		DA5E8D9C1C633950005E3093 /* ABCWallet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCWallet.m; path = Classes/Private/ABCWallet.m; sourceTree = SOURCE_ROOT; };
+		DA5E8D9C1C633950005E3093 /* ABCWallet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = ABCWallet.m; path = Classes/Private/ABCWallet.m; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		DA5E8D9D1C633950005E3093 /* AirbitzCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AirbitzCore.m; path = Classes/Private/AirbitzCore.m; sourceTree = SOURCE_ROOT; };
 		DA5E8DB41C633950005E3093 /* NSMutableData+Secure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSMutableData+Secure.h"; path = "Classes/Private/NSMutableData+Secure.h"; sourceTree = SOURCE_ROOT; };
 		DA5E8DB51C633950005E3093 /* NSMutableData+Secure.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSMutableData+Secure.m"; path = "Classes/Private/NSMutableData+Secure.m"; sourceTree = SOURCE_ROOT; };
@@ -94,10 +94,10 @@
 		DA5E8DDA1C633960005E3093 /* ABCReceiveAddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCReceiveAddress.h; path = Classes/Public/ABCReceiveAddress.h; sourceTree = SOURCE_ROOT; };
 		DA5E8DDC1C633960005E3093 /* ABCSpend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCSpend.h; path = Classes/Public/ABCSpend.h; sourceTree = SOURCE_ROOT; };
 		DA5E8DDD1C633960005E3093 /* ABCTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCTransaction.h; path = Classes/Public/ABCTransaction.h; sourceTree = SOURCE_ROOT; };
-		DA5E8DDE1C633960005E3093 /* ABCTxOutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCTxOutput.h; path = Classes/Public/ABCTxOutput.h; sourceTree = SOURCE_ROOT; };
+		DA5E8DDE1C633960005E3093 /* ABCTxInOut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = ABCTxInOut.h; path = Classes/Public/ABCTxInOut.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		DA5E8DDF1C633960005E3093 /* ABCUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCUtil.h; path = Classes/Public/ABCUtil.h; sourceTree = SOURCE_ROOT; };
-		DA5E8DE01C633960005E3093 /* ABCWallet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCWallet.h; path = Classes/Public/ABCWallet.h; sourceTree = SOURCE_ROOT; };
-		DA5E8DE11C633960005E3093 /* AirbitzCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AirbitzCore.h; path = Classes/Public/AirbitzCore.h; sourceTree = SOURCE_ROOT; };
+		DA5E8DE01C633960005E3093 /* ABCWallet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = ABCWallet.h; path = Classes/Public/ABCWallet.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		DA5E8DE11C633960005E3093 /* AirbitzCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = AirbitzCore.h; path = Classes/Public/AirbitzCore.h; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		DA5E8E3B1C643A23005E3093 /* libabc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libabc.a; path = Libraries/libabc.a; sourceTree = SOURCE_ROOT; };
 		DA5E8E3C1C643A23005E3093 /* libbitcoin.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbitcoin.a; path = Libraries/libbitcoin.a; sourceTree = SOURCE_ROOT; };
 		DA5E8E3D1C643A23005E3093 /* libboost_atomic.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_atomic.a; path = Libraries/libboost_atomic.a; sourceTree = SOURCE_ROOT; };
@@ -124,6 +124,8 @@
 		DA78DC3F1C828D3800F17F13 /* ABCCurrency.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCCurrency.m; path = Classes/Private/ABCCurrency.m; sourceTree = SOURCE_ROOT; };
 		DA78DC411C82A1E600F17F13 /* ABCCurrency+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ABCCurrency+Internal.h"; path = "Classes/Private/ABCCurrency+Internal.h"; sourceTree = SOURCE_ROOT; };
 		DA78DC431C82AF3B00F17F13 /* ABCDenomination.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCDenomination.m; path = Classes/Private/ABCDenomination.m; sourceTree = SOURCE_ROOT; };
+		DAAE6B161C8946CF0060A9F2 /* ABCMetaData+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ABCMetaData+Internal.h"; path = "Classes/Private/ABCMetaData+Internal.h"; sourceTree = SOURCE_ROOT; };
+		DAAE6B1B1C896FC90060A9F2 /* ABCTransaction+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ABCTransaction+Internal.h"; path = "Classes/Private/ABCTransaction+Internal.h"; sourceTree = SOURCE_ROOT; };
 		DAC0C6FE1C6AE15B006013A7 /* AirbitzCore+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "AirbitzCore+Internal.h"; path = "Classes/Private/AirbitzCore+Internal.h"; sourceTree = SOURCE_ROOT; };
 		DAC0C7081C6B0A21006013A7 /* ABCKeychain+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ABCKeychain+Internal.h"; path = "Classes/Private/ABCKeychain+Internal.h"; sourceTree = SOURCE_ROOT; };
 		DAC0C7091C6B0A21006013A7 /* ABCLocalSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCLocalSettings.h; path = Classes/Private/ABCLocalSettings.h; sourceTree = SOURCE_ROOT; };
@@ -187,7 +189,7 @@
 				DA5E8DDA1C633960005E3093 /* ABCReceiveAddress.h */,
 				DA5E8DDC1C633960005E3093 /* ABCSpend.h */,
 				DA5E8DDD1C633960005E3093 /* ABCTransaction.h */,
-				DA5E8DDE1C633960005E3093 /* ABCTxOutput.h */,
+				DA5E8DDE1C633960005E3093 /* ABCTxInOut.h */,
 				DA5E8DDF1C633960005E3093 /* ABCUtil.h */,
 				DA5E8DE01C633960005E3093 /* ABCWallet.h */,
 				DA5E8DE11C633960005E3093 /* AirbitzCore.h */,
@@ -208,11 +210,12 @@
 				DA252AC51C8269D0008F046A /* ABCExchangeCache+Internal.h */,
 				DAC0C7081C6B0A21006013A7 /* ABCKeychain+Internal.h */,
 				DAC0C7091C6B0A21006013A7 /* ABCLocalSettings.h */,
-				DACC23831C86C71800883540 /* ABCMetaData.m */,
+				DAAE6B161C8946CF0060A9F2 /* ABCMetaData+Internal.h */,
 				DAC0C70A1C6B0A21006013A7 /* ABCReceiveAddress+Internal.h */,
 				DAC0C70C1C6B0B97006013A7 /* ABCSettings+Internal.h */,
 				DAC0C70B1C6B0A21006013A7 /* ABCSpend+Internal.h */,
 				DA5E8D971C633950005E3093 /* ABCStrings.h */,
+				DAAE6B1B1C896FC90060A9F2 /* ABCTransaction+Internal.h */,
 				DAC0C70D1C6B0BEB006013A7 /* ABCWallet+Internal.h */,
 				DA2195271C6EA126009A2CF5 /* ABCAccount.m */,
 				DA78DC3F1C828D3800F17F13 /* ABCCurrency.m */,
@@ -222,12 +225,13 @@
 				DA252AC41C8269D0008F046A /* ABCExchangeCache.m */,
 				DA5E8D911C633950005E3093 /* ABCKeychain.m */,
 				DA5E8D931C633950005E3093 /* ABCLocalSettings.m */,
+				DACC23831C86C71800883540 /* ABCMetaData.m */,
 				DA5E8D941C633950005E3093 /* ABCReceiveAddress.m */,
 				DA5E8D951C633950005E3093 /* ABCSettings.m */,
 				DA5E8D961C633950005E3093 /* ABCSpend.m */,
 				DA5E8D981C633950005E3093 /* ABCStrings.m */,
 				DA5E8D991C633950005E3093 /* ABCTransaction.m */,
-				DA5E8D9A1C633950005E3093 /* ABCTxOutput.m */,
+				DA5E8D9A1C633950005E3093 /* ABCTxInOut.m */,
 				DA5E8D9B1C633950005E3093 /* ABCUtil.m */,
 				DA5E8D9C1C633950005E3093 /* ABCWallet.m */,
 				DA5E8D9D1C633950005E3093 /* AirbitzCore.m */,
@@ -364,7 +368,7 @@
 				DA5E8DC01C633950005E3093 /* ABCWallet.m in Sources */,
 				DA5E8DB81C633950005E3093 /* ABCLocalSettings.m in Sources */,
 				DA5E8DBD1C633950005E3093 /* ABCTransaction.m in Sources */,
-				DA5E8DBE1C633950005E3093 /* ABCTxOutput.m in Sources */,
+				DA5E8DBE1C633950005E3093 /* ABCTxInOut.m in Sources */,
 				DACC23841C86C71800883540 /* ABCMetaData.m in Sources */,
 				DA5E8DD81C633950005E3093 /* NSMutableData+Secure.m in Sources */,
 			);

@@ -19,7 +19,7 @@
 
 #pragma mark - NSObject overrides
 
-- (id)init
+- (id)initWithWallet:(ABCWallet *)wallet;
 {
     self = [super init];
     if (self) 
@@ -27,12 +27,13 @@
         self.metaData = [ABCMetaData alloc];
         self.txid = @"";
         self.date = [NSDate date];
-        self.outputs = [[NSArray alloc] init];
+        self.inputList = [[NSArray alloc] init];
+        self.outputList = [[NSArray alloc] init];
         self.metaData.payeeName = @"";
         self.metaData.category = @"";
         self.metaData.notes = @"";
         self.metaData.bizId = 0;
-        self.wallet = nil;
+        self.wallet = wallet;
         self.abcError = [[ABCError alloc] init];
     }
     return self;

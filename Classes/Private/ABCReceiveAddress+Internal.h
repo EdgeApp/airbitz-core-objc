@@ -12,4 +12,6 @@
 
 @property (atomic, strong) ABCWallet         *wallet;
 
+- (NSError *)createAddress;
+
 @end

@@ -130,91 +130,36 @@ static const int importTimeout                  = 30;
      }];
 }
 
-
-- (NSError *)createReceiveAddressWithDetails:(ABCReceiveAddress *)request;
+- (ABCReceiveAddress *)createNewReceiveAddress;
 {
-    tABC_Error error;
-    tABC_TxDetails details;
-    NSError *nserror = nil;
-    unsigned char *pData = NULL;
-    char *szRequestAddress = NULL;
-    char *pszURI = NULL;
-    
-    //first need to create a transaction details struct
-    memset(&details, 0, sizeof(tABC_TxDetails));
-    
-    details.amountSatoshi = request.amountSatoshi;
-    details.szName = (char *) [request.metaData.payeeName UTF8String];
-    details.szCategory = (char *) [request.metaData.category UTF8String];
-    details.szNotes = (char *) [request.metaData.notes UTF8String];
-    details.bizId = request.metaData.bizId;
-    details.attributes = 0x0; //for our own use (not used by the core)
-    
-    //the true fee values will be set by the core
-    details.amountFeesAirbitzSatoshi = 0;
-    details.amountFeesMinersSatoshi = 0;
-    details.amountCurrency = 0;
-    
-    char *pRequestID = nil;
-    request.wallet = self;
-    
-    // create the request
-    ABC_CreateReceiveRequest([self.account.name UTF8String],
-                             [self.account.password UTF8String],
-                             [request.wallet.uuid UTF8String],
-                             &pRequestID,
-                             &error);
-    nserror = [ABCError makeNSError:error];
-    if (nserror) goto exitnow;
+    return [self createNewReceiveAddress:nil];
+}
+- (ABCReceiveAddress *)createNewReceiveAddress:(NSError **)nserror;
+{
+    ABCReceiveAddress *receiveAddress = [[ABCReceiveAddress alloc] initWithWallet:self];
 
-    request.address = [NSString stringWithUTF8String:pRequestID];
-    
-    ABC_ModifyReceiveRequest([self.account.name UTF8String],
-                             [self.account.password UTF8String],
-                             [request.wallet.uuid UTF8String],
-                             pRequestID,
-                             &details,
-                             &error);
-    nserror = [ABCError makeNSError:error];
-    if (nserror) goto exitnow;
-    
-    unsigned int width = 0;
-    ABC_GenerateRequestQRCode([self.account.name UTF8String],
-                              [self.account.password UTF8String],
-                              [request.wallet.uuid UTF8String],
-                              pRequestID,
-                              &pszURI,
-                              &pData,
-                              &width,
-                              &error);
-    nserror = [ABCError makeNSError:error];
-    if (nserror) goto exitnow;
+    NSError *error = [receiveAddress createAddress];
 
-    request.qrCode = [ABCUtil dataToImage:pData withWidth:width andHeight:width];
-    request.uri    = [NSString stringWithUTF8String:pszURI];
-    
-exitnow:
-    
-    if (pRequestID) free(pRequestID);
-    if (szRequestAddress) free(szRequestAddress);
-    if (pData) free(pData);
-    if (pszURI) free(pszURI);
-    
-    return nserror;
+    if (nserror)
+        *nserror = error;
+
+    return receiveAddress;
+
 }
 
-- (void)createReceiveAddressWithDetails:(ABCReceiveAddress *)request
-                               complete:(void (^)(void))completionHandler
-                                  error:(void (^)(NSError *error)) errorHandler
+- (void)createNewReceiveAddress:(void (^)(ABCReceiveAddress *))completionHandler
+                          error:(void (^)(NSError *error)) errorHandler
 {
     [self.account postToGenQRQueue:^(void)
      {
-         NSError *error = [self createReceiveAddressWithDetails:request];
+         NSError *error = nil;
+         ABCReceiveAddress *receiveAddress = [self createNewReceiveAddress:&error];
+
          dispatch_async(dispatch_get_main_queue(), ^(void)
                         {
                             if (!error)
                             {
-                                if (completionHandler) completionHandler();
+                                if (completionHandler) completionHandler(receiveAddress);
                             }
                             else
                             {
@@ -224,6 +169,20 @@ exitnow:
          
      }];
 }
+
+- (ABCReceiveAddress *)getReceiveAddress:(NSString *)address;
+{
+    return [self getReceiveAddress:address error:nil];
+}
+- (ABCReceiveAddress *)getReceiveAddress:(NSString *)address error:(NSError **)nserror;
+{
+    ABCReceiveAddress *receiveAddress = [[ABCReceiveAddress alloc] initWithWallet:self];
+
+    receiveAddress.address = address;
+
+    return receiveAddress;
+}
+
 
 - (ABCSpend *)newSpendFromText:(NSString *)uri error:(NSError *__autoreleasing *)nserror;
 {
@@ -460,29 +419,14 @@ exitnow:
     return nserror;
 }
 
-- (NSError *)finalizeRequestWithAddress:(NSString *)address;
+- (void)deprioritizeAllAddresses;
 {
-    tABC_Error error;
-    ABC_FinalizeReceiveRequest([self.account.name UTF8String],
-                               [self.account.password UTF8String],
-                               [self.uuid UTF8String],
-                               [address UTF8String],
-                               &error);
-    return [ABCError makeNSError:error];
-}
-
-/// XXX move to ABCAddress object
-- (void)prioritizeAddress:(NSString *)address;
-{
-    if (!address)
-        return;
-    
     [self.account postToWatcherQueue:^{
         tABC_Error Error;
         ABC_PrioritizeAddress([self.account.name UTF8String],
                               [self.account.password UTF8String],
                               [self.uuid UTF8String],
-                              [address UTF8String],
+                              NULL,
                               &Error);
     }];
 }
@@ -499,7 +443,7 @@ exitnow:
                                         &pTrans, &Error);
     if (ABC_CC_Ok == result)
     {
-        transaction = [[ABCTransaction alloc] init];
+        transaction = [[ABCTransaction alloc] initWithWallet:self];
         [self setTransaction:transaction coreTx:pTrans];
     }
     else
@@ -551,7 +495,7 @@ exitnow:
         for (int j = tCount - 1; j >= 0; --j)
         {
             tABC_TxInfo *pTrans = aTransactions[j];
-            transaction = [[ABCTransaction alloc] init];
+            transaction = [[ABCTransaction alloc] initWithWallet:self];
             [self setTransaction:transaction coreTx:pTrans];
             [arrayTransactions addObject:transaction];
         }
@@ -581,9 +525,8 @@ exitnow:
     transaction.date = [self.account.abc dateFromTimestamp: pTrans->timeCreation];
     transaction.amountSatoshi = pTrans->pDetails->amountSatoshi;
     transaction.metaData.amountFiat = pTrans->pDetails->amountCurrency;
-    transaction.abFees = pTrans->pDetails->amountFeesAirbitzSatoshi;
+    transaction.providerFee = pTrans->pDetails->amountFeesAirbitzSatoshi;
     transaction.minerFees = pTrans->pDetails->amountFeesMinersSatoshi;
-    transaction.wallet = self;
     if (pTrans->szMalleableTxId) {
         transaction.malleableTxid = [NSString stringWithUTF8String: pTrans->szMalleableTxId];
     }
@@ -595,14 +538,14 @@ exitnow:
     NSMutableArray *outputs = [[NSMutableArray alloc] init];
     for (int i = 0; i < pTrans->countOutputs; ++i)
     {
-        ABCTxOutput *output = [[ABCTxOutput alloc] init];
-        output.strAddress = [NSString stringWithUTF8String: pTrans->aOutputs[i]->szAddress];
-        output.bInput = pTrans->aOutputs[i]->input;
-        output.value = pTrans->aOutputs[i]->value;
+        ABCTxInOut *output = [[ABCTxInOut alloc] init];
+        output.address = [NSString stringWithUTF8String: pTrans->aOutputs[i]->szAddress];
+        output.isInput = pTrans->aOutputs[i]->input;
+        output.amountSatoshi = pTrans->aOutputs[i]->value;
         
         [outputs addObject:output];
     }
-    transaction.outputs = outputs;
+    transaction.outputList = outputs;
     transaction.metaData.bizId = pTrans->pDetails->bizId;
 }
 
@@ -656,7 +599,7 @@ exitnow:
     {
         for (int j = tCount - 1; j >= 0; --j) {
             tABC_TxInfo *pTrans = aTransactions[j];
-            transaction = [[ABCTransaction alloc] init];
+            transaction = [[ABCTransaction alloc] initWithWallet:self];
             [self setTransaction:transaction coreTx:pTrans];
             [arrayTransactions addObject:transaction];
         }

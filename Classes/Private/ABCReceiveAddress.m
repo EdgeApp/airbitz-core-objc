@@ -6,39 +6,176 @@
 #import "ABCReceiveAddress+Internal.h"
 #import "AirbitzCore+Internal.h"
 
-@interface ABCReceiveAddress ()
+@interface ABCReceiveAddress () <ABCMetaDataDelegate>
 {
 
 }
-@property (nonatomic, strong) ABCError          *abcError;
-@property (nonatomic, strong) ABCAccount        *account; // pointer to ABCAccount object that created request
-@property (nonatomic, strong) ABCWallet         *wallet;
+@property (nonatomic, strong)   ABCWallet       *wallet;
+@property                       BOOL            requestChanged;
 
 @end
 
 @implementation ABCReceiveAddress
-- (id)init;
+- (id)initWithWallet:(ABCWallet *)wallet;
 {
     self = [super init];
-    self.abcError = [[ABCError alloc] init];
     self.metaData = [ABCMetaData alloc];
+    self.metaData.delegate = self;
+    self.wallet = wallet;
+
     return self;
 }
+
+- (NSError *)createAddress;
+{
+    tABC_Error error;
+    NSError *lnserror = nil;
+
+    char *pRequestID = nil;
+
+    // create the request
+    ABC_CreateReceiveRequest([self.wallet.account.name UTF8String],
+            [self.wallet.account.password UTF8String],
+            [self.wallet.uuid UTF8String],
+            &pRequestID,
+            &error);
+    lnserror = [ABCError makeNSError:error];
+    if (lnserror) goto exitnow;
+    self.address = [NSString stringWithUTF8String:pRequestID];
+
+    exitnow:
+
+    if (pRequestID) free(pRequestID);
+
+    return lnserror;
+
+}
+
+- (NSString *)address;
+{
+    if (_requestChanged)
+        [self modifyReceiveAddress];
+    return _address;
+}
+
+- (UIImage *)qrCode
+{
+    if (_requestChanged)
+        [self modifyReceiveAddress];
+    return _qrCode;
+}
+
+- (NSString *)uri;
+{
+    if (_requestChanged)
+        [self modifyReceiveAddress];
+    return _uri;
+}
+
+- (void)abcMetaDataChanged
+{
+    _requestChanged = YES;
+}
+
+- (void)setAmountSatoshi:(int64_t)amountSatoshi
+{
+    _amountSatoshi = amountSatoshi;
+    _requestChanged = YES;
+}
+
+- (void)modifyReceiveAddress;
+{
+    tABC_Error error;
+    tABC_TxDetails details;
+    NSError *lnserror = nil;
+    unsigned char *pData = NULL;
+    char *pszURI = NULL;
+
+    //first need to create a transaction details struct
+    memset(&details, 0, sizeof(tABC_TxDetails));
+
+    details.amountSatoshi = _amountSatoshi;
+    details.szName = (char *) [_metaData.payeeName UTF8String];
+    details.szCategory = (char *) [_metaData.category UTF8String];
+    details.szNotes = (char *) [_metaData.notes UTF8String];
+    details.bizId = _metaData.bizId;
+    details.attributes = 0x0; //for our own use (not used by the core)
+
+    //the true fee values will be set by the core
+    details.amountFeesAirbitzSatoshi = 0;
+    details.amountFeesMinersSatoshi = 0;
+    details.amountCurrency = 0;
+
+    ABC_ModifyReceiveRequest([self.wallet.account.name UTF8String],
+            [_wallet.account.password UTF8String],
+            [_wallet.uuid UTF8String],
+            [_address UTF8String],
+            &details,
+            &error);
+    lnserror = [ABCError makeNSError:error];
+    if (lnserror) goto exitnow;
+
+    unsigned int width = 0;
+    ABC_GenerateRequestQRCode([self.wallet.account.name UTF8String],
+            [_wallet.account.password UTF8String],
+            [_wallet.uuid UTF8String],
+            [_address UTF8String],
+            &pszURI,
+            &pData,
+            &width,
+            &error);
+    lnserror = [ABCError makeNSError:error];
+    if (lnserror) goto exitnow;
+
+    _qrCode = [ABCUtil dataToImage:pData withWidth:width andHeight:width];
+    _uri    = [NSString stringWithUTF8String:pszURI];
+
+    exitnow:
+    if (pData) free(pData);
+    if (pszURI) free(pszURI);
+
+    if (lnserror)
+    {
+        _qrCode = nil;
+        _uri = nil;
+    }
+    
+    _requestChanged = NO;
+
+}
+
 
 - (NSError *)finalizeRequest
 {
     tABC_Error error;
     
-    if (!self.wallet || !self.account || !self.address)
+    if (!self.wallet || !self.wallet.account || !self.address)
     {
         error.code = ABC_CC_NULLPtr;
         return [ABCError makeNSError:error];
     }
     // Finalize this request so it isn't used elsewhere
-    ABC_FinalizeReceiveRequest([self.account.name UTF8String],
-            [self.account.password UTF8String], [self.wallet.uuid UTF8String],
+    ABC_FinalizeReceiveRequest([self.wallet.account.name UTF8String],
+            [self.wallet.account.password UTF8String], [self.wallet.uuid UTF8String],
             [self.address UTF8String], &error);
     return [ABCError makeNSError:error];
+}
+
+- (void)prioritizeAddress:(BOOL)enable;
+{
+    NSString *address = nil;
+
+    if (enable)
+        address = self.address;
+
+    [self.wallet.account postToWatcherQueue:^{
+        tABC_Error error;
+        ABC_PrioritizeAddress([self.wallet.account.name UTF8String],
+                [self.wallet.account.password UTF8String],
+                [self.wallet.uuid UTF8String],
+                [address UTF8String],
+                &error);
+    }];
 }
 
 - (NSError *)modifyRequestWithDetails;

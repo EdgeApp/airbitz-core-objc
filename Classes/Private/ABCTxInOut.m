@@ -1,18 +1,18 @@
 //
-//  ABCTxOutput.m
+//  ABCTxInOut.m
 //  AirBitz
 //
 //  Created by Timbo on 6/17/14.
 //  Copyright (c) 2014 AirBitz. All rights reserved.
 //
 
-#import "ABCTxOutput.h"
+#import "ABCTxInOut.h"
 #import "AirbitzCore+Internal.h"
 
-@interface ABCTxOutput ()
+@interface ABCTxInOut ()
 @end
 
-@implementation ABCTxOutput
+@implementation ABCTxInOut
 
 #pragma mark - NSObject overrides
 
@@ -21,9 +21,9 @@
     self = [super init];
     if (self) 
     {
-        self.strAddress = @"";
-        self.bInput = false;
-        self.value = 0;
+        self.address = @"";
+        self.isInput = false;
+        self.amountSatoshi = 0;
     }
     return self;
 }

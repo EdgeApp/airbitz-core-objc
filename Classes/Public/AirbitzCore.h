@@ -17,7 +17,7 @@
 #import "ABCSettings.h"
 #import "ABCSpend.h"
 #import "ABCTransaction.h"
-#import "ABCTxOutput.h"
+#import "ABCTxInOut.h"
 #import "ABCUtil.h"
 #import "ABCWallet.h"
 
@@ -66,7 +66,7 @@
             request.notes         = @"Rent payment for Jan 2016";
             request.amountSatoshi = 12345000;
 
-            [wallet createReceiveAddressWithDetails:request];
+            [wallet createNewReceiveAddress:request];
 
             // Use the request results
             NSString *bitcoinAddress = request.address;

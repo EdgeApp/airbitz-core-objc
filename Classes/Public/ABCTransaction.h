@@ -23,9 +23,10 @@
 @property (nonatomic, assign)   int             confirmations;
 @property (nonatomic, assign)   SInt64			amountSatoshi;
 @property (nonatomic, assign)   SInt64			minerFees;
-@property (nonatomic, assign)   SInt64			abFees;
+@property (nonatomic, assign)   SInt64          providerFee;
 @property (nonatomic, assign)   SInt64          balance;
-@property (nonatomic, strong)   NSArray         *outputs;
+@property (nonatomic, strong)   NSArray         *outputList;
+@property (nonatomic, strong)   NSArray         *inputList;
 
 - (void)saveTransactionDetails;
 
