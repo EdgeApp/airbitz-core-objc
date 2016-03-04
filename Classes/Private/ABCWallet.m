@@ -131,7 +131,7 @@ static const int importTimeout                  = 30;
 }
 
 
-- (NSError *)createReceiveRequestWithDetails:(ABCRequest *)request;
+- (NSError *)createReceiveAddressWithDetails:(ABCReceiveAddress *)request;
 {
     tABC_Error error;
     tABC_TxDetails details;
@@ -203,13 +203,13 @@ exitnow:
     return nserror;
 }
 
-- (void)createReceiveRequestWithDetails:(ABCRequest *)request
-                               complete:(void (^)(void)) completionHandler
+- (void)createReceiveAddressWithDetails:(ABCReceiveAddress *)request
+                               complete:(void (^)(void))completionHandler
                                   error:(void (^)(NSError *error)) errorHandler
 {
     [self.account postToGenQRQueue:^(void)
      {
-         NSError *error = [self createReceiveRequestWithDetails:request];
+         NSError *error = [self createReceiveAddressWithDetails:request];
          dispatch_async(dispatch_get_main_queue(), ^(void)
                         {
                             if (!error)

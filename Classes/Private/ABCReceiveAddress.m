@@ -3,10 +3,10 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import "ABCRequest+Internal.h"
+#import "ABCReceiveAddress+Internal.h"
 #import "AirbitzCore+Internal.h"
 
-@interface ABCRequest ()
+@interface ABCReceiveAddress ()
 {
 
 }
@@ -16,7 +16,7 @@
 
 @end
 
-@implementation ABCRequest
+@implementation ABCReceiveAddress
 - (id)init;
 {
     self = [super init];

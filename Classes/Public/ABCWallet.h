@@ -16,7 +16,7 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 };
 
 @class ABCAccount;
-@class ABCRequest;
+@class ABCReceiveAddress;
 @class AirbitzCore;
 @class ABCSpend;
 @class ABCTransaction;
@@ -57,18 +57,18 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 
 
 /** Create a receive request from the current wallet. User should pass in an allocated
- * ABCRequest object with optional values set for amountSatoshi, payee, category, notes, or bizID.
+ * ABCReceiveAddress object with optional values set for amountSatoshi, payee, category, notes, or bizID.
  * The object will have a uri, address, and QRcode UIImage filled in when method completes
- * @param request ABCRequest*
+ * @param request ABCReceiveAddress*
  * @param completionHandler Completion handler code block which is called with void. (Optional. If used, method
  * returns immediately with void)
  * @param errorHandler Error handler code block which is called with the following args<br>
  * - *param* NSError* error object
  * @return NSError* or nil if no error. Returns void if completion handlers are used.
  */
-- (NSError *)createReceiveRequestWithDetails:(ABCRequest *)request;
-- (void)createReceiveRequestWithDetails:(ABCRequest *)request
-                               complete:(void (^)(void)) completionHandler
+- (NSError *)createReceiveAddressWithDetails:(ABCReceiveAddress *)request;
+- (void)createReceiveAddressWithDetails:(ABCReceiveAddress *)request
+                               complete:(void (^)(void))completionHandler
                                   error:(void (^)(NSError *error)) errorHandler;
 
 /**

@@ -13,7 +13,7 @@
 @class ABCExchangeCache;
 @class ABCSpend;
 @class ABCSettings;
-@class ABCRequest;
+@class ABCReceiveAddress;
 @class ABCTransaction;
 @class ABCWallet;
 

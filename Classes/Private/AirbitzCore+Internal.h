@@ -14,7 +14,7 @@
 #import "ABCExchangeCache+Internal.h"
 #import "ABCKeychain+Internal.h"
 #import "ABCLocalSettings.h"
-#import "ABCRequest+Internal.h"
+#import "ABCReceiveAddress+Internal.h"
 #import "ABCSettings+Internal.h"
 #import "ABCSpend+Internal.h"
 #import "ABCStrings.h"

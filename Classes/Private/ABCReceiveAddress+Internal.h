@@ -1,14 +1,14 @@
 //
-// ABCRequest+Internal.h
+// ABCReceiveAddress+Internal.h
 //
 // Created by Paul P on 2016/02/09.
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import "ABCRequest.h"
+#import "ABCReceiveAddress.h"
 #import "AirbitzCore+Internal.h"
 
-@interface ABCRequest (Internal)
+@interface ABCReceiveAddress (Internal)
 
 @property (atomic, strong) ABCWallet         *wallet;
 

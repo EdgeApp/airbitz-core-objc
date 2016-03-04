@@ -16,8 +16,8 @@
 /// transactions details of incoming transaction to be automatically tagged
 /// with the information from this object.
 
-@interface ABCRequest : NSObject
-/// @name The following properties are passed into ABCRequest as details for the request
+@interface ABCReceiveAddress : NSObject
+/// @name The following properties are passed into ABCReceiveAddress as details for the request
 
 /// Amount of satoshis to add to request. Optional
 @property (nonatomic)               int64_t                 amountSatoshi;
@@ -51,7 +51,7 @@
 - (NSError *)finalizeRequest;
 
 /**
- * Modify a request based on the values in the ABCRequest structure
+ * Modify a request based on the values in the ABCReceiveAddress structure
  * @return NSError*
  */
 - (NSError *)modifyRequestWithDetails;

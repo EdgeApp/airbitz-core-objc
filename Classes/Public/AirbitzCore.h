@@ -13,7 +13,7 @@
 #import "ABCExchangeCache.h"
 #import "ABCKeychain.h"
 #import "ABCMetaData.h"
-#import "ABCRequest.h"
+#import "ABCReceiveAddress.h"
 #import "ABCSettings.h"
 #import "ABCSpend.h"
 #import "ABCTransaction.h"
@@ -58,7 +58,7 @@
             ABCWallet *wallet = abcAccount.arrayWallets[0];
 
             // Create a bitcoin request
-            ABCRequest *request = [[ABCRequest alloc] init];
+            ABCReceiveAddress *request = [[ABCReceiveAddress alloc] init];
 
             // Put in some optional meta data into this request so incoming funds are automatically tagged
             request.payeeName     = @"William Swanson"; // Name of the person receiving request
@@ -66,7 +66,7 @@
             request.notes         = @"Rent payment for Jan 2016";
             request.amountSatoshi = 12345000;
 
-            [wallet createReceiveRequestWithDetails:request];
+            [wallet createReceiveAddressWithDetails:request];
 
             // Use the request results
             NSString *bitcoinAddress = request.address;
@@ -109,15 +109,35 @@ typedef enum eABCDeviceCaps
 
 @class ABCSpend;
 @class ABCSettings;
-@class ABCRequest;
+@class ABCReceiveAddress;
 @class ABCAccount;
 
+
+/// -----------------------------------------------------------------------------
+/// @name ABCPasswordRuleResult struct/object
+/// -----------------------------------------------------------------------------
+
+/// Object returned by checkPasswordRules to determine if password meets the minimum
+/// entropy requirements
 @interface ABCPasswordRuleResult : NSObject
+
+/// Estimated number of seconds to crack encryption based on this password on a
+/// current desktop computer
 @property       double      secondsToCrack;
+
+/// Password does not meet minimum lenght requrements (10 characters)
 @property       BOOL        tooShort;
+
+/// Password must have at least one number
 @property       BOOL        noNumber;
+
+/// Password must have an upper case letter
 @property       BOOL        noUpperCase;
+
+/// Password must have a lower case letter
 @property       BOOL        noLowerCase;
+
+/// Password has passed all the tests
 @property       BOOL        passed;
 @end
 
@@ -549,20 +569,7 @@ typedef enum eABCDeviceCaps
  */
 + (UIImage *)encodeStringToQRImage:(NSString *)string error:(NSError **)error;
 
-///**
-// * Given a currency code, returns the 3 digit currency code. ie. "USD, CAD, EUR"
-// * @param currencyNum int - ISO currency num to lookup
-// * @return NSString* 3 digit ISO currency code
-// */
-//- (NSString *)currencyAbbrevLookup:(int)currencyNum;
-//
-///**
-// * Given a currency code, returns the currency symbol. ie "$"
-// * @param currencyNum int - ISO currency num to lookup
-// * @return NSString* symbol
-// */
-//- (NSString *)currencySymbolLookup:(int)currencyNum;
-//
+
 /// ------------------------------------------------------------------
 /// @name Class methods to retrieve constant parameters from ABC
 /// ------------------------------------------------------------------

@@ -10,7 +10,7 @@
 @class AirbitzCore;
 @class ABCSpend;
 @class ABCSettings;
-@class ABCRequest;
+@class ABCReceiveAddress;
 @class ABCTransaction;
 
 #define ABCArrayExchanges     @[@"Bitstamp", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
