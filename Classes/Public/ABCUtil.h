@@ -29,12 +29,15 @@
 /**
  * Encodes a string into a QR code returned as UIImage *
  * @param string NSString* string to encode
+ * @param error NSError** May be set to nil
  * @return UIImage* returned image
  */
 + (UIImage *)encodeStringToQRImage:(NSString *)string error:(NSError **)error;
 
 + (NSString *)platform;
 + (NSString *)platformString;
+
+
 + (NSString *)safeStringWithUTF8String:(const char *)bytes;
 + (void)replaceString:(char **)ppszValue withString:(const char *)szNewValue;
 + (void)freeStringArray:(char **)aszStrings count:(unsigned int)count;

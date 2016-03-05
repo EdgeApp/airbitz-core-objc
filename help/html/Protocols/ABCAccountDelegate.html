@@ -60,11 +60,11 @@
 		
 		<option value="//api/name/abcAccountAccountChanged">- abcAccountAccountChanged</option>
 		
-		<option value="//api/name/abcAccountBalanceUpdate:txid:">- abcAccountBalanceUpdate:txid:</option>
+		<option value="//api/name/abcAccountBalanceUpdate:transaction:">- abcAccountBalanceUpdate:transaction:</option>
 		
 		<option value="//api/name/abcAccountBlockHeightChanged">- abcAccountBlockHeightChanged</option>
 		
-		<option value="//api/name/abcAccountIncomingBitcoin:txid:">- abcAccountIncomingBitcoin:txid:</option>
+		<option value="//api/name/abcAccountIncomingBitcoin:transaction:">- abcAccountIncomingBitcoin:transaction:</option>
 		
 		<option value="//api/name/abcAccountLoggedOut:">- abcAccountLoggedOut:</option>
 		
@@ -189,9 +189,21 @@ Also called under some error conditions such as corrupt local data.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)abcAccountLoggedOut:(ABCAccount *)<em>user</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountLoggedOut:(ABCAccount *)<em>account</em></code></div>
 
 		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>account</code></th>
+						<td><p>ABCAccount* account that has been logged out</p></td>
+					</tr>
+				
+				</table>
+			</div>
 			
 
 			
@@ -285,6 +297,18 @@ Also called under some error conditions such as corrupt local data.</p>
 			<div class="method-subsection method-declaration"><code>- (void)abcAccountWalletChanged:(ABCWallet *)<em>wallet</em></code></div>
 
 		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>wallet</code></th>
+						<td><p>ABCWallet*</p></td>
+					</tr>
+				
+				</table>
+			</div>
 			
 
 			
@@ -592,8 +616,8 @@ device or user&rsquo;s time clock is skewed.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/abcAccountBalanceUpdate:txid:" title="abcAccountBalanceUpdate:txid:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/abcAccountBalanceUpdate:txid:">&ndash;&nbsp;abcAccountBalanceUpdate:txid:</a></code>
+	<a name="//api/name/abcAccountBalanceUpdate:transaction:" title="abcAccountBalanceUpdate:transaction:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountBalanceUpdate:transaction:">&ndash;&nbsp;abcAccountBalanceUpdate:transaction:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -610,9 +634,26 @@ abcAccountIncomingBitcoin. The second device will see abcAccountBalanceUpdate</p
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)abcAccountBalanceUpdate:(ABCWallet *)<em>wallet</em> txid:(NSString *)<em>txid</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountBalanceUpdate:(ABCWallet *)<em>wallet</em> transaction:(ABCTransaction *)<em>transaction</em></code></div>
 
 		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>wallet</code></th>
+						<td><p>ABCWallet* The wallet whose balance was updated</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>transaction</code></th>
+						<td><p>ABCWallet* The transaction which caused the balance change</p></td>
+					</tr>
+				
+				</table>
+			</div>
 			
 
 			
@@ -642,8 +683,8 @@ abcAccountIncomingBitcoin. The second device will see abcAccountBalanceUpdate</p
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/abcAccountIncomingBitcoin:txid:" title="abcAccountIncomingBitcoin:txid:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/abcAccountIncomingBitcoin:txid:">&ndash;&nbsp;abcAccountIncomingBitcoin:txid:</a></code>
+	<a name="//api/name/abcAccountIncomingBitcoin:transaction:" title="abcAccountIncomingBitcoin:transaction:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountIncomingBitcoin:transaction:">&ndash;&nbsp;abcAccountIncomingBitcoin:transaction:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -653,14 +694,32 @@ abcAccountIncomingBitcoin. The second device will see abcAccountBalanceUpdate</p
 			
 			
 			<div class="method-subsection brief-description">
-				<p>The specified wallet has just received a new transaction with given txid.</p>
+				<p>The specified wallet has just received a new incoming funds transaction which has not yet
+been seen by other devices with this account.</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)abcAccountIncomingBitcoin:(ABCWallet *)<em>wallet</em> txid:(NSString *)<em>txid</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountIncomingBitcoin:(ABCWallet *)<em>wallet</em> transaction:(ABCTransaction *)<em>transaction</em></code></div>
 
 		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>wallet</code></th>
+						<td><p>ABCWallet* The wallet whose balance was updated</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>transaction</code></th>
+						<td><p>ABCWallet* The transaction which caused the incoming coin.</p></td>
+					</tr>
+				
+				</table>
+			</div>
 			
 
 			
@@ -670,7 +729,8 @@ abcAccountIncomingBitcoin. The second device will see abcAccountBalanceUpdate</p
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>The specified wallet has just received a new transaction with given txid.</p>
+				<p>The specified wallet has just received a new incoming funds transaction which has not yet
+been seen by other devices with this account.</p>
 			</div>
 			
 
@@ -702,7 +762,7 @@ abcAccountIncomingBitcoin. The second device will see abcAccountBalanceUpdate</p
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-02-29</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-05</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

@@ -35,8 +35,8 @@
 
 /**
  * Convert fiat currency amount to a bitcoin amount in satoshis
- * @param double Amount in fiat value to convert
- * @param currencyCode NSSTring* ISO currency code of fiat currency to convert to. 
+ * @param currency (double) Amount in fiat value to convert
+ * @param currencyCode NSString* ISO currency code of fiat currency to convert to.
  * ie "USD, CAD, EUR"
  * @param error NSError** pointer to NSError object
  * @return uint_64t Resulting value in satoshis

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 
-	<title>ABCRequest Class Reference</title>
+	<title>ABCReceiveAddress Class Reference</title>
 
 	<link rel="stylesheet" href="../css/style.css">
 	<meta name="viewport" content="initial-scale=1, maximum-scale=1.4">
@@ -60,13 +60,7 @@
 		
 		<option value="//api/name/amountSatoshi">amountSatoshi</option>
 		
-		<option value="//api/name/bizId">bizId</option>
-		
-		<option value="//api/name/category">category</option>
-		
-		<option value="//api/name/notes">notes</option>
-		
-		<option value="//api/name/payeeName">payeeName</option>
+		<option value="//api/name/metaData">metaData</option>
 		
 		<option value="//api/name/qrCode">qrCode</option>
 		
@@ -99,7 +93,7 @@
 		<div id="overview_contents" class="container">
 			<div id="content">
 				<main role="main">
-					<h1 class="title">ABCRequest Class Reference</h1>
+					<h1 class="title">ABCReceiveAddress Class Reference</h1>
 
 					
 					<div class="section section-specification"><table cellspacing="0"><tbody>
@@ -108,7 +102,7 @@
 	<td>NSObject</td>
 </tr><tr>
 	<th>Declared in</th>
-	<td>ABCRequest.h</td>
+	<td>ABCReceiveAddress.h</td>
 </tr>
 						</tbody></table></div>
 					
@@ -119,7 +113,7 @@
 						<a title="Overview" name="overview"></a>
 						<h2 class="subtitle subtitle-overview">Overview</h2>
 						<p>Object used to pass in <a href="#//api/name/address">address</a> request details
-Optional fields <a href="#//api/name/payeeName">payeeName</a>, <a href="#//api/name/category">category</a>, <a href="#//api/name/notes">notes</a>, and <a href="#//api/name/bizId">bizId</a> will cause
+Optional fields payeeName, category, notes, and bizId will cause
 transactions details of incoming transaction to be automatically tagged
 with the information from this object.</p>
 					</div>
@@ -132,8 +126,8 @@ with the information from this object.</p>
 						<a title="Tasks" name="tasks"></a>
 						
 
-						<a title="The following properties are passed into ABCRequest as details for the request" name="task_The following properties are passed into ABCRequest as details for the request"></a>
-						<h2 class="task-title">The following properties are passed into ABCRequest as details for the request</h2>
+						<a title="The following properties are passed into ABCReceiveAddress as details for the request" name="task_The following properties are passed into ABCReceiveAddress as details for the request"></a>
+						<h2 class="task-title">The following properties are passed into ABCReceiveAddress as details for the request</h2>
 
 						<div class="task-list">
 							<div class="section-method">
@@ -176,15 +170,15 @@ with the information from this object.</p>
 			
 			<div class="method-subsection declared-in-section">
 				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCRequest.h</code></p>
+				<p><code class="declared-in-ref">ABCReceiveAddress.h</code></p>
 			</div>
 			
 			
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/payeeName" title="payeeName"></a>
-	<h3 class="method-title"><code><a href="#//api/name/payeeName">&nbsp;&nbsp;payeeName</a></code>
+	<a name="//api/name/metaData" title="metaData"></a>
+	<h3 class="method-title"><code><a href="#//api/name/metaData">&nbsp;&nbsp;metaData</a></code>
 </h3>
 
 	<div class="method-info">
@@ -194,14 +188,13 @@ with the information from this object.</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Payee name to specify in the request. This should be the name of the entity intended to
-pay the request. This is auto tagged to transaction meta data for all incoming
-transactions to the <a href="#//api/name/address">address</a> from this request</p>
+				<p>Optional meta to add to this request. Once money is received into this request
+<a href="#//api/name/address">address</a>, the transaction will be tagged with this metadata</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>@property (nonatomic, copy) NSString *payeeName</code></div>
+			<div class="method-subsection method-declaration"><code>@property (nonatomic, strong) ABCMetaData *metaData</code></div>
 
 		    
 			
@@ -213,9 +206,8 @@ transactions to the <a href="#//api/name/address">address</a> from this request<
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Payee name to specify in the request. This should be the name of the entity intended to
-pay the request. This is auto tagged to transaction meta data for all incoming
-transactions to the <a href="#//api/name/address">address</a> from this request</p>
+				<p>Optional meta to add to this request. Once money is received into this request
+<a href="#//api/name/address">address</a>, the transaction will be tagged with this metadata</p>
 			</div>
 			
 
@@ -226,145 +218,7 @@ transactions to the <a href="#//api/name/address">address</a> from this request<
 			
 			<div class="method-subsection declared-in-section">
 				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCRequest.h</code></p>
-			</div>
-			
-			
-		</div>
-	</div>
-</div><div class="section-method">
-	<a name="//api/name/category" title="category"></a>
-	<h3 class="method-title"><code><a href="#//api/name/category">&nbsp;&nbsp;category</a></code>
-</h3>
-
-	<div class="method-info">
-		<div class="pointy-thing"></div>
-
-		<div class="method-info-container">
-			
-			
-			<div class="method-subsection brief-description">
-				<p>The category to tag all transactions incoming to this request&rsquo;s <a href="#//api/name/address">address</a></p>
-			</div>
-			
-		    
-
-			<div class="method-subsection method-declaration"><code>@property (nonatomic, copy) NSString *category</code></div>
-
-		    
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection discussion-section">
-				<h4 class="method-subtitle">Discussion</h4>
-				<p>The category to tag all transactions incoming to this request&rsquo;s <a href="#//api/name/address">address</a></p>
-			</div>
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection declared-in-section">
-				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCRequest.h</code></p>
-			</div>
-			
-			
-		</div>
-	</div>
-</div><div class="section-method">
-	<a name="//api/name/notes" title="notes"></a>
-	<h3 class="method-title"><code><a href="#//api/name/notes">&nbsp;&nbsp;notes</a></code>
-</h3>
-
-	<div class="method-info">
-		<div class="pointy-thing"></div>
-
-		<div class="method-info-container">
-			
-			
-			<div class="method-subsection brief-description">
-				<p>Misc notes to tag all transactions incoming to this request&rsquo;s <a href="#//api/name/address">address</a></p>
-			</div>
-			
-		    
-
-			<div class="method-subsection method-declaration"><code>@property (nonatomic, copy) NSString *notes</code></div>
-
-		    
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection discussion-section">
-				<h4 class="method-subtitle">Discussion</h4>
-				<p>Misc notes to tag all transactions incoming to this request&rsquo;s <a href="#//api/name/address">address</a></p>
-			</div>
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection declared-in-section">
-				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCRequest.h</code></p>
-			</div>
-			
-			
-		</div>
-	</div>
-</div><div class="section-method">
-	<a name="//api/name/bizId" title="bizId"></a>
-	<h3 class="method-title"><code><a href="#//api/name/bizId">&nbsp;&nbsp;bizId</a></code>
-</h3>
-
-	<div class="method-info">
-		<div class="pointy-thing"></div>
-
-		<div class="method-info-container">
-			
-			
-			<div class="method-subsection brief-description">
-				<p>An Airbitz Directory bizid to tag all transactions incoming to this request&rsquo;s <a href="#//api/name/address">address</a></p>
-			</div>
-			
-		    
-
-			<div class="method-subsection method-declaration"><code>@property (nonatomic) unsigned int bizId</code></div>
-
-		    
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection discussion-section">
-				<h4 class="method-subtitle">Discussion</h4>
-				<p>An Airbitz Directory bizid to tag all transactions incoming to this request&rsquo;s <a href="#//api/name/address">address</a></p>
-			</div>
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection declared-in-section">
-				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCRequest.h</code></p>
+				<p><code class="declared-in-ref">ABCReceiveAddress.h</code></p>
 			</div>
 			
 			
@@ -418,7 +272,7 @@ transactions to the <a href="#//api/name/address">address</a> from this request<
 			
 			<div class="method-subsection declared-in-section">
 				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCRequest.h</code></p>
+				<p><code class="declared-in-ref">ABCReceiveAddress.h</code></p>
 			</div>
 			
 			
@@ -464,7 +318,7 @@ transactions to the <a href="#//api/name/address">address</a> from this request<
 			
 			<div class="method-subsection declared-in-section">
 				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCRequest.h</code></p>
+				<p><code class="declared-in-ref">ABCReceiveAddress.h</code></p>
 			</div>
 			
 			
@@ -510,7 +364,7 @@ transactions to the <a href="#//api/name/address">address</a> from this request<
 			
 			<div class="method-subsection declared-in-section">
 				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCRequest.h</code></p>
+				<p><code class="declared-in-ref">ABCReceiveAddress.h</code></p>
 			</div>
 			
 			
@@ -571,7 +425,7 @@ rotation so the next request gets a different <a href="#//api/name/address">addr
 			
 			<div class="method-subsection declared-in-section">
 				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCRequest.h</code></p>
+				<p><code class="declared-in-ref">ABCReceiveAddress.h</code></p>
 			</div>
 			
 			
@@ -589,7 +443,7 @@ rotation so the next request gets a different <a href="#//api/name/address">addr
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Modify a request based on the values in the ABCRequest structure</p>
+				<p>Modify a request based on the values in the ABCReceiveAddress structure</p>
 			</div>
 			
 		    
@@ -611,7 +465,7 @@ rotation so the next request gets a different <a href="#//api/name/address">addr
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Modify a request based on the values in the ABCRequest structure</p>
+				<p>Modify a request based on the values in the ABCReceiveAddress structure</p>
 			</div>
 			
 
@@ -622,7 +476,7 @@ rotation so the next request gets a different <a href="#//api/name/address">addr
 			
 			<div class="method-subsection declared-in-section">
 				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCRequest.h</code></p>
+				<p><code class="declared-in-ref">ABCReceiveAddress.h</code></p>
 			</div>
 			
 			
@@ -643,7 +497,7 @@ rotation so the next request gets a different <a href="#//api/name/address">addr
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-02-29</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-05</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

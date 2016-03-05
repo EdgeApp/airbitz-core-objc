@@ -58,11 +58,13 @@
 	
 	<optgroup label="Instance Methods">
 		
-		<option value="//api/name/createReceiveRequestWithDetails:">- createReceiveRequestWithDetails:</option>
+		<option value="//api/name/createNewReceiveAddress:">- createNewReceiveAddress:</option>
+		
+		<option value="//api/name/createNewReceiveAddress:error:">- createNewReceiveAddress:error:</option>
 		
 		<option value="//api/name/exportTransactionsToCSV:">- exportTransactionsToCSV:</option>
 		
-		<option value="//api/name/finalizeRequestWithAddress:">- finalizeRequestWithAddress:</option>
+		<option value="//api/name/getReceiveAddress:error:">- getReceiveAddress:error:</option>
 		
 		<option value="//api/name/importPrivateKey:importing:complete:error:">- importPrivateKey:importing:complete:error:</option>
 		
@@ -247,8 +249,8 @@ calling this routine.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/createReceiveRequestWithDetails:" title="createReceiveRequestWithDetails:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/createReceiveRequestWithDetails:">&ndash;&nbsp;createReceiveRequestWithDetails:</a></code>
+	<a name="//api/name/createNewReceiveAddress:error:" title="createNewReceiveAddress:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/createNewReceiveAddress:error:">&ndash;&nbsp;createNewReceiveAddress:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -258,14 +260,26 @@ calling this routine.</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Create a receive request from the current wallet. User should pass in an allocated
-<a href="../Classes/ABCRequest.html">ABCRequest</a> object with optional values set for amountSatoshi, payee, category, notes, or bizID.
-The object will have a uri, address, and QRcode UIImage filled in when method completes</p>
+				<p>Create a receive request from the current wallet using completion handlers
+Caller may then optionally set the values in the following properties:<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.metadata<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.amountSatoshi<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.uriMessage<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.uriLabel<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.uriCategory<br><br>
+Caller can then read the following properties<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.address<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.qrCode<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.uri<br><br>
+Properties in the metadata object are permanently associated with the <a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a> such that any
+future payments to this address will have that metadata automatically tagged in the transaction. User must
+read either the address, qrCode, or uri properties to ensure that modified fields in <a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.metadata are
+saved. The qrCode and uri values will include the amountSatoshi, uriMessage, uriLabel, and uriCategory properties</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (NSError *)createReceiveRequestWithDetails:(ABCRequest *)<em>request</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)createNewReceiveAddress:(void ( ^ ) ( ABCReceiveAddress *))<em>completionHandler</em> error:(void ( ^ ) ( NSError *error ))<em>errorHandler</em></code></div>
 
 		    
 			
@@ -274,14 +288,10 @@ The object will have a uri, address, and QRcode UIImage filled in when method co
 				<table class="argument-def parameter-def">
 				
 					<tr>
-						<th scope="row" class="argument-name"><code>request</code></th>
-						<td><p>ABCRequest*</p></td>
-					</tr>
-				
-					<tr>
 						<th scope="row" class="argument-name"><code>completionHandler</code></th>
 						<td><p>Completion handler code block which is called with void. (Optional. If used, method
-returns immediately with void)</p></td>
+returns immediately with void)<br>
+- <em>param</em> ABCReceiveAddress* Receive address object</p></td>
 					</tr>
 				
 					<tr>
@@ -297,7 +307,7 @@ returns immediately with void)</p></td>
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>NSError* or nil if no error. Returns void if completion handlers are used.</p>
+				<p>void</p>
 			</div>
 			
 
@@ -306,9 +316,21 @@ returns immediately with void)</p></td>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Create a receive request from the current wallet. User should pass in an allocated
-<a href="../Classes/ABCRequest.html">ABCRequest</a> object with optional values set for amountSatoshi, payee, category, notes, or bizID.
-The object will have a uri, address, and QRcode UIImage filled in when method completes</p>
+				<p>Create a receive request from the current wallet using completion handlers
+Caller may then optionally set the values in the following properties:<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.metadata<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.amountSatoshi<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.uriMessage<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.uriLabel<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.uriCategory<br><br>
+Caller can then read the following properties<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.address<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.qrCode<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.uri<br><br>
+Properties in the metadata object are permanently associated with the <a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a> such that any
+future payments to this address will have that metadata automatically tagged in the transaction. User must
+read either the address, qrCode, or uri properties to ensure that modified fields in <a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.metadata are
+saved. The qrCode and uri values will include the amountSatoshi, uriMessage, uriLabel, and uriCategory properties</p>
 			</div>
 			
 
@@ -326,8 +348,8 @@ The object will have a uri, address, and QRcode UIImage filled in when method co
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/finalizeRequestWithAddress:" title="finalizeRequestWithAddress:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/finalizeRequestWithAddress:">&ndash;&nbsp;finalizeRequestWithAddress:</a></code>
+	<a name="//api/name/createNewReceiveAddress:" title="createNewReceiveAddress:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/createNewReceiveAddress:">&ndash;&nbsp;createNewReceiveAddress:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -337,13 +359,26 @@ The object will have a uri, address, and QRcode UIImage filled in when method co
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Finalizes the request so the address cannot be used by future requests. Forces address
-rotation so the next request gets a different address</p>
+				<p>Create a receive request from the current wallet.
+Caller may then optionally set the values in the following properties:<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.metadata<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.amountSatoshi<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.uriMessage<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.uriLabel<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.uriCategory<br><br>
+Caller can then read the following properties<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.address<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.qrCode<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.uri<br><br>
+Properties in the metadata object are permanently associated with the <a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a> such that any
+future payments to this address will have that metadata automatically tagged in the transaction. User must
+read either the address, qrCode, or uri properties to ensure that modified fields in <a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.metadata are
+saved. The qrCode and uri values will include the amountSatoshi, uriMessage, uriLabel, and uriCategory properties</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (NSError *)finalizeRequestWithAddress:(NSString *)<em>address</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (ABCReceiveAddress *)createNewReceiveAddress:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -352,8 +387,8 @@ rotation so the next request gets a different address</p>
 				<table class="argument-def parameter-def">
 				
 					<tr>
-						<th scope="row" class="argument-name"><code>requestID</code></th>
-						<td><p>NSString* Bitcoin address to finalize</p></td>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>NSError** (optional)</p></td>
 					</tr>
 				
 				</table>
@@ -363,7 +398,7 @@ rotation so the next request gets a different address</p>
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>NSError* error object</p>
+				<p>ABCReceiveAddress* or nil if failure</p>
 			</div>
 			
 
@@ -372,8 +407,95 @@ rotation so the next request gets a different address</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Finalizes the request so the address cannot be used by future requests. Forces address
-rotation so the next request gets a different address</p>
+				<p>Create a receive request from the current wallet.
+Caller may then optionally set the values in the following properties:<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.metadata<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.amountSatoshi<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.uriMessage<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.uriLabel<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.uriCategory<br><br>
+Caller can then read the following properties<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.address<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.qrCode<br>
+<a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.uri<br><br>
+Properties in the metadata object are permanently associated with the <a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a> such that any
+future payments to this address will have that metadata automatically tagged in the transaction. User must
+read either the address, qrCode, or uri properties to ensure that modified fields in <a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a>.metadata are
+saved. The qrCode and uri values will include the amountSatoshi, uriMessage, uriLabel, and uriCategory properties</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCWallet.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/getReceiveAddress:error:" title="getReceiveAddress:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/getReceiveAddress:error:">&ndash;&nbsp;getReceiveAddress:error:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Retrieves an <a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a> object for the given public address
+At this time, metadata or amountSatoshi values previously associated with this
+receive address are not re-populated into this <a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a> object even
+if they are still saved in the internal ABC database.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCReceiveAddress *)getReceiveAddress:(NSString *)<em>address</em> error:(NSError **)<em>error</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>address</code></th>
+						<td><p>NSString* Bitcoin public address from a previous <a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a></p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>NSError** Pointer to error object (optional)</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCReceiveAddress* <a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a> object</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Retrieves an <a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a> object for the given public address
+At this time, metadata or amountSatoshi values previously associated with this
+receive address are not re-populated into this <a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a> object even
+if they are still saved in the internal ABC database.</p>
 			</div>
 			
 
@@ -685,7 +807,7 @@ after sweep.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)importPrivateKey:(NSString *)<em>privateKey</em> importing:(void ( ^ ) ( NSString *address ))<em>importingHandler</em> complete:(void ( ^ ) ( ABCImportDataModel dataModel , NSString *address , NSString *txid , uint64_t amount ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *))<em>errorHandler</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)importPrivateKey:(NSString *)<em>privateKey</em> importing:(void ( ^ ) ( NSString *address ))<em>importingHandler</em> complete:(void ( ^ ) ( ABCImportDataModel dataModel , NSString *address , ABCTransaction *transaction , uint64_t amount ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *))<em>errorHandler</em></code></div>
 
 		    
 			
@@ -709,8 +831,8 @@ after sweep.</p>
 						<td><p>Called on success.<br>
 - <em>param</em> dataModel <a href="../Constants/ABCImportDataModel.html">ABCImportDataModel</a> of private key<br>
 - <em>param</em> address NSString<em> public address of private key<br>
-- </em>param<em> txid NSString</em> txid of transaction that swept funds<br>
-- <em>param</em> amount uint64_t amount of satoshis swept into wallet</p></td>
+- </em>param<em> transaction ABCTransaction that swept funds<br>
+- </em>param* amount uint64_t amount of satoshis swept into wallet</p></td>
 					</tr>
 				
 					<tr>
@@ -768,7 +890,7 @@ after sweep.</p>
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-02-29</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-05</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

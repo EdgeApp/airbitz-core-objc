@@ -43,8 +43,6 @@
 							<select id="jump-to">
 	<option value="top">Jump To&#133;</option>
 	
-	<option value="overview">Overview</option>
-	
 
 	
 	
@@ -58,9 +56,7 @@
 	
 	<optgroup label="Class Methods">
 		
-		<option value="//api/name/checkPasswordRules:secondsToCrack:count:ruleDescription:rulePassed:checkResultsMessage:">+ checkPasswordRules:secondsToCrack:count:ruleDescription:rulePassed:checkResultsMessage:</option>
-		
-		<option value="//api/name/encodeStringToQRImage:error:">+ encodeStringToQRImage:error:</option>
+		<option value="//api/name/checkPasswordRules:">+ checkPasswordRules:</option>
 		
 		<option value="//api/name/fixUsername:error:">+ fixUsername:error:</option>
 		
@@ -72,7 +68,7 @@
 	
 	<optgroup label="Instance Methods">
 		
-		<option value="//api/name/PINLoginExists:">- PINLoginExists:</option>
+		<option value="//api/name/PINLoginExists:error:">- PINLoginExists:error:</option>
 		
 		<option value="//api/name/accountExistsLocal:">- accountExistsLocal:</option>
 		
@@ -116,7 +112,7 @@
 		
 		<option value="//api/name/passwordExists:error:">- passwordExists:error:</option>
 		
-		<option value="//api/name/requestOTPReset:complete:error:">- requestOTPReset:complete:error:</option>
+		<option value="//api/name/requestOTPReset:token:complete:error:">- requestOTPReset:token:complete:error:</option>
 		
 		<option value="//api/name/restoreConnectivity">- restoreConnectivity</option>
 		
@@ -126,7 +122,11 @@
 		
 		<option value="//api/name/signIn:password:delegate:otp:complete:error:">- signIn:password:delegate:otp:complete:error:</option>
 		
+		<option value="//api/name/signIn:password:delegate:otp:error:">- signIn:password:delegate:otp:error:</option>
+		
 		<option value="//api/name/signInWithPIN:pin:delegate:complete:error:">- signInWithPIN:pin:delegate:complete:error:</option>
+		
+		<option value="//api/name/signInWithPIN:pin:delegate:error:">- signInWithPIN:pin:delegate:error:</option>
 		
 		<option value="//api/name/signInWithRecoveryAnswers:answers:delegate:otp:complete:error:">- signInWithRecoveryAnswers:answers:delegate:otp:complete:error:</option>
 		
@@ -160,79 +160,6 @@
 					
 
                     
-					
-					<div class="section section-overview">
-						<a title="Overview" name="overview"></a>
-						<h2 class="subtitle subtitle-overview">Overview</h2>
-						<p>AirbitzCore (ABC) is a client-side blockchain and EdgeSecurity SDK providing auto-encrypted
-and auto-backed up accounts and wallets with zero-knowledge security and privacy. All
-blockchain/bitcoin private and public keys are fully encrypted by the users' credentials
-before being backed up on to peer to peer servers. ABC allows developers to create new
-Airbitz wallet accounts or login to pre-existing accounts. Account encrypted data is
-automatically synchronized between all devices and apps using the Airbitz SDK. This allows a
-third party application to generate payment requests or send funds for the users' account
-that may have been created on the Airbitz Mobile Bitcoin Wallet or any other Airbitz SDK
-application.</p>
-
-<pre><code>- (void) exampleMethod
-{
-    // Create an account
-    AirbitzCore *abc  = [[AirbitzCore alloc] init:@"YourAPIKeyHere"];
-    ABCAccount *abcAccount = [abc createAccount:@"myUsername" password:@"MyPa55w0rd!&amp;" pin:@"4283" delegate:self error:nil];
-    // New account is auto logged in after creation
-
-    // Create a wallet in the user account
-    ABCWallet *wallet = [abcAccount createWallet:@"My Awesome Bitcoins" currency:nil];
-
-    // Logout
-    [abc logout:abcAccount];
-
-    // Log back in with full credentials
-    abcAccount = [abc signIn:@"myUsername" password:@"MyPa55w0rd!&amp;" delegate:self otp:nil resetDate:nil error:nil];
-    [abc logout:abcAccount];
-
-    // Log back in with PIN using completion handler codeblock
-    [abc signInWithPIN:@"myUsername" pin:@"4283" delegate:self complete:^(ABCAccount *user)
-    {
-        ABCAccount *abcAccount = user;
-
-        // Get the first wallet in the account
-        ABCWallet *wallet = abcAccount.arrayWallets[0];
-
-        // Create a bitcoin request
-        ABCRequest *request = [[ABCRequest alloc] init];
-
-        // Put in some optional meta data into this request so incoming funds are automatically tagged
-        request.payeeName     = @"William Swanson"; // Name of the person receiving request
-        request.category      = @"Income:Rent";     // Category of payment. Auto tags category when funds come in
-        request.notes         = @"Rent payment for Jan 2016";
-        request.amountSatoshi = 12345000;
-
-        [wallet createReceiveRequestWithDetails:request];
-
-        // Use the request results
-        NSString *bitcoinAddress = request.address;
-        NSString *bitcoinURI     = request.uri;
-        UIImage  *bitcoinQRCode  = request.qrCode;
-
-        // Now go and display the QR code or send payment to address in some other way.
-
-    } error:^(NSError *error)
-    {
-        NSLog(@"Argh! Error code: %d. Error string:%@", error.code, error.userInfo[NSLocalizedDescriptionKey]);
-    }];
-
-}
-
-// Delegate method called when bitcoin is received
-- (void) abcAccountIncomingBitcoin:(ABCWallet *)wallet txid:(NSString *)txid;
-{
-    NSLog(@"Yay, my wallet just received bitcoin", wallet.name);
-}
-</code></pre>
-					</div>
-					
-					
 
 					
 					
@@ -554,12 +481,12 @@ callback handler</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Sign In to an Airbitz account.</p>
+				<p>Sign In to an Airbitz account using completion handlers.</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)signIn:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> complete:(void ( ^ ) ( ABCAccount *account ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *, NSDate *resetDate ))<em>errorHandler</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)signIn:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> complete:(void ( ^ ) ( ABCAccount *account ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *, NSDate *resetDate , NSString *resetToken ))<em>errorHandler</em></code></div>
 
 		    
 			
@@ -599,12 +526,88 @@ or if OTP token has already been saved in this account from prior login</p></td>
 						<td><p>(Optional) Code block called on error with parameters<br>
 - <em>param</em> NSError<em><br>
 - </em>param<em> NSDate</em> resetDate If login fails due to invalid or unset OTP key, and an OTP reset has been
-requested, the data that the reset will occur will be returned in this argument</p></td>
+requested, the data that the reset will occur will be returned in this argument<br>
+- <em>param</em> NSString* OTP reset token. If login fails due to OTP set on this account, use this token
+in requestOTPReset to request a reset of OTP. The reset will take 7 days</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>void</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Sign In to an Airbitz account using completion handlers.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/signIn:password:delegate:otp:error:" title="signIn:password:delegate:otp:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/signIn:password:delegate:otp:error:">&ndash;&nbsp;signIn:password:delegate:otp:error:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Sign In to an Airbitz account.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCAccount *)signIn:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> error:(NSError **)<em>error</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>username</code></th>
+						<td><p>NSString*</p></td>
 					</tr>
 				
 					<tr>
-						<th scope="row" class="argument-name"><code>resetDate</code></th>
-						<td><p>NSDate** If login fails due to invalid or unset OTP key, and an OTP reset has been</p></td>
+						<th scope="row" class="argument-name"><code>password</code></th>
+						<td><p>NSString*</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>delegate</code></th>
+						<td><p><a href="../Protocols/ABCAccountDelegate.html">ABCAccountDelegate</a> object for callbacks. May be set to nil;</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>otp</code></th>
+						<td><p>NSString* One Time Password token (optional). Send nil if logging in w/o OTP token
+or if OTP token has already been saved in this account from prior login</p></td>
 					</tr>
 				
 					<tr>
@@ -619,8 +622,7 @@ requested, the data that the reset will occur will be returned in this argument<
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>ABCAccount* Account object or nil if failure. Return void if using completion
-handler</p>
+				<p>ABCAccount* Account object or nil if failure.</p>
 			</div>
 			
 
@@ -658,8 +660,8 @@ handler</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Sign In to an Airbitz account with PIN. Used to sign into devices that have previously
-been logged into using a full username &amp; password</p>
+				<p>Sign In to an Airbitz account with PIN using completion handlers. Used to sign into
+devices that have previously been logged into using a full username &amp; password</p>
 			</div>
 			
 		    
@@ -700,6 +702,81 @@ been logged into using a full username &amp; password</p>
 requested, the data that the reset will occur will be returned in this argument</p></td>
 					</tr>
 				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>void</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Sign In to an Airbitz account with PIN using completion handlers. Used to sign into
+devices that have previously been logged into using a full username &amp; password</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/signInWithPIN:pin:delegate:error:" title="signInWithPIN:pin:delegate:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/signInWithPIN:pin:delegate:error:">&ndash;&nbsp;signInWithPIN:pin:delegate:error:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Sign In to an Airbitz account with PIN. Used to sign into devices that have previously
+been logged into using a full username &amp; password</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCAccount *)signInWithPIN:(NSString *)<em>username</em> pin:(NSString *)<em>pin</em> delegate:(id)<em>delegate</em> error:(NSError **)<em>error</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>username</code></th>
+						<td><p>NSString*</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>pin</code></th>
+						<td><p>NSString*</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>delegate</code></th>
+						<td><p><a href="../Protocols/ABCAccountDelegate.html">ABCAccountDelegate</a> object for callbacks. May be set to nil;</p></td>
+					</tr>
+				
 					<tr>
 						<th scope="row" class="argument-name"><code>error</code></th>
 						<td><p>NSError** May be set to nil. Only used when not using completion handler</p></td>
@@ -712,8 +789,7 @@ requested, the data that the reset will occur will be returned in this argument<
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>ABCAccount* Account object or nil if failure. Return void if using completion
-handler</p>
+				<p>ABCAccount* Account object or nil if failure.</p>
 			</div>
 			
 
@@ -758,7 +834,7 @@ set in their account. Use [ABCAccount setupRecoveryQuestions] to set questions a
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)signInWithRecoveryAnswers:(NSString *)<em>username</em> answers:(NSString *)<em>answers</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> complete:(void ( ^ ) ( ABCAccount *account ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *, NSDate *resetDate ))<em>errorHandler</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)signInWithRecoveryAnswers:(NSString *)<em>username</em> answers:(NSString *)<em>answers</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> complete:(void ( ^ ) ( ABCAccount *account ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *, NSDate *resetDate , NSString *resetToken ))<em>errorHandler</em></code></div>
 
 		    
 			
@@ -777,13 +853,19 @@ set in their account. Use [ABCAccount setupRecoveryQuestions] to set questions a
 					</tr>
 				
 					<tr>
+						<th scope="row" class="argument-name"><code>delegate</code></th>
+						<td><p>Delegate owner to handle <a href="../Classes/ABCAccount.html">ABCAccount</a> delegate callbacks</p></td>
+					</tr>
+				
+					<tr>
 						<th scope="row" class="argument-name"><code>otp</code></th>
 						<td><p>NSString* OTP token if needed to login. May be set to nil.</p></td>
 					</tr>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>completionHandler</code></th>
-						<td><p>Completion handler code block<br></p></td>
+						<td><p>Completion handler code block<br>
+- <em>param</em> ABCAccount* Returned account object logged in.</p></td>
 					</tr>
 				
 					<tr>
@@ -791,7 +873,8 @@ set in their account. Use [ABCAccount setupRecoveryQuestions] to set questions a
 						<td><p>Error handler code block which is called with the following args<br>
 - <em>param</em> NSError<em><br>
 - </em>param<em> NSDate</em> resetDate If login fails due to OTP and a reset has been requested, this contains
-the date that the reset will occur.</p></td>
+the date that the reset will occur.<br>
+- <em>param</em> NSString* OTP reset token. If login fails due to OTP set on this account, use this token</p></td>
 					</tr>
 				
 				</table>
@@ -1025,8 +1108,8 @@ a PIN-only account.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/checkPasswordRules:secondsToCrack:count:ruleDescription:rulePassed:checkResultsMessage:" title="checkPasswordRules:secondsToCrack:count:ruleDescription:rulePassed:checkResultsMessage:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/checkPasswordRules:secondsToCrack:count:ruleDescription:rulePassed:checkResultsMessage:">+&nbsp;checkPasswordRules:secondsToCrack:count:ruleDescription:rulePassed:checkResultsMessage:</a></code>
+	<a name="//api/name/checkPasswordRules:" title="checkPasswordRules:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/checkPasswordRules:">+&nbsp;checkPasswordRules:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1043,7 +1126,7 @@ by app to give feedback to user before creating a new account.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>+ (BOOL)checkPasswordRules:(NSString *)<em>password</em> secondsToCrack:(double *)<em>secondsToCrack</em> count:(unsigned int *)<em>count</em> ruleDescription:(NSMutableArray *)<em>ruleDescription</em> rulePassed:(NSMutableArray *)<em>rulePassed</em> checkResultsMessage:(NSMutableString *)<em>checkResultsMessage</em></code></div>
+			<div class="method-subsection method-declaration"><code>+ (ABCPasswordRuleResult *)checkPasswordRules:(NSString *)<em>password</em></code></div>
 
 		    
 			
@@ -1056,31 +1139,6 @@ by app to give feedback to user before creating a new account.</p>
 						<td><p>NSString* Password to check</p></td>
 					</tr>
 				
-					<tr>
-						<th scope="row" class="argument-name"><code>secondsToCrack</code></th>
-						<td><p>double* estimated time it takes to crack password</p></td>
-					</tr>
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>count</code></th>
-						<td><p>int* pointer to number of rules used</p></td>
-					</tr>
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>ruleDescription</code></th>
-						<td><p>NSMutableArray<em> array of NSString</em> with description of each rule</p></td>
-					</tr>
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>rulePassed</code></th>
-						<td><p>NSMutableArray<em> array of NSNumber</em> with BOOL of whether rule passed</p></td>
-					</tr>
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>checkResultsMessage</code></th>
-						<td><p>NSMutableString* message describing all failures</p></td>
-					</tr>
-				
 				</table>
 			</div>
 			
@@ -1088,7 +1146,7 @@ by app to give feedback to user before creating a new account.</p>
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>BOOL True if password passes all requirements</p>
+				<p>ABCPasswordRuleResult* Results of password check.</p>
 			</div>
 			
 
@@ -1310,8 +1368,8 @@ was created but never logged into this device, this will return NO.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/PINLoginExists:" title="PINLoginExists:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/PINLoginExists:">&ndash;&nbsp;PINLoginExists:</a></code>
+	<a name="//api/name/PINLoginExists:error:" title="PINLoginExists:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/PINLoginExists:error:">&ndash;&nbsp;PINLoginExists:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1327,7 +1385,7 @@ there is a local PIN package on the device from a prior login</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (BOOL)PINLoginExists:(NSString *)<em>username</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (BOOL)PINLoginExists:(NSString *)<em>username</em> error:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -1599,6 +1657,11 @@ with a call to [ABCAccount setupRecoveryQuestions]</p>
 						<td><p>NSString* username to query</p></td>
 					</tr>
 				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>NSError** May be set to nil.</p></td>
+					</tr>
+				
 				</table>
 			</div>
 			
@@ -1662,17 +1725,17 @@ servers, but app is <a href="#//api/name/free">free</a> to choose its own to pre
 				<table class="argument-def parameter-def">
 				
 					<tr>
-						<th scope="row" class="argument-name"><code>error</code></th>
-						<td><p>error handler code block which is called with the following args<br>
-- <em>param</em> NSError* error</p></td>
-					</tr>
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>complete</code></th>
-						<td><p>completion handler code block which is called with the following args<br>
+						<th scope="row" class="argument-name"><code>completionHandler</code></th>
+						<td><p>Completion handler code block which is called with the following args<br>
 - <em>param</em> arrayCategoryString NSMutableString<em> array of string based questions<br>
 - </em>param<em> arrayCategoryNumeric NSMutableString</em> array of numeric based questions<br>
 - <em>param</em> arrayCategoryMust NSMutableString* array of questions of which one must have an answer</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>errorHandler</code></th>
+						<td><p>Error handler code block which is called with the following args<br>
+- <em>param</em> NSError* error</p></td>
 					</tr>
 				
 				</table>
@@ -1855,8 +1918,8 @@ have a pending OTP reset on the server.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/requestOTPReset:complete:error:" title="requestOTPReset:complete:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/requestOTPReset:complete:error:">&ndash;&nbsp;requestOTPReset:complete:error:</a></code>
+	<a name="//api/name/requestOTPReset:token:complete:error:" title="requestOTPReset:token:complete:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/requestOTPReset:token:complete:error:">&ndash;&nbsp;requestOTPReset:token:complete:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1872,7 +1935,7 @@ which will disable the OTP authentication requirement when it expires.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)requestOTPReset:(NSString *)<em>username</em> complete:(void ( ^ ) ( void ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *error ))<em>errorHandler</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)requestOTPReset:(NSString *)<em>username</em> token:(NSString *)<em>token</em> complete:(void ( ^ ) ( void ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *error ))<em>errorHandler</em></code></div>
 
 		    
 			
@@ -1882,19 +1945,25 @@ which will disable the OTP authentication requirement when it expires.</p>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>username</code></th>
-						<td><p>NSString*
+						<td><p>NSString*</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>token</code></th>
+						<td><p>NSString* Reset token returned by the signIn&hellip; routines
+if sign in failes due to missing or incorrect OTP.
 (Optional. If used, method returns immediately with void)</p></td>
 					</tr>
 				
 					<tr>
-						<th scope="row" class="argument-name"><code>error</code></th>
-						<td><p>error handler code block which is called with the following args<br>
-- <em>param</em> NSError* error</p></td>
+						<th scope="row" class="argument-name"><code>completionHandler</code></th>
+						<td><p>Completion handler code block</p></td>
 					</tr>
 				
 					<tr>
-						<th scope="row" class="argument-name"><code>completionHandler:</code></th>
-						<td><p>completion handler code block</p></td>
+						<th scope="row" class="argument-name"><code>errorHandler</code></th>
+						<td><p>Error handler code block which is called with the following args<br>
+- <em>param</em> NSError* error</p></td>
 					</tr>
 				
 				</table>
@@ -2070,6 +2139,18 @@ which will disable the OTP authentication requirement when it expires.</p>
 			<div class="method-subsection method-declaration"><code>- (BOOL)hasDeviceCapability:(ABCDeviceCaps)<em>caps</em></code></div>
 
 		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>caps</code></th>
+						<td><p>ABCDeviceCaps</p></td>
+					</tr>
+				
+				</table>
+			</div>
 			
 
 			
@@ -2375,7 +2456,30 @@ and checks for invalid characters.</p>
 
 		    
 			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>username</code></th>
+						<td><p>NSString* Username to fix</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>NSError** May be set to nil.</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
 
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>NSString* Fixed username with text lowercased, leading and
+trailing white space removed, and all whitespace condensed to one space.</p>
+			</div>
 			
 
 			
@@ -2386,69 +2490,6 @@ and checks for invalid characters.</p>
 				<p>Transforms a username into the internal format used for hashing.
 This collapses spaces, converts to lowercase,
 and checks for invalid characters.</p>
-			</div>
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection declared-in-section">
-				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
-			</div>
-			
-			
-		</div>
-	</div>
-</div><div class="section-method">
-	<a name="//api/name/encodeStringToQRImage:error:" title="encodeStringToQRImage:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/encodeStringToQRImage:error:">+&nbsp;encodeStringToQRImage:error:</a></code>
-</h3>
-
-	<div class="method-info">
-		<div class="pointy-thing"></div>
-
-		<div class="method-info-container">
-			
-			
-			<div class="method-subsection brief-description">
-				<p>Encodes a string into a QR code returned as UIImage *</p>
-			</div>
-			
-		    
-
-			<div class="method-subsection method-declaration"><code>+ (UIImage *)encodeStringToQRImage:(NSString *)<em>string</em> error:(NSError **)<em>error</em></code></div>
-
-		    
-			
-			<div class="method-subsection arguments-section parameters">
-				<h4 class="method-subtitle parameter-title">Parameters</h4>
-				<table class="argument-def parameter-def">
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>string</code></th>
-						<td><p>NSString* string to encode</p></td>
-					</tr>
-				
-				</table>
-			</div>
-			
-
-			
-			<div class="method-subsection return">
-				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>UIImage* returned image</p>
-			</div>
-			
-
-			
-
-			
-			<div class="method-subsection discussion-section">
-				<h4 class="method-subtitle">Discussion</h4>
-				<p>Encodes a string into a QR code returned as UIImage *</p>
 			</div>
 			
 
@@ -2480,7 +2521,7 @@ and checks for invalid characters.</p>
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-02-29</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-05</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

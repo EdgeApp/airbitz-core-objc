@@ -37,12 +37,14 @@
 
 /// User has been logged out. Always called after [ABCAccount logout] once Core has finished logout
 /// Also called under some error conditions such as corrupt local data.
-- (void) abcAccountLoggedOut:(ABCAccount *)user;
+/// @param account ABCAccount* account that has been logged out
+- (void) abcAccountLoggedOut:(ABCAccount *)account;
 
 /// Account details such as settings have changed
 - (void) abcAccountAccountChanged;
 
 /// Specific wallet has changed. Changes may include new transactions or modified metadata
+/// @param wallet ABCWallet*
 - (void) abcAccountWalletChanged:(ABCWallet *)wallet;
 
 /// Called when the wallets in the account are still loading their prior transactions.
@@ -68,9 +70,14 @@
 /// This device has just sync'ed a transaction to the specified wallet from another device
 /// causing a change in balance. This happens if two devices share a wallet. First device will see
 /// abcAccountIncomingBitcoin. The second device will see abcAccountBalanceUpdate
+/// @param wallet ABCWallet* The wallet whose balance was updated
+/// @param transaction ABCWallet* The transaction which caused the balance change
 - (void) abcAccountBalanceUpdate:(ABCWallet *)wallet transaction:(ABCTransaction *)transaction;
 
-/// The specified wallet has just received a new transaction.
+/// The specified wallet has just received a new incoming funds transaction which has not yet
+/// been seen by other devices with this account.
+/// @param wallet ABCWallet* The wallet whose balance was updated
+/// @param transaction ABCWallet* The transaction which caused the incoming coin.
 - (void) abcAccountIncomingBitcoin:(ABCWallet *)wallet transaction:(ABCTransaction *)transaction;
 
 @end
@@ -165,22 +172,22 @@
 - (NSError *)changePassword:(NSString *)password;
 
 /**
- * @param NSString* pin: new pin for currently logged in user
+ * @param pin NSString* New pin for currently logged in user
  * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler: completion handler code block
- * @param errorHandler: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode or void if completion handlers used
+ * @param completionHandler Completion handler code block
+ * @param errorHandler Error handler code block which is called with the following args<br>
+ * - *param* NSError*
+ * @return NSError* Error object. Nil if success. Returns void if completion handlers used
  */
-- (NSError *)changePIN:(NSString *)pin;
 - (void)changePIN:(NSString *)pin
-                     complete:(void (^)(void)) completionHandler
-                        error:(void (^)(NSError *)) errorHandler;
+         complete:(void (^)(void)) completionHandler
+            error:(void (^)(NSError *)) errorHandler;
+- (NSError *)changePIN:(NSString *)pin;
 
 /**
  * Check if this user has a password on the account or if it is
  * a PIN-only account.
+ * @param error (Optional) NSError* Error object. Nil if success
  * @return BOOL true if user has a password
  */
 - (BOOL)passwordExists:(NSError **)error;
@@ -203,14 +210,13 @@
  * @param error (Optional) NSError* Error object. Nil if success
  * @return BOOL YES if PIN is correct
  */
-- (BOOL) checkPIN:(NSString *)pin;
 - (BOOL) checkPIN:(NSString *)pin error:(NSError **)error;
+- (BOOL) checkPIN:(NSString *)pin;
 
 /**
  * Checks if password is the correct password for this account
  * @param password NSString* Password to check
- * @param error (Optional) NSError* Error object. Nil if success
- * @return BOOL YES if PIN is correct
+ * @return BOOL YES if password is correct
  */
 - (BOOL)checkPassword:(NSString *)password;
 
@@ -238,23 +244,33 @@
 /// -----------------------------------------------------------------------------
 
 /**
+ * Create a wallet in the current account with completion handlers
+ * @param walletName NSString* Name of wallet or set to nil to use default wallet name
+ * @param currency NSString* ISO 3 digit currency code for wallet. Set to nil to use default currency from
+ *  settings or the global default currency if settings unavailable. ie. "USD, EUR, CAD, PHP"
+ * (Optional. If used, method returns immediately with void
+ * @param completionHandler (Optional) Code block called on success. Returns void if used<br>
+ * - *param* ABCWallet* User object.<br>
+ * @param errorHandler (Optional) Code block called on error with parameters<br>
+ * - *param* NSError*
+ * @return void
+ */
+- (void) createWallet:(NSString *)walletName currency:(NSString *)currency
+             complete:(void (^)(ABCWallet *)) completionHandler
+                error:(void (^)(NSError *)) errorHandler;
+
+
+/**
  * Create a wallet in the current account.
  * @param walletName NSString* Name of wallet or set to nil to use default wallet name
  * @param currency NSString* ISO 3 digit currency code for wallet. Set to nil to use default currency from
  *  settings or the global default currency if settings unavailable. ie. "USD, EUR, CAD, PHP"
  * (Optional. If used, method returns immediately with void
  * @param error NSError** May be set to nil. Only used when not using completion handler
- * @param completionHandler (Optional) Code block called on success. Returns void if used<br>
- * - *param* ABCWallet* User object.<br>
- * @param errorHandler (Optional) Code block called on error with parameters<br>
- * - *param* NSError*
- * @return ABCWallet* wallet object or nil if failure. If using completion handler, returns void.
+ * @return ABCWallet* wallet object or nil if failure.
  */
+- (ABCWallet *) createWallet:(NSString *)walletName currency:(NSString *)currency error:(NSError **)error;
 - (ABCWallet *) createWallet:(NSString *)walletName currency:(NSString *)currency;
-- (ABCWallet *) createWallet:(NSString *)walletName currency:(NSString *)currency error:(NSError **)nserror;
-- (void) createWallet:(NSString *)walletName currency:(NSString *)currency
-             complete:(void (^)(ABCWallet *)) completionHandler
-                error:(void (^)(NSError *)) errorHandler;
 
 - (NSError *)createFirstWalletIfNeeded;
 
@@ -272,7 +288,8 @@
  * array. Wallets are reordered by specifying the source wallet
  * position in sourceIndexPath and destination position in destinationIndexPath.
  * @param sourceIndexPath NSIndexPath* The position of the wallet to move
- * @return destinationIndexPath NSIndexPath* The destination array position of the wallet
+ * @param destinationIndexPath NSIndexPath* The destination array position of the wallet
+ * @return NSError* Error object. Nil if success.
  */
 - (NSError *)reorderWallets:(NSIndexPath *)sourceIndexPath
                 toIndexPath:(NSIndexPath *)destinationIndexPath;
@@ -297,7 +314,7 @@
  * @param error NSError** error object or nil if success
  * @return key NSString* OTP key
  */
-- (NSString *)getOTPLocalKey:(NSError **)nserror;
+- (NSString *)getOTPLocalKey:(NSError **)error;
 
 /**
  * Removes the OTP key for current user.
@@ -369,9 +386,9 @@
  * - *param* NSError*
  * @return NSError* or nil if no error. Returns void if using completionHandler
  */
-- (NSError *)clearBlockchainCache;
 - (void)clearBlockchainCache:(void (^)(void)) completionHandler
                        error:(void (^)(NSError *error)) errorHandler;
+- (NSError *)clearBlockchainCache;
 
 
 /**

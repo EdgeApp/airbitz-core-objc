@@ -211,7 +211,6 @@ typedef enum eABCDeviceCaps
  * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
  * @param otp NSString* One Time Password token (optional). Send nil if logging in w/o OTP token
  *  or if OTP token has already been saved in this account from prior login
- * @param error NSError** May be set to nil. Only used when not using completion handler
  * @param completionHandler (Optional) Code block called on success. Returns void if used<br>
  * - *param* ABCAccount* Account object created from SignIn call
  * @param errorHandler (Optional) Code block called on error with parameters<br>
@@ -236,7 +235,6 @@ typedef enum eABCDeviceCaps
  * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
  * @param otp NSString* One Time Password token (optional). Send nil if logging in w/o OTP token
  *  or if OTP token has already been saved in this account from prior login
- * @param resetDate NSDate** If login fails due to invalid or unset OTP key, and an OTP reset has been
  * @param error NSError** May be set to nil. Only used when not using completion handler
  * @return ABCAccount* Account object or nil if failure.
  */
@@ -247,25 +245,34 @@ typedef enum eABCDeviceCaps
                  error:(NSError **)error;
 
 /**
- * Sign In to an Airbitz account with PIN. Used to sign into devices that have previously
- * been logged into using a full username & password
+ * Sign In to an Airbitz account with PIN using completion handlers. Used to sign into 
+ * devices that have previously been logged into using a full username & password
  * @param username NSString*
  * @param pin NSString*
  * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
- * @param error NSError** May be set to nil. Only used when not using completion handler
  * @param completionHandler (Optional) Code block called on success.<br>
  * - *param* ABCAccount* User object.
  * @param errorHandler (Optional) Code block called on error with parameters<br>
  * - *param* NSError*
  *  requested, the data that the reset will occur will be returned in this argument
- * @return ABCAccount* Account object or nil if failure. Return void if using completion
- *  handler
+ * @return void
  */
 - (void)signInWithPIN:(NSString *)username
                   pin:(NSString *)pin
              delegate:(id)delegate
              complete:(void (^)(ABCAccount *user)) completionHandler
                 error:(void (^)(NSError *)) errorHandler;
+
+
+/**
+ * Sign In to an Airbitz account with PIN. Used to sign into devices that have previously
+ * been logged into using a full username & password
+ * @param username NSString*
+ * @param pin NSString*
+ * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
+ * @param error NSError** May be set to nil. Only used when not using completion handler
+ * @return ABCAccount* Account object or nil if failure.
+ */
 - (ABCAccount *)signInWithPIN:(NSString *)username
                           pin:(NSString *)pin
                      delegate:(id)delegate
@@ -276,8 +283,10 @@ typedef enum eABCDeviceCaps
  * set in their account. Use [ABCAccount setupRecoveryQuestions] to set questions and answers
  * @param username NSString*
  * @param answers  NSString* concatenated string of recovery answers separated by '\n' after each answer
+ * @param delegate Delegate owner to handle ABCAccount delegate callbacks
  * @param otp NSString* OTP token if needed to login. May be set to nil.
  * @param completionHandler Completion handler code block<br>
+ * - *param* ABCAccount* Returned account object logged in.
  * @param errorHandler Error handler code block which is called with the following args<br>
  * - *param* NSError*<br>
  * - *param* NSDate* resetDate If login fails due to OTP and a reset has been requested, this contains
@@ -378,8 +387,8 @@ typedef enum eABCDeviceCaps
  * @param error NSError** (optional) May be set to nil.
  * @return BOOL YES PIN login is possible
  */
-- (BOOL)PINLoginExists:(NSString *)username;
 - (BOOL)PINLoginExists:(NSString *)username error:(NSError **)error;
+- (BOOL)PINLoginExists:(NSString *)username;
 
 /**
  * Deletes named account from local device. Account is recoverable if it contains a password.
@@ -414,6 +423,7 @@ typedef enum eABCDeviceCaps
  * returned as an NSArray of NSString*. Recovery questions need to have been previously set
  * with a call to [ABCAccount setupRecoveryQuestions]
  * @param username NSString* username to query
+ * @param error NSError** May be set to nil. 
  * @return NSArray* Array of questions in NSString format. Returns nil if no questions
  * have been set.
  */
@@ -422,11 +432,11 @@ typedef enum eABCDeviceCaps
 /**
  * Gets a list of recovery questions to ask user. These are suggested questions from the Airbitz
  * servers, but app is free to choose its own to present the user.
- * @param complete completion handler code block which is called with the following args<br>
+ * @param completionHandler Completion handler code block which is called with the following args<br>
  * - *param* arrayCategoryString NSMutableString* array of string based questions<br>
  * - *param* arrayCategoryNumeric NSMutableString* array of numeric based questions<br>
  * - *param* arrayCategoryMust NSMutableString* array of questions of which one must have an answer
- * @param error error handler code block which is called with the following args<br>
+ * @param errorHandler Error handler code block which is called with the following args<br>
  * - *param* NSError* error
  * @return void
  */
@@ -464,9 +474,11 @@ typedef enum eABCDeviceCaps
  * Launches an OTP reset timer on the server,
  * which will disable the OTP authentication requirement when it expires.
  * @param username NSString*
+ * @param token NSString* Reset token returned by the signIn... routines
+ * if sign in failes due to missing or incorrect OTP.
  * (Optional. If used, method returns immediately with void)
- * @param completionHandler: completion handler code block
- * @param error error handler code block which is called with the following args<br>
+ * @param completionHandler Completion handler code block
+ * @param errorHandler Error handler code block which is called with the following args<br>
  * - *param* NSError* error
  * @return NSError object or nil if success. Return void if using completion
  *  handler
@@ -500,6 +512,7 @@ typedef enum eABCDeviceCaps
 
 /**
  * Check if device has a capability from ABCDeviceCaps
+ * @param caps ABCDeviceCaps
  * @return BOOL TRUE if device has specified capability
  */
 - (BOOL) hasDeviceCapability:(ABCDeviceCaps) caps;
@@ -560,6 +573,10 @@ typedef enum eABCDeviceCaps
  * Transforms a username into the internal format used for hashing.
  * This collapses spaces, converts to lowercase,
  * and checks for invalid characters.
+ * @param username NSString* Username to fix
+ * @param error NSError** May be set to nil.
+ * @return NSString* Fixed username with text lowercased, leading and
+ * trailing white space removed, and all whitespace condensed to one space.
  */
 + (NSString *)fixUsername:(NSString *)username error:(NSError **)error;
 

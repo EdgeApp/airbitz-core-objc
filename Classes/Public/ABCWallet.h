@@ -53,6 +53,32 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 - (NSError *)removeWallet;
 
 /** 
+ * Create a receive request from the current wallet using completion handlers
+ * Caller may then optionally set the values in the following properties:<br>
+ * ABCReceiveAddress.metadata<br>
+ * ABCReceiveAddress.amountSatoshi<br>
+ * ABCReceiveAddress.uriMessage<br>
+ * ABCReceiveAddress.uriLabel<br>
+ * ABCReceiveAddress.uriCategory<br><br>
+ * Caller can then read the following properties<br>
+ * ABCReceiveAddress.address<br>
+ * ABCReceiveAddress.qrCode<br>
+ * ABCReceiveAddress.uri<br><br>
+ * Properties in the metadata object are permanently associated with the ABCReceiveAddress such that any
+ * future payments to this address will have that metadata automatically tagged in the transaction. User must
+ * read either the address, qrCode, or uri properties to ensure that modified fields in ABCReceiveAddress.metadata are
+ * saved. The qrCode and uri values will include the amountSatoshi, uriMessage, uriLabel, and uriCategory properties
+ * @param completionHandler Completion handler code block which is called with void. (Optional. If used, method
+ * returns immediately with void)<br>
+ * - *param* ABCReceiveAddress* Receive address object
+ * @param errorHandler Error handler code block which is called with the following args<br>
+ * - *param* NSError* error object
+ * @return void
+ */
+- (void)createNewReceiveAddress:(void (^)(ABCReceiveAddress *))completionHandler
+                          error:(void (^)(NSError *error)) errorHandler;
+
+/**
  * Create a receive request from the current wallet.
  * Caller may then optionally set the values in the following properties:<br>
  * ABCReceiveAddress.metadata<br>
@@ -69,17 +95,10 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  * read either the address, qrCode, or uri properties to ensure that modified fields in ABCReceiveAddress.metadata are
  * saved. The qrCode and uri values will include the amountSatoshi, uriMessage, uriLabel, and uriCategory properties
  * @param error NSError** (optional)
- * @param completionHandler Completion handler code block which is called with void. (Optional. If used, method
- * returns immediately with void)<br>
- * - *param* ABCReceiveAddress* Receive address object
- * @param errorHandler Error handler code block which is called with the following args<br>
- * - *param* NSError* error object
- * @return NSError* or nil if no error. Returns void if completion handlers are used.
+ * @return ABCReceiveAddress* or nil if failure
  */
-- (ABCReceiveAddress *)createNewReceiveAddress;
 - (ABCReceiveAddress *)createNewReceiveAddress:(NSError **)error;
-- (void)createNewReceiveAddress:(void (^)(ABCReceiveAddress *))completionHandler
-                          error:(void (^)(NSError *error)) errorHandler;
+- (ABCReceiveAddress *)createNewReceiveAddress;
 
 /**
  * Retrieves an ABCReceiveAddress object for the given public address

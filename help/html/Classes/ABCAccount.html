@@ -56,11 +56,11 @@
 		
 		<option value="//api/name/arrayArchivedWallets">arrayArchivedWallets</option>
 		
-		<option value="//api/name/arrayCategories">arrayCategories</option>
-		
 		<option value="//api/name/arrayWalletNames">arrayWalletNames</option>
 		
 		<option value="//api/name/arrayWallets">arrayWallets</option>
+		
+		<option value="//api/name/categories">categories</option>
 		
 		<option value="//api/name/currentWallet">currentWallet</option>
 		
@@ -69,6 +69,10 @@
 		<option value="//api/name/dataStore">dataStore</option>
 		
 		<option value="//api/name/delegate">delegate</option>
+		
+		<option value="//api/name/exchangeCache">exchangeCache</option>
+		
+		<option value="//api/name/name">name</option>
 		
 		<option value="//api/name/settings">settings</option>
 		
@@ -80,7 +84,19 @@
 	
 	<optgroup label="Instance Methods">
 		
-		<option value="//api/name/createWallet:currency:">- createWallet:currency:</option>
+		<option value="//api/name/changePIN:complete:error:">- changePIN:complete:error:</option>
+		
+		<option value="//api/name/changePassword:complete:error:">- changePassword:complete:error:</option>
+		
+		<option value="//api/name/checkPIN:error:">- checkPIN:error:</option>
+		
+		<option value="//api/name/checkPassword:">- checkPassword:</option>
+		
+		<option value="//api/name/clearBlockchainCache:error:">- clearBlockchainCache:error:</option>
+		
+		<option value="//api/name/createWallet:currency:complete:error:">- createWallet:currency:complete:error:</option>
+		
+		<option value="//api/name/createWallet:currency:error:">- createWallet:currency:error:</option>
 		
 		<option value="//api/name/getNumWalletsInAccount:">- getNumWalletsInAccount:</option>
 		
@@ -96,8 +112,6 @@
 		
 		<option value="//api/name/passwordExists:">- passwordExists:</option>
 		
-		<option value="//api/name/pinCheck:">- pinCheck:</option>
-		
 		<option value="//api/name/pinLoginSetup:">- pinLoginSetup:</option>
 		
 		<option value="//api/name/recentlyLoggedIn">- recentlyLoggedIn</option>
@@ -111,6 +125,10 @@
 		<option value="//api/name/reorderWallets:toIndexPath:">- reorderWallets:toIndexPath:</option>
 		
 		<option value="//api/name/setOTPAuth:">- setOTPAuth:</option>
+		
+		<option value="//api/name/setupRecoveryQuestions:answers:complete:error:">- setupRecoveryQuestions:answers:complete:error:</option>
+		
+		<option value="//api/name/shouldAskUserToEnableTouchID">- shouldAskUserToEnableTouchID</option>
 		
 	</optgroup>
 	
@@ -231,6 +249,52 @@ to make sure they are loaded and <a href="../Classes/ABCSettings.html#//api/name
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>ABC settings that can be set or viewed by app or ABC. Use method <a href="../Classes/ABCSettings.html#//api/name/loadSettings">[ABCSettings loadSettings]</a>
 to make sure they are loaded and <a href="../Classes/ABCSettings.html#//api/name/saveSettings">[ABCSettings saveSettings]</a> to ensure modified settings are latched</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/exchangeCache" title="exchangeCache"></a>
+	<h3 class="method-title"><code><a href="#//api/name/exchangeCache">&nbsp;&nbsp;exchangeCache</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Exchange Cache object. Used to convert bitcoin to fiat in various formats</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>@property (atomic, strong) ABCExchangeCache *exchangeCache</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Exchange Cache object. Used to convert bitcoin to fiat in various formats</p>
 			</div>
 			
 
@@ -498,8 +562,8 @@ arrayWallets[currentWalletIndex] = <a href="#//api/name/currentWallet">currentWa
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/arrayCategories" title="arrayCategories"></a>
-	<h3 class="method-title"><code><a href="#//api/name/arrayCategories">&nbsp;&nbsp;arrayCategories</a></code>
+	<a name="//api/name/categories" title="categories"></a>
+	<h3 class="method-title"><code><a href="#//api/name/categories">&nbsp;&nbsp;categories</a></code>
 </h3>
 
 	<div class="method-info">
@@ -516,7 +580,7 @@ an arbitrary subcategory such as &ldquo;Food &amp; Dining&rdquo;. ie. &ldquo;Exp
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>@property (atomic, strong) NSArray *arrayCategories</code></div>
+			<div class="method-subsection method-declaration"><code>@property (atomic, strong) ABCCategories *categories</code></div>
 
 		    
 			
@@ -595,6 +659,52 @@ ABCAccount</p>
 			
 		</div>
 	</div>
+</div><div class="section-method">
+	<a name="//api/name/name" title="name"></a>
+	<h3 class="method-title"><code><a href="#//api/name/name">&nbsp;&nbsp;name</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>This account&rsquo;s username</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>@property (atomic, copy) NSString *name</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>This account&rsquo;s username</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
 </div>
 						</div>
 						
@@ -604,6 +714,149 @@ ABCAccount</p>
 
 						<div class="task-list">
 							<div class="section-method">
+	<a name="//api/name/changePassword:complete:error:" title="changePassword:complete:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/changePassword:complete:error:">&ndash;&nbsp;changePassword:complete:error:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>NSString* new password for currently logged in user
+(Optional. If used, method returns immediately with void)</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)changePassword:(NSString *)<em>password</em> complete:(void ( ^ ) ( void ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *))<em>errorHandler</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>password</code></th>
+						<td><p>NSString* new password for currently logged in user
+(Optional. If used, method returns immediately with void)</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>completionHandler</code></th>
+						<td><p>(Optional) completion handler code block</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>errorHandler</code></th>
+						<td><p>(Optional) Code block called on error with parameters<br>
+- <em>param</em> NSError*</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>NSError object or nil if success. Return void if using completion
+handler</p>
+			</div>
+			
+
+			
+
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/changePIN:complete:error:" title="changePIN:complete:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/changePIN:complete:error:">&ndash;&nbsp;changePIN:complete:error:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>NSString* New pin for currently logged in user
+(Optional. If used, method returns immediately with ABCCConditionCodeOk)</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)changePIN:(NSString *)<em>pin</em> complete:(void ( ^ ) ( void ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *))<em>errorHandler</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>pin</code></th>
+						<td><p>NSString* New pin for currently logged in user
+(Optional. If used, method returns immediately with ABCCConditionCodeOk)</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>completionHandler</code></th>
+						<td><p>Completion handler code block</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>errorHandler</code></th>
+						<td><p>Error handler code block which is called with the following args<br>
+- <em>param</em> NSError*</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>NSError* Error object. Nil if success. Returns void if completion handlers used</p>
+			</div>
+			
+
+			
+
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
 	<a name="//api/name/passwordExists:" title="passwordExists:"></a>
 	<h3 class="method-title"><code><a href="#//api/name/passwordExists:">&ndash;&nbsp;passwordExists:</a></code>
 </h3>
@@ -624,6 +877,18 @@ a PIN-only account.</p>
 			<div class="method-subsection method-declaration"><code>- (BOOL)passwordExists:(NSError **)<em>error</em></code></div>
 
 		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>(Optional) NSError* Error object. Nil if success</p></td>
+					</tr>
+				
+				</table>
+			</div>
 			
 
 			
@@ -712,8 +977,8 @@ on spend.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/pinCheck:" title="pinCheck:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/pinCheck:">&ndash;&nbsp;pinCheck:</a></code>
+	<a name="//api/name/checkPIN:error:" title="checkPIN:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/checkPIN:error:">&ndash;&nbsp;checkPIN:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -731,7 +996,7 @@ This is used to guard access to certain actions in the GUI.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (BOOL)pinCheck:(NSString *)<em>pin</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (BOOL)checkPIN:(NSString *)<em>pin</em> error:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -769,6 +1034,69 @@ This is used to guard access to certain actions in the GUI.</p>
 during account creation in [AirbitzCore createAccount] or the PIN changed
 with [ABCAccount changePIN]<br>
 This is used to guard access to certain actions in the GUI.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/checkPassword:" title="checkPassword:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/checkPassword:">&ndash;&nbsp;checkPassword:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Checks if password is the correct password for this account</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (BOOL)checkPassword:(NSString *)<em>password</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>password</code></th>
+						<td><p>NSString* Password to check</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>BOOL YES if password is correct</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Checks if password is the correct password for this account</p>
 			</div>
 			
 
@@ -920,8 +1248,90 @@ are then used to decrypt the local account thereby loggin in the user.</p>
 
 						<div class="task-list">
 							<div class="section-method">
-	<a name="//api/name/createWallet:currency:" title="createWallet:currency:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/createWallet:currency:">&ndash;&nbsp;createWallet:currency:</a></code>
+	<a name="//api/name/createWallet:currency:complete:error:" title="createWallet:currency:complete:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/createWallet:currency:complete:error:">&ndash;&nbsp;createWallet:currency:complete:error:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Create a wallet in the current account with completion handlers</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)createWallet:(NSString *)<em>walletName</em> currency:(NSString *)<em>currency</em> complete:(void ( ^ ) ( ABCWallet *))<em>completionHandler</em> error:(void ( ^ ) ( NSError *))<em>errorHandler</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>walletName</code></th>
+						<td><p>NSString* Name of wallet or set to nil to use default wallet <a href="#//api/name/name">name</a></p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>currency</code></th>
+						<td><p>NSString* ISO 3 digit currency code for wallet. Set to nil to use default currency from
+<a href="#//api/name/settings">settings</a> or the global default currency if <a href="#//api/name/settings">settings</a> unavailable. ie. &ldquo;USD, EUR, CAD, PHP&rdquo;
+(Optional. If used, method returns immediately with void</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>completionHandler</code></th>
+						<td><p>(Optional) Code block called on success. Returns void if used<br>
+- <em>param</em> ABCWallet* User object.<br></p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>errorHandler</code></th>
+						<td><p>(Optional) Code block called on error with parameters<br>
+- <em>param</em> NSError*</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>void</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Create a wallet in the current account with completion handlers</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/createWallet:currency:error:" title="createWallet:currency:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/createWallet:currency:error:">&ndash;&nbsp;createWallet:currency:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -936,7 +1346,7 @@ are then used to decrypt the local account thereby loggin in the user.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (ABCWallet *)createWallet:(NSString *)<em>walletName</em> currency:(NSString *)<em>currency</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (ABCWallet *)createWallet:(NSString *)<em>walletName</em> currency:(NSString *)<em>currency</em> error:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -946,7 +1356,7 @@ are then used to decrypt the local account thereby loggin in the user.</p>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>walletName</code></th>
-						<td><p>NSString* Name of wallet or set to nil to use default wallet name</p></td>
+						<td><p>NSString* Name of wallet or set to nil to use default wallet <a href="#//api/name/name">name</a></p></td>
 					</tr>
 				
 					<tr>
@@ -954,18 +1364,6 @@ are then used to decrypt the local account thereby loggin in the user.</p>
 						<td><p>NSString* ISO 3 digit currency code for wallet. Set to nil to use default currency from
 <a href="#//api/name/settings">settings</a> or the global default currency if <a href="#//api/name/settings">settings</a> unavailable. ie. &ldquo;USD, EUR, CAD, PHP&rdquo;
 (Optional. If used, method returns immediately with void</p></td>
-					</tr>
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>errorHandler</code></th>
-						<td><p>(Optional) Code block called on error with parameters<br>
-- <em>param</em> NSError*</p></td>
-					</tr>
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>completionHandler</code></th>
-						<td><p>(Optional) Code block called on success. Returns void if used<br>
-- <em>param</em> ABCWallet* User object.<br></p></td>
 					</tr>
 				
 					<tr>
@@ -980,7 +1378,7 @@ are then used to decrypt the local account thereby loggin in the user.</p>
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>ABCWallet* wallet object or nil if failure. If using completion handler, returns void.</p>
+				<p>ABCWallet* wallet object or nil if failure.</p>
 			</div>
 			
 
@@ -1103,6 +1501,11 @@ position in sourceIndexPath and destination position in destinationIndexPath.</p
 						<td><p>NSIndexPath* The position of the wallet to move</p></td>
 					</tr>
 				
+					<tr>
+						<th scope="row" class="argument-name"><code>destinationIndexPath</code></th>
+						<td><p>NSIndexPath* The destination array position of the wallet</p></td>
+					</tr>
+				
 				</table>
 			</div>
 			
@@ -1110,7 +1513,7 @@ position in sourceIndexPath and destination position in destinationIndexPath.</p
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>destinationIndexPath NSIndexPath* The destination array position of the wallet</p>
+				<p>NSError* Error object. Nil if success.</p>
 			</div>
 			
 
@@ -1285,7 +1688,7 @@ OTP.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (NSString *)getOTPLocalKey:(NSError **)<em>nserror</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (NSString *)getOTPLocalKey:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -1471,7 +1874,7 @@ An OTP reset is a request to disable OTP made through the method
 			
 			<div class="method-subsection brief-description">
 				<p>Sets up OTP authentication on the server for currently logged in user
-This will generate a new token if the username doesn&rsquo;t already have one.</p>
+This will generate a new token if the user<a href="#//api/name/name">name</a> doesn&rsquo;t already have one.</p>
 			</div>
 			
 		    
@@ -1507,7 +1910,7 @@ before OTP is disabled.</p></td>
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>Sets up OTP authentication on the server for currently logged in user
-This will generate a new token if the username doesn&rsquo;t already have one.</p>
+This will generate a new token if the user<a href="#//api/name/name">name</a> doesn&rsquo;t already have one.</p>
 			</div>
 			
 
@@ -1630,6 +2033,221 @@ currently logged in user</p>
 			
 		</div>
 	</div>
+</div><div class="section-method">
+	<a name="//api/name/setupRecoveryQuestions:answers:complete:error:" title="setupRecoveryQuestions:answers:complete:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/setupRecoveryQuestions:answers:complete:error:">&ndash;&nbsp;setupRecoveryQuestions:answers:complete:error:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Sets account recovery questions and answers in case use forgets their password</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)setupRecoveryQuestions:(NSString *)<em>questions</em> answers:(NSString *)<em>answers</em> complete:(void ( ^ ) ( void ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *error ))<em>errorHandler</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>questions</code></th>
+						<td><p>NSString* concatenated string of recovery questions separated by &lsquo;\n&rsquo; after each question</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>answers</code></th>
+						<td><p>NSString* concatenated string of recovery answers separated by &lsquo;\n&rsquo; after each answer</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>completionHandler</code></th>
+						<td><p>(Optional) code block which is called upon success with void
+(Optional. If used, method returns immediately with void)</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>errorHandler</code></th>
+						<td><p>(Optional) Code block called on error with parameters<br>
+- <em>param</em> NSError*</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>NSError* or nil if no error. Returns void if using completionHandler</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Sets account recovery questions and answers in case use forgets their password</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/clearBlockchainCache:error:" title="clearBlockchainCache:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/clearBlockchainCache:error:">&ndash;&nbsp;clearBlockchainCache:error:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Clears the local cache of blockchain information and force a re-download. This will cause wallets
+to report incorrect balances which the blockchain is resynced</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)clearBlockchainCache:(void ( ^ ) ( void ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *error ))<em>errorHandler</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>completionHandler</code></th>
+						<td><p>(Optional) code block which is called upon success with void
+(Optional. If used, method returns immediately with void)</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>errorHandler</code></th>
+						<td><p>(Optional) Code block called on error with parameters<br>
+- <em>param</em> NSError*</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>NSError* or nil if no error. Returns void if using completionHandler</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Clears the local cache of blockchain information and force a re-download. This will cause wallets
+to report incorrect balances which the blockchain is resynced</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/shouldAskUserToEnableTouchID" title="shouldAskUserToEnableTouchID"></a>
+	<h3 class="method-title"><code><a href="#//api/name/shouldAskUserToEnableTouchID">&ndash;&nbsp;shouldAskUserToEnableTouchID</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Evaluates if user should be asked to enable touch ID based
+on various factors such as if they have ever disabled touchID
+in the past, if they have touchID hardware support, and if
+this account has a password. PIN only accounts can&rsquo;t user TouchID
+at the moment. If user previously had touchID enabled, this will
+automatically enable touchID and return NO.
+Should be called while logged in.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (BOOL)shouldAskUserToEnableTouchID</code></div>
+
+		    
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>BOOL: Should GUI ask if user wants to enable</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Evaluates if user should be asked to enable touch ID based
+on various factors such as if they have ever disabled touchID
+in the past, if they have touchID hardware support, and if
+this account has a password. PIN only accounts can&rsquo;t user TouchID
+at the moment. If user previously had touchID enabled, this will
+automatically enable touchID and return NO.
+Should be called while logged in.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
 </div>
 						</div>
 						
@@ -1645,7 +2263,7 @@ currently logged in user</p>
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-02-29</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-05</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>
