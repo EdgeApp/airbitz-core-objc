@@ -42,6 +42,7 @@
 
 - (BOOL) touchIDEnabled;
 - (BOOL) enableTouchID;
+- (BOOL) enableTouchID:(NSString *)password;
 - (void) disableTouchID;
 
 @end

@@ -7,6 +7,7 @@
 
 @class AirbitzCore;
 @class ABCAccount;
+@class ABCCategories;
 @class ABCCurrency;
 @class ABCDataStore;
 @class ABCDenomination;
@@ -86,6 +87,7 @@
 /// to make sure they are loaded and [ABCSettings saveSettings] to ensure modified settings are latched
 @property (atomic, strong) ABCSettings                  *settings;
 
+/// Exchange Cache object. Used to convert bitcoin to fiat in various formats
 @property (atomic, strong) ABCExchangeCache             *exchangeCache;
 
 ///----------------------------------------------------------
@@ -116,7 +118,7 @@
 /// Array of NSString* categories with which a user to could choose to tag a transaction with.
 /// Categories must start with "Income", "Expense", "Transfer" or "Exchange" plus a ":" and then
 /// an arbitrary subcategory such as "Food & Dining". ie. "Expense:Rent"
-@property (atomic, strong) NSArray                   *arrayCategories;
+@property (atomic, strong) ABCCategories             *categories;
 
 /// DataStore object for allowing arbitrary Edge Secure data storage and retrieval on this
 /// ABCAccount
@@ -125,27 +127,16 @@
 @property (atomic)         BOOL                      bAllWalletsLoaded;
 @property (atomic)         int                       numWalletsLoaded;
 @property (atomic)         int                       numTotalWallets;
-@property (atomic)         int                       numCategories;
 
 /// This account's username
 @property (atomic, copy)     NSString                *name;
-@property (atomic, copy)     NSString                *password;
-
-
-
-
 
 // New methods
 - (void)makeCurrentWallet:(ABCWallet *)wallet;
 - (void)makeCurrentWalletWithIndex:(NSIndexPath *)indexPath;
 - (void)makeCurrentWalletWithUUID:(NSString *)uuid;
 - (ABCWallet *)selectWalletWithUUID:(NSString *)uuid;
-- (void)loadCategories;
-- (NSError *)saveCategories:(NSMutableArray *)saveArrayCategories;
 - (BOOL) isLoggedIn;
-
-
-- (bool)setWalletAttributes: (ABCWallet *) wallet;
 
 - (NSString *)createExchangeRateString:(ABCCurrency *)currency
                    includeCurrencyCode:(bool)includeCurrencyCode;
@@ -159,26 +150,22 @@
 /// @name Account Management
 /// -----------------------------------------------------------------------------
 
-
-/*
- * changePassword
+/**
  * @param password NSString* new password for currently logged in user
  * (Optional. If used, method returns immediately with void)
  * @param completionHandler (Optional) completion handler code block
  * @param errorHandler (Optional) Code block called on error with parameters<br>
  * - *param* NSError*
- * @return NSError object or nil if failure. Return void if using completion
+ * @return NSError object or nil if success. Return void if using completion
  *  handler
  */
-- (NSError *)changePassword:(NSString *)password;
 - (void)changePassword:(NSString *)password
               complete:(void (^)(void)) completionHandler
                  error:(void (^)(NSError *)) errorHandler;
+- (NSError *)changePassword:(NSString *)password;
 
-/*
- * changePIN
+/**
  * @param NSString* pin: new pin for currently logged in user
- *
  * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
  * @param completionHandler: completion handler code block
  * @param errorHandler: error handler code block which is called with the following args
@@ -207,7 +194,6 @@
  */
 - (BOOL)recentlyLoggedIn;
 
-
 /**
  * Checks a PIN for correctness. This checks against the PIN used
  * during account creation in [AirbitzCore createAccount] or the PIN changed
@@ -227,7 +213,6 @@
  * @return BOOL YES if PIN is correct
  */
 - (BOOL)checkPassword:(NSString *)password;
-
 
 /**
  * Enable or disable PIN login on this account. Set enable = YES to allow
@@ -270,7 +255,6 @@
 - (void) createWallet:(NSString *)walletName currency:(NSString *)currency
              complete:(void (^)(ABCWallet *)) completionHandler
                 error:(void (^)(NSError *)) errorHandler;
-
 
 - (NSError *)createFirstWalletIfNeeded;
 
@@ -357,9 +341,8 @@
  */
 - (NSError *)removeOTPResetRequest;
 
-/*
+/**
  * Sets account recovery questions and answers in case use forgets their password
- * @param password NSString* password of currently logged in user
  * @param questions NSString* concatenated string of recovery questions separated by '\n' after each question
  * @param answers NSString* concatenated string of recovery answers separated by '\n' after each answer
  * @param completionHandler (Optional) code block which is called upon success with void
@@ -368,19 +351,16 @@
  * - *param* NSError*
  * @return NSError* or nil if no error. Returns void if using completionHandler
  */
-
-- (NSError *)setupRecoveryQuestions:(NSString *)password
-                        questions:(NSString *)questions
-                          answers:(NSString *)answers;
-- (void)setupRecoveryQuestions:(NSString *)password
-                               questions:(NSString *)questions
-                                 answers:(NSString *)answers
-                                complete:(void (^)(void)) completionHandler
-                                   error:(void (^)(NSError *error)) errorHandler;
+- (void)setupRecoveryQuestions:(NSString *)questions
+                       answers:(NSString *)answers
+                      complete:(void (^)(void)) completionHandler
+                         error:(void (^)(NSError *error)) errorHandler;
+- (NSError *)setupRecoveryQuestions:(NSString *)questions
+                            answers:(NSString *)answers;
 
 
 
-/*
+/**
  * Clears the local cache of blockchain information and force a re-download. This will cause wallets
  * to report incorrect balances which the blockchain is resynced
  * @param completionHandler (Optional) code block which is called upon success with void
@@ -394,22 +374,17 @@
                        error:(void (^)(NSError *error)) errorHandler;
 
 
-/*
- * shouldAskUserToEnableTouchID
- *  Evaluates if user should be asked to enable touch ID based
- *  on various factors such as if they have ever disabled touchID
- *  in the past, if they have touchID hardware support, and if
- *  this account has a password. PIN only accounts can't user TouchID
- *  at the moment. If user previously had touchID enabled, this will
- *  automatically enable touchID and return NO.
- *  Should be called while logged in.
+/**
+ * Evaluates if user should be asked to enable touch ID based
+ * on various factors such as if they have ever disabled touchID
+ * in the past, if they have touchID hardware support, and if
+ * this account has a password. PIN only accounts can't user TouchID
+ * at the moment. If user previously had touchID enabled, this will
+ * automatically enable touchID and return NO.
+ * Should be called while logged in.
  * @return BOOL: Should GUI ask if user wants to enable
  */
 - (BOOL) shouldAskUserToEnableTouchID;
-
-- (NSError *)addCategory:(NSString *)strCategory;
-
-
 
 @end
 

@@ -6,6 +6,7 @@
 //
 #import <Foundation/Foundation.h>
 #import "ABCAccount.h"
+#import "ABCCategories.h"
 #import "ABCConditionCode.h"
 #import "ABCCurrency.h"
 #import "ABCDataStore.h"

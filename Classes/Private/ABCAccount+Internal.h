@@ -10,6 +10,7 @@
 
 @property (atomic, strong)   AirbitzCore             *abc;
 @property                       BOOL                bNewDeviceLogin;
+@property (atomic, copy)     NSString                *password;
 
 - (void)login;
 - (void)logout;
