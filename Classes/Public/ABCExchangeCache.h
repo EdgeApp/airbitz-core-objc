@@ -13,7 +13,7 @@
 @class ABCReceiveAddress;
 @class ABCTransaction;
 
-#define ABCArrayExchanges     @[@"Bitstamp", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
+#define ABCArrayExchanges     @[@"Bitstamp", @"Bitfinex", @"BitcoinAverage", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
 
 @interface ABCExchangeCache : NSObject
 
