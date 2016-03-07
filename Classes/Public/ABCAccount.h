@@ -37,14 +37,14 @@
 
 /// User has been logged out. Always called after [ABCAccount logout] once Core has finished logout
 /// Also called under some error conditions such as corrupt local data.
-/// @param account ABCAccount* account that has been logged out
+/// @param account ABCAccount account that has been logged out
 - (void) abcAccountLoggedOut:(ABCAccount *)account;
 
 /// Account details such as settings have changed
 - (void) abcAccountAccountChanged;
 
 /// Specific wallet has changed. Changes may include new transactions or modified metadata
-/// @param wallet ABCWallet*
+/// @param wallet ABCWallet
 - (void) abcAccountWalletChanged:(ABCWallet *)wallet;
 
 /// Called when the wallets in the account are still loading their prior transactions.
@@ -70,14 +70,14 @@
 /// This device has just sync'ed a transaction to the specified wallet from another device
 /// causing a change in balance. This happens if two devices share a wallet. First device will see
 /// abcAccountIncomingBitcoin. The second device will see abcAccountBalanceUpdate
-/// @param wallet ABCWallet* The wallet whose balance was updated
-/// @param transaction ABCWallet* The transaction which caused the balance change
+/// @param wallet ABCWallet The wallet whose balance was updated
+/// @param transaction ABCTransaction The transaction which caused the balance change
 - (void) abcAccountBalanceUpdate:(ABCWallet *)wallet transaction:(ABCTransaction *)transaction;
 
 /// The specified wallet has just received a new incoming funds transaction which has not yet
 /// been seen by other devices with this account.
-/// @param wallet ABCWallet* The wallet whose balance was updated
-/// @param transaction ABCWallet* The transaction which caused the incoming coin.
+/// @param wallet ABCWallet The wallet whose balance was updated
+/// @param transaction ABCTransaction The transaction which caused the incoming coin.
 - (void) abcAccountIncomingBitcoin:(ABCWallet *)wallet transaction:(ABCTransaction *)transaction;
 
 @end
@@ -94,22 +94,22 @@
 /// to make sure they are loaded and [ABCSettings saveSettings] to ensure modified settings are latched
 @property (atomic, strong) ABCSettings                  *settings;
 
-/// Exchange Cache object. Used to convert bitcoin to fiat in various formats
+/// ABCExchangeCache object. Used to convert bitcoin to fiat in various formats
 @property (atomic, strong) ABCExchangeCache             *exchangeCache;
 
 ///----------------------------------------------------------
 /// @name ABCAccount read-only public object variables
 ///----------------------------------------------------------
 
-/// Array of Wallet objects currently loaded into account. This array is read-only and app should only
+/// Array of ABCWallet objects currently loaded into account. This array is read-only and app should only
 /// access the array while in the main queue.
 @property (atomic, strong) NSMutableArray            *arrayWallets;
 
-/// Array of archived Wallet objects currently loaded into account. This array is read-only and app should only
+/// Array of archived ABCWallet objects currently loaded into account. This array is read-only and app should only
 /// access the array while in the main queue.
 @property (atomic, strong) NSMutableArray            *arrayArchivedWallets;
 
-/// Array of NSString * wallet names. This array is read-only and app should only
+/// Array of NSString wallet names. This array is read-only and app should only
 /// access the array while in the main queue.
 @property (atomic, strong) NSMutableArray            *arrayWalletNames;
 
@@ -122,12 +122,12 @@
 /// arrayWallets[currentWalletIndex] = currentWallet
 @property (atomic)         int                       currentWalletIndex;
 
-/// Array of NSString* categories with which a user to could choose to tag a transaction with.
+/// ABCCategories object which lists category options a user could choose to tag a transaction with.
 /// Categories must start with "Income", "Expense", "Transfer" or "Exchange" plus a ":" and then
 /// an arbitrary subcategory such as "Food & Dining". ie. "Expense:Rent"
 @property (atomic, strong) ABCCategories             *categories;
 
-/// DataStore object for allowing arbitrary Edge Secure data storage and retrieval on this
+/// ABCDataStore object for allowing arbitrary Edge Secure data storage and retrieval on this
 /// ABCAccount
 @property                  ABCDataStore              *dataStore;
 
@@ -224,7 +224,7 @@
  * Enable or disable PIN login on this account. Set enable = YES to allow
  * PIN login. Enabling PIN login creates a local account decryption key that
  * is split with one have in local device storage and the other half on Airbitz
- * servers. When using [AirbitzCore signInWithPIN] the PIN is sent to Airbitz servers
+ * servers. When using [AirbitzCore signInWithPIN:username:pin:delegate:error] the PIN is sent to Airbitz servers
  * to authenticate the user. If the PIN is correct, the second half of the decryption
  * key is sent back to the device. Combined with the locally saved key, the two
  * are then used to decrypt the local account thereby loggin in the user.
@@ -250,7 +250,7 @@
  *  settings or the global default currency if settings unavailable. ie. "USD, EUR, CAD, PHP"
  * (Optional. If used, method returns immediately with void
  * @param completionHandler (Optional) Code block called on success. Returns void if used<br>
- * - *param* ABCWallet* User object.<br>
+ * - *param* ABCWallet User object.<br>
  * @param errorHandler (Optional) Code block called on error with parameters<br>
  * - *param* NSError*
  * @return void
@@ -267,7 +267,7 @@
  *  settings or the global default currency if settings unavailable. ie. "USD, EUR, CAD, PHP"
  * (Optional. If used, method returns immediately with void
  * @param error NSError** May be set to nil. Only used when not using completion handler
- * @return ABCWallet* wallet object or nil if failure.
+ * @return ABCWallet wallet object or nil if failure.
  */
 - (ABCWallet *) createWallet:(NSString *)walletName currency:(NSString *)currency error:(NSError **)error;
 - (ABCWallet *) createWallet:(NSString *)walletName currency:(NSString *)currency;
@@ -277,7 +277,7 @@
 /**
  * Returns an ABCWallet object looked up by walletUUID
  * @param walletUUID NSString* uuid of wallet to find
- * @return ABCWallet* Returned wallet object or nil if not found
+ * @return ABCWallet Returned wallet object or nil if not found
  */
 - (ABCWallet *)getWallet:(NSString *)walletUUID;
 

@@ -117,15 +117,15 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  * Create an ABCSpend object from text. Text could be a bitcoin address or BIP21/BIP70 URI.
  * @param uri NSString*  Bitcoin address or full BIP21/BIP70 uri
  * @param error NSError** Pointer to error object.
- * @return ABCSpend* ABCSpend object or nil if failure.
+ * @return ABCSpend ABCSpend object or nil if failure.
  */
 - (ABCSpend *)newSpendFromText:(NSString *)uri error:(NSError **)error;
 
 /**
  * Create an ABCSpend object from text. Text could be a bitcoin address or BIP21/BIP70 URI.
  * @param uri NSString*  Bitcoin address or full BIP21/BIP70 uri
- * @param completionHandler Completion handler code block which is called with ABCSpend*.<br>
- * - *param* ABCSpend* ABCSpend object.
+ * @param completionHandler Completion handler code block which is called with ABCSpend.<br>
+ * - *param* ABCSpend ABCSpend object.
  * @param errorHandler Error handler code block which is called with the following args<br>
  * - *param* NSError* error object
  * @return void
@@ -137,9 +137,9 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 /**
  * Creates a ABCSpend object from a wallet to wallet transfer. Transfer goes from
  * current object wallet to [ABCWallet] destWallet
- * @param destWallet ABCWallet* of destination wallet for transfer
+ * @param destWallet ABCWallet of destination wallet for transfer
  * @param error NSError** Pointer to error object.
- * @return ABCSpend* ABCSpend object or nil if failure
+ * @return ABCSpend ABCSpend object or nil if failure
  */
 - (ABCSpend *)newSpendTransfer:(ABCWallet *)destWallet error:(NSError **)error;
 
