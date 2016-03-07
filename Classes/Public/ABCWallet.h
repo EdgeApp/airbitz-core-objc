@@ -157,6 +157,14 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  */
 - (NSError *)exportTransactionsToCSV:(NSMutableString *) csv;
 
+/**
+ * Export a wallet's transactions to QBO format
+ * @param csv NSMutableString* allocated and initialized mutable string to receive CSV contents.
+ *  Must not be nil.
+ * @return NSError* error object. nil if success
+ */
+- (NSError *)exportTransactionsToQBO:(NSMutableString *) qbo;
+
 /*
  * Export a wallet's private seed in raw entropy format
  * @param seed NSMutableString* allocated and initialized mutable string to receive private seed contents.

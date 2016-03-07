@@ -397,6 +397,32 @@ static const int importTimeout                  = 30;
     return nserror;
 }
 
+- (NSError *)exportTransactionsToQBO:(NSMutableString *) qbo;
+{
+    char *szQBOData = nil;
+    tABC_Error error;
+    int64_t startTime = 0; // Need to pull this from GUI
+    int64_t endTime = 0x0FFFFFFFFFFFFFFF; // Need to pull this from GUI
+    
+    if (!qbo)
+    {
+        error.code = ABC_CC_NULLPtr;
+        return [ABCError makeNSError:error];
+    }
+    ABC_QBOExport([self.account.name UTF8String],
+                  [self.account.password UTF8String],
+                  [self.uuid UTF8String],
+                  startTime, endTime, &szQBOData, &error);
+    NSError *nserror = [ABCError makeNSError:error];
+    if (!nserror)
+    {
+        [qbo setString:[NSString stringWithCString:szQBOData encoding:NSASCIIStringEncoding]];
+    }
+    
+    if (szQBOData) free(szQBOData);
+    return nserror;
+}
+
 - (NSError *)exportWalletPrivateSeed:(NSMutableString *) seed
 {
     tABC_Error error;
