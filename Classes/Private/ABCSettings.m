@@ -80,16 +80,16 @@
 {
     tABC_Error error;
     tABC_AccountSettings *pSettings;
-    BOOL pinLoginChanged = NO;
     BOOL settingsChanged = NO;
+    BOOL exchangeRateSourceChanged = NO;
 
     ABC_LoadAccountSettings([self.account.name UTF8String], [self.account.password UTF8String], &pSettings, &error);
     NSError *nserror = [ABCError makeNSError:error];
 
     if (!nserror)
     {
-        if (pSettings->bDisablePINLogin != self.bDisablePINLogin)
-            pinLoginChanged = settingsChanged = YES;
+        if (![self isNSStringEqualToCString:self.exchangeRateSource   cstring:pSettings->szExchangeRateSource] )
+            exchangeRateSourceChanged = YES;
         int currencyNum = self.defaultCurrency.currencyNum;
         if ([self haveSettingsChanged:pSettings])
         {
@@ -110,6 +110,11 @@
             settingsChanged = YES;
         }
 
+        if (exchangeRateSourceChanged)
+        {
+            [self.account requestExchangeRateUpdate];
+        }
+        
         if (settingsChanged)
         {
             ABC_UpdateAccountSettings([self.account.name UTF8String], [self.account.password UTF8String], pSettings, &error);

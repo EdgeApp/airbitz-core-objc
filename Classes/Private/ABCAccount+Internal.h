@@ -36,5 +36,7 @@
 - (void)stopQueues;
 - (int)dataOperationCount;
 - (long) saveLogoutDate;
+- (void)requestExchangeRateUpdate;
+
 
 @end
