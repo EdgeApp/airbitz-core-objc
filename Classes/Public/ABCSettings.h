@@ -10,8 +10,6 @@
 @class ABCAccount;
 @class ABCDenomination;
 
-#define ABCArrayExchanges     @[@"Bitstamp", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
-
 @interface ABCSettings : NSObject
 
 /// @name User Settings that are synced across devices
