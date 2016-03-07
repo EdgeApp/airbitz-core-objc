@@ -140,21 +140,24 @@ static const int notifySyncDelay          = 1;
 {
     if ([self isLoggedIn])
     {
-        // Initialize the exchange rates queue
-        exchangeTimer = [NSTimer scheduledTimerWithTimeInterval:ABC_EXCHANGE_RATE_REFRESH_INTERVAL_SECONDS
-                                                         target:self
-                                                       selector:@selector(requestExchangeRateUpdate:)
-                                                       userInfo:nil
-                                                        repeats:YES];
         // Request one right now
-        [self requestExchangeRateUpdate:nil];
+        [self requestExchangeRateUpdate];
         
-        // Initialize data sync queue
-        dataSyncTimer = [NSTimer scheduledTimerWithTimeInterval:fileSyncFrequencySeconds
-                                                         target:self
-                                                       selector:@selector(dataSyncAllWalletsAndAccount:)
-                                                       userInfo:nil
-                                                        repeats:YES];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // Initialize the exchange rates queue
+            exchangeTimer = [NSTimer scheduledTimerWithTimeInterval:ABC_EXCHANGE_RATE_REFRESH_INTERVAL_SECONDS
+                                                             target:self
+                                                           selector:@selector(requestExchangeRateUpdate)
+                                                           userInfo:nil
+                                                            repeats:YES];
+            
+            // Initialize data sync queue
+            dataSyncTimer = [NSTimer scheduledTimerWithTimeInterval:fileSyncFrequencySeconds
+                                                             target:self
+                                                           selector:@selector(dataSyncAllWalletsAndAccount)
+                                                           userInfo:nil
+                                                            repeats:YES];
+        });
     }
 }
 
@@ -808,7 +811,7 @@ static const int notifySyncDelay          = 1;
     });
     [self.abc setLastAccessedAccount:self.name];
     [self.settings loadSettings];
-    [self requestExchangeRateUpdate:nil];
+    [self requestExchangeRateUpdate];
     
     //
     // Do the following for first wallet then all others
@@ -829,7 +832,7 @@ static const int notifySyncDelay          = 1;
     [self postToWatcherQueue: ^
      {
          // Goes to dataQueue after watcherQueue is complete from above
-         [self dataSyncAllWalletsAndAccount:nil];
+         [self dataSyncAllWalletsAndAccount];
          
          //
          // Start the watchers to grab new blockchain transaction data. Do this AFTER git sync
@@ -1132,7 +1135,7 @@ static const int notifySyncDelay          = 1;
                        [walletUUID UTF8String], &Error);
 }
 
-- (void)requestExchangeRateUpdate:(NSTimer *)object
+- (void)requestExchangeRateUpdate
 {
     dispatch_async(dispatch_get_main_queue(),^
                    {
@@ -1211,7 +1214,7 @@ static const int notifySyncDelay          = 1;
 
 
 
-- (void)dataSyncAllWalletsAndAccount:(NSTimer *)object
+- (void)dataSyncAllWalletsAndAccount
 {
     // Do not request a sync one is currently in progress
     if ([dataQueue operationCount] > 0) {
