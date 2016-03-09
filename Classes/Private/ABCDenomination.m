@@ -132,16 +132,19 @@ static ABCDenomination *uBTC = nil;
 {
     tABC_Error error;
     char *pFormatted = NULL;
-    int decimalPlaces;
+    int decimalPlaces, prettyDecimalPlaces;
+    
+    decimalPlaces = [self maxBitcoinDecimalPlaces];
     
     if (cropDecimals)
     {
-        decimalPlaces = [self prettyBitcoinDecimalPlaces];
+        prettyDecimalPlaces = [self prettyBitcoinDecimalPlaces];
     }
     else
     {
-        decimalPlaces = [self maxBitcoinDecimalPlaces];
+        prettyDecimalPlaces = [self prettyBitcoinDecimalPlaces];
     }
+
     
     bool negative = amount < 0;
     amount = llabs(amount);
@@ -165,7 +168,7 @@ static ABCDenomination *uBTC = nil;
         int offset = (start - pFormatted) % 3;
         NSNumberFormatter *f = [ABCCurrency generateNumberFormatter];
         
-        for (int i = 0; i < strlen(pFormatted) && p - start <= decimalPlaces; ++i, ++p)
+        for (int i = 0; i < strlen(pFormatted) && p - start <= prettyDecimalPlaces; ++i, ++p)
         {
             if (p < start)
             {
