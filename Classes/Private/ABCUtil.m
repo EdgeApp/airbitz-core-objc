@@ -16,6 +16,49 @@
 
 }
 
++ (ABCParsedURI *)parseURI:(NSString *)uri error:(NSError **)nserror;
+{
+    tABC_ParsedUri *parsedUri;
+    ABCParsedURI *abcParsedURI = nil;
+    tABC_Error error;
+    NSError *lnserror = nil;
+    
+    if (!uri)
+    {
+        error.code = ABC_CC_NULLPtr;
+        lnserror = [ABCError makeNSError:error];
+    }
+    else
+    {
+        ABC_ParseUri((char *)[uri UTF8String], &parsedUri, &error);
+        lnserror = [ABCError makeNSError:error];
+    }
+    
+    if (!lnserror && parsedUri)
+    {
+        abcParsedURI = [ABCParsedURI alloc];
+        abcParsedURI.amountSatoshi  = parsedUri->amountSatoshi;
+        if (parsedUri->szAddress)
+            abcParsedURI.address        = [NSString stringWithUTF8String:parsedUri->szAddress];
+        if (parsedUri->szWif)
+            abcParsedURI.privateKey     = [NSString stringWithUTF8String:parsedUri->szWif];
+        if (parsedUri->szBitidUri)
+            abcParsedURI.bitIDURI       = [NSString stringWithUTF8String:parsedUri->szBitidUri];
+        if (parsedUri->szLabel)
+            abcParsedURI.label          = [NSString stringWithUTF8String:parsedUri->szLabel];
+        if (parsedUri->szMessage)
+            abcParsedURI.message        = [NSString stringWithUTF8String:parsedUri->szMessage];
+        if (parsedUri->szCategory)
+            abcParsedURI.category       = [NSString stringWithUTF8String:parsedUri->szCategory];
+        if (parsedUri->szRet)
+            abcParsedURI.returnURI      = [NSString stringWithUTF8String:parsedUri->szRet];
+    }
+    
+    if (nserror) *nserror = lnserror;
+    
+    return abcParsedURI;
+}
+
 + (UIImage *)encodeStringToQRImage:(NSString *)string error:(NSError **)nserror;
 {
     unsigned char *pData = NULL;

@@ -4,6 +4,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ABCParsedURI.h"
 
 #define SYSTEM_VERSION_EQUAL_TO(v)                  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedSame)
 #define SYSTEM_VERSION_GREATER_THAN(v)              ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedDescending)
@@ -33,6 +34,15 @@
  * @return UIImage* returned image
  */
 + (UIImage *)encodeStringToQRImage:(NSString *)string error:(NSError **)error;
+
+
+/**
+ * Parses a bitcoin BIP21 URI, Wif private key, or Airbitz hbits private key
+ * @param uri NSString to parse
+ * @param error NSError Pointer to NSError object. (Optional. May be set to nil)
+ * @return ABCParsedURI ABCParsedURI Object with various parameters parsed out
+ */
++ (ABCParsedURI *)parseURI:(NSString *)uri error:(NSError **)nserror;
 
 + (NSString *)platform;
 + (NSString *)platformString;

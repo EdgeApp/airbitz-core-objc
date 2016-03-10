@@ -15,6 +15,7 @@
 #import "ABCKeychain+Internal.h"
 #import "ABCLocalSettings.h"
 #import "ABCMetaData+Internal.h"
+#import "ABCParsedURI+Internal.h"
 #import "ABCReceiveAddress+Internal.h"
 #import "ABCSettings+Internal.h"
 #import "ABCSpend+Internal.h"
