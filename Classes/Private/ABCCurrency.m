@@ -77,6 +77,22 @@ static NSArray                  *arrayCurrencyStrings = nil;
     return arrayCurrencyNums;
 }
 
+- (NSString *)symbol
+{
+    if (!_symbol)
+    {
+        NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+        for (NSString *l in NSLocale.availableLocaleIdentifiers) {
+            f.locale = [NSLocale localeWithLocaleIdentifier:l];
+            if ([f.currencyCode isEqualToString:_code]) {
+                _symbol = f.currencySymbol;
+                break;
+            }
+        }
+    }
+    return _symbol;
+}
+
 const NSString *syncToken = @"ABCCurrencySyncToken";
 
 + (void) initializeCurrencyArrays
@@ -105,16 +121,7 @@ const NSString *syncToken = @"ABCCurrencySyncToken";
                                         [NSString stringWithUTF8String:aCurrencies[i].szDescription]];
             currency.code = [NSString stringWithUTF8String:aCurrencies[i].szCode];
             currency.currencyNum = aCurrencies[i].num;
-            
-            for (NSString *l in NSLocale.availableLocaleIdentifiers) {
-                NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
-                f.locale = [NSLocale localeWithLocaleIdentifier:l];
-                if ([f.currencyCode isEqualToString:currency.code]) {
-                    currency.symbol = f.currencySymbol;
-                    break;
-                }
-            }
-            
+
             [lArrayCurrency addObject:currency];
             [lArrayCurrencyCodes addObject:currency.code];
             [lArrayCurrencyNums addObject:[NSNumber numberWithInt:aCurrencies[i].num]];
