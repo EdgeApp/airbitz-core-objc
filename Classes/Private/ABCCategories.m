@@ -3,7 +3,7 @@
 //  Airbitz
 //
 
-#import "ABCCategories.h"
+#import "ABCCategories+Internal.h"
 #import "AirbitzCore+Internal.h"
 
 @interface ABCCategories ()

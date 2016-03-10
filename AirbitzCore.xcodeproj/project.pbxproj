@@ -125,6 +125,7 @@
 		DA7236F71C90E4EE00E9966B /* ABCParsedURI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCParsedURI.m; path = Classes/Private/ABCParsedURI.m; sourceTree = SOURCE_ROOT; };
 		DA7236F91C90E4F900E9966B /* ABCParsedURI+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ABCParsedURI+Internal.h"; path = "Classes/Private/ABCParsedURI+Internal.h"; sourceTree = SOURCE_ROOT; };
 		DA7236FA1C90E51200E9966B /* ABCParsedURI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCParsedURI.h; path = Classes/Public/ABCParsedURI.h; sourceTree = SOURCE_ROOT; };
+		DA7236FC1C916BE800E9966B /* ABCCategories+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ABCCategories+Internal.h"; path = "Classes/Private/ABCCategories+Internal.h"; sourceTree = SOURCE_ROOT; };
 		DA78DC3E1C8283A000F17F13 /* ABCCurrency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCCurrency.h; path = Classes/Public/ABCCurrency.h; sourceTree = SOURCE_ROOT; };
 		DA78DC3F1C828D3800F17F13 /* ABCCurrency.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCCurrency.m; path = Classes/Private/ABCCurrency.m; sourceTree = SOURCE_ROOT; };
 		DA78DC411C82A1E600F17F13 /* ABCCurrency+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ABCCurrency+Internal.h"; path = "Classes/Private/ABCCurrency+Internal.h"; sourceTree = SOURCE_ROOT; };
@@ -213,6 +214,7 @@
 				DA5E8D8D1C633950005E3093 /* ABC.h */,
 				DAC0C6FE1C6AE15B006013A7 /* AirbitzCore+Internal.h */,
 				DA2195281C6EA126009A2CF5 /* ABCAccount+Internal.h */,
+				DA7236FC1C916BE800E9966B /* ABCCategories+Internal.h */,
 				DA78DC411C82A1E600F17F13 /* ABCCurrency+Internal.h */,
 				DAF16DD21C844112004642B9 /* ABCDataStore+Internal.h */,
 				DA5E8D8E1C633950005E3093 /* ABCError.h */,

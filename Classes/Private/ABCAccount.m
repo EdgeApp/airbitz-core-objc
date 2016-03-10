@@ -47,10 +47,11 @@ static const int notifySyncDelay          = 1;
     {
         if (!airbitzCore) return nil;
         
-        self.abc = airbitzCore;
-        self.exchangeCache = [self.abc exchangeCacheGet];
-        self.dataStore      = [ABCDataStore alloc];
-        self.dataStore.account = self;
+        self.abc                    = airbitzCore;
+        self.exchangeCache          = [self.abc exchangeCacheGet];
+        self.dataStore              = [ABCDataStore alloc];
+        self.dataStore.account      = self;
+        self.categories             = [[ABCCategories alloc] initWithAccount:self];
         
         abcError = [[ABCError alloc] init];
         
