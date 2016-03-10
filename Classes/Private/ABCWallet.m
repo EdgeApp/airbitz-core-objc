@@ -328,15 +328,15 @@ static const int importTimeout                  = 30;
     }
     if (bSuccess)
     {
-        // private key is a valid format
-        // attempt to sweep it
-        NSString *address;
+        ABCParsedURI *parsedURI = [ABCUtil parseURI:privateKey error:nil];
+        self.sweptAddress = parsedURI.address;
+        
+        NSString *dummyAddress; // To be deprecated from ABC_SweepKey
         nserror = [self sweepKey:privateKey
                       intoWallet:self.uuid
-                         address:&address];
-        self.sweptAddress = address;
+                         address:&dummyAddress];
         
-        if (nil != self.sweptAddress && self.sweptAddress.length)
+        if (nil != self.sweptAddress && !nserror)
         {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (importingHandler) importingHandler(self.sweptAddress);
