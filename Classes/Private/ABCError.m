@@ -20,17 +20,41 @@
     }
     else
     {
-        NSString *failureReason = [NSString stringWithFormat:@"%@\n%@: %@:%d",
-                                   [NSString stringWithUTF8String:error.szDescription],
+        NSString *failureReason = [NSString stringWithUTF8String:error.szDescription];
+        NSString *failureDetail = [NSString stringWithFormat:@"%@: %@:%d",
                                    [NSString stringWithUTF8String:error.szSourceFunc],
                                    [NSString stringWithUTF8String:error.szSourceFile],
                                    error.nSourceLine];
         return [NSError errorWithDomain:ABCErrorDomain
                                    code:error.code
                                userInfo:@{ NSLocalizedDescriptionKey:[ABCError errorMap:error] ,
-                                           NSLocalizedFailureReasonErrorKey:failureReason}];
+                                           NSLocalizedFailureReasonErrorKey:failureReason,
+                                           NSLocalizedRecoverySuggestionErrorKey:failureDetail }];
     }
 }
+
++ (NSError *)makeNSError:(tABC_Error)error description:(NSString *)description;
+{
+    if (ABCConditionCodeOk == error.code)
+    {
+        return nil;
+    }
+    else
+    {
+        NSString *failureReason = [NSString stringWithUTF8String:error.szDescription];
+        NSString *failureDetail = [NSString stringWithFormat:@"%@: %@:%d",
+                                   [NSString stringWithUTF8String:error.szSourceFunc],
+                                   [NSString stringWithUTF8String:error.szSourceFile],
+                                   error.nSourceLine];
+        return [NSError errorWithDomain:ABCErrorDomain
+                                   code:error.code
+                               userInfo:@{ NSLocalizedDescriptionKey:description,
+                                           NSLocalizedFailureReasonErrorKey:failureReason,
+                                           NSLocalizedRecoverySuggestionErrorKey:failureDetail }];
+    }
+}
+
+
 
 + (NSString *)errorMap:(tABC_Error)error;
 {

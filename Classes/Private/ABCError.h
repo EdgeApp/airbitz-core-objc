@@ -15,6 +15,7 @@
  */
 + (NSString *)conditionCodeMap:(const ABCConditionCode) code;
 
-+ (NSError *) makeNSError:(tABC_Error)error;
++ (NSError *)makeNSError:(tABC_Error)error;
++ (NSError *)makeNSError:(tABC_Error)error description:(NSString *)description;
 
 @end

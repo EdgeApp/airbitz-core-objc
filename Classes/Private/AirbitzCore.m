@@ -697,6 +697,7 @@
     tABC_Error error;
     NSError *lnserror;
     ABCAccount *account = nil;
+    int pinLoginWaitSeconds = 0;
     
     if (!username || !pin)
     {
@@ -709,8 +710,12 @@
         {
             ABC_PinLogin([username UTF8String],
                          [pin UTF8String],
+                         &pinLoginWaitSeconds,
                          &error);
-            lnserror = [ABCError makeNSError:error];
+            if (ABC_CC_InvalidPinWait == error.code)
+                lnserror = [ABCError makeNSError:error description:[NSString stringWithFormat:invalidPINWaitSecondsText, pinLoginWaitSeconds]];
+            else
+                lnserror = [ABCError makeNSError:error];
             
             if (!lnserror)
             {
