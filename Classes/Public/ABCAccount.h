@@ -149,7 +149,7 @@
                    includeCurrencyCode:(bool)includeCurrencyCode;
 - (BOOL)needsRecoveryQuestionsReminder;
 - (NSString *) bitidParseURI:(NSString *)uri;
-- (BOOL) bitidLogin:(NSString *)uri;
+- (NSError *) bitidLogin:(NSString *)uri;
 - (BitidSignature *) bitidSign:(NSString *)uri msg:(NSString *)msg;
 
 

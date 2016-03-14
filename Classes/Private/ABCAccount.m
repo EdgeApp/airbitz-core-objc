@@ -1398,15 +1398,12 @@ static const int notifySyncDelay          = 1;
     
 }
 
-- (BOOL) bitidLogin:(NSString *)uri;
+- (NSError *) bitidLogin:(NSString *)uri;
 {
     tABC_Error error;
     
     ABC_BitidLogin([self.name UTF8String], nil, [uri UTF8String], &error);
-    
-    if (error.code == ABC_CC_Ok)
-        return YES;
-    return NO;
+    return [ABCError makeNSError:error];    
 }
 
 - (BitidSignature *)bitidSign:(NSString *)uri msg:(NSString *)message
