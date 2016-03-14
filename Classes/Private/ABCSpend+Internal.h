@@ -8,7 +8,15 @@
 #import "ABCSpend.h"
 #import "AirbitzCore+Internal.h"
 
+@interface ABCPaymentRequest (Internal)
+@property                           tABC_PaymentRequest     *pPaymentRequest;
+@end
+
 @interface ABCSpend (Internal)
 
+@property (nonatomic)               void                    *pSpend;
+
+- (id)init:(id)abc;
+- (void)spendObjectSet:(void *)o;
 
 @end

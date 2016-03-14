@@ -44,6 +44,14 @@
  */
 + (ABCParsedURI *)parseURI:(NSString *)uri error:(NSError **)nserror;
 
++ (NSString *)encodeURI:(NSString *)address
+                 amount:(uint64_t)amount
+                  label:(NSString *)label
+                message:(NSString *)message
+               category:(NSString *)category
+                    ret:(NSString *)ret;
+
+
 + (NSString *)platform;
 + (NSString *)platformString;
 

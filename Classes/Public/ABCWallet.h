@@ -112,42 +112,12 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 - (ABCReceiveAddress *)getReceiveAddress:(NSString *)address error:(NSError **)error;
 - (ABCReceiveAddress *)getReceiveAddress:(NSString *)address;
 
-
 /**
- * Create an ABCSpend object from text. Text could be a bitcoin address or BIP21/BIP70 URI.
- * @param uri NSString*  Bitcoin address or full BIP21/BIP70 uri
- * @param error NSError** Pointer to error object.
- * @return ABCSpend ABCSpend object or nil if failure.
+ * Create a new ABCSpend object. Can be explicitly deallocated using [ABCSpend free].
+ * @param error Return pointer to NSError object
+ * @return ABCSpend object
  */
-- (ABCSpend *)newSpendFromText:(NSString *)uri error:(NSError **)error;
-
-/**
- * Create an ABCSpend object from text. Text could be a bitcoin address or BIP21/BIP70 URI.
- * @param uri NSString*  Bitcoin address or full BIP21/BIP70 uri
- * @param completionHandler Completion handler code block which is called with ABCSpend.<br>
- * - *param* ABCSpend ABCSpend object.
- * @param errorHandler Error handler code block which is called with the following args<br>
- * - *param* NSError* error object
- * @return void
- */
-- (void)newSpendFromText:(NSString *)uri
-                complete:(void(^)(ABCSpend *sp))completionHandler
-                   error:(void (^)(NSError *error)) errorHandler;
-
-/**
- * Creates a ABCSpend object from a wallet to wallet transfer. Transfer goes from
- * current object wallet to [ABCWallet] destWallet
- * @param destWallet ABCWallet of destination wallet for transfer
- * @param error NSError** Pointer to error object.
- * @return ABCSpend ABCSpend object or nil if failure
- */
-- (ABCSpend *)newSpendTransfer:(ABCWallet *)destWallet error:(NSError **)error;
-
-- (ABCSpend *)newSpendInternal:(NSString *)address
-                         label:(NSString *)label
-                      category:(NSString *)category
-                         notes:(NSString *)notes
-                 amountSatoshi:(uint64_t)amountSatoshi;
+- (ABCSpend *)createNewSpend:(NSError **)error;
 
 /**
  * Export a wallet's transactions to CSV format

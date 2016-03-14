@@ -183,102 +183,25 @@ static const int importTimeout                  = 30;
     return receiveAddress;
 }
 
-
-- (ABCSpend *)newSpendFromText:(NSString *)uri error:(NSError *__autoreleasing *)nserror;
+- (ABCSpend *)createNewSpend:(NSError **)nserror;
 {
+    ABCSpend *spend = nil;
     tABC_Error error;
-    NSError *nserror2 = nil;
-    ABCSpend *abcSpend = nil;
+    NSError *lnserror = nil;
+    void *ptr;
     
-    if (!uri)
-    {
-        error.code = (tABC_CC)ABCConditionCodeNULLPtr;
-        nserror2 = [ABCError makeNSError:error];
-    }
-    else
-    {
-        tABC_SpendTarget *pSpend = NULL;
-        
-        ABC_SpendNewDecode([uri UTF8String], &pSpend, &error);
-        nserror2 = [ABCError makeNSError:error];
-        
-        if (!nserror2)
-        {
-            abcSpend = [[ABCSpend alloc] init:self];
-            [abcSpend spendObjectSet:(void *)pSpend];
-        }
-    }
-    if (nserror) *nserror = nserror2;
-    return abcSpend;
-}
-
-- (void)newSpendFromText:(NSString *)uri
-                complete:(void(^)(ABCSpend *sp))completionHandler
-                   error:(void (^)(NSError *error)) errorHandler;
-{
-    [self.account postToMiscQueue:^{
-        ABCSpend *abcSpend;
-        NSError *error;
-        abcSpend = [self newSpendFromText:uri error:&error];
-        
-        dispatch_async(dispatch_get_main_queue(),^{
-            if (!error) {
-                if (completionHandler) completionHandler(abcSpend);
-            } else {
-                if (errorHandler) errorHandler(error);
-            }
-        });
-    }];
-}
-
-- (ABCSpend *)newSpendTransfer:(ABCWallet *)destWallet error:(NSError **)nserror;
-{
-    tABC_Error error;
-    NSError *nserror2 = nil;
-    ABCSpend *abcSpend = nil;
+    ABC_SpendNew([self.account.name UTF8String], [[self uuid] UTF8String], &ptr, &error);
+    lnserror = [ABCError makeNSError:error];
     
-    if (!destWallet)
+    if (!lnserror)
     {
-        error.code = (tABC_CC)ABCConditionCodeNULLPtr;
-        nserror2 = [ABCError makeNSError:error];
+        spend = [[ABCSpend alloc]init:self];
+        spend.pSpend = ptr;
     }
-    else
-    {
-        tABC_SpendTarget *pSpend = NULL;
-        ABC_SpendNewTransfer([self.account.name UTF8String],
-                             [destWallet.uuid UTF8String], 0, &pSpend, &error);
-        nserror2 = [ABCError makeNSError:error];
-        if (!nserror2)
-        {
-            abcSpend = [[ABCSpend alloc] init:self];
-            abcSpend.destWallet = destWallet;
-            [abcSpend spendObjectSet:(void *)pSpend];
-        }
-    }
-    if (nserror) *nserror = nserror2;
-    return abcSpend;
-}
-
-- (ABCSpend *)newSpendInternal:(NSString *)address
-                         label:(NSString *)label
-                      category:(NSString *)category
-                         notes:(NSString *)notes
-                 amountSatoshi:(uint64_t)amountSatoshi;
-{
-    tABC_Error error;
-    ABCSpend *abcSpend = [[ABCSpend alloc] init:self];
-    tABC_SpendTarget *pSpend = NULL;
     
-    ABC_SpendNewInternal([address UTF8String], [label UTF8String],
-                         [category UTF8String], [notes UTF8String],
-                         amountSatoshi, &pSpend, &error);
-    NSError *nserror = [ABCError makeNSError:error];
-    if (!nserror)
-    {
-        [abcSpend spendObjectSet:(void *)pSpend];
-        return abcSpend;
-    }
-    return nil;
+    if (nserror) *nserror = lnserror;
+    
+    return spend;
 }
 
 - (void)importPrivateKey:(NSString *)privateKey
@@ -777,7 +700,6 @@ static const int importTimeout                  = 30;
                  [self.account.password UTF8String],
                  [walletUUID UTF8String],
                  [privateKey UTF8String],
-                 &pszAddress,
                  &error);
     nserror = [ABCError makeNSError:error];
     if (!nserror && pszAddress)

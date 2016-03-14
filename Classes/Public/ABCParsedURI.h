@@ -7,18 +7,18 @@
 
 #import "AirbitzCore.h"
 
+@class ABCPaymentRequest;
+
 @interface ABCParsedURI : NSObject
 
 @property                           NSString            *address;
 @property                           NSString            *privateKey;
-//@property                           NSString            *paymentProtocol;
 @property                           NSString            *bitIDURI;
-
-
+@property                           NSString            *paymentRequestURL;
 @property                           uint64_t            amountSatoshi;
-@property                           NSString            *label;
-@property                           NSString            *message;
-@property                           NSString            *category;
+@property                           ABCMetaData         *metadata;
 @property                           NSString            *returnURI;
+
+- (ABCPaymentRequest *) getPaymentRequest:(NSError **)error;
 
 @end

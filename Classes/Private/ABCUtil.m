@@ -18,7 +18,7 @@
 
 + (ABCParsedURI *)parseURI:(NSString *)uri error:(NSError **)nserror;
 {
-    tABC_ParsedUri *parsedUri;
+    tABC_ParsedUri *parsedUri = NULL;
     ABCParsedURI *abcParsedURI = nil;
     tABC_Error error;
     NSError *lnserror = nil;
@@ -36,27 +36,50 @@
     
     if (!lnserror && parsedUri)
     {
-        abcParsedURI = [ABCParsedURI alloc];
-        abcParsedURI.amountSatoshi  = parsedUri->amountSatoshi;
+        abcParsedURI                        = [ABCParsedURI alloc];
+        abcParsedURI.metadata               = [ABCMetaData alloc];
+        abcParsedURI.amountSatoshi          = parsedUri->amountSatoshi;
         if (parsedUri->szAddress)
-            abcParsedURI.address        = [NSString stringWithUTF8String:parsedUri->szAddress];
+            abcParsedURI.address            = [NSString stringWithUTF8String:parsedUri->szAddress];
         if (parsedUri->szWif)
-            abcParsedURI.privateKey     = [NSString stringWithUTF8String:parsedUri->szWif];
+            abcParsedURI.privateKey         = [NSString stringWithUTF8String:parsedUri->szWif];
         if (parsedUri->szBitidUri)
-            abcParsedURI.bitIDURI       = [NSString stringWithUTF8String:parsedUri->szBitidUri];
+            abcParsedURI.bitIDURI           = [NSString stringWithUTF8String:parsedUri->szBitidUri];
         if (parsedUri->szLabel)
-            abcParsedURI.label          = [NSString stringWithUTF8String:parsedUri->szLabel];
+            abcParsedURI.metadata.payeeName = [NSString stringWithUTF8String:parsedUri->szLabel];
         if (parsedUri->szMessage)
-            abcParsedURI.message        = [NSString stringWithUTF8String:parsedUri->szMessage];
+            abcParsedURI.metadata.notes     = [NSString stringWithUTF8String:parsedUri->szMessage];
         if (parsedUri->szCategory)
-            abcParsedURI.category       = [NSString stringWithUTF8String:parsedUri->szCategory];
+            abcParsedURI.metadata.category  = [NSString stringWithUTF8String:parsedUri->szCategory];
         if (parsedUri->szRet)
-            abcParsedURI.returnURI      = [NSString stringWithUTF8String:parsedUri->szRet];
+            abcParsedURI.returnURI          = [NSString stringWithUTF8String:parsedUri->szRet];
+        if (parsedUri->szPaymentProto)
+            abcParsedURI.paymentRequestURL  = [NSString stringWithUTF8String:parsedUri->szPaymentProto];
     }
     
     if (nserror) *nserror = lnserror;
     
+    if (parsedUri)
+        free(parsedUri);
+    
     return abcParsedURI;
+}
+
++ (NSString *)encodeURI:(NSString *)address
+                 amount:(uint64_t)amount
+                  label:(NSString *)label
+                message:(NSString *)message
+               category:(NSString *)category
+                    ret:(NSString *)ret;
+{
+    char *pszResult = NULL;
+    tABC_Error error;
+    
+    ABC_AddressUriEncode([address UTF8String],
+                         amount, [label UTF8String],
+                         [message UTF8String], [category UTF8String], [ret UTF8String], &pszResult, &error);
+    NSString *uri = [NSString stringWithUTF8String:pszResult];
+    return uri;
 }
 
 + (UIImage *)encodeStringToQRImage:(NSString *)string error:(NSError **)nserror;
