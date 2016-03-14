@@ -14,6 +14,7 @@
 @property                           NSString            *address;
 @property                           NSString            *privateKey;
 @property                           NSString            *bitIDURI;
+@property                           NSString            *bitIDDomain;
 @property                           NSString            *paymentRequestURL;
 @property                           uint64_t            amountSatoshi;
 @property                           ABCMetaData         *metadata;

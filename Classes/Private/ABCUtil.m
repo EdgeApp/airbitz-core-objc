@@ -19,6 +19,7 @@
 + (ABCParsedURI *)parseURI:(NSString *)uri error:(NSError **)nserror;
 {
     tABC_ParsedUri *parsedUri = NULL;
+    char *szBitidDomain = NULL;
     ABCParsedURI *abcParsedURI = nil;
     tABC_Error error;
     NSError *lnserror = nil;
@@ -44,7 +45,12 @@
         if (parsedUri->szWif)
             abcParsedURI.privateKey         = [NSString stringWithUTF8String:parsedUri->szWif];
         if (parsedUri->szBitidUri)
+        {
             abcParsedURI.bitIDURI           = [NSString stringWithUTF8String:parsedUri->szBitidUri];
+            ABC_BitidParseUri(nil, nil, [abcParsedURI.bitIDURI UTF8String], &szBitidDomain, &error);
+            if (szBitidDomain)
+                abcParsedURI.bitIDDomain    = [NSString stringWithUTF8String:szBitidDomain];
+        }
         if (parsedUri->szLabel)
             abcParsedURI.metadata.payeeName = [NSString stringWithUTF8String:parsedUri->szLabel];
         if (parsedUri->szMessage)
@@ -55,12 +61,14 @@
             abcParsedURI.returnURI          = [NSString stringWithUTF8String:parsedUri->szRet];
         if (parsedUri->szPaymentProto)
             abcParsedURI.paymentRequestURL  = [NSString stringWithUTF8String:parsedUri->szPaymentProto];
+        
+        
     }
     
     if (nserror) *nserror = lnserror;
     
-    if (parsedUri)
-        free(parsedUri);
+    if (parsedUri) free(parsedUri);
+    if (szBitidDomain) free(szBitidDomain);
     
     return abcParsedURI;
 }
