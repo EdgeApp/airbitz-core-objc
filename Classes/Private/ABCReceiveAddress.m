@@ -90,6 +90,8 @@
     NSError *lnserror = nil;
     unsigned char *pData = NULL;
     char *pszURI = NULL;
+    unsigned int width = 0;
+    NSString *label = @"";
 
     //first need to create a transaction details struct
     memset(&details, 0, sizeof(tABC_TxDetails));
@@ -115,15 +117,16 @@
     lnserror = [ABCError makeNSError:error];
     if (lnserror) goto exitnow;
 
-    unsigned int width = 0;
-    ABC_GenerateRequestQRCode([self.wallet.account.name UTF8String],
-            [_wallet.account.password UTF8String],
-            [_wallet.uuid UTF8String],
-            [_address UTF8String],
-            &pszURI,
-            &pData,
-            &width,
-            &error);
+    if (self.wallet.account.settings.bNameOnPayments)
+    {
+        label = self.wallet.account.settings.fullName;
+    }
+
+    ABC_AddressUriEncode([_address UTF8String], _amountSatoshi, [label UTF8String], NULL, NULL, NULL, &pszURI, &error);
+    lnserror = [ABCError makeNSError:error];
+    if (lnserror) goto exitnow;
+    
+    ABC_QrEncode(pszURI, &pData, &width, &error);
     lnserror = [ABCError makeNSError:error];
     if (lnserror) goto exitnow;
 
@@ -186,6 +189,7 @@
     char *szRequestAddress = NULL;
     char *pszURI = NULL;
     NSError *nserror = nil;
+    NSString *label = @"";
     
     //first need to create a transaction details struct
     memset(&details, 0, sizeof(tABC_TxDetails));
@@ -214,14 +218,16 @@
     if (nserror) goto exitnow;
     
     unsigned int width = 0;
-    ABC_GenerateRequestQRCode([self.wallet.account.name UTF8String],
-                              [self.wallet.account.password UTF8String],
-                              [self.wallet.uuid UTF8String],
-                              pRequestID,
-                              &pszURI,
-                              &pData,
-                              &width,
-                              &error);
+    if (self.wallet.account.settings.bNameOnPayments)
+    {
+        label = self.wallet.account.settings.fullName;
+    }
+    
+    ABC_AddressUriEncode([_address UTF8String], _amountSatoshi, [label UTF8String], NULL, NULL, NULL, &pszURI, &error);
+    nserror = [ABCError makeNSError:error];
+    if (nserror) goto exitnow;
+    
+    ABC_QrEncode(pszURI, &pData, &width, &error);
     nserror = [ABCError makeNSError:error];
     if (nserror) goto exitnow;
     
