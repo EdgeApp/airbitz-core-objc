@@ -110,22 +110,6 @@ static ABCDenomination *uBTC = nil;
     return [self satoshiToBTCString:amount withSymbol:symbol cropDecimals:NO];
 }
 
-/**
- * formatSatoshi
- *
- * forceDecimals specifies the number of decimals to shift to
- * the left when converting from satoshi to BTC/mBTC/uBTC etc.
- * ie. for BTC decimals = 8
- *
- * formatSatoshi will use the settings by default if
- * forceDecimals is not supplied
- *
- * cropDecimals will crop the maximum number of digits to the
- * right of the decimal. cropDecimals = 3 will make
- * "1234.12345" -> "1234.123"
- *
- **/
-
 - (NSString *)satoshiToBTCString:(int64_t)amount
                       withSymbol:(bool)symbol
                     cropDecimals:(BOOL)cropDecimals
@@ -142,7 +126,7 @@ static ABCDenomination *uBTC = nil;
     }
     else
     {
-        prettyDecimalPlaces = [self prettyBitcoinDecimalPlaces];
+        prettyDecimalPlaces = decimalPlaces;
     }
 
     
