@@ -11,8 +11,6 @@
 
 @interface ABCTransaction ()
 
-@property                   ABCError            *abcError;
-
 @end
 
 @implementation ABCTransaction
@@ -34,7 +32,6 @@
         self.metaData.notes = @"";
         self.metaData.bizId = 0;
         self.wallet = wallet;
-        self.abcError = [[ABCError alloc] init];
     }
     return self;
 }
