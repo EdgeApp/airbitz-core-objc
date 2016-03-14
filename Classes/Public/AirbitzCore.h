@@ -241,8 +241,14 @@ typedef enum eABCDeviceCaps
 - (ABCAccount *)signIn:(NSString *)username
               password:(NSString *)password
               delegate:(id)delegate
+                 error:(NSError **)nserror;
+- (ABCAccount *)signIn:(NSString *)username
+              password:(NSString *)password
+              delegate:(id)delegate
                    otp:(NSString *)otp
-                 error:(NSError **)error;
+         otpResetToken:(NSMutableString *)otpResetToken
+          otpResetDate:(NSDate **)otpResetDate
+                 error:(NSError **)nserror;
 
 /**
  * Sign In to an Airbitz account with PIN using completion handlers. Used to sign into 

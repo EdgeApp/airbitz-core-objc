@@ -585,7 +585,23 @@
 - (ABCAccount *)signIn:(NSString *)username
               password:(NSString *)password
               delegate:(id)delegate
+                 error:(NSError **)nserror;
+{
+    return [self signIn:username
+               password:password
+               delegate:delegate
+                    otp:nil
+          otpResetToken:nil
+           otpResetDate:nil
+                  error:nil];
+}
+
+- (ABCAccount *)signIn:(NSString *)username
+              password:(NSString *)password
+              delegate:(id)delegate
                    otp:(NSString *)otp
+         otpResetToken:(NSMutableString *)otpResetToken
+          otpResetDate:(NSDate **)otpResetDate
                  error:(NSError **)nserror;
 {
     
@@ -594,6 +610,9 @@
 
     tABC_Error error;
     BOOL bNewDeviceLogin = NO;
+    
+    char *szResetToken = NULL;
+    char *szResetDate = NULL;
     
     if (!username || !password)
     {
@@ -612,9 +631,24 @@
         
         if (!lnserror)
         {
-            ABC_SignIn([username UTF8String],
-                       [password UTF8String], &error);
+            ABC_PasswordLogin([username UTF8String], [password UTF8String], &szResetToken, &szResetDate, &error);
+            
             lnserror = [ABCError makeNSError:error];
+            
+            if (szResetToken && otpResetToken)
+            {
+                [otpResetToken setString:[NSString stringWithUTF8String:szResetToken]];
+            }
+            if (szResetDate && otpResetDate)
+            {
+                NSString *dateStr = [NSString stringWithUTF8String:szResetDate];
+                
+                NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
+                
+                NSDate *dateTemp = [dateFormatter dateFromString:dateStr];
+                *otpResetDate = dateTemp;
+            }
             
             if (!lnserror)
             {
@@ -630,14 +664,12 @@
         }
     }
     
+    if (szResetDate) free(szResetDate);
+    if (szResetToken) free(szResetToken);
     if (nserror)
         *nserror = lnserror;
     return account;
 }
-
-
-
-
 
 - (void)signIn:(NSString *)username password:(NSString *)password
       delegate:(id)delegate otp:(NSString *)otp
@@ -647,34 +679,16 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
         NSError *nserror = nil;
         NSDate *resetDate;
-        NSString *resetToken = password;
-        ABCAccount *account = [self signIn:username password:password delegate:delegate otp:otp error:&nserror];
-        if (ABCConditionCodeInvalidOTP == nserror.code)
-        {
-            char *szDate = NULL;
-            tABC_Error error;
-            ABC_OtpResetDate(&szDate, &error);
-            NSError *nserror2 = [ABCError makeNSError:error];
-            if (!nserror2)
-            {
-                if (szDate == NULL || strlen(szDate) == 0)
-                {
-                    resetDate = nil;
-                }
-                else
-                {
-                    NSString *dateStr = [NSString stringWithUTF8String:szDate];
-                    
-                    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-                    [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
-                    
-                    NSDate *dateTemp = [dateFormatter dateFromString:dateStr];
-                    resetDate = dateTemp;
-                }
-            }
-            
-            if (szDate) free(szDate);
-        }
+        NSString *resetToken;
+        NSMutableString *mResetToken = [[NSMutableString alloc] init];
+        ABCAccount *account = [self signIn:username
+                                  password:password
+                                  delegate:delegate
+                                       otp:otp
+                             otpResetToken:mResetToken
+                              otpResetDate:&resetDate
+                                     error:&nserror];
+        resetToken = [NSString stringWithString:mResetToken];
 
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             if (account)
@@ -773,9 +787,11 @@
         tABC_Error error;
         NSError *nserror;
         NSDate *resetDate;
-        NSString *resetToken = answers;
+        NSString *resetToken;
         ABCAccount *account = nil;
         BOOL bNewDeviceLogin = NO;
+        char *szResetToken = NULL;
+        char *szResetDate = NULL;
         
         if (!username || !answers)
         {
@@ -796,9 +812,8 @@
                 bNewDeviceLogin = YES;
             
             // This actually logs in the user
-            ABC_RecoveryLogin([username UTF8String],
-                              [answers UTF8String],
-                              &error);
+            ABC_RecoveryLogin([username UTF8String], [answers UTF8String], &szResetToken, &szResetDate, &error);
+            
             nserror = [ABCError makeNSError:error];
             
             if (!nserror)
@@ -812,34 +827,25 @@
                 [account login];
                 [account setupLoginPIN];
             }
-            else if ((ABCConditionCodeInvalidOTP == nserror.code))
+            if (szResetToken)
             {
-                char *szDate = NULL;
-                ABC_OtpResetDate(&szDate, &error);
-                NSError *nserror2 = [ABCError makeNSError:error];
-                if (!nserror2)
-                {
-                    if (szDate == NULL || strlen(szDate) == 0)
-                    {
-                        resetDate = nil;
-                    }
-                    else
-                    {
-                        NSString *dateStr = [NSString stringWithUTF8String:szDate];
-                        
-                        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-                        [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
-                        
-                        NSDate *dateTemp = [dateFormatter dateFromString:dateStr];
-                        resetDate = dateTemp;
-                    }
-                }
+                resetToken = [NSString stringWithUTF8String:szResetToken];
+            }
+            if (szResetDate)
+            {
+                NSString *dateStr = [NSString stringWithUTF8String:szResetDate];
                 
-                if (szDate) free(szDate);
+                NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
                 
+                NSDate *dateTemp = [dateFormatter dateFromString:dateStr];
+                resetDate = dateTemp;
             }
         }
         
+        if (szResetDate) free(szResetDate);
+        if (szResetToken) free(szResetToken);
+
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             if (!nserror)
             {
@@ -1028,7 +1034,7 @@
 - (NSError *)requestOTPReset:(NSString *)username token:(NSString *)token;
 {
     tABC_Error error;
-    ABC_OtpResetSet([username UTF8String], &error);
+    ABC_OtpResetSet([username UTF8String], [token UTF8String], &error);
     return [ABCError makeNSError:error];
 }
 
