@@ -23,70 +23,92 @@
 #import "ABCWallet.h"
 
 /**
- AirbitzCore (ABC) is a client-side blockchain and EdgeSecurity SDK providing auto-encrypted
- and auto-backed up accounts and wallets with zero-knowledge security and privacy. All
- blockchain/bitcoin private and public keys are fully encrypted by the users' credentials
+ AirbitzCore (ABC) is a client-side blockchain and Edge Security SDK providing auto-encrypted
+ and auto-backed up accounts and wallets with zero-knowledge security and privacy. 
+ All blockchain/bitcoin private and public keys are fully encrypted by the users' credentials
  before being backed up on to peer to peer servers. ABC allows developers to create new
  Airbitz wallet accounts or login to pre-existing accounts. Account encrypted data is
  automatically synchronized between all devices and apps using the Airbitz SDK. This allows a
  third party application to generate payment requests or send funds for the users' account
  that may have been created on the Airbitz Mobile Bitcoin Wallet or any other Airbitz SDK
- application.
+ application. 
+ 
+ In addition, the ABCDataStore object in the Airbitz ABCAccount object allows developers to
+ store arbitrary Edge-Secured data on the user's account which is automatically encrypted,
+ automatically backed up, and automatically synchronized between the user's authenticated 
+ devices.
+
+    // Global account object
+    ABCAccount *gAccount;
 
     - (void) exampleMethod
     {
         // Create an account
         AirbitzCore *abc  = [[AirbitzCore alloc] init:@"YourAPIKeyHere"];
-        ABCAccount *abcAccount = [abc createAccount:@"myUsername" password:@"MyPa55w0rd!&" pin:@"4283" delegate:self error:nil];
+        ABCAccount *abcAccount = [abc createAccount:@"myusername" password:@"MyPa55w0rd!&" pin:@"4283" delegate:self error:nil];
         // New account is auto logged in after creation
-    
+
+        // Use Airbitz Edge Security to write encrypted/backed up/synchronized data to the account
+        [gAccount.dataStore dataWrite:@"myAppUserInfo" withKey:@"user_email" withValue:@"theuser@hisdomain.com"];
+
+        // Read back the data
+        NSMutableString *usersEmail = [[NSMutableString alloc] init];
+        [gAccount.dataStore dataRead:@"myAppUserInfo" withKey:@"user_email" data:usersEmail];
+
+        // usersEmail now contains "theuser@hisdomain.com"
+
         // Create a wallet in the user account
-        ABCWallet *wallet = [abcAccount createWallet:@"My Awesome Bitcoins" currency:nil];
+        ABCWallet *wallet = [abcAccount createWallet:@"My Awesome Wallet" currency:nil];
 
         // Logout
         [abc logout:abcAccount];
 
         // Log back in with full credentials
-        abcAccount = [abc signIn:@"myUsername" password:@"MyPa55w0rd!&" delegate:self otp:nil resetDate:nil error:nil];
+        abcAccount = [abc signIn:@"myusername" password:@"MyPa55w0rd!&" delegate:self error:nil];
+
+        // Logout
         [abc logout:abcAccount];
 
         // Log back in with PIN using completion handler codeblock
-        [abc signInWithPIN:@"myUsername" pin:@"4283" delegate:self complete:^(ABCAccount *user)
+        [abc signInWithPIN:@"myusername" pin:@"4283" delegate:self complete:^(ABCAccount *account)
         {
-            ABCAccount *abcAccount = user;
+            gAccount = account;
 
-            // Get the first wallet in the account
-            ABCWallet *wallet = abcAccount.arrayWallets[0];
-
-            // Create a bitcoin request
-            ABCReceiveAddress *request = [[ABCReceiveAddress alloc] init];
-
-            // Put in some optional meta data into this request so incoming funds are automatically tagged
-            request.payeeName     = @"William Swanson"; // Name of the person receiving request
-            request.category      = @"Income:Rent";     // Category of payment. Auto tags category when funds come in
-            request.notes         = @"Rent payment for Jan 2016";
-            request.amountSatoshi = 12345000;
-
-            [wallet createNewReceiveAddress:request];
-
-            // Use the request results
-            NSString *bitcoinAddress = request.address;
-            NSString *bitcoinURI     = request.uri;
-            UIImage  *bitcoinQRCode  = request.qrCode;
-
-            // Now go and display the QR code or send payment to address in some other way.
-
-        } error:^(NSError *error)
-        {
-            NSLog(@"Argh! Error code: %d. Error string:%@", error.code, error.userInfo[NSLocalizedDescriptionKey]);
+        } error:^(NSError *error) {
+            NSLog(@"Argh! Error code: %d. Error string:%@", (int)error.code, error.userInfo[NSLocalizedDescriptionKey]);
         }];
 
+    }
+
+    // Delegate method called when wallets are loaded after a signIn
+    - (void) abcAccountWalletsLoaded
+    {
+        // Get the first wallet in the account
+        ABCWallet *wallet = gAccount.arrayWallets[0];
+
+        // Create a bitcoin request
+        ABCReceiveAddress *request = [wallet createNewReceiveAddress];
+
+        // Put in some optional meta data into this request so incoming funds are automatically tagged
+        request.metaData.payeeName     = @"William Swanson"; // Name of the person receiving request
+        request.metaData.category      = @"Income:Rent";     // Category of payment. Auto tags category when funds come in
+        request.metaData.notes         = @"Rent payment for Jan 2016";
+
+        // Put in an optional request amount and use fiat exchange rate conversion methods
+        request.amountSatoshi          = [gAccount.exchangeCache currencyToSatoshi:5.00 currencyCode:@"USD" error:nil];
+
+        // Use the request results
+        NSString *bitcoinAddress = request.address;
+        NSString *bitcoinURI     = request.uri;
+        UIImage  *bitcoinQRCode  = request.qrCode;
+
+        // Now go and display the QR code or send payment to address in some other way.
     }
 
     // Delegate method called when bitcoin is received
     - (void) abcAccountIncomingBitcoin:(ABCWallet *)wallet txid:(NSString *)txid;
     {
-        NSLog(@"Yay, my wallet just received bitcoin", wallet.name);
+        NSLog(@"Yay, my wallet just received bitcoin");
     }
 */
 
@@ -112,35 +134,7 @@ typedef enum eABCDeviceCaps
 @class ABCSettings;
 @class ABCReceiveAddress;
 @class ABCAccount;
-
-
-/// -----------------------------------------------------------------------------
-/// @name ABCPasswordRuleResult struct/object
-/// -----------------------------------------------------------------------------
-
-/// Object returned by checkPasswordRules to determine if password meets the minimum
-/// entropy requirements
-@interface ABCPasswordRuleResult : NSObject
-
-/// Estimated number of seconds to crack encryption based on this password on a
-/// current desktop computer
-@property       double      secondsToCrack;
-
-/// Password does not meet minimum lenght requrements (10 characters)
-@property       BOOL        tooShort;
-
-/// Password must have at least one number
-@property       BOOL        noNumber;
-
-/// Password must have an upper case letter
-@property       BOOL        noUpperCase;
-
-/// Password must have a lower case letter
-@property       BOOL        noLowerCase;
-
-/// Password has passed all the tests
-@property       BOOL        passed;
-@end
+@class ABCPasswordRuleResult;
 
 @interface AirbitzCore : NSObject
 
@@ -170,7 +164,8 @@ typedef enum eABCDeviceCaps
 /// @name Account Management
 /// -----------------------------------------------------------------------------
 
-/** Create an Airbitz account with specified username, password, and PIN with 
+/** 
+ * Create an Airbitz account with specified username, password, and PIN with
  * callback handler
  * @param username NSString
  * @param password NSString
@@ -241,14 +236,14 @@ typedef enum eABCDeviceCaps
 - (ABCAccount *)signIn:(NSString *)username
               password:(NSString *)password
               delegate:(id)delegate
-                 error:(NSError **)nserror;
+                 error:(NSError **)error;
 - (ABCAccount *)signIn:(NSString *)username
               password:(NSString *)password
               delegate:(id)delegate
                    otp:(NSString *)otp
          otpResetToken:(NSMutableString *)otpResetToken
           otpResetDate:(NSDate **)otpResetDate
-                 error:(NSError **)nserror;
+                 error:(NSError **)error;
 
 /**
  * Sign In to an Airbitz account with PIN using completion handlers. Used to sign into 
@@ -598,3 +593,34 @@ typedef enum eABCDeviceCaps
 
 
 @end
+
+
+/// -----------------------------------------------------------------------------
+/// @name ABCPasswordRuleResult struct/object
+/// -----------------------------------------------------------------------------
+
+/// Object returned by checkPasswordRules to determine if password meets the minimum
+/// entropy requirements
+@interface ABCPasswordRuleResult : NSObject
+
+/// Estimated number of seconds to crack encryption based on this password on a
+/// current desktop computer
+@property       double      secondsToCrack;
+
+/// Password does not meet minimum lenght requrements (10 characters)
+@property       BOOL        tooShort;
+
+/// Password must have at least one number
+@property       BOOL        noNumber;
+
+/// Password must have an upper case letter
+@property       BOOL        noUpperCase;
+
+/// Password must have a lower case letter
+@property       BOOL        noLowerCase;
+
+/// Password has passed all the tests
+@property       BOOL        passed;
+@end
+
+
