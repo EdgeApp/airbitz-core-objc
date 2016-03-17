@@ -52,23 +52,21 @@
 
 	
 	
-	<optgroup label="Properties">
+
+	
+
+	
+	<optgroup label="Instance Methods">
 		
-		<option value="//api/name/amountMutable">amountMutable</option>
+		<option value="//api/name/getFees:">- getFees:</option>
 		
-		<option value="//api/name/bSigned">bSigned</option>
+		<option value="//api/name/getFees:error:">- getFees:error:</option>
 		
-		<option value="//api/name/destUUID">destUUID</option>
+		<option value="//api/name/getMaxSpendable:">- getMaxSpendable:</option>
 		
-		<option value="//api/name/metaData">metaData</option>
-		
-		<option value="//api/name/returnURL">returnURL</option>
+		<option value="//api/name/getMaxSpendable:error:">- getMaxSpendable:error:</option>
 		
 	</optgroup>
-	
-
-	
-
 	
 	
 </select>
@@ -110,8 +108,8 @@
 
 						<div class="task-list">
 							<div class="section-method">
-	<a name="//api/name/amountMutable" title="amountMutable"></a>
-	<h3 class="method-title"><code><a href="#//api/name/amountMutable">&nbsp;&nbsp;amountMutable</a></code>
+	<a name="//api/name/getFees:" title="getFees:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/getFees:">&ndash;&nbsp;getFees:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -121,16 +119,33 @@
 			
 			
 			<div class="method-subsection brief-description">
-				<p>True if the GUI can change the amount.</p>
+				<p>Calculate the amount of fees needed to send this transaction</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>@property (nonatomic) bool amountMutable</code></div>
+			<div class="method-subsection method-declaration"><code>- (uint64_t)getFees:(NSError **)<em>error</em></code></div>
 
 		    
 			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>NSError (optional)</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
 
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>uint64_t Total fees required for this transaction</p>
+			</div>
 			
 
 			
@@ -138,7 +153,7 @@
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>True if the GUI can change the amount.</p>
+				<p>Calculate the amount of fees needed to send this transaction</p>
 			</div>
 			
 
@@ -156,8 +171,8 @@
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/bSigned" title="bSigned"></a>
-	<h3 class="method-title"><code><a href="#//api/name/bSigned">&nbsp;&nbsp;bSigned</a></code>
+	<a name="//api/name/getFees:error:" title="getFees:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/getFees:error:">&ndash;&nbsp;getFees:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -167,14 +182,33 @@
 			
 			
 			<div class="method-subsection brief-description">
-				<p>True if this is a signed bip70 payment request.</p>
+				<p>Calculate the amount of fees needed to send this transaction</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>@property (nonatomic) bool bSigned</code></div>
+			<div class="method-subsection method-declaration"><code>- (void)getFees:(void ( ^ ) ( uint64_t fees ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *error ))<em>errorHandler</em></code></div>
 
 		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>completionHandler</code></th>
+						<td><p>Completion handler code block which is called with uint64_t totalFees
+- <em>param</em> uint64_t Amount of fees in satoshis</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>errorHandler</code></th>
+						<td><p>Error handler code block which is called with the following args<br>
+- <em>param</em> NSError error object</p></td>
+					</tr>
+				
+				</table>
+			</div>
 			
 
 			
@@ -184,7 +218,7 @@
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>True if this is a signed bip70 payment request.</p>
+				<p>Calculate the amount of fees needed to send this transaction</p>
 			</div>
 			
 
@@ -202,8 +236,8 @@
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/returnURL" title="returnURL"></a>
-	<h3 class="method-title"><code><a href="#//api/name/returnURL">&nbsp;&nbsp;returnURL</a></code>
+	<a name="//api/name/getMaxSpendable:" title="getMaxSpendable:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/getMaxSpendable:">&ndash;&nbsp;getMaxSpendable:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -213,17 +247,33 @@
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Non-null if the payment request provides a URL
-to visit once the payment is done.</p>
+				<p>Get the maximum amount spendable from this wallet using the currenct ABCSpend object</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>@property (nonatomic) NSString *returnURL</code></div>
+			<div class="method-subsection method-declaration"><code>- (uint64_t)getMaxSpendable:(NSError **)<em>error</em></code></div>
 
 		    
 			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>NSError (optional)</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
 
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>uint64_t Maximum spendable from this wallet in satoshis</p>
+			</div>
 			
 
 			
@@ -231,8 +281,7 @@ to visit once the payment is done.</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Non-null if the payment request provides a URL
-to visit once the payment is done.</p>
+				<p>Get the maximum amount spendable from this wallet using the currenct ABCSpend object</p>
 			</div>
 			
 
@@ -250,8 +299,8 @@ to visit once the payment is done.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/destUUID" title="destUUID"></a>
-	<h3 class="method-title"><code><a href="#//api/name/destUUID">&nbsp;&nbsp;destUUID</a></code>
+	<a name="//api/name/getMaxSpendable:error:" title="getMaxSpendable:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/getMaxSpendable:error:">&ndash;&nbsp;getMaxSpendable:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -261,14 +310,33 @@ to visit once the payment is done.</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>The destination wallet if this is a transfer, otherwise NULL</p>
+				<p>Get the maximum amount spendable from this wallet using completion handlers</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>@property (nonatomic) NSString *destUUID</code></div>
+			<div class="method-subsection method-declaration"><code>- (void)getMaxSpendable:(void ( ^ ) ( uint64_t amountSpendable ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *error ))<em>errorHandler</em></code></div>
 
 		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>completionHandler</code></th>
+						<td><p>Completion handler code block which is called with uint64_t totalFees
+- <em>param</em> uint64_t amountSpendable Total amount spendablein satoshis</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>errorHandler</code></th>
+						<td><p>Error handler code block which is called with the following args<br>
+- <em>param</em> NSError error object</p></td>
+					</tr>
+				
+				</table>
+			</div>
 			
 
 			
@@ -278,53 +346,7 @@ to visit once the payment is done.</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>The destination wallet if this is a transfer, otherwise NULL</p>
-			</div>
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection declared-in-section">
-				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCSpend.h</code></p>
-			</div>
-			
-			
-		</div>
-	</div>
-</div><div class="section-method">
-	<a name="//api/name/metaData" title="metaData"></a>
-	<h3 class="method-title"><code><a href="#//api/name/metaData">&nbsp;&nbsp;metaData</a></code>
-</h3>
-
-	<div class="method-info">
-		<div class="pointy-thing"></div>
-
-		<div class="method-info-container">
-			
-			
-			<div class="method-subsection brief-description">
-				<p>Metadata to write into the transaction after the spend has been made</p>
-			</div>
-			
-		    
-
-			<div class="method-subsection method-declaration"><code>@property (nonatomic, strong) ABCMetaData *metaData</code></div>
-
-		    
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection discussion-section">
-				<h4 class="method-subtitle">Discussion</h4>
-				<p>Metadata to write into the transaction after the spend has been made</p>
+				<p>Get the maximum amount spendable from this wallet using completion handlers</p>
 			</div>
 			
 
@@ -356,7 +378,7 @@ to visit once the payment is done.</p>
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-05</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-17</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

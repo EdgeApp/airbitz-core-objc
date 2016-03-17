@@ -43,6 +43,8 @@
 							<select id="jump-to">
 	<option value="top">Jump To&#133;</option>
 	
+	<option value="overview">Overview</option>
+	
 
 	
 	
@@ -120,9 +122,11 @@
 		
 		<option value="//api/name/setOTPKey:key:">- setOTPKey:key:</option>
 		
+		<option value="//api/name/signIn:password:delegate:error:">- signIn:password:delegate:error:</option>
+		
 		<option value="//api/name/signIn:password:delegate:otp:complete:error:">- signIn:password:delegate:otp:complete:error:</option>
 		
-		<option value="//api/name/signIn:password:delegate:otp:error:">- signIn:password:delegate:otp:error:</option>
+		<option value="//api/name/signIn:password:delegate:otp:otpResetToken:otpResetDate:error:">- signIn:password:delegate:otp:otpResetToken:otpResetDate:error:</option>
 		
 		<option value="//api/name/signInWithPIN:pin:delegate:complete:error:">- signInWithPIN:pin:delegate:complete:error:</option>
 		
@@ -160,6 +164,101 @@
 					
 
                     
+					
+					<div class="section section-overview">
+						<a title="Overview" name="overview"></a>
+						<h2 class="subtitle subtitle-overview">Overview</h2>
+						<p>AirbitzCore (ABC) is a client-side blockchain and Edge Security SDK providing auto-encrypted
+and auto-backed up accounts and wallets with zero-knowledge security and privacy.
+All blockchain/bitcoin private and public keys are fully encrypted by the users' credentials
+before being backed up on to peer to peer servers. ABC allows developers to create new
+Airbitz wallet accounts or login to pre-existing accounts. Account encrypted data is
+automatically synchronized between all devices and apps using the Airbitz SDK. This allows a
+third party application to generate payment requests or send funds for the users' account
+that may have been created on the Airbitz Mobile Bitcoin Wallet or any other Airbitz SDK
+application.</p>
+
+<p>In addition, the <a href="../Classes/ABCDataStore.html">ABCDataStore</a> object in the Airbitz <a href="../Classes/ABCAccount.html">ABCAccount</a> object allows developers to
+store arbitrary Edge-Secured data on the user&rsquo;s account which is automatically encrypted,
+automatically backed up, and automatically synchronized between the user&rsquo;s authenticated
+devices.</p>
+
+<pre><code>// Global account object
+ABCAccount *gAccount;
+
+- (void) exampleMethod
+{
+    // Create an account
+    AirbitzCore *abc  = [[AirbitzCore alloc] init:@"YourAPIKeyHere"];
+    ABCAccount *abcAccount = [abc createAccount:@"myusername" password:@"MyPa55w0rd!&amp;" pin:@"4283" delegate:self error:nil];
+    // New account is auto logged in after creation
+
+    // Use Airbitz Edge Security to write encrypted/backed up/synchronized data to the account
+    [gAccount.dataStore dataWrite:@"myAppUserInfo" withKey:@"user_email" withValue:@"theuser@hisdomain.com"];
+
+    // Read back the data
+    NSMutableString *usersEmail = [[NSMutableString alloc] init];
+    [gAccount.dataStore dataRead:@"myAppUserInfo" withKey:@"user_email" data:usersEmail];
+
+    // usersEmail now contains "theuser@hisdomain.com"
+
+    // Create a wallet in the user account
+    ABCWallet *wallet = [abcAccount createWallet:@"My Awesome Wallet" currency:nil];
+
+    // Logout
+    [abc logout:abcAccount];
+
+    // Log back in with full credentials
+    abcAccount = [abc signIn:@"myusername" password:@"MyPa55w0rd!&amp;" delegate:self error:nil];
+
+    // Logout
+    [abc logout:abcAccount];
+
+    // Log back in with PIN using completion handler codeblock
+    [abc signInWithPIN:@"myusername" pin:@"4283" delegate:self complete:^(ABCAccount *account)
+    {
+        gAccount = account;
+
+    } error:^(NSError *error) {
+        NSLog(@"Argh! Error code: %d. Error string:%@", (int)error.code, error.userInfo[NSLocalizedDescriptionKey]);
+    }];
+
+}
+
+// Delegate method called when wallets are loaded after a signIn
+- (void) abcAccountWalletsLoaded
+{
+    // Get the first wallet in the account
+    ABCWallet *wallet = gAccount.arrayWallets[0];
+
+    // Create a bitcoin request
+    ABCReceiveAddress *request = [wallet createNewReceiveAddress];
+
+    // Put in some optional meta data into this request so incoming funds are automatically tagged
+    request.metaData.payeeName     = @"William Swanson"; // Name of the person receiving request
+    request.metaData.category      = @"Income:Rent";     // Category of payment. Auto tags category when funds come in
+    request.metaData.notes         = @"Rent payment for Jan 2016";
+
+    // Put in an optional request amount and use fiat exchange rate conversion methods
+    request.amountSatoshi          = [gAccount.exchangeCache currencyToSatoshi:5.00 currencyCode:@"USD" error:nil];
+
+    // Use the request results
+    NSString *bitcoinAddress = request.address;
+    NSString *bitcoinURI     = request.uri;
+    UIImage  *bitcoinQRCode  = request.qrCode;
+
+    // Now go and display the QR code or send payment to address in some other way.
+}
+
+// Delegate method called when bitcoin is received
+- (void) abcAccountIncomingBitcoin:(ABCWallet *)wallet txid:(NSString *)txid;
+{
+    NSLog(@"Yay, my wallet just received bitcoin");
+}
+</code></pre>
+					</div>
+					
+					
 
 					
 					
@@ -214,7 +313,7 @@ specific &ldquo;gift cards&rdquo; that are only redeemable by applications using
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>AirbitzCore* Instance of AirbitzCore object</p>
+				<p>AirbitzCore Instance of AirbitzCore object</p>
 			</div>
 			
 
@@ -322,17 +421,17 @@ callback handler</p>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>username</code></th>
-						<td><p>NSString*</p></td>
+						<td><p>NSString</p></td>
 					</tr>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>password</code></th>
-						<td><p>NSString*</p></td>
+						<td><p>NSString</p></td>
 					</tr>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>pin</code></th>
-						<td><p>NSString*</p></td>
+						<td><p>NSString</p></td>
 					</tr>
 				
 					<tr>
@@ -343,13 +442,13 @@ callback handler</p>
 					<tr>
 						<th scope="row" class="argument-name"><code>completionHandler</code></th>
 						<td><p>(Optional) Code block called on success. Returns void if used<br>
-- <em>param</em> ABCAccount* Account object.<br></p></td>
+- <em>param</em> <a href="../Classes/ABCAccount.html">ABCAccount</a> Account object.<br></p></td>
 					</tr>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>errorHandler</code></th>
 						<td><p>(Optional) Code block called on error with parameters<br>
-- <em>param</em> NSError*</p></td>
+- <em>param</em> NSError</p></td>
 					</tr>
 				
 				</table>
@@ -443,7 +542,7 @@ callback handler</p>
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>ABCAccount* Account object or nil if failure.</p>
+				<p><a href="../Classes/ABCAccount.html">ABCAccount</a> Account object or nil if failure.</p>
 			</div>
 			
 
@@ -486,7 +585,7 @@ callback handler</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)signIn:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> complete:(void ( ^ ) ( ABCAccount *account ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *, NSDate *resetDate , NSString *resetToken ))<em>errorHandler</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)signIn:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> complete:(void ( ^ ) ( ABCAccount *account ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *, NSDate *otpResetDate , NSString *otpResetToken ))<em>errorHandler</em></code></div>
 
 		    
 			
@@ -496,12 +595,12 @@ callback handler</p>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>username</code></th>
-						<td><p>NSString*</p></td>
+						<td><p>NSString</p></td>
 					</tr>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>password</code></th>
-						<td><p>NSString*</p></td>
+						<td><p>NSString</p></td>
 					</tr>
 				
 					<tr>
@@ -511,23 +610,23 @@ callback handler</p>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>otp</code></th>
-						<td><p>NSString* One Time Password token (optional). Send nil if logging in w/o OTP token
+						<td><p>NSString One Time Password token (optional). Send nil if logging in w/o OTP token
 or if OTP token has already been saved in this account from prior login</p></td>
 					</tr>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>completionHandler</code></th>
 						<td><p>(Optional) Code block called on success. Returns void if used<br>
-- <em>param</em> ABCAccount* Account object created from SignIn call</p></td>
+- <em>param</em> <a href="../Classes/ABCAccount.html">ABCAccount</a> Account object created from SignIn call</p></td>
 					</tr>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>errorHandler</code></th>
 						<td><p>(Optional) Code block called on error with parameters<br>
-- <em>param</em> NSError<em><br>
-- </em>param<em> NSDate</em> resetDate If login fails due to invalid or unset OTP key, and an OTP reset has been
+- <em>param</em> NSError<br>
+- <em>param</em> NSDate otpResetDate If login fails due to invalid or unset OTP key, and an OTP reset has been
 requested, the data that the reset will occur will be returned in this argument<br>
-- <em>param</em> NSString* OTP reset token. If login fails due to OTP set on this account, use this token
+- <em>param</em> NSString otpResetToken. If login fails due to OTP set on this account, use this token
 in requestOTPReset to request a reset of OTP. The reset will take 7 days</p></td>
 					</tr>
 				
@@ -565,8 +664,8 @@ in requestOTPReset to request a reset of OTP. The reset will take 7 days</p></td
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/signIn:password:delegate:otp:error:" title="signIn:password:delegate:otp:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/signIn:password:delegate:otp:error:">&ndash;&nbsp;signIn:password:delegate:otp:error:</a></code>
+	<a name="//api/name/signIn:password:delegate:error:" title="signIn:password:delegate:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/signIn:password:delegate:error:">&ndash;&nbsp;signIn:password:delegate:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -581,7 +680,7 @@ in requestOTPReset to request a reset of OTP. The reset will take 7 days</p></td
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (ABCAccount *)signIn:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> error:(NSError **)<em>error</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (ABCAccount *)signIn:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> error:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -591,12 +690,95 @@ in requestOTPReset to request a reset of OTP. The reset will take 7 days</p></td
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>username</code></th>
-						<td><p>NSString*</p></td>
+						<td><p>NSString</p></td>
 					</tr>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>password</code></th>
-						<td><p>NSString*</p></td>
+						<td><p>NSString</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>delegate</code></th>
+						<td><p><a href="../Protocols/ABCAccountDelegate.html">ABCAccountDelegate</a> object for callbacks. May be set to nil;</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>NSError May be set to nil. Only used when not using completion handler</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p><a href="../Classes/ABCAccount.html">ABCAccount</a> Account object or nil if failure.</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Sign In to an Airbitz account.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/signIn:password:delegate:otp:otpResetToken:otpResetDate:error:" title="signIn:password:delegate:otp:otpResetToken:otpResetDate:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/signIn:password:delegate:otp:otpResetToken:otpResetDate:error:">&ndash;&nbsp;signIn:password:delegate:otp:otpResetToken:otpResetDate:error:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Sign In to an Airbitz account. This routine allows caller to receive back an otpResetToken
+which is used with [AirbitzCore requestOTPReset] to remove OTP from the specified account.
+The otpResetToken is only returned if the caller has provided the correct username and password
+but the account had OTP enabled. In such case, signIn will also provide an otpResetDate which is
+the date when the account OTP will be disabled if a prior OTP reset was successfully requested.
+The reset date is set to 7 days from when a reset was initially requested.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCAccount *)signIn:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> otpResetToken:(NSMutableString *)<em>otpResetToken</em> otpResetDate:(NSDate **)<em>otpResetDate</em> error:(NSError **)<em>error</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>username</code></th>
+						<td><p>NSString</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>password</code></th>
+						<td><p>NSString</p></td>
 					</tr>
 				
 					<tr>
@@ -611,8 +793,19 @@ or if OTP token has already been saved in this account from prior login</p></td>
 					</tr>
 				
 					<tr>
+						<th scope="row" class="argument-name"><code>otpResetToken</code></th>
+						<td><p>NSMutableString A reset token to be used to request disabling of OTP for
+this account.</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>otpResetDate</code></th>
+						<td><p>NSDate Date which the account reset will occur</p></td>
+					</tr>
+				
+					<tr>
 						<th scope="row" class="argument-name"><code>error</code></th>
-						<td><p>NSError** May be set to nil. Only used when not using completion handler</p></td>
+						<td><p>NSError May be set to nil. Only used when not using completion handler</p></td>
 					</tr>
 				
 				</table>
@@ -622,7 +815,7 @@ or if OTP token has already been saved in this account from prior login</p></td>
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>ABCAccount* Account object or nil if failure.</p>
+				<p><a href="../Classes/ABCAccount.html">ABCAccount</a> Account object or nil if failure.</p>
 			</div>
 			
 
@@ -631,7 +824,12 @@ or if OTP token has already been saved in this account from prior login</p></td>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Sign In to an Airbitz account.</p>
+				<p>Sign In to an Airbitz account. This routine allows caller to receive back an otpResetToken
+which is used with [AirbitzCore requestOTPReset] to remove OTP from the specified account.
+The otpResetToken is only returned if the caller has provided the correct username and password
+but the account had OTP enabled. In such case, signIn will also provide an otpResetDate which is
+the date when the account OTP will be disabled if a prior OTP reset was successfully requested.
+The reset date is set to 7 days from when a reset was initially requested.</p>
 			</div>
 			
 
@@ -692,7 +890,7 @@ devices that have previously been logged into using a full username &amp; passwo
 					<tr>
 						<th scope="row" class="argument-name"><code>completionHandler</code></th>
 						<td><p>(Optional) Code block called on success.<br>
-- <em>param</em> ABCAccount* User object.</p></td>
+- <em>param</em> <a href="../Classes/ABCAccount.html">ABCAccount</a> User object.</p></td>
 					</tr>
 				
 					<tr>
@@ -789,7 +987,7 @@ been logged into using a full username &amp; password</p>
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>ABCAccount* Account object or nil if failure.</p>
+				<p><a href="../Classes/ABCAccount.html">ABCAccount</a> Account object or nil if failure.</p>
 			</div>
 			
 
@@ -865,7 +1063,7 @@ set in their account. Use [ABCAccount setupRecoveryQuestions] to set questions a
 					<tr>
 						<th scope="row" class="argument-name"><code>completionHandler</code></th>
 						<td><p>Completion handler code block<br>
-- <em>param</em> ABCAccount* Returned account object logged in.</p></td>
+- <em>param</em> <a href="../Classes/ABCAccount.html">ABCAccount</a> Returned account object logged in.</p></td>
 					</tr>
 				
 					<tr>
@@ -948,7 +1146,7 @@ set in their account. Use [ABCAccount setupRecoveryQuestions] to set questions a
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>ABCAccount* if logged in. nil otherwise</p>
+				<p><a href="../Classes/ABCAccount.html">ABCAccount</a> if logged in. nil otherwise</p>
 			</div>
 			
 
@@ -1001,7 +1199,7 @@ set in their account. Use [ABCAccount setupRecoveryQuestions] to set questions a
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>abcAccount</code></th>
-						<td><p>ABCAccount* user to logout</p></td>
+						<td><p><a href="../Classes/ABCAccount.html">ABCAccount</a> user to logout</p></td>
 					</tr>
 				
 				</table>
@@ -2521,7 +2719,7 @@ and checks for invalid characters.</p>
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-05</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-17</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

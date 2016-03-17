@@ -277,7 +277,7 @@ to make sure they are loaded and <a href="../Classes/ABCSettings.html#//api/name
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Exchange Cache object. Used to convert bitcoin to fiat in various formats</p>
+				<p><a href="../Classes/ABCExchangeCache.html">ABCExchangeCache</a> object. Used to convert bitcoin to fiat in various formats</p>
 			</div>
 			
 		    
@@ -294,7 +294,7 @@ to make sure they are loaded and <a href="../Classes/ABCSettings.html#//api/name
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Exchange Cache object. Used to convert bitcoin to fiat in various formats</p>
+				<p><a href="../Classes/ABCExchangeCache.html">ABCExchangeCache</a> object. Used to convert bitcoin to fiat in various formats</p>
 			</div>
 			
 
@@ -331,7 +331,7 @@ to make sure they are loaded and <a href="../Classes/ABCSettings.html#//api/name
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Array of Wallet objects currently loaded into account. This array is read-only and app should only
+				<p>Array of <a href="../Classes/ABCWallet.html">ABCWallet</a> objects currently loaded into account. This array is read-only and app should only
 access the array while in the main queue.</p>
 			</div>
 			
@@ -349,7 +349,7 @@ access the array while in the main queue.</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Array of Wallet objects currently loaded into account. This array is read-only and app should only
+				<p>Array of <a href="../Classes/ABCWallet.html">ABCWallet</a> objects currently loaded into account. This array is read-only and app should only
 access the array while in the main queue.</p>
 			</div>
 			
@@ -379,7 +379,7 @@ access the array while in the main queue.</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Array of archived Wallet objects currently loaded into account. This array is read-only and app should only
+				<p>Array of archived <a href="../Classes/ABCWallet.html">ABCWallet</a> objects currently loaded into account. This array is read-only and app should only
 access the array while in the main queue.</p>
 			</div>
 			
@@ -397,7 +397,7 @@ access the array while in the main queue.</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Array of archived Wallet objects currently loaded into account. This array is read-only and app should only
+				<p>Array of archived <a href="../Classes/ABCWallet.html">ABCWallet</a> objects currently loaded into account. This array is read-only and app should only
 access the array while in the main queue.</p>
 			</div>
 			
@@ -427,7 +427,7 @@ access the array while in the main queue.</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Array of NSString * wallet names. This array is read-only and app should only
+				<p>Array of NSString wallet names. This array is read-only and app should only
 access the array while in the main queue.</p>
 			</div>
 			
@@ -445,7 +445,7 @@ access the array while in the main queue.</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Array of NSString * wallet names. This array is read-only and app should only
+				<p>Array of NSString wallet names. This array is read-only and app should only
 access the array while in the main queue.</p>
 			</div>
 			
@@ -573,7 +573,7 @@ arrayWallets[currentWalletIndex] = <a href="#//api/name/currentWallet">currentWa
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Array of NSString* categories with which a user to could choose to tag a transaction with.
+				<p><a href="../Classes/ABCCategories.html">ABCCategories</a> object which lists category options a user could choose to tag a transaction with.
 Categories must start with &ldquo;Income&rdquo;, &ldquo;Expense&rdquo;, &ldquo;Transfer&rdquo; or &ldquo;Exchange&rdquo; plus a &ldquo;:&rdquo; and then
 an arbitrary subcategory such as &ldquo;Food &amp; Dining&rdquo;. ie. &ldquo;Expense:Rent&rdquo;</p>
 			</div>
@@ -592,7 +592,7 @@ an arbitrary subcategory such as &ldquo;Food &amp; Dining&rdquo;. ie. &ldquo;Exp
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Array of NSString* categories with which a user to could choose to tag a transaction with.
+				<p><a href="../Classes/ABCCategories.html">ABCCategories</a> object which lists category options a user could choose to tag a transaction with.
 Categories must start with &ldquo;Income&rdquo;, &ldquo;Expense&rdquo;, &ldquo;Transfer&rdquo; or &ldquo;Exchange&rdquo; plus a &ldquo;:&rdquo; and then
 an arbitrary subcategory such as &ldquo;Food &amp; Dining&rdquo;. ie. &ldquo;Expense:Rent&rdquo;</p>
 			</div>
@@ -623,7 +623,7 @@ an arbitrary subcategory such as &ldquo;Food &amp; Dining&rdquo;. ie. &ldquo;Exp
 			
 			
 			<div class="method-subsection brief-description">
-				<p>DataStore object for allowing arbitrary Edge Secure data storage and retrieval on this
+				<p><a href="../Classes/ABCDataStore.html">ABCDataStore</a> object for allowing arbitrary Edge Secure data storage and retrieval on this
 ABCAccount</p>
 			</div>
 			
@@ -641,7 +641,7 @@ ABCAccount</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>DataStore object for allowing arbitrary Edge Secure data storage and retrieval on this
+				<p><a href="../Classes/ABCDataStore.html">ABCDataStore</a> object for allowing arbitrary Edge Secure data storage and retrieval on this
 ABCAccount</p>
 			</div>
 			
@@ -1128,7 +1128,7 @@ This is used to guard access to certain actions in the GUI.</p>
 				<p>Enable or disable PIN login on this account. Set enable = YES to allow
 PIN login. Enabling PIN login creates a local account decryption key that
 is split with one have in local device storage and the other half on Airbitz
-servers. When using [AirbitzCore signInWithPIN] the PIN is sent to Airbitz servers
+servers. When using [AirbitzCore signInWithPIN:username:pin:delegate:error] the PIN is sent to Airbitz servers
 to authenticate the user. If the PIN is correct, the second half of the decryption
 key is sent back to the device. Combined with the locally saved key, the two
 are then used to decrypt the local account thereby loggin in the user.</p>
@@ -1168,7 +1168,7 @@ are then used to decrypt the local account thereby loggin in the user.</p>
 				<p>Enable or disable PIN login on this account. Set enable = YES to allow
 PIN login. Enabling PIN login creates a local account decryption key that
 is split with one have in local device storage and the other half on Airbitz
-servers. When using [AirbitzCore signInWithPIN] the PIN is sent to Airbitz servers
+servers. When using [AirbitzCore signInWithPIN:username:pin:delegate:error] the PIN is sent to Airbitz servers
 to authenticate the user. If the PIN is correct, the second half of the decryption
 key is sent back to the device. Combined with the locally saved key, the two
 are then used to decrypt the local account thereby loggin in the user.</p>
@@ -1287,7 +1287,7 @@ are then used to decrypt the local account thereby loggin in the user.</p>
 					<tr>
 						<th scope="row" class="argument-name"><code>completionHandler</code></th>
 						<td><p>(Optional) Code block called on success. Returns void if used<br>
-- <em>param</em> ABCWallet* User object.<br></p></td>
+- <em>param</em> <a href="../Classes/ABCWallet.html">ABCWallet</a> User object.<br></p></td>
 					</tr>
 				
 					<tr>
@@ -1378,7 +1378,7 @@ are then used to decrypt the local account thereby loggin in the user.</p>
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>ABCWallet* wallet object or nil if failure.</p>
+				<p><a href="../Classes/ABCWallet.html">ABCWallet</a> wallet object or nil if failure.</p>
 			</div>
 			
 
@@ -1441,7 +1441,7 @@ are then used to decrypt the local account thereby loggin in the user.</p>
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>ABCWallet* Returned wallet object or nil if not found</p>
+				<p><a href="../Classes/ABCWallet.html">ABCWallet</a> Returned wallet object or nil if not found</p>
 			</div>
 			
 
@@ -2263,7 +2263,7 @@ Should be called while logged in.</p>
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-05</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-17</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

@@ -62,17 +62,15 @@
 		
 		<option value="//api/name/createNewReceiveAddress:error:">- createNewReceiveAddress:error:</option>
 		
+		<option value="//api/name/createNewSpend:">- createNewSpend:</option>
+		
 		<option value="//api/name/exportTransactionsToCSV:">- exportTransactionsToCSV:</option>
+		
+		<option value="//api/name/exportTransactionsToQBO:">- exportTransactionsToQBO:</option>
 		
 		<option value="//api/name/getReceiveAddress:error:">- getReceiveAddress:error:</option>
 		
 		<option value="//api/name/importPrivateKey:importing:complete:error:">- importPrivateKey:importing:complete:error:</option>
-		
-		<option value="//api/name/newSpendFromText:complete:error:">- newSpendFromText:complete:error:</option>
-		
-		<option value="//api/name/newSpendFromText:error:">- newSpendFromText:error:</option>
-		
-		<option value="//api/name/newSpendTransfer:error:">- newSpendTransfer:error:</option>
 		
 		<option value="//api/name/removeWallet:error:">- removeWallet:error:</option>
 		
@@ -513,8 +511,8 @@ if they are still saved in the internal ABC database.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/newSpendFromText:error:" title="newSpendFromText:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/newSpendFromText:error:">&ndash;&nbsp;newSpendFromText:error:</a></code>
+	<a name="//api/name/createNewSpend:" title="createNewSpend:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/createNewSpend:">&ndash;&nbsp;createNewSpend:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -524,27 +522,22 @@ if they are still saved in the internal ABC database.</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Create an <a href="../Classes/ABCSpend.html">ABCSpend</a> object from text. Text could be a bitcoin address or BIP21/BIP70 URI.</p>
+				<p>Create a new ABCSpend object. Can be explicitly deallocated using [ABCSpend free].</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (ABCSpend *)newSpendFromText:(NSString *)<em>uri</em> error:(NSError **)<em>error</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (ABCSpend *)createNewSpend:(NSError **)<em>error</em></code></div>
 
 		    
 			
 			<div class="method-subsection arguments-section parameters">
 				<h4 class="method-subtitle parameter-title">Parameters</h4>
 				<table class="argument-def parameter-def">
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>uri</code></th>
-						<td><p>NSString*  Bitcoin address or full BIP21/BIP70 uri</p></td>
-					</tr>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>error</code></th>
-						<td><p>NSError** Pointer to error object.</p></td>
+						<td><p>Return pointer to NSError object</p></td>
 					</tr>
 				
 				</table>
@@ -554,7 +547,7 @@ if they are still saved in the internal ABC database.</p>
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>ABCSpend* <a href="../Classes/ABCSpend.html">ABCSpend</a> object or nil if failure.</p>
+				<p><a href="../Classes/ABCSpend.html">ABCSpend</a> object</p>
 			</div>
 			
 
@@ -563,152 +556,7 @@ if they are still saved in the internal ABC database.</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Create an <a href="../Classes/ABCSpend.html">ABCSpend</a> object from text. Text could be a bitcoin address or BIP21/BIP70 URI.</p>
-			</div>
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection declared-in-section">
-				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCWallet.h</code></p>
-			</div>
-			
-			
-		</div>
-	</div>
-</div><div class="section-method">
-	<a name="//api/name/newSpendFromText:complete:error:" title="newSpendFromText:complete:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/newSpendFromText:complete:error:">&ndash;&nbsp;newSpendFromText:complete:error:</a></code>
-</h3>
-
-	<div class="method-info">
-		<div class="pointy-thing"></div>
-
-		<div class="method-info-container">
-			
-			
-			<div class="method-subsection brief-description">
-				<p>Create an <a href="../Classes/ABCSpend.html">ABCSpend</a> object from text. Text could be a bitcoin address or BIP21/BIP70 URI.</p>
-			</div>
-			
-		    
-
-			<div class="method-subsection method-declaration"><code>- (void)newSpendFromText:(NSString *)<em>uri</em> complete:(void ( ^ ) ( ABCSpend *sp ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *error ))<em>errorHandler</em></code></div>
-
-		    
-			
-			<div class="method-subsection arguments-section parameters">
-				<h4 class="method-subtitle parameter-title">Parameters</h4>
-				<table class="argument-def parameter-def">
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>uri</code></th>
-						<td><p>NSString*  Bitcoin address or full BIP21/BIP70 uri</p></td>
-					</tr>
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>completionHandler</code></th>
-						<td><p>Completion handler code block which is called with <a href="../Classes/ABCSpend.html">ABCSpend</a><em>.<br>
-- </em>param<em> <a href="../Classes/ABCSpend.html">ABCSpend</a></em> <a href="../Classes/ABCSpend.html">ABCSpend</a> object.</p></td>
-					</tr>
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>errorHandler</code></th>
-						<td><p>Error handler code block which is called with the following args<br>
-- <em>param</em> NSError* error object</p></td>
-					</tr>
-				
-				</table>
-			</div>
-			
-
-			
-			<div class="method-subsection return">
-				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>void</p>
-			</div>
-			
-
-			
-
-			
-			<div class="method-subsection discussion-section">
-				<h4 class="method-subtitle">Discussion</h4>
-				<p>Create an <a href="../Classes/ABCSpend.html">ABCSpend</a> object from text. Text could be a bitcoin address or BIP21/BIP70 URI.</p>
-			</div>
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection declared-in-section">
-				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCWallet.h</code></p>
-			</div>
-			
-			
-		</div>
-	</div>
-</div><div class="section-method">
-	<a name="//api/name/newSpendTransfer:error:" title="newSpendTransfer:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/newSpendTransfer:error:">&ndash;&nbsp;newSpendTransfer:error:</a></code>
-</h3>
-
-	<div class="method-info">
-		<div class="pointy-thing"></div>
-
-		<div class="method-info-container">
-			
-			
-			<div class="method-subsection brief-description">
-				<p>Creates a <a href="../Classes/ABCSpend.html">ABCSpend</a> object from a wallet to wallet transfer. Transfer goes from
-current object wallet to [ABCWallet] destWallet</p>
-			</div>
-			
-		    
-
-			<div class="method-subsection method-declaration"><code>- (ABCSpend *)newSpendTransfer:(ABCWallet *)<em>destWallet</em> error:(NSError **)<em>error</em></code></div>
-
-		    
-			
-			<div class="method-subsection arguments-section parameters">
-				<h4 class="method-subtitle parameter-title">Parameters</h4>
-				<table class="argument-def parameter-def">
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>destWallet</code></th>
-						<td><p>ABCWallet* of destination wallet for transfer</p></td>
-					</tr>
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>error</code></th>
-						<td><p>NSError** Pointer to error object.</p></td>
-					</tr>
-				
-				</table>
-			</div>
-			
-
-			
-			<div class="method-subsection return">
-				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>ABCSpend* <a href="../Classes/ABCSpend.html">ABCSpend</a> object or nil if failure</p>
-			</div>
-			
-
-			
-
-			
-			<div class="method-subsection discussion-section">
-				<h4 class="method-subtitle">Discussion</h4>
-				<p>Creates a <a href="../Classes/ABCSpend.html">ABCSpend</a> object from a wallet to wallet transfer. Transfer goes from
-current object wallet to [ABCWallet] destWallet</p>
+				<p>Create a new ABCSpend object. Can be explicitly deallocated using [ABCSpend free].</p>
 			</div>
 			
 
@@ -773,6 +621,70 @@ Must not be nil.</p></td>
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>Export a wallet&rsquo;s transactions to CSV format</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCWallet.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/exportTransactionsToQBO:" title="exportTransactionsToQBO:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/exportTransactionsToQBO:">&ndash;&nbsp;exportTransactionsToQBO:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Export a wallet&rsquo;s transactions to QBO format</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (NSError *)exportTransactionsToQBO:(NSMutableString *)<em>qbo</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>csv</code></th>
+						<td><p>NSMutableString* allocated and initialized mutable string to receive CSV contents.
+Must not be nil.</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>NSError* error object. nil if success</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Export a wallet&rsquo;s transactions to QBO format</p>
 			</div>
 			
 
@@ -890,7 +802,7 @@ after sweep.</p>
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-05</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-17</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

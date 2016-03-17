@@ -201,18 +201,18 @@ typedef enum eABCDeviceCaps
 
 /**
  * Sign In to an Airbitz account using completion handlers.
- * @param username NSString*
- * @param password NSString*
+ * @param username NSString
+ * @param password NSString
  * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
- * @param otp NSString* One Time Password token (optional). Send nil if logging in w/o OTP token
+ * @param otp NSString One Time Password token (optional). Send nil if logging in w/o OTP token
  *  or if OTP token has already been saved in this account from prior login
  * @param completionHandler (Optional) Code block called on success. Returns void if used<br>
  * - *param* ABCAccount Account object created from SignIn call
  * @param errorHandler (Optional) Code block called on error with parameters<br>
- * - *param* NSError*<br>
- * - *param* NSDate* resetDate If login fails due to invalid or unset OTP key, and an OTP reset has been
+ * - *param* NSError<br>
+ * - *param* NSDate otpResetDate If login fails due to invalid or unset OTP key, and an OTP reset has been
  *  requested, the data that the reset will occur will be returned in this argument<br>
- * - *param* NSString* OTP reset token. If login fails due to OTP set on this account, use this token
+ * - *param* NSString otpResetToken. If login fails due to OTP set on this account, use this token
  *  in requestOTPReset to request a reset of OTP. The reset will take 7 days
  * @return void
  */
@@ -221,22 +221,39 @@ typedef enum eABCDeviceCaps
       delegate:(id)delegate
            otp:(NSString *)otp
       complete:(void (^)(ABCAccount *account)) completionHandler
-         error:(void (^)(NSError *, NSDate *resetDate, NSString *resetToken)) errorHandler;
+         error:(void (^)(NSError *, NSDate *otpResetDate, NSString *otpResetToken)) errorHandler;
 
 /**
  * Sign In to an Airbitz account.
- * @param username NSString*
- * @param password NSString*
+ * @param username NSString
+ * @param password NSString
  * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
- * @param otp NSString* One Time Password token (optional). Send nil if logging in w/o OTP token
- *  or if OTP token has already been saved in this account from prior login
- * @param error NSError** May be set to nil. Only used when not using completion handler
+ * @param error NSError May be set to nil. Only used when not using completion handler
  * @return ABCAccount Account object or nil if failure.
  */
 - (ABCAccount *)signIn:(NSString *)username
               password:(NSString *)password
               delegate:(id)delegate
                  error:(NSError **)error;
+
+/**
+ * Sign In to an Airbitz account. This routine allows caller to receive back an otpResetToken
+ * which is used with [AirbitzCore requestOTPReset] to remove OTP from the specified account.
+ * The otpResetToken is only returned if the caller has provided the correct username and password
+ * but the account had OTP enabled. In such case, signIn will also provide an otpResetDate which is
+ * the date when the account OTP will be disabled if a prior OTP reset was successfully requested.
+ * The reset date is set to 7 days from when a reset was initially requested.
+ * @param username NSString
+ * @param password NSString
+ * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
+ * @param otp NSString* One Time Password token (optional). Send nil if logging in w/o OTP token
+ *  or if OTP token has already been saved in this account from prior login
+ * @param otpResetToken NSMutableString A reset token to be used to request disabling of OTP for
+ *  this account.
+ * @param otpResetDate NSDate Date which the account reset will occur
+ * @param error NSError May be set to nil. Only used when not using completion handler
+ * @return ABCAccount Account object or nil if failure.
+ */
 - (ABCAccount *)signIn:(NSString *)username
               password:(NSString *)password
               delegate:(id)delegate
