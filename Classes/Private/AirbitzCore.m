@@ -726,10 +726,7 @@
                          [pin UTF8String],
                          &pinLoginWaitSeconds,
                          &error);
-            if (ABC_CC_InvalidPinWait == error.code)
-                lnserror = [ABCError makeNSError:error description:[NSString stringWithFormat:invalidPINWaitSecondsText, pinLoginWaitSeconds]];
-            else
-                lnserror = [ABCError makeNSError:error];
+            lnserror = [ABCError makeNSError:error];
             
             if (!lnserror)
             {
