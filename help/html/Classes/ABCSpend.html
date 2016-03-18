@@ -43,6 +43,8 @@
 							<select id="jump-to">
 	<option value="top">Jump To&#133;</option>
 	
+	<option value="overview">Overview</option>
+	
 
 	
 	
@@ -58,6 +60,12 @@
 	
 	<optgroup label="Instance Methods">
 		
+		<option value="//api/name/addAddress:amount:">- addAddress:amount:</option>
+		
+		<option value="//api/name/addPaymentRequest:">- addPaymentRequest:</option>
+		
+		<option value="//api/name/addTransfer:amount:destMeta:">- addTransfer:amount:destMeta:</option>
+		
 		<option value="//api/name/getFees:">- getFees:</option>
 		
 		<option value="//api/name/getFees:error:">- getFees:error:</option>
@@ -65,6 +73,10 @@
 		<option value="//api/name/getMaxSpendable:">- getMaxSpendable:</option>
 		
 		<option value="//api/name/getMaxSpendable:error:">- getMaxSpendable:error:</option>
+		
+		<option value="//api/name/signBroadcastAndSave:">- signBroadcastAndSave:</option>
+		
+		<option value="//api/name/signBroadcastAndSave:error:">- signBroadcastAndSave:error:</option>
 		
 	</optgroup>
 	
@@ -96,6 +108,17 @@
 					
 
                     
+					
+					<div class="section section-overview">
+						<a title="Overview" name="overview"></a>
+						<h2 class="subtitle subtitle-overview">Overview</h2>
+						<p>ABCSpend is used to build a Spend from the <a href="../Classes/ABCWallet.html">ABCWallet</a> that generated this ABCSpend object.
+Caller can add multiple spend targets by calling either of addAddress, addTransfer, or
+addPaymentRequest repeated times. Use signBroadcastAndSave to send the transaction to the
+blockchain. This spend may also be signed without broadcast by calling signTx.</p>
+					</div>
+					
+					
 
 					
 					
@@ -108,6 +131,309 @@
 
 						<div class="task-list">
 							<div class="section-method">
+	<a name="//api/name/addAddress:amount:" title="addAddress:amount:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/addAddress:amount:">&ndash;&nbsp;addAddress:amount:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Adds an address and amount to this spend request</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (NSError *)addAddress:(NSString *)<em>address</em> amount:(uint64_t)<em>amount</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>address</code></th>
+						<td><p>NSString Bitcoin public address to send funds to</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>amount</code></th>
+						<td><p>uint64_t Amount of bitcoin to send in satoshis</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>NSError</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Adds an address and amount to this spend request</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCSpend.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/addTransfer:amount:destMeta:" title="addTransfer:amount:destMeta:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/addTransfer:amount:destMeta:">&ndash;&nbsp;addTransfer:amount:destMeta:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Adds a transfer of funds between ABCWallets in an account. The source
+wallet is the wallet that created this ABCSpend and once the transaction
+send, the source wallet is tagged with the metaData from this ABCSpend object.
+The destWallet is tagged with metadata supplied in detaMeta</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (NSError *)addTransfer:(ABCWallet *)<em>destWallet</em> amount:(uint64_t)<em>amountSatoshi</em> destMeta:(ABCMetaData *)<em>destMeta</em></code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Adds a transfer of funds between ABCWallets in an account. The source
+wallet is the wallet that created this ABCSpend and once the transaction
+send, the source wallet is tagged with the metaData from this ABCSpend object.
+The destWallet is tagged with metadata supplied in detaMeta</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCSpend.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/addPaymentRequest:" title="addPaymentRequest:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/addPaymentRequest:">&ndash;&nbsp;addPaymentRequest:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Adds a BIP70 payment request to this ABCSpend transaction. No amount parameter is
+provided as the payment request always has the amount included. Generate an
+ABCPaymentRequest object by calling parseURI then getPaymentRequest</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (NSError *)addPaymentRequest:(ABCPaymentRequest *)<em>paymentRequest</em></code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Adds a BIP70 payment request to this ABCSpend transaction. No amount parameter is
+provided as the payment request always has the amount included. Generate an
+ABCPaymentRequest object by calling parseURI then getPaymentRequest</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCSpend.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/signBroadcastAndSave:" title="signBroadcastAndSave:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/signBroadcastAndSave:">&ndash;&nbsp;signBroadcastAndSave:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Signs this send request and broadcasts it to the blockchain</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCTransaction *)signBroadcastAndSave:(NSError **)<em>error</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>NSError object</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCTransaction Transaction object</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Signs this send request and broadcasts it to the blockchain</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCSpend.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/signBroadcastAndSave:error:" title="signBroadcastAndSave:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/signBroadcastAndSave:error:">&ndash;&nbsp;signBroadcastAndSave:error:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Signs this send request and broadcasts it to the blockchain. Uses completion handlers</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)signBroadcastAndSave:(void ( ^ ) ( ABCTransaction *))<em>completionHandler</em> error:(void ( ^ ) ( NSError *error ))<em>errorHandler</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>completionHandler</code></th>
+						<td><p>Completion handler code block<br>
+- <em>param</em> ABCTransaction Transaction object</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>errorHandler</code></th>
+						<td><p>Error handler code block which is called with the following args<br>
+- <em>param</em> NSError error object</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>void</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Signs this send request and broadcasts it to the blockchain. Uses completion handlers</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCSpend.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
 	<a name="//api/name/getFees:" title="getFees:"></a>
 	<h3 class="method-title"><code><a href="#//api/name/getFees:">&ndash;&nbsp;getFees:</a></code>
 </h3>
@@ -197,7 +523,7 @@
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>completionHandler</code></th>
-						<td><p>Completion handler code block which is called with uint64_t totalFees
+						<td><p>Completion handler code block which is called with uint64_t totalFees<br>
 - <em>param</em> uint64_t Amount of fees in satoshis</p></td>
 					</tr>
 				
@@ -325,7 +651,7 @@
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>completionHandler</code></th>
-						<td><p>Completion handler code block which is called with uint64_t totalFees
+						<td><p>Completion handler code block which is called with uint64_t totalFees<br>
 - <em>param</em> uint64_t amountSpendable Total amount spendablein satoshis</p></td>
 					</tr>
 				
@@ -378,7 +704,7 @@
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-17</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-18</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

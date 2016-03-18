@@ -62,6 +62,12 @@
 		
 		<option value="//api/name/fixUsername:error:">+ fixUsername:error:</option>
 		
+		<option value="//api/name/getMinimumPINLength">+ getMinimumPINLength</option>
+		
+		<option value="//api/name/getMinimumPasswordLength">+ getMinimumPasswordLength</option>
+		
+		<option value="//api/name/getMinimumUsernamedLength">+ getMinimumUsernamedLength</option>
+		
 		<option value="//api/name/listRecoveryQuestionsChoices:error:">+ listRecoveryQuestionsChoices:error:</option>
 		
 	</optgroup>
@@ -1449,7 +1455,8 @@ by app to give feedback to user before creating a new account.</p>
 			<div class="method-subsection brief-description">
 				<p>Checks if an account with the specified username exists locally on the current device.
 This does not check for existence of the account on the entire Airbitz system. If a username
-was created but never logged into this device, this will return NO.</p>
+was created but never logged into this device, this will return NO. This routine
+does not require network connectivity to operate.</p>
 			</div>
 			
 		    
@@ -1485,7 +1492,8 @@ was created but never logged into this device, this will return NO.</p>
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>Checks if an account with the specified username exists locally on the current device.
 This does not check for existence of the account on the entire Airbitz system. If a username
-was created but never logged into this device, this will return NO.</p>
+was created but never logged into this device, this will return NO. This routine
+does not require network connectivity to operate.</p>
 			</div>
 			
 
@@ -1514,7 +1522,8 @@ was created but never logged into this device, this will return NO.</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Checks if username is available</p>
+				<p>Checks if username is available on the global Airbitz username space. This requires
+network connectivity to function.</p>
 			</div>
 			
 		    
@@ -1548,7 +1557,8 @@ was created but never logged into this device, this will return NO.</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Checks if username is available</p>
+				<p>Checks if username is available on the global Airbitz username space. This requires
+network connectivity to function.</p>
 			</div>
 			
 
@@ -1836,7 +1846,7 @@ returns the username of another local account. This can be overridden by calling
 			
 			<div class="method-subsection brief-description">
 				<p>Gets the recovery questions set for the specified username. Questions are
-returned as an NSArray of NSString*. Recovery questions need to have been previously set
+returned as an NSArray of NSString. Recovery questions need to have been previously set
 with a call to [ABCAccount setupRecoveryQuestions]</p>
 			</div>
 			
@@ -1878,7 +1888,7 @@ have been set.</p>
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>Gets the recovery questions set for the specified username. Questions are
-returned as an NSArray of NSString*. Recovery questions need to have been previously set
+returned as an NSArray of NSString. Recovery questions need to have been previously set
 with a call to [ABCAccount setupRecoveryQuestions]</p>
 			</div>
 			
@@ -1927,7 +1937,8 @@ servers, but app is <a href="#//api/name/free">free</a> to choose its own to pre
 						<td><p>Completion handler code block which is called with the following args<br>
 - <em>param</em> arrayCategoryString NSMutableString<em> array of string based questions<br>
 - </em>param<em> arrayCategoryNumeric NSMutableString</em> array of numeric based questions<br>
-- <em>param</em> arrayCategoryMust NSMutableString* array of questions of which one must have an answer</p></td>
+- <em>param</em> arrayCategoryMust NSMutableString* array of questions which cannot be answered via
+information from public records</p></td>
 					</tr>
 				
 					<tr>
@@ -1990,7 +2001,9 @@ servers, but app is <a href="#//api/name/free">free</a> to choose its own to pre
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Associates an OTP key with the given username.
+				<p>Associates an OTP key with the given username. An OTP key can be retrieved from
+a previously logged in account using [ABCAccount getOTPLocalKey]. The account
+must have had OTP enabled by using [ABCAccount setOTPAuth]
 This will not write to disk until the user has successfully logged in
 at least once.</p>
 			</div>
@@ -2031,7 +2044,9 @@ at least once.</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Associates an OTP key with the given username.
+				<p>Associates an OTP key with the given username. An OTP key can be retrieved from
+a previously logged in account using [ABCAccount getOTPLocalKey]. The account
+must have had OTP enabled by using [ABCAccount setOTPAuth]
 This will not write to disk until the user has successfully logged in
 at least once.</p>
 			</div>
@@ -2707,6 +2722,167 @@ and checks for invalid characters.</p>
 </div>
 						</div>
 						
+
+						<a title="Class methods to retrieve constant parameters from ABC" name="task_Class methods to retrieve constant parameters from ABC"></a>
+						<h2 class="task-title">Class methods to retrieve constant parameters from ABC</h2>
+
+						<div class="task-list">
+							<div class="section-method">
+	<a name="//api/name/getMinimumUsernamedLength" title="getMinimumUsernamedLength"></a>
+	<h3 class="method-title"><code><a href="#//api/name/getMinimumUsernamedLength">+&nbsp;getMinimumUsernamedLength</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Get the minimum allowable length of a username for new accounts</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>+ (int)getMinimumUsernamedLength</code></div>
+
+		    
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>int Minimum length</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Get the minimum allowable length of a username for new accounts</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/getMinimumPasswordLength" title="getMinimumPasswordLength"></a>
+	<h3 class="method-title"><code><a href="#//api/name/getMinimumPasswordLength">+&nbsp;getMinimumPasswordLength</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Get the minimum allowable length of a password for accounts</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>+ (int)getMinimumPasswordLength</code></div>
+
+		    
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>int Minimum length</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Get the minimum allowable length of a password for accounts</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/getMinimumPINLength" title="getMinimumPINLength"></a>
+	<h3 class="method-title"><code><a href="#//api/name/getMinimumPINLength">+&nbsp;getMinimumPINLength</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Get the minimum allowable length of a PIN for accounts</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>+ (int)getMinimumPINLength</code></div>
+
+		    
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>int Minimum length</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Get the minimum allowable length of a PIN for accounts</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div>
+						</div>
+						
 					</div>
 					
 					
@@ -2719,7 +2895,7 @@ and checks for invalid characters.</p>
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-17</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-18</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

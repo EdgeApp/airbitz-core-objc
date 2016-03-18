@@ -6,7 +6,7 @@
 
 @class ABCUtil;
 
-@implementation BitidSignature
+@implementation ABCBitIDSignature
 - (id)init
 {
    self = [super init];

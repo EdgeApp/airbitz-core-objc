@@ -1,5 +1,6 @@
 
 #import "AirbitzCore+Internal.h"
+#import "ABCAccount.h"
 #import <pthread.h>
 
 static const int   fileSyncFrequencySeconds   = 30;
@@ -1406,12 +1407,12 @@ static const int notifySyncDelay          = 1;
     return [ABCError makeNSError:error];    
 }
 
-- (BitidSignature *)bitidSign:(NSString *)uri msg:(NSString *)message
+- (ABCBitIDSignature *)bitidSign:(NSString *)uri message:(NSString *)message
 {
     tABC_Error error;
     char *szAddress = NULL;
     char *szSignature = NULL;
-    BitidSignature *bitid = [[BitidSignature alloc] init];
+    ABCBitIDSignature *bitid = [[ABCBitIDSignature alloc] init];
     
     tABC_CC result = ABC_BitidSign(
                                    [self.name UTF8String], [self.password UTF8String],

@@ -6,29 +6,62 @@
 #import "AirbitzCore.h"
 
 @class ABCWallet;
+@class ABCPaymentRequest;
+@class ABCUnsentTx;
 
-@interface ABCPaymentRequest : NSObject
-@property                           NSString                *domain;
-@property                           uint64_t                amountSatoshi;
-@property                           NSString                *memo;
-@property                           NSString                *merchant;
-@end
-
-@interface ABCUnsentTx : NSObject
-@property                           NSString                *base16;
-
-- (NSError *)broadcastTx;
-- (ABCTransaction *)saveTx:(NSError **)error;
-@end
+/**
+ * ABCSpend is used to build a Spend from the ABCWallet that generated this ABCSpend object.
+ * Caller can add multiple spend targets by calling either of addAddress, addTransfer, or
+ * addPaymentRequest repeated times. Use signBroadcastAndSave to send the transaction to the
+ * blockchain. This spend may also be signed without broadcast by calling signTx.
+ */
 
 
 @interface ABCSpend : NSObject
 
 @property                           ABCMetaData             *metaData;
 
+/**
+ * Adds an address and amount to this spend request
+ * @param address NSString Bitcoin public address to send funds to
+ * @param amount uint64_t Amount of bitcoin to send in satoshis
+ * @return NSError
+ */
 - (NSError *)addAddress:(NSString *)address amount:(uint64_t)amount;
+
+/**
+ * Adds a transfer of funds between ABCWallets in an account. The source
+ * wallet is the wallet that created this ABCSpend and once the transaction
+ * is sent, the source wallet is tagged with the metaData from this ABCSpend object.
+ * The destWallet is tagged with metadata supplied in detaMeta
+ */
 - (NSError *)addTransfer:(ABCWallet *)destWallet amount:(uint64_t)amountSatoshi destMeta:(ABCMetaData *)destMeta;
+
+/**
+ * Adds a BIP70 payment request to this ABCSpend transaction. No amount parameter is
+ * provided as the payment request always has the amount included. Generate an
+ * ABCPaymentRequest object by calling parseURI then getPaymentRequest
+ */
 - (NSError *)addPaymentRequest:(ABCPaymentRequest *)paymentRequest;
+
+/**
+ * Signs this send request and broadcasts it to the blockchain
+ * @param error NSError object
+ * @return ABCTransaction Transaction object
+ */
+- (ABCTransaction *)signBroadcastAndSave:(NSError **)error;
+
+/**
+ * Signs this send request and broadcasts it to the blockchain. Uses completion handlers
+ * @param completionHandler Completion handler code block<br>
+ * - *param* ABCTransaction Transaction object
+ * @param errorHandler Error handler code block which is called with the following args<br>
+ * - *param* NSError error object
+ * @return void
+ */
+- (void)signBroadcastAndSave:(void(^)(ABCTransaction *))completionHandler
+                       error:(void(^)(NSError *error)) errorHandler;
+
 
 /**
  * Calculate the amount of fees needed to send this transaction
@@ -40,7 +73,7 @@
 
 /**
  * Calculate the amount of fees needed to send this transaction
- * @param completionHandler Completion handler code block which is called with uint64_t totalFees
+ * @param completionHandler Completion handler code block which is called with uint64_t totalFees<br>
  * - *param* uint64_t Amount of fees in satoshis
  * @param errorHandler Error handler code block which is called with the following args<br>
  * - *param* NSError error object
@@ -58,7 +91,7 @@
 
 /**
  * Get the maximum amount spendable from this wallet using completion handlers
- * @param completionHandler Completion handler code block which is called with uint64_t totalFees
+ * @param completionHandler Completion handler code block which is called with uint64_t totalFees<br>
  * - *param* uint64_t amountSpendable Total amount spendablein satoshis
  * @param errorHandler Error handler code block which is called with the following args<br>
  * - *param* NSError error object
@@ -71,8 +104,23 @@
 - (void)signTx:(void(^)(ABCUnsentTx *unsentTx))completionHandler
          error:(void(^)(NSError *error)) errorHandler;
 
-- (ABCTransaction *)signBroadcastAndSave:(NSError **)error;
-- (void)signBroadcastAndSave:(void(^)(ABCTransaction *))completionHandler
-                       error:(void(^)(NSError *error)) errorHandler;
 
 @end
+
+
+
+@interface ABCPaymentRequest : NSObject
+@property                           NSString                *domain;
+@property                           uint64_t                amountSatoshi;
+@property                           NSString                *memo;
+@property                           NSString                *merchant;
+@end
+
+@interface ABCUnsentTx : NSObject
+@property                           NSString                *base16;
+
+- (NSError *)broadcastTx;
+- (ABCTransaction *)saveTx:(NSError **)error;
+@end
+
+

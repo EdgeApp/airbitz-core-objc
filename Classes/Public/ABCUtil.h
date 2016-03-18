@@ -42,8 +42,16 @@
  * @param error NSError Pointer to NSError object. (Optional. May be set to nil)
  * @return ABCParsedURI ABCParsedURI Object with various parameters parsed out
  */
-+ (ABCParsedURI *)parseURI:(NSString *)uri error:(NSError **)nserror;
++ (ABCParsedURI *)parseURI:(NSString *)uri error:(NSError **)error;
 
+/**
+ * Encodes a BIP21 compatible payment request URI using various paramters
+ * @param address NSString Bitcoin public address
+ * @param amount uint64_t Amount of request in satoshis
+ * @param label NSString Name of requestor
+ * @param message NSString Misc notes of transaction request
+ * @param ret NSString Return URI to send user to after payment is made
+ */
 + (NSString *)encodeURI:(NSString *)address
                  amount:(uint64_t)amount
                   label:(NSString *)label

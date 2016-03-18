@@ -5,6 +5,17 @@
 
 #import "AirbitzCore.h"
 
+/**
+ * The ABCAccount object represents a fully logged in account. This is returned by various signIn
+ * routines from AirbitzCore. It contains an ABCSettings object which are account settings that
+ * carry over from device to device. ABCAccount also contains an array of ABCWallet object wallets and archived
+ * wallets which should be checked for the parameter loaded=YES before being accessed.
+ *
+ * The ABCDataStore object dataStore allows reading/writing of encrypted and backed up key/value
+ * data to the user's account. This data is accessible from any device that the user authenticates
+ * into using an app running on the Airbitz SDK.
+ */
+
 @class AirbitzCore;
 @class ABCAccount;
 @class ABCCategories;
@@ -17,70 +28,8 @@
 @class ABCReceiveAddress;
 @class ABCTransaction;
 @class ABCWallet;
-
-@interface BitidSignature : NSObject
-@property (nonatomic, strong) NSString *address;
-@property (nonatomic, strong) NSString *signature;
-@end
-
-///----------------------------------------------------------
-/// @name ABCAccount Delegate callbacks
-///----------------------------------------------------------
-
-@protocol ABCAccountDelegate <NSObject>
-
-@optional
-
-/// Password has been changed by a remote device. User will be able to login on current device
-/// with old password. One user logs in with new password, old password will cease to function.
-- (void) abcAccountRemotePasswordChange;
-
-/// User has been logged out. Always called after [ABCAccount logout] once Core has finished logout
-/// Also called under some error conditions such as corrupt local data.
-/// @param account ABCAccount account that has been logged out
-- (void) abcAccountLoggedOut:(ABCAccount *)account;
-
-/// Account details such as settings have changed
-- (void) abcAccountAccountChanged;
-
-/// Specific wallet has changed. Changes may include new transactions or modified metadata
-/// @param wallet ABCWallet
-- (void) abcAccountWalletChanged:(ABCWallet *)wallet;
-
-/// Called when the wallets in the account are still loading their prior transactions.
-- (void) abcAccountWalletsLoading;
-
-/// At minimum, the primary wallet has finished loading. Other wallets may still be loading
-- (void) abcAccountWalletsLoaded;
-
-/// Wallets in the account have changed. Changes may include new wallet order or wallet names.
-- (void) abcAccountWalletsChanged;
-
-/// Account has had OTP enabled on another device. GUI should ask user to add OTP key from
-/// OTP authenticated device.
-- (void) abcAccountOTPRequired;
-
-/// Current OTP token on device does not match server OTP token. Token may have been changed by another
-/// device or user's time clock is skewed.
-- (void) abcAccountOTPSkew;
-
-/// The current blockheight has changed. Use should refresh GUI by rereading ABCAccount.arrayWallets
-- (void) abcAccountBlockHeightChanged;
-
-/// This device has just sync'ed a transaction to the specified wallet from another device
-/// causing a change in balance. This happens if two devices share a wallet. First device will see
-/// abcAccountIncomingBitcoin. The second device will see abcAccountBalanceUpdate
-/// @param wallet ABCWallet The wallet whose balance was updated
-/// @param transaction ABCTransaction The transaction which caused the balance change
-- (void) abcAccountBalanceUpdate:(ABCWallet *)wallet transaction:(ABCTransaction *)transaction;
-
-/// The specified wallet has just received a new incoming funds transaction which has not yet
-/// been seen by other devices with this account.
-/// @param wallet ABCWallet The wallet whose balance was updated
-/// @param transaction ABCTransaction The transaction which caused the incoming coin.
-- (void) abcAccountIncomingBitcoin:(ABCWallet *)wallet transaction:(ABCTransaction *)transaction;
-
-@end
+@class ABCBitIDSignature;
+@protocol ABCAccountDelegate;
 
 @interface ABCAccount : NSObject
 ///----------------------------------------------------------
@@ -151,11 +100,6 @@
 - (ABCWallet *)selectWalletWithUUID:(NSString *)uuid;
 - (BOOL) isLoggedIn;
 
-- (BOOL)needsRecoveryQuestionsReminder;
-- (NSString *) bitidParseURI:(NSString *)uri;
-- (NSError *) bitidLogin:(NSString *)uri;
-- (BitidSignature *) bitidSign:(NSString *)uri msg:(NSString *)msg;
-
 /**
  * Creates a user displayable exchange rate string using the current user's
  * denomination settings. ie. "1 BTC = $451" or "1 mBTC = $0.451"
@@ -173,11 +117,11 @@
 /// -----------------------------------------------------------------------------
 
 /**
- * @param password NSString* new password for currently logged in user
+ * @param password NSString new password for currently logged in user
  * (Optional. If used, method returns immediately with void)
  * @param completionHandler (Optional) completion handler code block
  * @param errorHandler (Optional) Code block called on error with parameters<br>
- * - *param* NSError*
+ * - *param* NSError
  * @return NSError object or nil if success. Return void if using completion
  *  handler
  */
@@ -187,12 +131,12 @@
 - (NSError *)changePassword:(NSString *)password;
 
 /**
- * @param pin NSString* New pin for currently logged in user
+ * @param pin NSString New pin for currently logged in user
  * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
  * @param completionHandler Completion handler code block
  * @param errorHandler Error handler code block which is called with the following args<br>
- * - *param* NSError*
- * @return NSError* Error object. Nil if success. Returns void if completion handlers used
+ * - *param* NSError
+ * @return NSError Error object. Nil if success. Returns void if completion handlers used
  */
 - (void)changePIN:(NSString *)pin
          complete:(void (^)(void)) completionHandler
@@ -230,7 +174,7 @@
 
 /**
  * Checks if password is the correct password for this account
- * @param password NSString* Password to check
+ * @param password NSString Password to check
  * @return BOOL YES if password is correct
  */
 - (BOOL)checkPassword:(NSString *)password;
@@ -264,13 +208,14 @@
  * @param currency NSString* ISO 3 digit currency code for wallet. Set to nil to use default currency from
  *  settings or the global default currency if settings unavailable. ie. "USD, EUR, CAD, PHP"
  * (Optional. If used, method returns immediately with void
- * @param completionHandler (Optional) Code block called on success. Returns void if used<br>
- * - *param* ABCWallet User object.<br>
- * @param errorHandler (Optional) Code block called on error with parameters<br>
+ * @param completionHandler Code block called on success.<br>
+ * - *param* ABCWallet Fully created ABCWallet object.
+ * @param errorHandler Code block called on error with parameters<br>
  * - *param* NSError*
  * @return void
  */
-- (void) createWallet:(NSString *)walletName currency:(NSString *)currency
+- (void) createWallet:(NSString *)walletName
+             currency:(NSString *)currency
              complete:(void (^)(ABCWallet *)) completionHandler
                 error:(void (^)(NSError *)) errorHandler;
 
@@ -280,8 +225,7 @@
  * @param walletName NSString* Name of wallet or set to nil to use default wallet name
  * @param currency NSString* ISO 3 digit currency code for wallet. Set to nil to use default currency from
  *  settings or the global default currency if settings unavailable. ie. "USD, EUR, CAD, PHP"
- * (Optional. If used, method returns immediately with void
- * @param error NSError** May be set to nil. Only used when not using completion handler
+ * @param error NSError** May be set to nil. (Optional)
  * @return ABCWallet wallet object or nil if failure.
  */
 - (ABCWallet *) createWallet:(NSString *)walletName currency:(NSString *)currency error:(NSError **)error;
@@ -315,6 +259,11 @@
  * @return int Number of wallets
  */
 - (int) getNumWalletsInAccount:(NSError **)error;
+
+
+/// -----------------------------------------------------------------------------
+/// @name One Time Password (OTP) (2 Factor Authentication)
+/// -----------------------------------------------------------------------------
 
 /**
  * Checks if the current account has a pending request to reset (disable)
@@ -373,6 +322,11 @@
  */
 - (NSError *)removeOTPResetRequest;
 
+/// -----------------------------------------------------------------------------
+/// @name Password Recovery
+/// -----------------------------------------------------------------------------
+
+
 /**
  * Sets account recovery questions and answers in case use forgets their password
  * @param questions NSString* concatenated string of recovery questions separated by '\n' after each question
@@ -390,7 +344,17 @@
 - (NSError *)setupRecoveryQuestions:(NSString *)questions
                             answers:(NSString *)answers;
 
+/**
+ * GUI utility function to help determine if the user should be asked to setup
+ * recovery questions and answers. This routine factors the amount of funds the account
+ * has received and whether or not recovery Q/A has already been setup.
+ * @return BOOL YES if user should be asked.
+ */
+- (BOOL)needsRecoveryQuestionsReminder;
 
+/// -----------------------------------------------------------------------------
+/// @name Misc ABCAccount methods
+/// -----------------------------------------------------------------------------
 
 /**
  * Clears the local cache of blockchain information and force a re-download. This will cause wallets
@@ -418,6 +382,106 @@
  */
 - (BOOL) shouldAskUserToEnableTouchID;
 
+///----------------------------------------------------------
+/// @name BitID methods
+///----------------------------------------------------------
+
+/**
+ * Parses a BitID URI and returns the domain of the URL for display to user.
+ * @param uri NSString URI to parse
+ * @return NSString Domain of BitID request
+ */
+- (NSString *) bitidParseURI:(NSString *)uri;
+
+/**
+ * Login to a BitID server given the request URI
+ * @param uri NSString URI request from server in the form "bitid://server.com/bitid?x=NONCE"
+ * @return NSError Error object if failure. Nil if success.
+ */
+- (NSError *) bitidLogin:(NSString *)uri;
+
+/**
+ * Sign an arbitrary message with a BitID URI. The URI determines the key derivation
+ * used to sign the message.
+ * @param uri NSString URI request from server in the form "bitid://server.com/bitid?x=NONCE"
+ * @param message NSString message to sign.
+ * @return ABCBitIDSignature BitID signature object
+ */
+- (ABCBitIDSignature *)bitidSign:(NSString *)uri message:(NSString *)message;
+
+
 @end
 
+///----------------------------------------------------------
+/// @name ABCAccount Delegate callbacks
+///----------------------------------------------------------
+
+@protocol ABCAccountDelegate <NSObject>
+
+@optional
+
+/// Password has been changed by a remote device. User will be able to login on current device
+/// with old password. One user logs in with new password, old password will cease to function.
+- (void) abcAccountRemotePasswordChange;
+
+/// User has been logged out. Always called after [ABCAccount logout] once Core has finished logout
+/// Also called under some error conditions such as corrupt local data.
+/// @param account ABCAccount account that has been logged out
+- (void) abcAccountLoggedOut:(ABCAccount *)account;
+
+/// Account details such as settings have changed
+- (void) abcAccountAccountChanged;
+
+/// Specific wallet has changed. Changes may include new transactions or modified metadata
+/// @param wallet ABCWallet
+- (void) abcAccountWalletChanged:(ABCWallet *)wallet;
+
+/// Called when the wallets in the account are still loading their prior transactions.
+- (void) abcAccountWalletsLoading;
+
+/// At minimum, the primary wallet has finished loading. Other wallets may still be loading
+- (void) abcAccountWalletsLoaded;
+
+/// Wallets in the account have changed. Changes may include new wallet order or wallet names.
+- (void) abcAccountWalletsChanged;
+
+/// Account has had OTP enabled on another device. GUI should ask user to add OTP key from
+/// OTP authenticated device.
+- (void) abcAccountOTPRequired;
+
+/// Current OTP token on device does not match server OTP token. Token may have been changed by another
+/// device or user's time clock is skewed.
+- (void) abcAccountOTPSkew;
+
+/// The current blockheight has changed. Use should refresh GUI by rereading ABCAccount.arrayWallets
+- (void) abcAccountBlockHeightChanged;
+
+/// This device has just sync'ed a transaction to the specified wallet from another device
+/// causing a change in balance. This happens if two devices share a wallet. First device will see
+/// abcAccountIncomingBitcoin. The second device will see abcAccountBalanceUpdate
+/// @param wallet ABCWallet The wallet whose balance was updated
+/// @param transaction ABCTransaction The transaction which caused the balance change
+- (void) abcAccountBalanceUpdate:(ABCWallet *)wallet transaction:(ABCTransaction *)transaction;
+
+/// The specified wallet has just received a new incoming funds transaction which has not yet
+/// been seen by other devices with this account.
+/// @param wallet ABCWallet The wallet whose balance was updated
+/// @param transaction ABCTransaction The transaction which caused the incoming coin.
+- (void) abcAccountIncomingBitcoin:(ABCWallet *)wallet transaction:(ABCTransaction *)transaction;
+
+@end
+
+
+
+/**
+ * ABCBitIDSignature is the result of a signed BitID request.
+ */
+@interface ABCBitIDSignature : NSObject
+
+/// Public address used to sign the request
+@property (nonatomic, strong) NSString *address;
+
+/// Resulting signature of the request
+@property (nonatomic, strong) NSString *signature;
+@end
 

@@ -535,9 +535,10 @@ static const int importTimeout                  = 30;
     return retHeight;
 }
 
-- (NSMutableArray *)searchTransactionsIn:(NSString *)term addTo:(NSMutableArray *) arrayTransactions;
+- (NSError *)searchTransactionsIn:(NSString *)term addTo:(NSMutableArray *) arrayTransactions;
 {
     tABC_Error Error;
+    NSError *nserror = nil;
     unsigned int tCount = 0;
     ABCTransaction *transaction;
     tABC_TxInfo **aTransactions = NULL;
@@ -545,7 +546,8 @@ static const int importTimeout                  = 30;
                                             [self.account.password UTF8String],
                                             [self.uuid UTF8String], [term UTF8String],
                                             &aTransactions, &tCount, &Error);
-    if (ABC_CC_Ok == result)
+    nserror = [ABCError makeNSError:Error];
+    if (!nserror)
     {
         for (int j = tCount - 1; j >= 0; --j) {
             tABC_TxInfo *pTrans = aTransactions[j];
@@ -559,7 +561,7 @@ static const int importTimeout                  = 30;
         ABCLog(2,@("Error: AirbitzCore.searchTransactionsIn:  %s\n"), Error.szDescription);
     }
     ABC_FreeTransactions(aTransactions, tCount);
-    return arrayTransactions;
+    return nserror;
 }
 
 - (void)loadWalletFromCore:(NSString *)uuid;

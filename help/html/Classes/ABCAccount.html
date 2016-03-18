@@ -43,6 +43,8 @@
 							<select id="jump-to">
 	<option value="top">Jump To&#133;</option>
 	
+	<option value="overview">Overview</option>
+	
 
 	
 	
@@ -60,6 +62,8 @@
 		
 		<option value="//api/name/arrayWallets">arrayWallets</option>
 		
+		<option value="//api/name/bAllWalletsLoaded">bAllWalletsLoaded</option>
+		
 		<option value="//api/name/categories">categories</option>
 		
 		<option value="//api/name/currentWallet">currentWallet</option>
@@ -74,6 +78,10 @@
 		
 		<option value="//api/name/name">name</option>
 		
+		<option value="//api/name/numTotalWallets">numTotalWallets</option>
+		
+		<option value="//api/name/numWalletsLoaded">numWalletsLoaded</option>
+		
 		<option value="//api/name/settings">settings</option>
 		
 	</optgroup>
@@ -84,6 +92,12 @@
 	
 	<optgroup label="Instance Methods">
 		
+		<option value="//api/name/bitidLogin:">- bitidLogin:</option>
+		
+		<option value="//api/name/bitidParseURI:">- bitidParseURI:</option>
+		
+		<option value="//api/name/bitidSign:message:">- bitidSign:message:</option>
+		
 		<option value="//api/name/changePIN:complete:error:">- changePIN:complete:error:</option>
 		
 		<option value="//api/name/changePassword:complete:error:">- changePassword:complete:error:</option>
@@ -93,6 +107,8 @@
 		<option value="//api/name/checkPassword:">- checkPassword:</option>
 		
 		<option value="//api/name/clearBlockchainCache:error:">- clearBlockchainCache:error:</option>
+		
+		<option value="//api/name/createExchangeRateString:includeCurrencyCode:">- createExchangeRateString:includeCurrencyCode:</option>
 		
 		<option value="//api/name/createWallet:currency:complete:error:">- createWallet:currency:complete:error:</option>
 		
@@ -109,6 +125,8 @@
 		<option value="//api/name/hasOTPResetPending:">- hasOTPResetPending:</option>
 		
 		<option value="//api/name/isPINLoginEnabled">- isPINLoginEnabled</option>
+		
+		<option value="//api/name/needsRecoveryQuestionsReminder">- needsRecoveryQuestionsReminder</option>
 		
 		<option value="//api/name/passwordExists:">- passwordExists:</option>
 		
@@ -160,6 +178,21 @@
 					
 
                     
+					
+					<div class="section section-overview">
+						<a title="Overview" name="overview"></a>
+						<h2 class="subtitle subtitle-overview">Overview</h2>
+						<p>The ABCAccount object represents a fully logged in account. This is returned by various signIn
+routines from <a href="../Classes/AirbitzCore.html">AirbitzCore</a>. It contains an <a href="../Classes/ABCSettings.html">ABCSettings</a> object which are account <a href="#//api/name/settings">settings</a> that
+carry over from device to device. ABCAccount also contains an array of <a href="../Classes/ABCWallet.html">ABCWallet</a> object wallets and archived
+wallets which should be checked for the parameter loaded=YES before being accessed.</p>
+
+<p>The <a href="../Classes/ABCDataStore.html">ABCDataStore</a> object <a href="#//api/name/dataStore">dataStore</a> allows reading/writing of encrypted and backed up key/value
+data to the user&rsquo;s account. This data is accessible from any device that the user authenticates
+into using an app running on the Airbitz SDK.</p>
+					</div>
+					
+					
 
 					
 					
@@ -277,7 +310,9 @@ to make sure they are loaded and <a href="../Classes/ABCSettings.html#//api/name
 			
 			
 			<div class="method-subsection brief-description">
-				<p><a href="../Classes/ABCExchangeCache.html">ABCExchangeCache</a> object. Used to convert bitcoin to fiat in various formats</p>
+				<p><a href="../Classes/ABCExchangeCache.html">ABCExchangeCache</a> object. Used to convert bitcoin values to/from fiat in various formats
+The exchange cache is internally implemented as a global object shared across all users of
+<a href="../Classes/AirbitzCore.html">AirbitzCore</a> in the same application.</p>
 			</div>
 			
 		    
@@ -294,7 +329,9 @@ to make sure they are loaded and <a href="../Classes/ABCSettings.html#//api/name
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p><a href="../Classes/ABCExchangeCache.html">ABCExchangeCache</a> object. Used to convert bitcoin to fiat in various formats</p>
+				<p><a href="../Classes/ABCExchangeCache.html">ABCExchangeCache</a> object. Used to convert bitcoin values to/from fiat in various formats
+The exchange cache is internally implemented as a global object shared across all users of
+<a href="../Classes/AirbitzCore.html">AirbitzCore</a> in the same application.</p>
 			</div>
 			
 
@@ -427,8 +464,8 @@ access the array while in the main queue.</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Array of NSString wallet names. This array is read-only and app should only
-access the array while in the main queue.</p>
+				<p>Array of NSString wallet names for non-archived wallets. This array maps index-for-index
+to <a href="#//api/name/arrayWallets">arrayWallets</a>. This array is read-only and app should only access the array while in the main queue.</p>
 			</div>
 			
 		    
@@ -445,8 +482,8 @@ access the array while in the main queue.</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Array of NSString wallet names. This array is read-only and app should only
-access the array while in the main queue.</p>
+				<p>Array of NSString wallet names for non-archived wallets. This array maps index-for-index
+to <a href="#//api/name/arrayWallets">arrayWallets</a>. This array is read-only and app should only access the array while in the main queue.</p>
 			</div>
 			
 
@@ -573,7 +610,7 @@ arrayWallets[currentWalletIndex] = <a href="#//api/name/currentWallet">currentWa
 			
 			
 			<div class="method-subsection brief-description">
-				<p><a href="../Classes/ABCCategories.html">ABCCategories</a> object which lists category options a user could choose to tag a transaction with.
+				<p>ABCCategories object which lists category options a user could choose to tag a transaction with.
 Categories must start with &ldquo;Income&rdquo;, &ldquo;Expense&rdquo;, &ldquo;Transfer&rdquo; or &ldquo;Exchange&rdquo; plus a &ldquo;:&rdquo; and then
 an arbitrary subcategory such as &ldquo;Food &amp; Dining&rdquo;. ie. &ldquo;Expense:Rent&rdquo;</p>
 			</div>
@@ -592,7 +629,7 @@ an arbitrary subcategory such as &ldquo;Food &amp; Dining&rdquo;. ie. &ldquo;Exp
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p><a href="../Classes/ABCCategories.html">ABCCategories</a> object which lists category options a user could choose to tag a transaction with.
+				<p>ABCCategories object which lists category options a user could choose to tag a transaction with.
 Categories must start with &ldquo;Income&rdquo;, &ldquo;Expense&rdquo;, &ldquo;Transfer&rdquo; or &ldquo;Exchange&rdquo; plus a &ldquo;:&rdquo; and then
 an arbitrary subcategory such as &ldquo;Food &amp; Dining&rdquo;. ie. &ldquo;Expense:Rent&rdquo;</p>
 			</div>
@@ -624,7 +661,7 @@ an arbitrary subcategory such as &ldquo;Food &amp; Dining&rdquo;. ie. &ldquo;Exp
 			
 			<div class="method-subsection brief-description">
 				<p><a href="../Classes/ABCDataStore.html">ABCDataStore</a> object for allowing arbitrary Edge Secure data storage and retrieval on this
-ABCAccount</p>
+ABCAccount.</p>
 			</div>
 			
 		    
@@ -642,7 +679,145 @@ ABCAccount</p>
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
 				<p><a href="../Classes/ABCDataStore.html">ABCDataStore</a> object for allowing arbitrary Edge Secure data storage and retrieval on this
-ABCAccount</p>
+ABCAccount.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/bAllWalletsLoaded" title="bAllWalletsLoaded"></a>
+	<h3 class="method-title"><code><a href="#//api/name/bAllWalletsLoaded">&nbsp;&nbsp;bAllWalletsLoaded</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>YES once all wallets in this account have been successfully loaded after a signIn</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>@property (atomic) BOOL bAllWalletsLoaded</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>YES once all wallets in this account have been successfully loaded after a signIn</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/numWalletsLoaded" title="numWalletsLoaded"></a>
+	<h3 class="method-title"><code><a href="#//api/name/numWalletsLoaded">&nbsp;&nbsp;numWalletsLoaded</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Number of wallets that have been loaded after a signIn</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>@property (atomic) int numWalletsLoaded</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Number of wallets that have been loaded after a signIn</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/numTotalWallets" title="numTotalWallets"></a>
+	<h3 class="method-title"><code><a href="#//api/name/numTotalWallets">&nbsp;&nbsp;numTotalWallets</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Number of wallets in this account</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>@property (atomic) int numTotalWallets</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Number of wallets in this account</p>
 			</div>
 			
 
@@ -705,6 +880,73 @@ ABCAccount</p>
 			
 		</div>
 	</div>
+</div><div class="section-method">
+	<a name="//api/name/createExchangeRateString:includeCurrencyCode:" title="createExchangeRateString:includeCurrencyCode:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/createExchangeRateString:includeCurrencyCode:">&ndash;&nbsp;createExchangeRateString:includeCurrencyCode:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Creates a user displayable exchange rate string using the current user&rsquo;s
+denomination <a href="#//api/name/settings">settings</a>. ie. &ldquo;1 BTC = $451&rdquo; or &ldquo;1 mBTC = $0.451&rdquo;</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (NSString *)createExchangeRateString:(ABCCurrency *)<em>currency</em> includeCurrencyCode:(bool)<em>includeCurrencyCode</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>currency</code></th>
+						<td><p>ABCCurrency object representing choice of fiat
+currency to use for conversion</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>includeCurrencyCode</code></th>
+						<td><p>BOOL If YES, include the fiat currency code in the
+conversion string. ie. &ldquo;1 BTC = $451 USD&rdquo;</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Creates a user displayable exchange rate string using the current user&rsquo;s
+denomination <a href="#//api/name/settings">settings</a>. ie. &ldquo;1 BTC = $451&rdquo; or &ldquo;1 mBTC = $0.451&rdquo;</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
 </div>
 						</div>
 						
@@ -725,7 +967,7 @@ ABCAccount</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>NSString* new password for currently logged in user
+				<p>NSString new password for currently logged in user
 (Optional. If used, method returns immediately with void)</p>
 			</div>
 			
@@ -741,7 +983,7 @@ ABCAccount</p>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>password</code></th>
-						<td><p>NSString* new password for currently logged in user
+						<td><p>NSString new password for currently logged in user
 (Optional. If used, method returns immediately with void)</p></td>
 					</tr>
 				
@@ -753,7 +995,7 @@ ABCAccount</p>
 					<tr>
 						<th scope="row" class="argument-name"><code>errorHandler</code></th>
 						<td><p>(Optional) Code block called on error with parameters<br>
-- <em>param</em> NSError*</p></td>
+- <em>param</em> NSError</p></td>
 					</tr>
 				
 				</table>
@@ -797,7 +1039,7 @@ handler</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>NSString* New pin for currently logged in user
+				<p>NSString New pin for currently logged in user
 (Optional. If used, method returns immediately with ABCCConditionCodeOk)</p>
 			</div>
 			
@@ -813,7 +1055,7 @@ handler</p>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>pin</code></th>
-						<td><p>NSString* New pin for currently logged in user
+						<td><p>NSString New pin for currently logged in user
 (Optional. If used, method returns immediately with ABCCConditionCodeOk)</p></td>
 					</tr>
 				
@@ -825,7 +1067,7 @@ handler</p>
 					<tr>
 						<th scope="row" class="argument-name"><code>errorHandler</code></th>
 						<td><p>Error handler code block which is called with the following args<br>
-- <em>param</em> NSError*</p></td>
+- <em>param</em> NSError</p></td>
 					</tr>
 				
 				</table>
@@ -835,7 +1077,7 @@ handler</p>
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>NSError* Error object. Nil if success. Returns void if completion handlers used</p>
+				<p>NSError Error object. Nil if success. Returns void if completion handlers used</p>
 			</div>
 			
 
@@ -1077,7 +1319,7 @@ This is used to guard access to certain actions in the GUI.</p>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>password</code></th>
-						<td><p>NSString* Password to check</p></td>
+						<td><p>NSString Password to check</p></td>
 					</tr>
 				
 				</table>
@@ -1286,13 +1528,13 @@ are then used to decrypt the local account thereby loggin in the user.</p>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>completionHandler</code></th>
-						<td><p>(Optional) Code block called on success. Returns void if used<br>
-- <em>param</em> <a href="../Classes/ABCWallet.html">ABCWallet</a> User object.<br></p></td>
+						<td><p>Code block called on success.<br>
+- <em>param</em> <a href="../Classes/ABCWallet.html">ABCWallet</a> Fully created <a href="../Classes/ABCWallet.html">ABCWallet</a> object.</p></td>
 					</tr>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>errorHandler</code></th>
-						<td><p>(Optional) Code block called on error with parameters<br>
+						<td><p>Code block called on error with parameters<br>
 - <em>param</em> NSError*</p></td>
 					</tr>
 				
@@ -1362,13 +1604,12 @@ are then used to decrypt the local account thereby loggin in the user.</p>
 					<tr>
 						<th scope="row" class="argument-name"><code>currency</code></th>
 						<td><p>NSString* ISO 3 digit currency code for wallet. Set to nil to use default currency from
-<a href="#//api/name/settings">settings</a> or the global default currency if <a href="#//api/name/settings">settings</a> unavailable. ie. &ldquo;USD, EUR, CAD, PHP&rdquo;
-(Optional. If used, method returns immediately with void</p></td>
+<a href="#//api/name/settings">settings</a> or the global default currency if <a href="#//api/name/settings">settings</a> unavailable. ie. &ldquo;USD, EUR, CAD, PHP&rdquo;</p></td>
 					</tr>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>error</code></th>
-						<td><p>NSError** May be set to nil. Only used when not using completion handler</p></td>
+						<td><p>NSError** May be set to nil. (Optional)</p></td>
 					</tr>
 				
 				</table>
@@ -1570,7 +1811,7 @@ position in sourceIndexPath and destination position in destinationIndexPath.</p
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>error</code></th>
-						<td><p>NSError**</p></td>
+						<td><p>NSError</p></td>
 					</tr>
 				
 				</table>
@@ -1580,7 +1821,7 @@ position in sourceIndexPath and destination position in destinationIndexPath.</p
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>int number of wallets</p>
+				<p>int Number of wallets</p>
 			</div>
 			
 
@@ -1606,7 +1847,15 @@ position in sourceIndexPath and destination position in destinationIndexPath.</p
 			
 		</div>
 	</div>
-</div><div class="section-method">
+</div>
+						</div>
+						
+
+						<a title="One Time Password (OTP) (2 Factor Authentication)" name="task_One Time Password (OTP) (2 Factor Authentication)"></a>
+						<h2 class="task-title">One Time Password (OTP) (2 Factor Authentication)</h2>
+
+						<div class="task-list">
+							<div class="section-method">
 	<a name="//api/name/hasOTPResetPending:" title="hasOTPResetPending:"></a>
 	<h3 class="method-title"><code><a href="#//api/name/hasOTPResetPending:">&ndash;&nbsp;hasOTPResetPending:</a></code>
 </h3>
@@ -1634,7 +1883,7 @@ OTP.</p>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>error</code></th>
-						<td><p>NSError** error object or nil if success</p></td>
+						<td><p>NSError error object or nil if success</p></td>
 					</tr>
 				
 				</table>
@@ -1698,7 +1947,7 @@ OTP.</p>
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>error</code></th>
-						<td><p>NSError** error object or nil if success</p></td>
+						<td><p>NSError error object or nil if success</p></td>
 					</tr>
 				
 				</table>
@@ -1708,7 +1957,7 @@ OTP.</p>
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>key NSString* OTP key</p>
+				<p>NSString OTP key</p>
 			</div>
 			
 
@@ -2033,7 +2282,15 @@ currently logged in user</p>
 			
 		</div>
 	</div>
-</div><div class="section-method">
+</div>
+						</div>
+						
+
+						<a title="Password Recovery" name="task_Password Recovery"></a>
+						<h2 class="task-title">Password Recovery</h2>
+
+						<div class="task-list">
+							<div class="section-method">
 	<a name="//api/name/setupRecoveryQuestions:answers:complete:error:" title="setupRecoveryQuestions:answers:complete:error:"></a>
 	<h3 class="method-title"><code><a href="#//api/name/setupRecoveryQuestions:answers:complete:error:">&ndash;&nbsp;setupRecoveryQuestions:answers:complete:error:</a></code>
 </h3>
@@ -2114,6 +2371,69 @@ currently logged in user</p>
 		</div>
 	</div>
 </div><div class="section-method">
+	<a name="//api/name/needsRecoveryQuestionsReminder" title="needsRecoveryQuestionsReminder"></a>
+	<h3 class="method-title"><code><a href="#//api/name/needsRecoveryQuestionsReminder">&ndash;&nbsp;needsRecoveryQuestionsReminder</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>GUI utility function to help determine if the user should be asked to setup
+recovery questions and answers. This routine factors the amount of funds the account
+has received and whether or not recovery Q/A has already been setup.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (BOOL)needsRecoveryQuestionsReminder</code></div>
+
+		    
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>BOOL YES if user should be asked.</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>GUI utility function to help determine if the user should be asked to setup
+recovery questions and answers. This routine factors the amount of funds the account
+has received and whether or not recovery Q/A has already been setup.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div>
+						</div>
+						
+
+						<a title="Misc ABCAccount methods" name="task_Misc ABCAccount methods"></a>
+						<h2 class="task-title">Misc ABCAccount methods</h2>
+
+						<div class="task-list">
+							<div class="section-method">
 	<a name="//api/name/clearBlockchainCache:error:" title="clearBlockchainCache:error:"></a>
 	<h3 class="method-title"><code><a href="#//api/name/clearBlockchainCache:error:">&ndash;&nbsp;clearBlockchainCache:error:</a></code>
 </h3>
@@ -2251,6 +2571,210 @@ Should be called while logged in.</p>
 </div>
 						</div>
 						
+
+						<a title="BitID methods" name="task_BitID methods"></a>
+						<h2 class="task-title">BitID methods</h2>
+
+						<div class="task-list">
+							<div class="section-method">
+	<a name="//api/name/bitidParseURI:" title="bitidParseURI:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/bitidParseURI:">&ndash;&nbsp;bitidParseURI:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Parses a BitID URI and returns the domain of the URL for display to user.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (NSString *)bitidParseURI:(NSString *)<em>uri</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>uri</code></th>
+						<td><p>NSString URI to parse</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>NSString Domain of BitID request</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Parses a BitID URI and returns the domain of the URL for display to user.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/bitidLogin:" title="bitidLogin:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/bitidLogin:">&ndash;&nbsp;bitidLogin:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Login to a BitID server given the request URI</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (NSError *)bitidLogin:(NSString *)<em>uri</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>uri</code></th>
+						<td><p>NSString URI request from server in the form &ldquo;bitid://server.com/bitid?x=NONCE&rdquo;</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>NSError Error object if failure. Nil if success.</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Login to a BitID server given the request URI</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/bitidSign:message:" title="bitidSign:message:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/bitidSign:message:">&ndash;&nbsp;bitidSign:message:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Sign an arbitrary message with a BitID URI. The URI determines the key derivation
+used to sign the message.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (ABCBitIDSignature *)bitidSign:(NSString *)<em>uri</em> message:(NSString *)<em>message</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>uri</code></th>
+						<td><p>NSString URI request from server in the form &ldquo;bitid://server.com/bitid?x=NONCE&rdquo;</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>message</code></th>
+						<td><p>NSString message to sign.</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p><a href="../Classes/ABCBitIDSignature.html">ABCBitIDSignature</a> BitID signature object</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Sign an arbitrary message with a BitID URI. The URI determines the key derivation
+used to sign the message.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div>
+						</div>
+						
 					</div>
 					
 					
@@ -2263,7 +2787,7 @@ Should be called while logged in.</p>
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-17</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-18</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

@@ -3,9 +3,8 @@
 //  Airbitz
 //
 //  Created by Paul Puey.
-//  Copyright (c) 2016 AirBitz. All rights reserved.
+//  Copyright (c) 2016 Airbitz. All rights reserved.
 //
-
 #import "AirbitzCore.h"
 
 #define WALLET_ATTRIBUTE_ARCHIVE_BIT 0x1 // BIT0 is the archive bit
@@ -21,16 +20,50 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 @class ABCSpend;
 @class ABCTransaction;
 
+/**
+ * ABCWallet represents a single HD, multiple address, wallet within an ABCAccount.
+ * This object is the basis for Sends and Requests. Initiate sends by calling
+ * createNewSpend which returns an ABCSpend object. Use createNewReceiveAddress to
+ * generate an ABCReceiveAddress which contains a bitcoin address to receive funds.
+ */
+
 @interface ABCWallet : NSObject
 
+///----------------------------------------------------------
+/// @name ABCWallet properties
+///----------------------------------------------------------
+
+/// Wallet random UUID used for various routines
 @property (nonatomic, copy)     NSString        *uuid;
+
+/// Text name of wallet. Defaults to "My Wallet" but can be changed with renameWallet
 @property (nonatomic, copy)     NSString        *name;
-@property (nonatomic, assign)   ABCCurrency        *currency;
+
+/// ABCCurrency object determines the fiat currency which this wallet uses to save
+/// exchange rate values of each transaction.
+@property (nonatomic, assign)   ABCCurrency     *currency;
+
+/// YES if this wallet is archived. App should not allow the user to get an address or
+/// spend money from an archived wallet although the SDK does not enforce such rules.
 @property (nonatomic, assign)   unsigned int    archived;
-@property (nonatomic, assign)   double          balance;
+
+/// The total balance of this wallet in satoshis
+@property (nonatomic, assign)   int64_t         balance;
+
+/// Array of ABCTransaction objects in this wallet
 @property (nonatomic, strong)   NSArray         *arrayTransactions;
+
+/// YES if this wallet and it's transactions have been loaded. This is NO on initial
+/// signIn while wallet info is being decrypted and loaded
 @property (nonatomic, assign)   BOOL            loaded;
+
+/// The ABCAccount object which contains this wallet.
 @property (nonatomic, strong)   ABCAccount      *account;
+
+
+///----------------------------------------------------------
+/// @name Wallet Management
+///----------------------------------------------------------
 
 /**
  * @param newName NSString* new name of wallet
@@ -51,6 +84,32 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 - (void)removeWallet:(void(^)(void))completionHandler
                error:(void (^)(NSError *error)) errorHandler;
 - (NSError *)removeWallet;
+
+///----------------------------------------------------------
+/// @name Transaction Management
+///----------------------------------------------------------
+
+/**
+ * Gets an ABCTransaction object for bitcoin transactionID txid
+ * @param txId NSString Standard Bitcoin transaction ID
+ * @return ABCTransaction Transaction object or nil if fails to find
+ * transaction in wallet.
+ */
+- (ABCTransaction *)getTransaction:(NSString *) txId;
+
+/**
+ * Searches transactions in wallet for any transactions with metadata
+ * matching term and returns the matching transactions in arrayTransactions
+ * @param term NSString Search term
+ * @param arrayTransactions Allocated NSMutableArray for the resulting matching transactions
+ * @return NSError Error object
+ */
+- (NSError *)searchTransactionsIn:(NSString *)term addTo:(NSMutableArray *) arrayTransactions;
+
+
+///----------------------------------------------------------
+/// @name Bitcoin Address Creation
+///----------------------------------------------------------
 
 /** 
  * Create a receive request from the current wallet using completion handlers
@@ -112,36 +171,19 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 - (ABCReceiveAddress *)getReceiveAddress:(NSString *)address error:(NSError **)error;
 - (ABCReceiveAddress *)getReceiveAddress:(NSString *)address;
 
+///----------------------------------------------------------
+/// @name Spend Bitcoin Routines
+///----------------------------------------------------------
 /**
- * Create a new ABCSpend object. Can be explicitly deallocated using [ABCSpend free].
+ * Create a new ABCSpend object. Can be explicitly deallocated using ABCSpend free.
  * @param error Return pointer to NSError object
  * @return ABCSpend object
  */
 - (ABCSpend *)createNewSpend:(NSError **)error;
 
-/**
- * Export a wallet's transactions to CSV format
- * @param csv NSMutableString* allocated and initialized mutable string to receive CSV contents.
- *  Must not be nil.
- * @return NSError* error object. nil if success
- */
-- (NSError *)exportTransactionsToCSV:(NSMutableString *) csv;
-
-/**
- * Export a wallet's transactions to QBO format
- * @param csv NSMutableString* allocated and initialized mutable string to receive CSV contents.
- *  Must not be nil.
- * @return NSError* error object. nil if success
- */
-- (NSError *)exportTransactionsToQBO:(NSMutableString *) qbo;
-
-/*
- * Export a wallet's private seed in raw entropy format
- * @param seed NSMutableString* allocated and initialized mutable string to receive private seed contents.
- *  Must not be nil.
- * @return NSError* error object. nil if success
- */
-- (NSError *)exportWalletPrivateSeed:(NSMutableString *) seed;
+///----------------------------------------------------------
+/// @name Import and Export Routines
+///----------------------------------------------------------
 
 /**
  * Import (sweep) private key funds into this wallet. Private key is discarded
@@ -163,13 +205,35 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
                 complete:(void (^)(ABCImportDataModel dataModel, NSString *address, ABCTransaction *transaction, uint64_t amount)) completionHandler
                    error:(void (^)(NSError *)) errorHandler;
 
+/**
+ * Export a wallet's transactions to CSV format
+ * @param csv NSMutableString* allocated and initialized mutable string to receive CSV contents.
+ *  Must not be nil.
+ * @return NSError* error object. nil if success
+ */
+- (NSError *)exportTransactionsToCSV:(NSMutableString *) csv;
+
+/**
+ * Export a wallet's transactions to Quickbooks QBO format
+ * @param qbo NSMutableString* allocated and initialized mutable string to receive CSV contents.
+ *  Must not be nil.
+ * @return NSError* error object. nil if success
+ */
+- (NSError *)exportTransactionsToQBO:(NSMutableString *) qbo;
+
+/*
+ * Export a wallet's private seed in raw entropy format
+ * @param seed NSMutableString* allocated and initialized mutable string to receive private seed contents.
+ *  Must not be nil.
+ * @return NSError* error object. nil if success
+ */
+- (NSError *)exportWalletPrivateSeed:(NSMutableString *) seed;
+
+
 - (void)deprioritizeAllAddresses;
-- (ABCTransaction *)getTransaction:(NSString *) txId;
 - (int64_t)getTotalSentToday;
 - (void)refreshServer:(BOOL)bData notify:(void(^)(void))cb;
 - (NSString *)conversionString;
-- (NSMutableArray *)searchTransactionsIn:(NSString *)term addTo:(NSMutableArray *) arrayTransactions;
-- (void)loadWalletFromCore:(NSString *)uuid;
 
 
 

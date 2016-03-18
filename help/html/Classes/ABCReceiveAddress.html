@@ -78,6 +78,8 @@
 		
 		<option value="//api/name/modifyRequestWithDetails">- modifyRequestWithDetails</option>
 		
+		<option value="//api/name/prioritizeAddress:">- prioritizeAddress:</option>
+		
 	</optgroup>
 	
 	
@@ -112,10 +114,12 @@
 					<div class="section section-overview">
 						<a title="Overview" name="overview"></a>
 						<h2 class="subtitle subtitle-overview">Overview</h2>
-						<p>Object used to pass in <a href="#//api/name/address">address</a> request details
-Optional fields payeeName, category, notes, and bizId will cause
-transactions details of incoming transaction to be automatically tagged
-with the information from this object.</p>
+						<p>ABCReceiveAddress is returned by <a href="../Classes/ABCWallet.html">ABCWallet</a> routine createNewReceiveAddress and
+getReceiveAddress. The properties <a href="#//api/name/amountSatoshi">amountSatoshi</a> and <a href="#//api/name/metaData">metaData</a> can be modified by
+the caller. Subsequent reads of the properties <a href="#//api/name/uri">uri</a>, <a href="#//api/name/address">address</a>, and <a href="#//api/name/qrCode">qrCode</a> will
+automatically encompass the changes written to <a href="#//api/name/amountSatoshi">amountSatoshi</a> and <a href="#//api/name/metaData">metaData</a>. The
+values written to <a href="#//api/name/metaData">metaData</a> will be written to the <a href="../Classes/ABCTransaction.html">ABCTransaction</a> for funds received
+on this <a href="#//api/name/address">address</a>.</p>
 					</div>
 					
 					
@@ -142,7 +146,7 @@ with the information from this object.</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Amount of satoshis to add to request. Optional</p>
+				<p>Amount of satoshis to request. Optional. Set to zero if not needed</p>
 			</div>
 			
 		    
@@ -159,7 +163,7 @@ with the information from this object.</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Amount of satoshis to add to request. Optional</p>
+				<p>Amount of satoshis to request. Optional. Set to zero if not needed</p>
 			</div>
 			
 
@@ -189,7 +193,8 @@ with the information from this object.</p>
 			
 			<div class="method-subsection brief-description">
 				<p>Optional meta to add to this request. Once money is received into this request
-<a href="#//api/name/address">address</a>, the transaction will be tagged with this metadata</p>
+<a href="#//api/name/address">address</a>, the transaction will be tagged with this metadata such as payeeName
+category, and notes</p>
 			</div>
 			
 		    
@@ -207,7 +212,8 @@ with the information from this object.</p>
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>Optional meta to add to this request. Once money is received into this request
-<a href="#//api/name/address">address</a>, the transaction will be tagged with this metadata</p>
+<a href="#//api/name/address">address</a>, the transaction will be tagged with this metadata such as payeeName
+category, and notes</p>
 			</div>
 			
 
@@ -404,7 +410,7 @@ rotation so the next request gets a different <a href="#//api/name/address">addr
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>NSError*</p>
+				<p>NSError</p>
 			</div>
 			
 
@@ -443,7 +449,9 @@ rotation so the next request gets a different <a href="#//api/name/address">addr
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Modify a request based on the values in the ABCReceiveAddress structure</p>
+				<p>Modify a request based on the values in the ABCReceiveAddress structure. Normally the
+request would require that one of the parameters <a href="#//api/name/address">address</a>, <a href="#//api/name/qrCode">qrCode</a>, or <a href="#//api/name/uri">uri</a> are readback
+before the <a href="#//api/name/metaData">metaData</a> is saved with the <a href="#//api/name/address">address</a> in ABC.</p>
 			</div>
 			
 		    
@@ -456,7 +464,7 @@ rotation so the next request gets a different <a href="#//api/name/address">addr
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>NSError*</p>
+				<p>NSError</p>
 			</div>
 			
 
@@ -465,7 +473,70 @@ rotation so the next request gets a different <a href="#//api/name/address">addr
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Modify a request based on the values in the ABCReceiveAddress structure</p>
+				<p>Modify a request based on the values in the ABCReceiveAddress structure. Normally the
+request would require that one of the parameters <a href="#//api/name/address">address</a>, <a href="#//api/name/qrCode">qrCode</a>, or <a href="#//api/name/uri">uri</a> are readback
+before the <a href="#//api/name/metaData">metaData</a> is saved with the <a href="#//api/name/address">address</a> in ABC.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCReceiveAddress.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/prioritizeAddress:" title="prioritizeAddress:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/prioritizeAddress:">&ndash;&nbsp;prioritizeAddress:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Tell ABC to constantly query this <a href="#//api/name/address">address</a> to help ensure timely detection of
+funds on this <a href="#//api/name/address">address</a>. Great to use when there is a QR code showing on screen.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)prioritizeAddress:(BOOL)<em>enable</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>enable</code></th>
+						<td><p>BOOL Set to YES to prioritize this <a href="#//api/name/address">address</a>. Set to NO to disable
+priority</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Tell ABC to constantly query this <a href="#//api/name/address">address</a> to help ensure timely detection of
+funds on this <a href="#//api/name/address">address</a>. Great to use when there is a QR code showing on screen.</p>
 			</div>
 			
 
@@ -497,7 +568,7 @@ rotation so the next request gets a different <a href="#//api/name/address">addr
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-17</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-18</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

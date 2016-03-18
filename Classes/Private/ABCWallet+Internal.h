@@ -15,5 +15,6 @@
 - (id)initWithUser:(ABCAccount *) user;
 - (void)handleSweepCallback:(ABCTransaction *)transaction amount:(uint64_t)amount error:(NSError *)error;
 - (void) loadTransactions;
+- (void)loadWalletFromCore:(NSString *)uuid;
 
 @end
