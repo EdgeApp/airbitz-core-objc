@@ -11,7 +11,18 @@
  * The ABCDataStore object implements the Airbitz auto-encrypted, auto-backed up, and auto 
  * synchronized secure data storage.<br>
  * <br>
- * Data is saved as key/value pairs in named folders.
+ * Data is saved as key/value pairs in named folders. Usage is as simple as calling
+ * dataWrite to write data to this ABCDataStore using a unique folderID. Then calling
+ * dataRead to read back the data.<br>
+ * <br>
+ * Note: Data written using the same 'key' may generate conflicts when multiple devices
+ * write to the same DataStore with the same folderID and key. In such a case, automatic
+ * conflict resolution will chose the most likely newer update to the data. Writing
+ * to different folderIDs or keys will not cause conflicts.<br>
+ * <br>
+ * ABCDataStore will automatically
+ * backup all data and synchronize between all user's devices as long as the devices are
+ * online. If devices are offline, the data will sync as soon as the device comes back online
  */
 
 @interface ABCDataStore : NSObject
