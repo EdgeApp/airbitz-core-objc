@@ -15,11 +15,14 @@
 
 #define ABCArrayExchanges     @[@"Bitstamp", @"Bitfinex", @"BitcoinAverage", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
 
-@interface ABCExchangeCache : NSObject
+/**
+ * ABCExchangeCache provides conversion routines to convert from any fiat currency
+ * to BTC in satoshis or vice version. This object uses the exchange rate source
+ * set it ABCSettings. Exchange values are cached globally and shared between all
+ * incoming requests.
+ */
 
-/// -----------------------------------------------------------------------------
-/// @name ABCExchangeCache currency public read-only variables
-/// -----------------------------------------------------------------------------
+@interface ABCExchangeCache : NSObject
 
 /**
  * Convert bitcoin amount in satoshis to a fiat currency amount
