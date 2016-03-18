@@ -94,7 +94,9 @@
 /// to make sure they are loaded and [ABCSettings saveSettings] to ensure modified settings are latched
 @property (atomic, strong) ABCSettings                  *settings;
 
-/// ABCExchangeCache object. Used to convert bitcoin to fiat in various formats
+/// ABCExchangeCache object. Used to convert bitcoin values to/from fiat in various formats
+/// The exchange cache is internally implemented as a global object shared across all users of
+/// AirbitzCore in the same application.
 @property (atomic, strong) ABCExchangeCache             *exchangeCache;
 
 ///----------------------------------------------------------
@@ -109,8 +111,8 @@
 /// access the array while in the main queue.
 @property (atomic, strong) NSMutableArray            *arrayArchivedWallets;
 
-/// Array of NSString wallet names. This array is read-only and app should only
-/// access the array while in the main queue.
+/// Array of NSString wallet names for non-archived wallets. This array maps index-for-index
+/// to arrayWallets. This array is read-only and app should only access the array while in the main queue.
 @property (atomic, strong) NSMutableArray            *arrayWalletNames;
 
 /// Helper property that points to the "currentWallet" in the account. This can be used by
@@ -128,29 +130,42 @@
 @property (atomic, strong) ABCCategories             *categories;
 
 /// ABCDataStore object for allowing arbitrary Edge Secure data storage and retrieval on this
-/// ABCAccount
+/// ABCAccount.
 @property                  ABCDataStore              *dataStore;
 
+/// YES once all wallets in this account have been successfully loaded after a signIn
 @property (atomic)         BOOL                      bAllWalletsLoaded;
+
+/// Number of wallets that have been loaded after a signIn
 @property (atomic)         int                       numWalletsLoaded;
+
+/// Number of wallets in this account
 @property (atomic)         int                       numTotalWallets;
 
 /// This account's username
 @property (atomic, copy)     NSString                *name;
 
-// New methods
 - (void)makeCurrentWallet:(ABCWallet *)wallet;
 - (void)makeCurrentWalletWithIndex:(NSIndexPath *)indexPath;
 - (void)makeCurrentWalletWithUUID:(NSString *)uuid;
 - (ABCWallet *)selectWalletWithUUID:(NSString *)uuid;
 - (BOOL) isLoggedIn;
 
-- (NSString *)createExchangeRateString:(ABCCurrency *)currency
-                   includeCurrencyCode:(bool)includeCurrencyCode;
 - (BOOL)needsRecoveryQuestionsReminder;
 - (NSString *) bitidParseURI:(NSString *)uri;
 - (NSError *) bitidLogin:(NSString *)uri;
 - (BitidSignature *) bitidSign:(NSString *)uri msg:(NSString *)msg;
+
+/**
+ * Creates a user displayable exchange rate string using the current user's
+ * denomination settings. ie. "1 BTC = $451" or "1 mBTC = $0.451"
+ * @param currency ABCCurrency object representing choice of fiat
+ *  currency to use for conversion
+ * @param includeCurrencyCode BOOL If YES, include the fiat currency code in the
+ *  conversion string. ie. "1 BTC = $451 USD"
+ */
+- (NSString *)createExchangeRateString:(ABCCurrency *)currency
+                   includeCurrencyCode:(bool)includeCurrencyCode;
 
 
 /// -----------------------------------------------------------------------------
@@ -296,23 +311,23 @@
 
 /**
  * Returns the number of wallets in the account
- * @param error NSError**
- * @return int number of wallets
+ * @param error NSError
+ * @return int Number of wallets
  */
 - (int) getNumWalletsInAccount:(NSError **)error;
 
 /**
  * Checks if the current account has a pending request to reset (disable)
  * OTP.
- * @param error NSError** error object or nil if success
+ * @param error NSError error object or nil if success
  * @return BOOL YES if account has pending reset
  */
 - (BOOL) hasOTPResetPending:(NSError **)error;
 
 /**
  * Gets the locally saved OTP key for the current user.
- * @param error NSError** error object or nil if success
- * @return key NSString* OTP key
+ * @param error NSError error object or nil if success
+ * @return NSString OTP key
  */
 - (NSString *)getOTPLocalKey:(NSError **)error;
 

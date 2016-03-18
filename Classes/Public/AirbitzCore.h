@@ -361,14 +361,16 @@ typedef enum eABCDeviceCaps
 /**
  * Checks if an account with the specified username exists locally on the current device.
  * This does not check for existence of the account on the entire Airbitz system. If a username
- * was created but never logged into this device, this will return NO.
+ * was created but never logged into this device, this will return NO. This routine
+ * does not require network connectivity to operate.
  * @param username NSString* Username of account to check
  * @return YES if account exists locally, NO otherwise.
  */
 - (BOOL)accountExistsLocal:(NSString *)username;
 
 /**
- * Checks if username is available
+ * Checks if username is available on the global Airbitz username space. This requires
+ * network connectivity to function.
  * @param username NSString* username to check
  * @return nil if username is available
  */
@@ -438,7 +440,7 @@ typedef enum eABCDeviceCaps
 
 /**
  * Gets the recovery questions set for the specified username. Questions are
- * returned as an NSArray of NSString*. Recovery questions need to have been previously set
+ * returned as an NSArray of NSString. Recovery questions need to have been previously set
  * with a call to [ABCAccount setupRecoveryQuestions]
  * @param username NSString* username to query
  * @param error NSError** May be set to nil. 
@@ -453,7 +455,8 @@ typedef enum eABCDeviceCaps
  * @param completionHandler Completion handler code block which is called with the following args<br>
  * - *param* arrayCategoryString NSMutableString* array of string based questions<br>
  * - *param* arrayCategoryNumeric NSMutableString* array of numeric based questions<br>
- * - *param* arrayCategoryMust NSMutableString* array of questions of which one must have an answer
+ * - *param* arrayCategoryMust NSMutableString* array of questions which cannot be answered via 
+ *  information from public records
  * @param errorHandler Error handler code block which is called with the following args<br>
  * - *param* NSError* error
  * @return void
@@ -470,7 +473,9 @@ typedef enum eABCDeviceCaps
 /// -----------------------------------------------------------------------------
 
 /**
- * Associates an OTP key with the given username.
+ * Associates an OTP key with the given username. An OTP key can be retrieved from
+ * a previously logged in account using [ABCAccount getOTPLocalKey]. The account
+ * must have had OTP enabled by using [ABCAccount setOTPAuth]
  * This will not write to disk until the user has successfully logged in
  * at least once.
  * @param username NSString* user to set the OTP key for
@@ -570,16 +575,16 @@ typedef enum eABCDeviceCaps
  * Uploads AirbitzCore debug log with optional message from user.
  * @param userText NSString* text to send to support staff
  * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param complete completion handler code block which is called with void
- * @param error error handler code block which is called with the following args<br>
+ * @param completionHandler Completion handler code block which is called with void
+ * @param errorHandler Error handler code block which is called with the following args<br>
  * - *param* NSError* error
  * @return NSError object or nil if success. Return void if using completion
  *  handler
  */
-- (NSError *)uploadLogs:(NSString *)userText;
 - (void)uploadLogs:(NSString *)userText
           complete:(void(^)(void))completionHandler
              error:(void (^)(NSError *error)) errorHandler;
+- (NSError *)uploadLogs:(NSString *)userText;
 
 
 #pragma mark - Utility Methods
@@ -602,12 +607,24 @@ typedef enum eABCDeviceCaps
 /// @name Class methods to retrieve constant parameters from ABC
 /// ------------------------------------------------------------------
 
+/**
+ * Get the minimum allowable length of a username for new accounts
+ * @return int Minimum length
+ */
 + (int) getMinimumUsernamedLength;
+
+
+/**
+ * Get the minimum allowable length of a password for accounts
+ * @return int Minimum length
+ */
 + (int) getMinimumPasswordLength;
+
+/**
+ * Get the minimum allowable length of a PIN for accounts
+ * @return int Minimum length
+ */
 + (int) getMinimumPINLength;
-
-
-
 
 @end
 
