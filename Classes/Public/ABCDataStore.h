@@ -9,14 +9,15 @@
 
 /**
  * The ABCDataStore object implements the Airbitz auto-encrypted, auto-backed up, and auto 
- * synchronized secure data storage.<br>
+ * synchronized Edge Security data storage. ABCDataStore is end-to-end encrypted with no access to the
+ * data by Airbitz, other users, or developers. Data is encrypted<br>
  * <br>
  * Data is saved as key/value pairs in named folders. Usage is as simple as calling
  * dataWrite to write data to this ABCDataStore using a unique folderID. Then calling
  * dataRead to read back the data.<br>
  * <br>
- * Note: Data written using the same 'key' may generate conflicts when multiple devices
- * write to the same DataStore with the same folderID and key. In such a case, automatic
+ * Note: Data written using the same folderID and same key may generate conflicts when multiple devices
+ * write to the same DataStore. In such a case, automatic
  * conflict resolution will chose the most likely newer update to the data. Writing
  * to different folderIDs or keys will not cause conflicts.<br>
  * <br>

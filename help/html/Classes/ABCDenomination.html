@@ -43,6 +43,8 @@
 							<select id="jump-to">
 	<option value="top">Jump To&#133;</option>
 	
+	<option value="overview">Overview</option>
+	
 
 	
 	
@@ -66,7 +68,27 @@
 	
 
 	
+	<optgroup label="Class Methods">
+		
+		<option value="//api/name/getDenominationForIndex:">+ getDenominationForIndex:</option>
+		
+		<option value="//api/name/getDenominationForMultiplier:">+ getDenominationForMultiplier:</option>
+		
+	</optgroup>
+	
 
+	
+	<optgroup label="Instance Methods">
+		
+		<option value="//api/name/btcStringToSatoshi:">- btcStringToSatoshi:</option>
+		
+		<option value="//api/name/maxBitcoinDecimalPlaces">- maxBitcoinDecimalPlaces</option>
+		
+		<option value="//api/name/prettyBitcoinDecimalPlaces">- prettyBitcoinDecimalPlaces</option>
+		
+		<option value="//api/name/satoshiToBTCString:withSymbol:cropDecimals:">- satoshiToBTCString:withSymbol:cropDecimals:</option>
+		
+	</optgroup>
 	
 	
 </select>
@@ -96,6 +118,16 @@
 					
 
                     
+					
+					<div class="section section-overview">
+						<a title="Overview" name="overview"></a>
+						<h2 class="subtitle subtitle-overview">Overview</h2>
+						<p>ABCDenomination represents a specific bitcoin denomination such as BTC, mBTC, or bits (uBTC).
+The class also includes several utility methods to convert to/from 64 bit satoshi amounts and
+user viewable strings in the current denomination.</p>
+					</div>
+					
+					
 
 					
 					
@@ -281,6 +313,382 @@ ie. 1 BTC -> multiplier = 100,000,000<br>
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>Denomination label such as &ldquo;BTC&rdquo; or &ldquo;bits&rdquo;</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCDenomination.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/maxBitcoinDecimalPlaces" title="maxBitcoinDecimalPlaces"></a>
+	<h3 class="method-title"><code><a href="#//api/name/maxBitcoinDecimalPlaces">&ndash;&nbsp;maxBitcoinDecimalPlaces</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Returns the maximum number of decimal places represented by this denomination</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (int)maxBitcoinDecimalPlaces</code></div>
+
+		    
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>int Maximum decimal places. BTC=8, mBTC=5, bits=2</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Returns the maximum number of decimal places represented by this denomination</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCDenomination.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/prettyBitcoinDecimalPlaces" title="prettyBitcoinDecimalPlaces"></a>
+	<h3 class="method-title"><code><a href="#//api/name/prettyBitcoinDecimalPlaces">&ndash;&nbsp;prettyBitcoinDecimalPlaces</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Returns the &lsquo;pretty&rsquo; number of decimal places represented by this denomination.
+Due to the large number of subunits of bitcoin, several decimal places represent
+units of value considered to be uninteresting to users. This returns the number of
+decimal places to represent no less than .001 USD.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (int)prettyBitcoinDecimalPlaces</code></div>
+
+		    
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>int Maximum decimal places</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Returns the &lsquo;pretty&rsquo; number of decimal places represented by this denomination.
+Due to the large number of subunits of bitcoin, several decimal places represent
+units of value considered to be uninteresting to users. This returns the number of
+decimal places to represent no less than .001 USD.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCDenomination.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/satoshiToBTCString:withSymbol:cropDecimals:" title="satoshiToBTCString:withSymbol:cropDecimals:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/satoshiToBTCString:withSymbol:cropDecimals:">&ndash;&nbsp;satoshiToBTCString:withSymbol:cropDecimals:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Convert a 64 bit satoshi value to a string using the current denomination. Routine will automatically
+apply the correct conversion to BTC/mBTC/bits based on this objects denomination</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (NSString *)satoshiToBTCString:(int64_t)<em>satoshi</em> withSymbol:(bool)<em>symbol</em> cropDecimals:(bool)<em>cropDecimals</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>satoshi</code></th>
+						<td><p>int64_t Signed satoshi amount to convert</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>symbol</code></th>
+						<td><p>(optional) bool YES if routine should add a denomination <a href="#//api/name/symbol">symbol</a> such as &ldquo;Ƀ&rdquo; before the amount</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>cropDecimals</code></th>
+						<td><p>(optional) bool YES if routine should only show the number of decimal places specified by
+<a href="#//api/name/prettyBitcoinDecimalPlaces">prettyBitcoinDecimalPlaces</a></p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>NSString String representation of bitcoin amount</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Convert a 64 bit satoshi value to a string using the current denomination. Routine will automatically
+apply the correct conversion to BTC/mBTC/bits based on this objects denomination</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCDenomination.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/btcStringToSatoshi:" title="btcStringToSatoshi:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/btcStringToSatoshi:">&ndash;&nbsp;btcStringToSatoshi:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Parse an NSString to satoshi amount. Factors in the current denomination in the conversion.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (int64_t)btcStringToSatoshi:(NSString *)<em>amount</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>amount</code></th>
+						<td><p>NSString String value to parse</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>int64_t Signed 64 bit satoshi amount</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Parse an NSString to satoshi amount. Factors in the current denomination in the conversion.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCDenomination.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/getDenominationForMultiplier:" title="getDenominationForMultiplier:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/getDenominationForMultiplier:">+&nbsp;getDenominationForMultiplier:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Returns an ABCDenomination object for the given multipier enum</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>+ (ABCDenomination *)getDenominationForMultiplier:(ABCDenominationMultiplier)<em>multiplier</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>multiplier</code></th>
+						<td><p><a href="../Constants/ABCDenominationMultiplier.html">ABCDenominationMultiplier</a> enum</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCDenomination Corresponding ABCDenomination for the <a href="#//api/name/multiplier">multiplier</a></p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Returns an ABCDenomination object for the given multipier enum</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCDenomination.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/getDenominationForIndex:" title="getDenominationForIndex:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/getDenominationForIndex:">+&nbsp;getDenominationForIndex:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Returns an ABCDenomination object for the given <a href="#//api/name/index">index</a> into the enum list.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>+ (ABCDenomination *)getDenominationForIndex:(int)<em>index</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>index</code></th>
+						<td><p>int</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>ABCDenomination Corresponding ABCDenomination for the index<br>
+0 -> ABCDenominationMultiplierBTC
+1 -> ABCDenominationMultiplierMBTC
+2 -> ABCDenominationMultiplierUBTC</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Returns an ABCDenomination object for the given <a href="#//api/name/index">index</a> into the enum list.</p>
 			</div>
 			
 

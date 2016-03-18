@@ -14,7 +14,9 @@
 /**
  * ABCReceiveAddress is returned by ABCWallet routine createNewReceiveAddress and
  * getReceiveAddress. The properties amountSatoshi and metaData can be modified by
- * the caller. Subsequent reads of the properties uri, address, and qrCode will
+ * the caller.<br>
+ * <br>
+ * Subsequent reads of the properties uri, address, and qrCode will
  * automatically encompass the changes written to amountSatoshi and metaData. The
  * values written to metaData will be written to the ABCTransaction for funds received
  * on this address.
