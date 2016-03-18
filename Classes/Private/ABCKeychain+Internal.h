@@ -1,15 +1,12 @@
 //
-//  ABCKeychain.h
-//  Airbitz
+// ABCKeychain+Internal.h
 //
-//  Created by Paul Puey on 2015-08-31.
-//  Copyright (c) 2015 Airbitz. All rights reserved.
+// Created by Paul P on 2016/02/09.
+// Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "AirbitzCore.h"
-#import "ABCSettings.h"
-#import "ABCLocalSettings.h"
+#import "ABCKeychain.h"
+#import "AirbitzCore+Internal.h"
 
 #define PASSWORD_KEY            @"key_password"
 #define RELOGIN_KEY             @"key_relogin"
@@ -20,9 +17,8 @@
 @class ABCSettings;
 @class ABCLocalSettings;
 
-@interface ABCKeychain : NSObject
+@interface ABCKeychain(Internal)
 
-@property (nonatomic) ABCSettings *settings;
 @property (nonatomic) ABCLocalSettings *localSettings;
 
 - (id) init:(AirbitzCore *)abc;

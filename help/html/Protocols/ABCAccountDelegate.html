@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<title>ABCAccountDelegate Protocol Reference</title>
+
+	<link rel="stylesheet" href="../css/style.css">
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1.4">
+	<meta name="generator" content="appledoc 2.2.1 (build 1334)">
+</head>
+<body class="appledoc">
+	<header>
+		<div class="container" class="hide-in-xcode">
+			
+			<h1 id="library-title">
+				<a href="../index.html">airbitz-core-objc </a>
+			</h1>
+
+			<p id="developer-home">
+				<a href="../index.html">Airbitz</a>
+			</p>
+			
+		</div>
+	</header>
+
+	<aside>
+		<div class="container">
+			<nav>
+				<ul id="header-buttons" role="toolbar">
+					<li><a href="../index.html">Index</a></li>
+<li><a href="../hierarchy.html">Hierarchy</a></li>
+
+					<li id="on-this-page" role="navigation">
+						<label>
+							On This Page
+
+							<div class="chevron">
+								<div class="chevy chevron-left"></div>
+								<div class="chevy chevron-right"></div>
+							</div>
+
+							<select id="jump-to">
+	<option value="top">Jump To&#133;</option>
+	
+
+	
+	
+	<option value="tasks">Tasks</option>
+	
+	
+
+	
+	
+
+	
+
+	
+	<optgroup label="Instance Methods">
+		
+		<option value="//api/name/abcAccountAccountChanged">- abcAccountAccountChanged</option>
+		
+		<option value="//api/name/abcAccountBalanceUpdate:transaction:">- abcAccountBalanceUpdate:transaction:</option>
+		
+		<option value="//api/name/abcAccountBlockHeightChanged">- abcAccountBlockHeightChanged</option>
+		
+		<option value="//api/name/abcAccountIncomingBitcoin:transaction:">- abcAccountIncomingBitcoin:transaction:</option>
+		
+		<option value="//api/name/abcAccountLoggedOut:">- abcAccountLoggedOut:</option>
+		
+		<option value="//api/name/abcAccountOTPRequired">- abcAccountOTPRequired</option>
+		
+		<option value="//api/name/abcAccountOTPSkew">- abcAccountOTPSkew</option>
+		
+		<option value="//api/name/abcAccountRemotePasswordChange">- abcAccountRemotePasswordChange</option>
+		
+		<option value="//api/name/abcAccountWalletChanged:">- abcAccountWalletChanged:</option>
+		
+		<option value="//api/name/abcAccountWalletsChanged">- abcAccountWalletsChanged</option>
+		
+		<option value="//api/name/abcAccountWalletsLoaded">- abcAccountWalletsLoaded</option>
+		
+		<option value="//api/name/abcAccountWalletsLoading">- abcAccountWalletsLoading</option>
+		
+	</optgroup>
+	
+	
+</select>
+						</label>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</aside>
+
+	<article>
+		<div id="overview_contents" class="container">
+			<div id="content">
+				<main role="main">
+					<h1 class="title">ABCAccountDelegate Protocol Reference</h1>
+
+					
+					<div class="section section-specification"><table cellspacing="0"><tbody>
+						<tr>
+	<th>Conforms to</th>
+	<td>NSObject</td>
+</tr><tr>
+	<th>Declared in</th>
+	<td>ABCAccount.h</td>
+</tr>
+						</tbody></table></div>
+					
+
+                    
+
+					
+					
+					<div class="section section-tasks">
+						<a title="Tasks" name="tasks"></a>
+						
+
+						
+						
+
+						<div class="task-list">
+							<div class="section-method">
+	<a name="//api/name/abcAccountRemotePasswordChange" title="abcAccountRemotePasswordChange"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountRemotePasswordChange">&ndash;&nbsp;abcAccountRemotePasswordChange</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Password has been changed by a remote device. User will be able to login on current device
+with old password. One user logs in with new password, old password will cease to function.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountRemotePasswordChange</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Password has been changed by a remote device. User will be able to login on current device
+with old password. One user logs in with new password, old password will cease to function.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/abcAccountLoggedOut:" title="abcAccountLoggedOut:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountLoggedOut:">&ndash;&nbsp;abcAccountLoggedOut:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>User has been logged out. Always called after [ABCAccount logout] once Core has finished logout
+Also called under some error conditions such as corrupt local data.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountLoggedOut:(ABCAccount *)<em>account</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>account</code></th>
+						<td><p><a href="../Classes/ABCAccount.html">ABCAccount</a> account that has been logged out</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>User has been logged out. Always called after [ABCAccount logout] once Core has finished logout
+Also called under some error conditions such as corrupt local data.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/abcAccountAccountChanged" title="abcAccountAccountChanged"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountAccountChanged">&ndash;&nbsp;abcAccountAccountChanged</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Account details such as settings have changed</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountAccountChanged</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Account details such as settings have changed</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/abcAccountWalletChanged:" title="abcAccountWalletChanged:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountWalletChanged:">&ndash;&nbsp;abcAccountWalletChanged:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Specific wallet has changed. Changes may include new transactions or modified metadata</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountWalletChanged:(ABCWallet *)<em>wallet</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>wallet</code></th>
+						<td><p><a href="../Classes/ABCWallet.html">ABCWallet</a></p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Specific wallet has changed. Changes may include new transactions or modified metadata</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/abcAccountWalletsLoading" title="abcAccountWalletsLoading"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountWalletsLoading">&ndash;&nbsp;abcAccountWalletsLoading</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Called when the wallets in the account are still loading their prior transactions.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountWalletsLoading</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Called when the wallets in the account are still loading their prior transactions.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/abcAccountWalletsLoaded" title="abcAccountWalletsLoaded"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountWalletsLoaded">&ndash;&nbsp;abcAccountWalletsLoaded</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>At minimum, the primary wallet has finished loading. Other wallets may still be loading</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountWalletsLoaded</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>At minimum, the primary wallet has finished loading. Other wallets may still be loading</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/abcAccountWalletsChanged" title="abcAccountWalletsChanged"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountWalletsChanged">&ndash;&nbsp;abcAccountWalletsChanged</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Wallets in the account have changed. Changes may include new wallet order or wallet names.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountWalletsChanged</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Wallets in the account have changed. Changes may include new wallet order or wallet names.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/abcAccountOTPRequired" title="abcAccountOTPRequired"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountOTPRequired">&ndash;&nbsp;abcAccountOTPRequired</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Account has had OTP enabled on another device. GUI should ask user to add OTP key from
+OTP authenticated device.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountOTPRequired</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Account has had OTP enabled on another device. GUI should ask user to add OTP key from
+OTP authenticated device.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/abcAccountOTPSkew" title="abcAccountOTPSkew"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountOTPSkew">&ndash;&nbsp;abcAccountOTPSkew</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Current OTP token on device does not match server OTP token. Token may have been changed by another
+device or user&rsquo;s time clock is skewed.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountOTPSkew</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Current OTP token on device does not match server OTP token. Token may have been changed by another
+device or user&rsquo;s time clock is skewed.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/abcAccountBlockHeightChanged" title="abcAccountBlockHeightChanged"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountBlockHeightChanged">&ndash;&nbsp;abcAccountBlockHeightChanged</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>The current blockheight has changed. Use should refresh GUI by rereading <a href="../Classes/ABCAccount.html">ABCAccount</a>.arrayWallets</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountBlockHeightChanged</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>The current blockheight has changed. Use should refresh GUI by rereading <a href="../Classes/ABCAccount.html">ABCAccount</a>.arrayWallets</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/abcAccountBalanceUpdate:transaction:" title="abcAccountBalanceUpdate:transaction:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountBalanceUpdate:transaction:">&ndash;&nbsp;abcAccountBalanceUpdate:transaction:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>This device has just sync'ed a transaction to the specified wallet from another device
+causing a change in balance. This happens if two devices share a wallet. First device will see
+abcAccountIncomingBitcoin. The second device will see abcAccountBalanceUpdate</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountBalanceUpdate:(ABCWallet *)<em>wallet</em> transaction:(ABCTransaction *)<em>transaction</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>wallet</code></th>
+						<td><p><a href="../Classes/ABCWallet.html">ABCWallet</a> The wallet whose balance was updated</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>transaction</code></th>
+						<td><p>ABCTransaction The transaction which caused the balance change</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>This device has just sync'ed a transaction to the specified wallet from another device
+causing a change in balance. This happens if two devices share a wallet. First device will see
+abcAccountIncomingBitcoin. The second device will see abcAccountBalanceUpdate</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/abcAccountIncomingBitcoin:transaction:" title="abcAccountIncomingBitcoin:transaction:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountIncomingBitcoin:transaction:">&ndash;&nbsp;abcAccountIncomingBitcoin:transaction:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>The specified wallet has just received a new incoming funds transaction which has not yet
+been seen by other devices with this account.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountIncomingBitcoin:(ABCWallet *)<em>wallet</em> transaction:(ABCTransaction *)<em>transaction</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>wallet</code></th>
+						<td><p><a href="../Classes/ABCWallet.html">ABCWallet</a> The wallet whose balance was updated</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>transaction</code></th>
+						<td><p>ABCTransaction The transaction which caused the incoming coin.</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>The specified wallet has just received a new incoming funds transaction which has not yet
+been seen by other devices with this account.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div>
+						</div>
+						
+					</div>
+					
+					
+
+                    
+                    
+          
+				</main>
+
+				<footer>
+					<div class="footer-copyright">
+						
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-18</p>
+						
+						
+						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>
+						
+					</div>
+				</footer>
+			</div>
+		</div>
+	</article>
+
+	<script src="../js/script.js"></script>
+</body>
+</html>

@@ -4,8 +4,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ABCConditionCode.h"
-#import "ABC.h"
+#import "AirbitzCore+Internal.h"
 
 @interface ABCError : NSObject
 
@@ -16,9 +15,7 @@
  */
 + (NSString *)conditionCodeMap:(const ABCConditionCode) code;
 
-+ (void)initAll;
-+ (ABCConditionCode)setLastErrors:(tABC_Error)error;
-+ (ABCConditionCode) getLastConditionCode;
-+ (NSString *) getLastErrorString;
++ (NSError *)makeNSError:(tABC_Error)error;
++ (NSError *)makeNSError:(tABC_Error)error description:(NSString *)description;
 
 @end

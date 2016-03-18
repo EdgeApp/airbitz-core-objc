@@ -4,53 +4,57 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ABCError.h"
-#import "AirbitzCore.h"
+#import "AirbitzCore+Internal.h"
 
 @interface ABCError ()
 
-@property (atomic)              ABCConditionCode        lastConditionCode;
-@property (atomic, strong)      NSString                *lastErrorString;
-
 @end
-
-__strong static ABCError *singleton;
 
 @implementation ABCError
 
-+ (void)initAll;
++ (NSError *)makeNSError:(tABC_Error)error;
 {
-    singleton = [ABCError alloc];
-}
-
-+ (ABCError *) Singleton
-{
-    return singleton;
-}
-
-+ (ABCConditionCode)setLastErrors:(tABC_Error)error;
-{
-    singleton.lastConditionCode = (ABCConditionCode) error.code;
-    if (ABCConditionCodeOk == singleton.lastConditionCode)
+    if (ABCConditionCodeOk == error.code)
     {
-        singleton.lastErrorString = @"";
+        return nil;
     }
     else
     {
-        singleton.lastErrorString = [ABCError errorMap:error];
+        NSString *failureReason = [NSString stringWithUTF8String:error.szDescription];
+        NSString *failureDetail = [NSString stringWithFormat:@"%@: %@:%d",
+                                   [NSString stringWithUTF8String:error.szSourceFunc],
+                                   [NSString stringWithUTF8String:error.szSourceFile],
+                                   error.nSourceLine];
+        return [NSError errorWithDomain:ABCErrorDomain
+                                   code:error.code
+                               userInfo:@{ NSLocalizedDescriptionKey:[ABCError errorMap:error] ,
+                                           NSLocalizedFailureReasonErrorKey:failureReason,
+                                           NSLocalizedRecoverySuggestionErrorKey:failureDetail }];
     }
-    return singleton.lastConditionCode;
 }
 
-+ (ABCConditionCode) getLastConditionCode;
++ (NSError *)makeNSError:(tABC_Error)error description:(NSString *)description;
 {
-    return singleton.lastConditionCode;
+    if (ABCConditionCodeOk == error.code)
+    {
+        return nil;
+    }
+    else
+    {
+        NSString *failureReason = [NSString stringWithUTF8String:error.szDescription];
+        NSString *failureDetail = [NSString stringWithFormat:@"%@: %@:%d",
+                                   [NSString stringWithUTF8String:error.szSourceFunc],
+                                   [NSString stringWithUTF8String:error.szSourceFile],
+                                   error.nSourceLine];
+        return [NSError errorWithDomain:ABCErrorDomain
+                                   code:error.code
+                               userInfo:@{ NSLocalizedDescriptionKey:description,
+                                           NSLocalizedFailureReasonErrorKey:failureReason,
+                                           NSLocalizedRecoverySuggestionErrorKey:failureDetail }];
+    }
 }
 
-+ (NSString *) getLastErrorString;
-{
-    return singleton.lastErrorString;
-}
+
 
 + (NSString *)errorMap:(tABC_Error)error;
 {

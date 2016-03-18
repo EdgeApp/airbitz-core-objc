@@ -3,15 +3,113 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import "ABCUtil.h"
+
 #import <UIKit/UIKit.h>
 #import <sys/sysctl.h>
+#import "ABCUtil.h"
+#import "AirbitzCore+Internal.h"
 
 
 
 @implementation ABCUtil
 {
 
+}
+
++ (ABCParsedURI *)parseURI:(NSString *)uri error:(NSError **)nserror;
+{
+    tABC_ParsedUri *parsedUri = NULL;
+    char *szBitidDomain = NULL;
+    ABCParsedURI *abcParsedURI = nil;
+    tABC_Error error;
+    NSError *lnserror = nil;
+    
+    if (!uri)
+    {
+        error.code = ABC_CC_NULLPtr;
+        lnserror = [ABCError makeNSError:error];
+    }
+    else
+    {
+        ABC_ParseUri((char *)[uri UTF8String], &parsedUri, &error);
+        lnserror = [ABCError makeNSError:error];
+    }
+    
+    if (!lnserror && parsedUri)
+    {
+        abcParsedURI                        = [ABCParsedURI alloc];
+        abcParsedURI.metadata               = [ABCMetaData alloc];
+        abcParsedURI.amountSatoshi          = parsedUri->amountSatoshi;
+        if (parsedUri->szAddress)
+            abcParsedURI.address            = [NSString stringWithUTF8String:parsedUri->szAddress];
+        if (parsedUri->szWif)
+            abcParsedURI.privateKey         = [NSString stringWithUTF8String:parsedUri->szWif];
+        if (parsedUri->szBitidUri)
+        {
+            abcParsedURI.bitIDURI           = [NSString stringWithUTF8String:parsedUri->szBitidUri];
+            ABC_BitidParseUri(nil, nil, [abcParsedURI.bitIDURI UTF8String], &szBitidDomain, &error);
+            if (szBitidDomain)
+                abcParsedURI.bitIDDomain    = [NSString stringWithUTF8String:szBitidDomain];
+        }
+        if (parsedUri->szLabel)
+            abcParsedURI.metadata.payeeName = [NSString stringWithUTF8String:parsedUri->szLabel];
+        if (parsedUri->szMessage)
+            abcParsedURI.metadata.notes     = [NSString stringWithUTF8String:parsedUri->szMessage];
+        if (parsedUri->szCategory)
+            abcParsedURI.metadata.category  = [NSString stringWithUTF8String:parsedUri->szCategory];
+        if (parsedUri->szRet)
+            abcParsedURI.returnURI          = [NSString stringWithUTF8String:parsedUri->szRet];
+        if (parsedUri->szPaymentProto)
+            abcParsedURI.paymentRequestURL  = [NSString stringWithUTF8String:parsedUri->szPaymentProto];
+        
+        
+    }
+    
+    if (nserror) *nserror = lnserror;
+    
+    if (parsedUri) free(parsedUri);
+    if (szBitidDomain) free(szBitidDomain);
+    
+    return abcParsedURI;
+}
+
++ (NSString *)encodeURI:(NSString *)address
+                 amount:(uint64_t)amount
+                  label:(NSString *)label
+                message:(NSString *)message
+               category:(NSString *)category
+                    ret:(NSString *)ret;
+{
+    char *pszResult = NULL;
+    tABC_Error error;
+    
+    ABC_AddressUriEncode([address UTF8String],
+                         amount, [label UTF8String],
+                         [message UTF8String], [category UTF8String], [ret UTF8String], &pszResult, &error);
+    NSString *uri = [NSString stringWithUTF8String:pszResult];
+    return uri;
+}
+
++ (UIImage *)encodeStringToQRImage:(NSString *)string error:(NSError **)nserror;
+{
+    unsigned char *pData = NULL;
+    unsigned int width;
+    tABC_Error error;
+    UIImage *image = nil;
+    NSError *nserror2 = nil;
+    
+    ABC_QrEncode([string UTF8String], &pData, &width, &error);
+    nserror2 = [ABCError makeNSError:error];
+    if (!nserror2)
+    {
+        image = [ABCUtil dataToImage:pData withWidth:width andHeight:width];
+    }
+    
+    if (pData) {
+        free(pData);
+    }
+    if (nserror) *nserror = nserror2;
+    return image;;
 }
 
 + (NSString *)safeStringWithUTF8String:(const char *)bytes;
@@ -48,6 +146,7 @@
         free(aszStrings);
     }
 }
+
 
 + (UIImage *)dataToImage:(const unsigned char *)data withWidth:(int)width andHeight:(int)height
 {

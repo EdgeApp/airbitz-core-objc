@@ -1,34 +1,126 @@
 //
-//  AirbitzCore.h
-//  Airbitz
+// AirbitzCore.h
 //
-
-#import "ABCWallet.h"
-#import "ABCTransaction.h"
+// Created by Paul P on 2016/02/09.
+// Copyright (c) 2016 Airbitz. All rights reserved.
+//
+#import <Foundation/Foundation.h>
+#import "ABCAccount.h"
+#import "ABCCategories.h"
 #import "ABCConditionCode.h"
-#import "ABCSpend.h"
-#import "ABCRequest.h"
+#import "ABCCurrency.h"
+#import "ABCDataStore.h"
+#import "ABCDenomination.h"
+#import "ABCExchangeCache.h"
+#import "ABCKeychain.h"
+#import "ABCMetaData.h"
+#import "ABCReceiveAddress.h"
 #import "ABCSettings.h"
+#import "ABCSpend.h"
+#import "ABCTransaction.h"
+#import "ABCTxInOut.h"
+#import "ABCUtil.h"
+#import "ABCWallet.h"
 
-#define ABC_NOTIFICATION_OTP_REQUIRED                       @"ABC_Otp_Required"
-#define ABC_NOTIFICATION_OTP_SKEW                           @"ABC_Otp_Skew"
-#define ABC_NOTIFICATION_EXCHANGE_RATE_CHANGE               @"ABC_Exchange_Rate_Change"
+/**
+ AirbitzCore (ABC) is a client-side blockchain and Edge Security SDK providing auto-encrypted
+ and auto-backed up accounts and wallets with zero-knowledge security and privacy. 
+ All blockchain/bitcoin private and public keys are fully encrypted by the users' credentials
+ before being backed up on to peer to peer servers. ABC allows developers to create new
+ Airbitz wallet accounts or login to pre-existing accounts. Account encrypted data is
+ automatically synchronized between all devices and apps using the Airbitz SDK. This allows a
+ third party application to generate payment requests or send funds for the users' account
+ that may have been created on the Airbitz Mobile Bitcoin Wallet or any other Airbitz SDK
+ application. 
+ 
+ In addition, the ABCDataStore object in the Airbitz ABCAccount object allows developers to
+ store arbitrary Edge-Secured data on the user's account which is automatically encrypted,
+ automatically backed up, and automatically synchronized between the user's authenticated 
+ devices.
 
-static const int ABCDenominationBTC  = 0;
-static const int ABCDenominationMBTC = 1;
-static const int ABCDenominationUBTC = 2;
+    // Global account object
+    ABCAccount *gAccount;
 
-typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
-    ABCImportWIF,
-    ABCImportHBitsURI,
-};
+    - (void) exampleMethod
+    {
+        // Create an account
+        AirbitzCore *abc  = [[AirbitzCore alloc] init:@"YourAPIKeyHere"];
+        ABCAccount *abcAccount = [abc createAccount:@"myusername" password:@"MyPa55w0rd!&" pin:@"4283" delegate:self error:nil];
+        // New account is auto logged in after creation
 
-#define CONFIRMED_CONFIRMATION_COUNT 6
-#define PIN_REQUIRED_PERIOD_SECONDS     120
-#define ABC_ARRAY_EXCHANGES     @[@"Bitstamp", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
+        // Use Airbitz Edge Security to write encrypted/backed up/synchronized data to the account
+        [gAccount.dataStore dataWrite:@"myAppUserInfo" withKey:@"user_email" withValue:@"theuser@hisdomain.com"];
 
+        // Read back the data
+        NSMutableString *usersEmail = [[NSMutableString alloc] init];
+        [gAccount.dataStore dataRead:@"myAppUserInfo" withKey:@"user_email" data:usersEmail];
+
+        // usersEmail now contains "theuser@hisdomain.com"
+
+        // Create a wallet in the user account
+        ABCWallet *wallet = [abcAccount createWallet:@"My Awesome Wallet" currency:nil];
+
+        // Logout
+        [abc logout:abcAccount];
+
+        // Log back in with full credentials
+        abcAccount = [abc signIn:@"myusername" password:@"MyPa55w0rd!&" delegate:self error:nil];
+
+        // Logout
+        [abc logout:abcAccount];
+
+        // Log back in with PIN using completion handler codeblock
+        [abc signInWithPIN:@"myusername" pin:@"4283" delegate:self complete:^(ABCAccount *account)
+        {
+            gAccount = account;
+
+        } error:^(NSError *error) {
+            NSLog(@"Argh! Error code: %d. Error string:%@", (int)error.code, error.userInfo[NSLocalizedDescriptionKey]);
+        }];
+
+    }
+
+    // Delegate method called when wallets are loaded after a signIn
+    - (void) abcAccountWalletsLoaded
+    {
+        // Get the first wallet in the account
+        ABCWallet *wallet = gAccount.arrayWallets[0];
+
+        // Create a bitcoin request
+        ABCReceiveAddress *request = [wallet createNewReceiveAddress];
+
+        // Put in some optional meta data into this request so incoming funds are automatically tagged
+        request.metaData.payeeName     = @"William Swanson"; // Name of the person receiving request
+        request.metaData.category      = @"Income:Rent";     // Category of payment. Auto tags category when funds come in
+        request.metaData.notes         = @"Rent payment for Jan 2016";
+
+        // Put in an optional request amount and use fiat exchange rate conversion methods
+        request.amountSatoshi          = [gAccount.exchangeCache currencyToSatoshi:5.00 currencyCode:@"USD" error:nil];
+
+        // Use the request results
+        NSString *bitcoinAddress = request.address;
+        NSString *bitcoinURI     = request.uri;
+        UIImage  *bitcoinQRCode  = request.qrCode;
+
+        // Now go and display the QR code or send payment to address in some other way.
+    }
+
+    // Delegate method called when bitcoin is received
+    - (void) abcAccountIncomingBitcoin:(ABCWallet *)wallet txid:(NSString *)txid;
+    {
+        NSLog(@"Yay, my wallet just received bitcoin");
+    }
+*/
+
+// Number of confirmations before Airbitz considers a transaction confirmed
+#define ABCConfirmedConfirmationCount    6
+
+// Generic logging routine that gets saved in local storage and optionally sent
+// to Airbitz to troubleshoot
 #define ABCLog(level, format_string,...) \
 ((abcDebugLog(level, [NSString stringWithFormat:format_string,##__VA_ARGS__])))
+
+#define ABCErrorDomain @"ABCErrorDomain"
 
 void abcDebugLog(int level, NSString *string);
 void abcSetDebugLevel(int level);
@@ -39,788 +131,530 @@ typedef enum eABCDeviceCaps
 } ABCDeviceCaps;
 
 @class ABCSpend;
-@class AirbitzCore;
 @class ABCSettings;
-@class ABCRequest;
-
-@interface BitidSignature : NSObject
-@property (nonatomic, strong) NSString *address;
-@property (nonatomic, strong) NSString *signature;
-@end
-
-@protocol CoreBridgeDelegate <NSObject>
-
-@optional
-
-- (void) airbitzCoreRemotePasswordChange;
-- (void) airbitzCoreLoggedOut;
-- (void) airbitzCoreDataSyncUpdate;
-- (void) airbitzCoreWalletsLoading;
-- (void) airbitzCoreWalletsLoaded;
-- (void) airbitzCoreWalletsChanged;
-- (void) airbitzCoreOTPRequired;
-- (void) airbitzCoreOTPSkew;
-- (void) airbitzCoreIncomingBitcoin:(NSString *)walletUUID txid:(NSString *)txid;
-
-@end
+@class ABCReceiveAddress;
+@class ABCAccount;
+@class ABCPasswordRuleResult;
 
 @interface AirbitzCore : NSObject
 
-@property (assign)            id<CoreBridgeDelegate>    delegate;
-@property (nonatomic, strong) ABCSettings               *settings;
-@property (nonatomic, strong) NSMutableArray            *arrayWallets;
-@property (nonatomic, strong) NSMutableArray            *arrayArchivedWallets;
-@property (nonatomic, strong) NSMutableArray            *arrayWalletNames;
-@property (nonatomic, strong) NSMutableArray            *arrayUUIDs;
-@property (nonatomic, strong) ABCWallet *currentWallet;
-@property (nonatomic, strong) NSArray                   *arrayCurrencyCodes;
-@property (nonatomic, strong) NSArray                   *arrayCurrencyNums;
-@property (nonatomic, strong) NSArray                   *arrayCurrencyStrings;
-@property (nonatomic, strong) NSArray                   *arrayCategories;
-@property (nonatomic)         int                       currentWalletID;
-@property (nonatomic)         BOOL                      bAllWalletsLoaded;
-@property (nonatomic)         int                       numWalletsLoaded;
-@property (nonatomic)         int                       numTotalWallets;
-@property (nonatomic)         int                       currencyCount;
-@property (nonatomic)         int                       numCategories;
+/// -----------------------------------------------------------------------------
+/// @name AirbitzCore initialization / free routines
+/// -----------------------------------------------------------------------------
 
-@property (nonatomic, copy) NSString *name;
-@property (nonatomic, copy) NSString *password;
-
-
+/**
+ * Initialize the AirbitzCore object. Required for functionality of ABC SDK.
+ * @param abcAPIKey NSString* API key obtained from Airbitz Inc.
+ * @param hbitsKey (Optional) unique key used to encrypt private keys for use as implementation
+ * specific "gift cards" that are only redeemable by applications using this implementation.
+ * @return AirbitzCore Instance of AirbitzCore object
+ */
 - (id)init:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey;
+- (id)init:(NSString *)abcAPIKey;
+
+/**
+ * Free the AirbitzCore object.
+ */
 - (void)free;
-- (void)startQueues;
-- (void)stopQueues;
 
-- (void)clearSyncQueue;
-- (void)clearTxSearchQueue;
 
-- (void)postToDataQueue:(void(^)(void))cb;
-- (void)postToWalletsQueue:(void(^)(void))cb;
-- (void)postToGenQRQueue:(void(^)(void))cb;
-- (void)postToTxSearchQueue:(void(^)(void))cb;
-- (void)postToMiscQueue:(void(^)(void))cb;
 
-- (int)dataOperationCount;
+#pragma mark - Account Management
+/// -----------------------------------------------------------------------------
+/// @name Account Management
+/// -----------------------------------------------------------------------------
 
-// New methods
-- (void)rotateWalletServer:(NSString *)walletUUID refreshData:(BOOL)bData notify:(void(^)(void))cb;
-- (void)reorderWallets: (NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath;
-- (void)makeCurrentWallet:(ABCWallet *)wallet;
-- (void)makeCurrentWalletWithIndex:(NSIndexPath *)indexPath;
-- (void)makeCurrentWalletWithUUID:(NSString *)strUUID;
-- (ABCWallet *)selectWalletWithUUID:(NSString *)strUUID;
-- (long) saveLogoutDate;
-- (void)addCategory:(NSString *)strCategory;
-- (void)loadCategories;
-- (void)saveCategories:(NSMutableArray *)saveArrayCategories;
+/** 
+ * Create an Airbitz account with specified username, password, and PIN with
+ * callback handler
+ * @param username NSString
+ * @param password NSString
+ * @param pin NSString
+ * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
+ * @param completionHandler (Optional) Code block called on success. Returns void if used<br>
+ * - *param* ABCAccount Account object.<br>
+ * @param errorHandler (Optional) Code block called on error with parameters<br>
+ * - *param* NSError
+ * @return void
+ */
+- (void)createAccount:(NSString *)username
+             password:(NSString *)password
+                  pin:(NSString *)pin
+             delegate:(id)delegate
+             complete:(void (^)(ABCAccount *account)) completionHandler
+                error:(void (^)(NSError *)) errorHandler;
+
+
+/** Create an Airbitz account with specified username, password, and PIN.
+ * @param username NSString*
+ * @param password NSString*
+ * @param pin NSString*
+ * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
+ * @param error NSError** May be set to nil. Only used when not using completion handler
+ * @return ABCAccount Account object or nil if failure.
+ */
+- (ABCAccount *)createAccount:(NSString *)username
+                     password:(NSString *)password
+                          pin:(NSString *)pin
+                     delegate:(id)delegate
+                        error:(NSError **)error;
+
+/**
+ * Sign In to an Airbitz account using completion handlers.
+ * @param username NSString
+ * @param password NSString
+ * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
+ * @param otp NSString One Time Password token (optional). Send nil if logging in w/o OTP token
+ *  or if OTP token has already been saved in this account from prior login
+ * @param completionHandler (Optional) Code block called on success. Returns void if used<br>
+ * - *param* ABCAccount Account object created from SignIn call
+ * @param errorHandler (Optional) Code block called on error with parameters<br>
+ * - *param* NSError<br>
+ * - *param* NSDate otpResetDate If login fails due to invalid or unset OTP key, and an OTP reset has been
+ *  requested, the data that the reset will occur will be returned in this argument<br>
+ * - *param* NSString otpResetToken. If login fails due to OTP set on this account, use this token
+ *  in requestOTPReset to request a reset of OTP. The reset will take 7 days
+ * @return void
+ */
+- (void)signIn:(NSString *)username
+      password:(NSString *)password
+      delegate:(id)delegate
+           otp:(NSString *)otp
+      complete:(void (^)(ABCAccount *account)) completionHandler
+         error:(void (^)(NSError *, NSDate *otpResetDate, NSString *otpResetToken)) errorHandler;
+
+/**
+ * Sign In to an Airbitz account.
+ * @param username NSString
+ * @param password NSString
+ * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
+ * @param error NSError May be set to nil. Only used when not using completion handler
+ * @return ABCAccount Account object or nil if failure.
+ */
+- (ABCAccount *)signIn:(NSString *)username
+              password:(NSString *)password
+              delegate:(id)delegate
+                 error:(NSError **)error;
+
+/**
+ * Sign In to an Airbitz account. This routine allows caller to receive back an otpResetToken
+ * which is used with [AirbitzCore requestOTPReset] to remove OTP from the specified account.
+ * The otpResetToken is only returned if the caller has provided the correct username and password
+ * but the account had OTP enabled. In such case, signIn will also provide an otpResetDate which is
+ * the date when the account OTP will be disabled if a prior OTP reset was successfully requested.
+ * The reset date is set to 7 days from when a reset was initially requested.
+ * @param username NSString
+ * @param password NSString
+ * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
+ * @param otp NSString* One Time Password token (optional). Send nil if logging in w/o OTP token
+ *  or if OTP token has already been saved in this account from prior login
+ * @param otpResetToken NSMutableString A reset token to be used to request disabling of OTP for
+ *  this account.
+ * @param otpResetDate NSDate Date which the account reset will occur
+ * @param error NSError May be set to nil. Only used when not using completion handler
+ * @return ABCAccount Account object or nil if failure.
+ */
+- (ABCAccount *)signIn:(NSString *)username
+              password:(NSString *)password
+              delegate:(id)delegate
+                   otp:(NSString *)otp
+         otpResetToken:(NSMutableString *)otpResetToken
+          otpResetDate:(NSDate **)otpResetDate
+                 error:(NSError **)error;
+
+/**
+ * Sign In to an Airbitz account with PIN using completion handlers. Used to sign into 
+ * devices that have previously been logged into using a full username & password
+ * @param username NSString*
+ * @param pin NSString*
+ * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
+ * @param completionHandler (Optional) Code block called on success.<br>
+ * - *param* ABCAccount User object.
+ * @param errorHandler (Optional) Code block called on error with parameters<br>
+ * - *param* NSError*
+ *  requested, the data that the reset will occur will be returned in this argument
+ * @return void
+ */
+- (void)signInWithPIN:(NSString *)username
+                  pin:(NSString *)pin
+             delegate:(id)delegate
+             complete:(void (^)(ABCAccount *user)) completionHandler
+                error:(void (^)(NSError *)) errorHandler;
+
+
+/**
+ * Sign In to an Airbitz account with PIN. Used to sign into devices that have previously
+ * been logged into using a full username & password
+ * @param username NSString*
+ * @param pin NSString*
+ * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
+ * @param error NSError** May be set to nil. Only used when not using completion handler
+ * @return ABCAccount Account object or nil if failure.
+ */
+- (ABCAccount *)signInWithPIN:(NSString *)username
+                          pin:(NSString *)pin
+                     delegate:(id)delegate
+                        error:(NSError **)error;
+
+/**
+ * Log in a user using recovery answers. Will only succeed if user has recovery questions and answers
+ * set in their account. Use [ABCAccount setupRecoveryQuestions] to set questions and answers
+ * @param username NSString*
+ * @param answers  NSString* concatenated string of recovery answers separated by '\n' after each answer
+ * @param delegate Delegate owner to handle ABCAccount delegate callbacks
+ * @param otp NSString* OTP token if needed to login. May be set to nil.
+ * @param completionHandler Completion handler code block<br>
+ * - *param* ABCAccount Returned account object logged in.
+ * @param errorHandler Error handler code block which is called with the following args<br>
+ * - *param* NSError*<br>
+ * - *param* NSDate* resetDate If login fails due to OTP and a reset has been requested, this contains
+ *  the date that the reset will occur.<br>
+ * - *param* NSString* OTP reset token. If login fails due to OTP set on this account, use this token
+ * @return void
+ */
+- (void)signInWithRecoveryAnswers:(NSString *)username
+                          answers:(NSString *)answers
+                         delegate:(id)delegate
+                              otp:(NSString *)otp
+                         complete:(void (^)(ABCAccount *account)) completionHandler
+                            error:(void (^)(NSError *, NSDate *resetDate, NSString *resetToken)) errorHandler;
+
+/**
+ * Get ABCAccount object for username if logged in.
+ * @param username NSString*
+ * @return ABCAccount if logged in. nil otherwise
+ */
+- (ABCAccount *) getLoggedInUser:(NSString *)username;
+
+/**
+ * Logout the specified ABCAccount object
+ * @param abcAccount ABCAccount user to logout
+ * @return void
+ */
+- (void)logout:(ABCAccount *)abcAccount;
+
+/**
+ * Check if specified username has a password on the account or if it is
+ * a PIN-only account.
+ * @param username NSString* user to check
+ * @param error NSError**
+ * @return BOOL true if user has a password
+ */
+- (BOOL)passwordExists:(NSString *)username error:(NSError **)error;
+
+/** 
+ * Checks a password for valid entropy looking for correct minimum
+ * requirements such as upper, lowercase letters, numbers, and # of digits. This should be used
+ * by app to give feedback to user before creating a new account.
+ * @param password NSString* Password to check
+ * @return ABCPasswordRuleResult* Results of password check. 
+ */
++ (ABCPasswordRuleResult *)checkPasswordRules:(NSString *)password;
+
+/**
+ * Get a list of previously logged in usernames on this device
+ * @param accounts NSMutableArray* array of strings of account names
+ * @return NSError* error code
+ */
+- (NSError *) listLocalAccounts:(NSMutableArray *) accounts;
+
+/**
+ * Checks if an account with the specified username exists locally on the current device.
+ * This does not check for existence of the account on the entire Airbitz system. If a username
+ * was created but never logged into this device, this will return NO. This routine
+ * does not require network connectivity to operate.
+ * @param username NSString* Username of account to check
+ * @return YES if account exists locally, NO otherwise.
+ */
 - (BOOL)accountExistsLocal:(NSString *)username;
-- (BOOL) isLoggedIn;
 
-
-
-- (ABCWallet *)getWallet: (NSString *)walletUUID;
-- (ABCTransaction *)getTransaction: (NSString *)walletUUID withTx:(NSString *) szTxId;
-- (int64_t)getTotalSentToday:(ABCWallet *)wallet;
-
-- (bool)setWalletAttributes: (ABCWallet *) wallet;
-
-- (NSMutableArray *)searchTransactionsIn: (ABCWallet *) wallet query:(NSString *)term addTo:(NSMutableArray *) arrayTransactions;
-- (void)storeTransaction:(ABCTransaction *)transaction;
-
-- (int) currencyDecimalPlaces;
-- (int) maxDecimalPlaces;
-- (int64_t) cleanNumString:(NSString *) value;
-- (NSString *)formatCurrency:(double) currency withCurrencyNum:(int)currencyNum;
-- (NSString *)formatCurrency:(double) currency withCurrencyNum:(int)currencyNum withSymbol:(bool)symbol;
-- (NSString *)formatSatoshi:(int64_t) bitcoin;
-- (NSString *)formatSatoshi:(int64_t) bitcoin withSymbol:(bool) symbol;
-- (NSString *)formatSatoshi:(int64_t) bitcoin withSymbol:(bool) symbol cropDecimals:(int) decimals;
-- (NSString *)formatSatoshi:(int64_t) bitcoin withSymbol:(bool) symbol forceDecimals:(int) forcedecimals;
-- (NSString *)formatSatoshi:(int64_t) bitcoin withSymbol:(bool) symbol cropDecimals:(int) decimals forceDecimals:(int) forcedecimals;
-- (int64_t) denominationToSatoshi: (NSString *) amount;
-- (NSString *)conversionString: (ABCWallet *) wallet;
-- (NSString *)conversionStringFromNum:(int) currencyNum withAbbrev:(bool) abbrev;
-- (NSArray *)getRecoveryQuestionsForUserName:(NSString *)strUserName
-                                   isSuccess:(BOOL *)bSuccess
-                                    errorMsg:(NSMutableString *)error;
-- (BOOL)needsRecoveryQuestionsReminder:(ABCWallet *)wallet;
-- (BOOL)recentlyLoggedIn;
-- (void)logout;
-- (BOOL)passwordOk:(NSString *)password;
-- (BOOL)passwordExists;
-- (BOOL)passwordExists:(NSString *)username;
-- (void)restoreConnectivity;
-- (void)lostConnectivity;
-- (void)prioritizeAddress:(NSString *)address inWallet:(NSString *)walletUUID;
-- (NSString *)coreVersion;
-- (NSString *)currencyAbbrevLookup:(int) currencyNum;
-- (NSString *)currencySymbolLookup:(int)currencyNum;
-- (int)getCurrencyNumOfLocale;
-- (NSString *) bitidParseURI:(NSString *)uri;
-- (BOOL) bitidLogin:(NSString *)uri;
-- (BitidSignature *) bitidSign:(NSString *)uri msg:(NSString *)msg;
-
-///////////////////////// New AirbitzCore methods //////////////////////
+/**
+ * Checks if username is available on the global Airbitz username space. This requires
+ * network connectivity to function.
+ * @param username NSString* username to check
+ * @return nil if username is available
+ */
+- (NSError *)isAccountUsernameAvailable:(NSString *)username;
 
 /*
- * createAccount
- * @param NSString* username:
- * @param NSString* password:
- * @param NSString* pin:
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler: completion handler code block
- * @param errorHandler: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- *
- * @return ABCConditionCode
- */
-- (ABCConditionCode)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin;
-- (ABCConditionCode)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin
-                         complete:(void (^)(void)) completionHandler
-                            error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-/*
- * createWallet
- * @param NSString* walletName: set to nil to use default wallet name
- * @param int       currencyNum: ISO currency number for wallet. set to 0 to use defaultCurrencyNum from
- *                               settings or the global default currency number if settings unavailable
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler: completion handler code block
- * @param errorHandler: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
- */
-- (ABCConditionCode) createWallet:(NSString *)walletName currencyNum:(int) currencyNum;
-- (ABCConditionCode) createWallet:(NSString *)walletName currencyNum:(int) currencyNum
-                         complete:(void (^)(void)) completionHandler
-                            error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-
-/*
- * renameWallet
- * @param NSString* walletUUID: UUID of wallet to rename
- * @param NSString*    newName: new name of wallet
- * @return ABCConditionCode
- */
-- (ABCConditionCode) renameWallet:(NSString *)walletUUID
-                          newName:(NSString *)walletName;
-
-- (ABCConditionCode) createFirstWalletIfNeeded;
-- (ABCConditionCode) getNumWalletsInAccount:(int *)numWallets;
-
-/*
- * importPrivateKey
- *  Import (sweep) private key funds into the specified wallet. Private key is discarded
- *  after sweep.
- * @param NSString* privateKey: WIF or HBITS format private key string
- * @param NSString* walletUUID: UUID of wallet to sweep funds into
- * @param  importingHandler: Called when private key is determined to be valid and ABC is
- *                           sweeping funds. May take up to 30 seconds to sweep.
- *                           @param NSString *       address: public address of private key for sweep
- * @param completionHandler: completion handler code block
- *                           @param ABCImportDataModel dataModel: type of private key imported
- *                           @param NSString *           address: public address of key imported
- *                           @param NSString *              txid: txid hash of importing transaction
- *                           @param uint64_t              amount: amount imported in satoshis
- * @param      errorHandler: error handler code block which is called with the following args
- *                           @param ABCConditionCode       ccode: ABC error code
- *                           @param NSString *       errorString: error message
- * @return ABCConditionCode
- */
-- (void)importPrivateKey:(NSString *)privateKey to:(NSString *)walletUUID
-               importing:(void (^)(NSString *address)) importingHandler
-                complete:(void (^)(ABCImportDataModel dataModel, NSString *address, NSString *txid, uint64_t amount)) completionHandler
-                   error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-
-- (ABCConditionCode)getOTPResetUsernames:(NSMutableArray **) usernameArray;
-- (ABCConditionCode)hasOTPResetPending:(BOOL *)needsReset;
-
-/**
- * getOTPLocalKey
- * @param NSString* username: user to get the OTP key for
- * @param NSString**     key: pointer to key returned from routine
- * @return ABCConditionCode
- */
-- (ABCConditionCode)getOTPLocalKey:(NSString *)username
-                               key:(NSString **)key;
-
-/**
- * setOTPKey
- * Associates an OTP key with the given username.
- * This will not write to disk until the user has successfully logged in
- * at least once.
- * @param NSString* username: user to set the OTP key for
- * @param NSString*      key: key to set
- * @return ABCConditionCode
- */
-- (ABCConditionCode)setOTPKey:(NSString *)username
-                          key:(NSString *)key;
-
-/**
- * removeOTPKey
- * Removes the OTP key for current user.
- * This will remove the key from disk as well.
- * @return ABCConditionCode
- */
-- (ABCConditionCode)removeOTPKey;
-
-/**
- * getOTPDetails
- * Reads the OTP configuration from the server.
- * This will remove the key from disk as well.
- * @param NSString* username:
- * @param NSString* password:
- * @param     bool*  enabled: enabled flag if OTP is enabled for this user
- * @param     long*  timeout: number seconds required after a reset is requested
- *                            before OTP is disabled. This is set by setOTPAuth
- * @return ABCConditionCode
- */
-- (ABCConditionCode)getOTPDetails:(NSString *)username
-                         password:(NSString *)password
-                          enabled:(bool *)enabled
-                          timeout:(long *)timeout;
-
-/**
- * setOTPAuth
- * Sets up OTP authentication on the server for currently logged in user
- * This will generate a new token if the username doesn't already have one.
- * @param     long   timeout: number seconds required after a reset is requested
- *                            before OTP is disabled.
- * @return ABCConditionCode
- */
-- (ABCConditionCode)setOTPAuth:(long)timeout;
-
-/**
- * removeOTPAuth
- * Removes the OTP authentication requirement from the server for the 
- * currently logged in user
- * @return ABCConditionCode
- */
-- (ABCConditionCode)removeOTPAuth;
-
-/**
- * getOTPResetDateForLastFailedAccountLogin
- *
- * Returns the OTP reset date for the last account that failed to log in,
- * if any. Returns an empty string otherwise.
- * @param NSDate   **date: pointer to NSDate for return value date
- * @return ABCConditionCode
- */
-- (ABCConditionCode)getOTPResetDateForLastFailedAccountLogin:(NSDate **)date;
-
-/**
- * requestOTPReset
- * Launches an OTP reset timer on the server,
- * which will disable the OTP authentication requirement when it expires.
- *
- * This only works after the caller has successfully authenticated
- * with the server, such as through a password login,
- * but has failed to fully log in due to a missing OTP key.
- * @param NSString   *username:
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler: completion handler code block
- * @param errorHandler: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
- */
-- (ABCConditionCode)requestOTPReset:(NSString *)username;
-- (ABCConditionCode)requestOTPReset:(NSString *)username
-                           complete:(void (^)(void)) completionHandler
-                              error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-/**
- * removeOTPResetRequest
- * Removes the OTP reset request from the server for the
- * currently logged in user
- * @return ABCConditionCode
- */
-- (ABCConditionCode)removeOTPResetRequest;
-
-/**
- * encodeStringToQRImage
- * Encodes a string into a QR code returned as UIImage *
- *
- * @param     NSString*   string: string to encode
- * @param     UIImage**    image: returned image
- * @return ABCConditionCode
- */
-- (ABCConditionCode)encodeStringToQRImage:(NSString *)string
-                                    image:(UIImage **)image;
-
-
-/**
- * isAccountUsernameAvailable
- * Checks if username is available
- *
- * @param     NSString*   username: username to check
- * @return ABCConditionCodeOk if username is available
- */
-- (ABCConditionCode)isAccountUsernameAvailable:(NSString *)username;
-
-/**
- * PINLoginExists
- * Checks if PIN login is possible for the given username. This checks if
- * there is a local PIN package on the device from a prior login
- *
- * @param     NSString   *username: username to check
- * @return    BOOL: YES if username is available
- */
-- (BOOL)PINLoginExists:(NSString *)username;
-
-- (NSString *) getLastAccessedAccount;
-- (void) setLastAccessedAccount:(NSString *) account;
-
-
-/*
- * signIn
- * @param NSString* username: username to login
- * @param NSString* password: password of user
- * @param NSString* otp: One Time Password token (optional) send nil if logging in w/o OTP
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler: completion handler code block
- * @param errorHandler: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- *
- * @return ABCConditionCode
- */
-- (ABCConditionCode)signIn:(NSString *)username password:(NSString *)password otp:(NSString *)otp;
-- (ABCConditionCode)signIn:(NSString *)username password:(NSString *)password otp:(NSString *)otp
-                  complete:(void (^)(void)) completionHandler
-                     error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-/*
- * signInWithPIN
- * @param NSString* username: username to login
- * @param NSString* pin: user's 4 digit PIN
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler: completion handler code block
- * @param errorHandler: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
- */
-- (ABCConditionCode)signInWithPIN:(NSString *)username pin:(NSString *)pin;
-- (ABCConditionCode)signInWithPIN:(NSString *)username pin:(NSString *)pin
-                            complete:(void (^)(void)) completionHandler
-                               error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-
-/*
- * autoReloginOrTouchIDIfPossible
- *
- * Attempts to auto-relogin the most recently logged in user if they are within their auto-logout 
- * setting (default 1 hour). Should be called upon initial execution of app and when the Login screen 
- * reappears after logout.
- *
+ * Attempts to auto-relogin the specified user if they are within their auto-logout
+ * setting (default 1 hour). Should be called upon initial execution of app and when the Login screen
+ * reappears after logout or if user selects a different user to login with. If user can 
+ * use TouchID to login and they are outside of their auto-logout time period, this will automatically
+ * show the TouchID prompt on supported devices and log them in if authenticated.
  * @param username: user account to attempt to relogin
+ * @param delegate delegate object for callbacks
  * @param doBeforeLogin: completion handler code block executes before login is attempted
- * @param completeWithLogin: completion handler code block executes if login is successful
+ * @param completionWithLogin: completion handler code block executes if login is successful<br>
+ * - *param* ABCAccount Account object created from SignIn call
+ * - *param* BOOL* usedTouchID: TRUE if user used TouchID to login
  * @param completeNoLogin: completion handler code block executes if relogin not attempted
- * @param errorHandler: error handler code block which is called if relogin attempted but failed
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
+ * @param errorHandler (Optional) Code block called on error with parameters<br>
+ * - *param* NSError*
+ * @return void
  */
 - (void)autoReloginOrTouchIDIfPossible:(NSString *)username
+                              delegate:(id)delegate
                          doBeforeLogin:(void (^)(void)) doBeforeLogin
-                     completeWithLogin:(void (^)(BOOL usedTouchID)) completionWithLogin
-                       completeNoLogin:(void (^)(void)) completionNoLogin
-                                 error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+                   completionWithLogin:(void (^)(ABCAccount *account, BOOL usedTouchID)) completionWithLogin
+                     completionNoLogin:(void (^)(void)) completionNoLogin
+                                 error:(void (^)(NSError *error)) errorHandler;
 
-/*
- * checkPasswordRules
- *  Checks a password for valid entropy looking for correct minimum
- *  requirements such as upper, lowercase letters, numbers, and # of digits
- * @param NSString                     *password: password to check
- * @param BOOL                            *valid: pointer to valid which is true if password passes checks
- * @param double                 *secondsToCrack: pointer to estimated time it takes to crack password
- * @param int                             *count: pointer to number of rules used
- * @param NSMutableArray        *ruleDescription: pointer to array of NSString * with description of each rule
- * @param NSMutableArray             *rulePassed: pointer to array of NSNumber * with BOOL of whether rule passed
- * @param NSMutableString   *checkResultsMessage: pointer to message describing failures
- *
- * @return ABCConditionCode
+/**
+ * Checks if PIN login is possible for the given username. This checks if
+ * there is a local PIN package on the device from a prior login
+ * @param username NSString* username to check
+ * @param error NSError** (optional) May be set to nil.
+ * @return BOOL YES PIN login is possible
  */
-- (ABCConditionCode)checkPasswordRules:(NSString *)password
-                                 valid:(BOOL *)valid
-                        secondsToCrack:(double *)secondsToCrack
-                                 count:(unsigned int *)count
-                       ruleDescription:(NSMutableArray **)ruleDescription
-                            rulePassed:(NSMutableArray **)rulePassed
-                   checkResultsMessage:(NSMutableString **) checkResultsMessage;
+- (BOOL)PINLoginExists:(NSString *)username error:(NSError **)error;
+- (BOOL)PINLoginExists:(NSString *)username;
 
-
-/*
- * changePassword
- * @param NSString* password: new password for currently logged in user
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler: completion handler code block
- * @param errorHandler: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
+/**
+ * Deletes named account from local device. Account is recoverable if it contains a password.
+ * Use [AirbitzCore passwordExists] to determine if account has a password. Recommend warning
+ * user before executing deleteLocalAccount if passwordExists returns FALSE.
+ * @param username NSString*  username of account to delete
+ * @return NSError* nil if method succeeds
  */
-- (ABCConditionCode)changePassword:(NSString *)password;
-- (ABCConditionCode)changePassword:(NSString *)password
-                          complete:(void (^)(void)) completionHandler
-                             error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+- (NSError *)deleteLocalAccount:(NSString *)username;
 
-/*
- * changePasswordWithRecoveryAnswers
- * @param NSString*        username: username whose password to change
- * @param NSString* recoveryAnswers: recovery answers delimited by '\n'
- * @param NSString*     newPassword: new password
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler: completion handler code block
- * @param errorHandler: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
+/**
+ * Returns the NSString* of the last account that was logged into. If that account was deleted,
+ * returns the username of another local account. This can be overridden by calling
+ * [AirbitzCore setLastAccessedAccount]
+ * @return NSString* username of last account
  */
-- (ABCConditionCode)changePasswordWithRecoveryAnswers:(NSString *)username
-                                      recoveryAnswers:(NSString *)answers
-                                          newPassword:(NSString *)password;
-- (ABCConditionCode)changePasswordWithRecoveryAnswers:(NSString *)username
-                                      recoveryAnswers:(NSString *)answers
-                                          newPassword:(NSString *)password
-                                             complete:(void (^)(void)) completionHandler
-                                                error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+- (NSString *) getLastAccessedAccount;
 
-/*
- * changePIN
- * @param NSString* pin: new pin for currently logged in user
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler: completion handler code block
- * @param errorHandler: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
+/**
+ * Overrides the cached account name returned by [AirbitzCore getLastAccessedAccount]
+ * @param username NSString* username
  */
-- (ABCConditionCode)changePIN:(NSString *)pin;
-- (ABCConditionCode)changePIN:(NSString *)pin
-                     complete:(void (^)(void)) completionHandler
-                        error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+- (void) setLastAccessedAccount:(NSString *) username;
 
+#pragma mark - Account Recovery
+/// -----------------------------------------------------------------------------
+/// @name Account Recovery
+/// -----------------------------------------------------------------------------
 
-/*
- * createReceiveRequestWithDetails
- * @param ABCRequest    *request: object with various bitcoin request details and return info
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler: completion handler code block
- * @param errorHandler: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
+/**
+ * Gets the recovery questions set for the specified username. Questions are
+ * returned as an NSArray of NSString. Recovery questions need to have been previously set
+ * with a call to [ABCAccount setupRecoveryQuestions]
+ * @param username NSString* username to query
+ * @param error NSError** May be set to nil. 
+ * @return NSArray* Array of questions in NSString format. Returns nil if no questions
+ * have been set.
  */
-- (ABCConditionCode)createReceiveRequestWithDetails:(ABCRequest *)request;
-- (ABCConditionCode)createReceiveRequestWithDetails:(ABCRequest *)request
-                                           complete:(void (^)(void)) completionHandler
-                                              error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-/*
- * finalizeRequestWithID
- *  Finalizes the request so the address cannot be used by future requests. Forces address
- *  rotation so the next request gets a different address
- * @param NSString   *walletUUID: wallet request is from
- * @param ABCRequest    *request: object with various bitcoin request details and return info
- * @return ABCConditionCode
- */
-- (ABCConditionCode)finalizeRequestWithID:(NSString *)walletUUID
-                                requestID:(NSString *)requestID;
-
-/*
- * uploadLogs
- * @param NSString* userText: text to send to support staff
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param complete: completion handler code block which is called with void
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
- */
-- (ABCConditionCode)uploadLogs:(NSString *)userText;
-- (ABCConditionCode)uploadLogs:(NSString *)userText
-                      complete:(void(^)(void))completionHandler
-                         error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-/*
- * walletRemove
- * @param NSString* uuid: UUID of wallet to delete
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param complete: completion handler code block which is called with void
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
- */
-
-- (ABCConditionCode)walletRemove:(NSString *)uuid;
-- (ABCConditionCode)walletRemove:(NSString *)uuid
-                        complete:(void(^)(void))completionHandler
-                           error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-/*
- * accountDeleteLocal
- *      Deletes named account from local device. Account is recoverable if it contains a password
- * @param NSString* username: username of account to delete
- *
- * @return ABCConditionCode
- */
-- (ABCConditionCode)accountDeleteLocal:(NSString *)username;
-
-
-/*
- * checkRecoveryAnswers
- * @param NSString* username: username
- * @param NSString* strAnswers: concatenated string of recovery answers separated by '\n' after each answer
- *
- * @param complete: completion handler code block which is called with void
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
- */
-- (void)checkRecoveryAnswers:(NSString *)username
-        answers:(NSString *)strAnswers
-       complete:(void (^)(BOOL validAnswers)) completionHandler
-          error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-/*
- * getRecoveryQuestionsChoices
- * @param complete: completion handler code block which is called with the following args
- *                          @param NSMutableString  arrayCategoryString:  array of string based questions
- *                          @param NSMutableString  arrayCategoryNumeric: array of numeric based questions
- *                          @param NSMutableString  arrayCategoryMust:    array of questions of which one must have an answer
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
+- (NSArray *)getRecoveryQuestionsForUserName:(NSString *)username
+                                       error:(NSError **)error;
+/**
+ * Gets a list of recovery questions to ask user. These are suggested questions from the Airbitz
+ * servers, but app is free to choose its own to present the user.
+ * @param completionHandler Completion handler code block which is called with the following args<br>
+ * - *param* arrayCategoryString NSMutableString* array of string based questions<br>
+ * - *param* arrayCategoryNumeric NSMutableString* array of numeric based questions<br>
+ * - *param* arrayCategoryMust NSMutableString* array of questions which cannot be answered via 
+ *  information from public records
+ * @param errorHandler Error handler code block which is called with the following args<br>
+ * - *param* NSError* error
  * @return void
  */
-- (void)getRecoveryQuestionsChoices: (void (^)(
-        NSMutableArray *arrayCategoryString,
-        NSMutableArray *arrayCategoryNumeric,
-        NSMutableArray *arrayCategoryMust)) completionHandler
-                              error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
++ (void)listRecoveryQuestionsChoices: (void (^)(
+                                               NSMutableArray *arrayCategoryString,
+                                               NSMutableArray *arrayCategoryNumeric,
+                                               NSMutableArray *arrayCategoryMust)) completionHandler
+                              error:(void (^)(NSError *error)) errorHandler;
 
-/*
- * setRecoveryQuestions
- * @param NSString* password: password of currently logged in user
- * @param NSString* questions: concatenated string of recovery questions separated by '\n' after each question
- * @param NSString* answers: concatenated string of recovery answers separated by '\n' after each answer
- *
- * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param complete: completion handler code block which is called with void
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCode
+#pragma mark - OTP Management
+/// -----------------------------------------------------------------------------
+/// @name OTP (2 Factor Auth) Management
+/// -----------------------------------------------------------------------------
+
+/**
+ * Associates an OTP key with the given username. An OTP key can be retrieved from
+ * a previously logged in account using [ABCAccount getOTPLocalKey]. The account
+ * must have had OTP enabled by using [ABCAccount setOTPAuth]
+ * This will not write to disk until the user has successfully logged in
+ * at least once.
+ * @param username NSString* user to set the OTP key for
+ * @param key NSString* key to set
+ * @return NSError*
  */
+- (NSError *)setOTPKey:(NSString *)username
+                   key:(NSString *)key;
 
-- (ABCConditionCode)setRecoveryQuestions:(NSString *)password
-                               questions:(NSString *)questions
-                                 answers:(NSString *)answers;
-- (ABCConditionCode)setRecoveryQuestions:(NSString *)password
-                               questions:(NSString *)questions
-                                 answers:(NSString *)answers
-                                complete:(void (^)(void)) completionHandler
-                                   error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-
-
-/*
- * newSpendFromText
- *      Creates a ABCSpend object from text. Text could be a bitcoin address or URI
- * @param NSString* uri: bitcoin address or full BIP21 uri
- * @param ABCSpend **abcSpend: pointer to ABCSpend object
- * @return ABCConditionCode
+/**
+ * Returns an array of usernames of accounts local to device that
+ * have a pending OTP reset on the server. 
+ * @param error NSError object
+ * @return NSArray* of NSString* of usernames
  */
-- (ABCConditionCode)newSpendFromText:(NSString *)uri abcSpend:(ABCSpend **)abcSpend;
+- (NSArray *)listPendingOTPResetUsernames:(NSError **)error;
 
-
-/*
- * newSpendFromTextAsync
- *      Creates a ABCSpend object from text. Text could be a bitcoin address or URI
- * @param NSString* walletUUID: walletUUID of destination wallet for transfer
- *
- * @param complete: completion handler code block which is called with ABCSpend *
- *                          @param ABCSpend *    abcSpend: ABCSpend object
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return void
+/**
+ * Launches an OTP reset timer on the server,
+ * which will disable the OTP authentication requirement when it expires.
+ * @param username NSString*
+ * @param token NSString* Reset token returned by the signIn... routines
+ * if sign in failes due to missing or incorrect OTP.
+ * (Optional. If used, method returns immediately with void)
+ * @param completionHandler Completion handler code block
+ * @param errorHandler Error handler code block which is called with the following args<br>
+ * - *param* NSError* error
+ * @return NSError object or nil if success. Return void if using completion
+ *  handler
  */
+- (void)requestOTPReset:(NSString *)username token:(NSString *)token
+               complete:(void (^)(void)) completionHandler
+                  error:(void (^)(NSError *error)) errorHandler;
+- (NSError *)requestOTPReset:(NSString *)username token:(NSString *)token;
 
-- (void)newSpendFromTextAsync:(NSString *)uri
-                     complete:(void(^)(ABCSpend *sp))completionHandler
-                        error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+#pragma mark - ABCExchange Calls
+/// ------------------------------------------------------------------
+/// @name ABCExchange Calls
+/// ------------------------------------------------------------------
 
-
-/*
- * newSpendFromTransfer
- *      Creates a ABCSpend object from text. Text could be a bitcoin address or URI
- * @param NSString* walletUUID: walletUUID of destination wallet for transfer
- * @param ABCSpend **abcSpend: pointer to ABCSpend object
- * @return ABCConditionCode
+/**
+ * Gets an ABCExchangeCache object for use in doing currency conversion
+ * @return ABCExchangeCache*
  */
-- (ABCConditionCode)newSpendTransfer:(NSString *)destWalletUUID abcSpend:(ABCSpend **)abcSpend;
+- (ABCExchangeCache *) exchangeCacheGet;
 
-/*
- * newSpendFromTransferAsync
- *      Creates a ABCSpend object from walletUUID.
- * @param NSString* walletUUID: walletUUID of destination wallet for transfer
- *
- * @param complete: completion handler code block which is called with ABCSpend *
- *                          @param ABCSpend *    abcSpend: ABCSpend object
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return void
+#pragma mark - System Calls and Queries
+/// ------------------------------------------------------------------
+/// @name System Calls and Queries
+/// ------------------------------------------------------------------
+
+/**
+ * Gets the version of AirbitzCore compiled into this implementation
+ * @return NSString* Version number if string format. ie. "1.8.5"
  */
-//- (void)newSpendTransferAsync:(NSString *)uri
-//                     complete:(void(^)(ABCSpend *sp))completionHandler
-//                        error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
+- (NSString *)coreVersion;
 
-
-- (ABCConditionCode)newSpendInternal:(NSString *)address
-                               label:(NSString *)label
-                            category:(NSString *)category
-                               notes:(NSString *)notes
-                       amountSatoshi:(uint64_t)amountSatoshi
-                         abcSpend:(ABCSpend **)abcSpend;
-
-
-- (ABCConditionCode)pluginDataGet:(NSString *)pluginId withKey:(NSString *)key data:(NSMutableString *)data;
-- (ABCConditionCode)pluginDataSet:(NSString *)pluginId withKey:(NSString *)key withValue:(NSString *)value;
-- (ABCConditionCode)pluginDataRemove:(NSString *)pluginId withKey:(NSString *)key;
-- (ABCConditionCode)pluginDataClear:(NSString *)pluginId;
-
-
-/*
- * exportTransactionsToCSV
- *      Export a wallet's transactions to CSV format
- * @param NSString*         walletUUID: walletUUID of destination wallet for transfer
- * @param NSMutableString*   csvString: allocated NSMutableString to receive csv
- * @return ABCConditionCode
+/**
+ * Check if device has a capability from ABCDeviceCaps
+ * @param caps ABCDeviceCaps
+ * @return BOOL TRUE if device has specified capability
  */
-- (ABCConditionCode)exportTransactionsToCSV:(NSString *)walletUUID
-                                  csvString:(NSMutableString *)csv;
-
-
-/*
- * exportWalletPrivateSeed
- *      Export a wallet's private seed
- * @param NSString*         walletUUID: walletUUID of destination wallet for transfer
- * @param NSMutableString*        seed: allocated NSMutableString to receive seed string
- * @return ABCConditionCode
- */
-- (ABCConditionCode)exportWalletPrivateSeed:(NSString *)walletUUID
-                                       seed:(NSMutableString *)seed;
-
-
-/*
- * clearBlockchainCache
- * clears the local cache of blockchain info and force a re-download. This will cause wallets
- * to report incorrect balances which the blockchain is resynced
- *
- * @param complete: completion handler code block which is called with ABCSpend *
- *                          @param ABCSpend *    abcSpend: ABCSpend object
- * @param error: error handler code block which is called with the following args
- *                          @param ABCConditionCode       ccode: ABC error code
- *                          @param NSString *       errorString: error message
- * @return ABCConditionCodeOk (always returns Ok)
- */
-- (ABCConditionCode)clearBlockchainCache;
-- (ABCConditionCode)clearBlockchainCache:(void (^)(void)) completionHandler
-                                   error:(void (^)(ABCConditionCode ccode, NSString *errorString)) errorHandler;
-
-
-/*
- * satoshiToCurrency
- *      Convert bitcoin amount in satoshis to a fiat currency amount
- * @param uint_64t     satoshi: amount to convert in satoshis
- * @param int      currencyNum: ISO currency number of fiat currency to convert to
- * @param double    *pCurrency: pointer to resulting value
- * @return ABCConditionCode
- */
-- (ABCConditionCode) satoshiToCurrency:(uint64_t) satoshi
-                           currencyNum:(int)currencyNum
-                              currency:(double *)pCurrency;
-
-/*
- * currencyToSatoshi
- *      Convert fiat amount to a satoshi amount
- * @param double      currency: amount to convert in satoshis
- * @param int      currencyNum: ISO currency number of fiat currency to convert from
- * @param uint_64t   *pSatoshi: pointer to resulting value
- * @return ABCConditionCode
- */
-- (ABCConditionCode) currencyToSatoshi:(double)currency
-                           currencyNum:(int)currencyNum
-                               satoshi:(int64_t *)pSatoshi;
-- (bool)isTestNet;
-
-
-/*
- * getLocalAccounts
- *      Get a list of previously logged in account names on this device
- * @param  NSMutableArray*       : array of strings of account names
- * @return ABCConditionCode: error code to look up
- */
-- (ABCConditionCode) getLocalAccounts:(NSMutableArray *) accounts;
-
-- (ABCConditionCode) getLastConditionCode;
-- (NSString *) getLastErrorString;
 - (BOOL) hasDeviceCapability:(ABCDeviceCaps) caps;
 
-/*
- * shouldAskUserToEnableTouchID
- *  Evaluates if user should be asked to enable touch ID based
- *  on various factors such as if they have ever disabled touchID
- *  in the past, if they have touchID hardware support, and if
- *  this account has a password. PIN only accounts can't user TouchID
- *  at the moment. If user previously had touchID enabled, this will
- *  automatically enable touchID and return NO.
- *  Should be called while logged in.
- * @return BOOL: Should GUI ask if user wants to enable
+/**
+ * Returns TRUE if AirbitzCore is compiled for testnet
+ * @return BOOL
  */
-- (BOOL) shouldAskUserToEnableTouchID;
+- (bool) isTestNet;
 
+/**
+ * Call this routine from within applicationDidEnterBackground to have ABC
+ * spin down any background queues
+ */
+- (void) enterBackground;
+
+
+/**
+ * Call this routine from within applicationDidEnterBackground to have ABC
+ * spin up any background queues
+ */
+- (void) enterForeground;
+
+/**
+ * Call this routine when application loses network connectibity to have ABC
+ * prevent repeated network calls
+ */
+- (void)restoreConnectivity;
+
+/**
+ * Call this routine when application re-gains network connectibity to have ABC
+ * re-initiate networking
+ */
+- (void)lostConnectivity;
+
+/*
+ * Uploads AirbitzCore debug log with optional message from user.
+ * @param userText NSString* text to send to support staff
+ * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
+ * @param completionHandler Completion handler code block which is called with void
+ * @param errorHandler Error handler code block which is called with the following args<br>
+ * - *param* NSError* error
+ * @return NSError object or nil if success. Return void if using completion
+ *  handler
+ */
+- (void)uploadLogs:(NSString *)userText
+          complete:(void(^)(void))completionHandler
+             error:(void (^)(NSError *error)) errorHandler;
+- (NSError *)uploadLogs:(NSString *)userText;
+
+
+#pragma mark - Utility Methods
+/// ------------------------------------------------------------------
+/// @name Utility methods
+/// ------------------------------------------------------------------
+
+/**
+ * Transforms a username into the internal format used for hashing.
+ * This collapses spaces, converts to lowercase,
+ * and checks for invalid characters.
+ * @param username NSString* Username to fix
+ * @param error NSError** May be set to nil.
+ * @return NSString* Fixed username with text lowercased, leading and
+ * trailing white space removed, and all whitespace condensed to one space.
+ */
++ (NSString *)fixUsername:(NSString *)username error:(NSError **)error;
+
+/// ------------------------------------------------------------------
+/// @name Class methods to retrieve constant parameters from ABC
+/// ------------------------------------------------------------------
+
+/**
+ * Get the minimum allowable length of a username for new accounts
+ * @return int Minimum length
+ */
 + (int) getMinimumUsernamedLength;
+
+
+/**
+ * Get the minimum allowable length of a password for accounts
+ * @return int Minimum length
+ */
 + (int) getMinimumPasswordLength;
+
+/**
+ * Get the minimum allowable length of a PIN for accounts
+ * @return int Minimum length
+ */
 + (int) getMinimumPINLength;
 
-/*
- * enterBackground
- * Call this routine from within applicationDidEnterBackground to have ABC
- * spin down any background queues
- */
-- (void)enterBackground;
-
-
-/*
- * enterBackground
- * Call this routine from within applicationDidEnterBackground to have ABC
- * spin down any background queues
- */
-- (void)enterForeground;
-
-
 @end
+
+
+/// -----------------------------------------------------------------------------
+/// @name ABCPasswordRuleResult struct/object
+/// -----------------------------------------------------------------------------
+
+/// Object returned by checkPasswordRules to determine if password meets the minimum
+/// entropy requirements
+@interface ABCPasswordRuleResult : NSObject
+
+/// Estimated number of seconds to crack encryption based on this password on a
+/// current desktop computer
+@property       double      secondsToCrack;
+
+/// Password does not meet minimum lenght requrements (10 characters)
+@property       BOOL        tooShort;
+
+/// Password must have at least one number
+@property       BOOL        noNumber;
+
+/// Password must have an upper case letter
+@property       BOOL        noUpperCase;
+
+/// Password must have a lower case letter
+@property       BOOL        noLowerCase;
+
+/// Password has passed all the tests
+@property       BOOL        passed;
+@end
+
+

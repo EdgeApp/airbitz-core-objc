@@ -4,6 +4,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ABCParsedURI.h"
 
 #define SYSTEM_VERSION_EQUAL_TO(v)                  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedSame)
 #define SYSTEM_VERSION_GREATER_THAN(v)              ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedDescending)
@@ -26,8 +27,43 @@
 
 @interface ABCUtil : NSObject
 
+/**
+ * Encodes a string into a QR code returned as UIImage *
+ * @param string NSString* string to encode
+ * @param error NSError** May be set to nil
+ * @return UIImage* returned image
+ */
++ (UIImage *)encodeStringToQRImage:(NSString *)string error:(NSError **)error;
+
+
+/**
+ * Parses a bitcoin BIP21 URI, Wif private key, or Airbitz hbits private key
+ * @param uri NSString to parse
+ * @param error NSError Pointer to NSError object. (Optional. May be set to nil)
+ * @return ABCParsedURI ABCParsedURI Object with various parameters parsed out
+ */
++ (ABCParsedURI *)parseURI:(NSString *)uri error:(NSError **)error;
+
+/**
+ * Encodes a BIP21 compatible payment request URI using various paramters
+ * @param address NSString Bitcoin public address
+ * @param amount uint64_t Amount of request in satoshis
+ * @param label NSString Name of requestor
+ * @param message NSString Misc notes of transaction request
+ * @param ret NSString Return URI to send user to after payment is made
+ */
++ (NSString *)encodeURI:(NSString *)address
+                 amount:(uint64_t)amount
+                  label:(NSString *)label
+                message:(NSString *)message
+               category:(NSString *)category
+                    ret:(NSString *)ret;
+
+
 + (NSString *)platform;
 + (NSString *)platformString;
+
+
 + (NSString *)safeStringWithUTF8String:(const char *)bytes;
 + (void)replaceString:(char **)ppszValue withString:(const char *)szNewValue;
 + (void)freeStringArray:(char **)aszStrings count:(unsigned int)count;

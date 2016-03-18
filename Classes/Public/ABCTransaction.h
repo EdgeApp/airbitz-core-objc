@@ -6,28 +6,28 @@
 //  Copyright (c) 2014 AirBitz. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "AirbitzCore.h"
+
+@class ABCWallet;
+@class ABCMetaData;
 
 @interface ABCTransaction : NSObject
 
-@property (nonatomic, copy)     NSString        *strID;
-@property (nonatomic, copy)     NSString        *strMallealbeID;
-@property (nonatomic, copy)     NSString        *strWalletUUID;
-@property (nonatomic, copy)     NSString        *strWalletName;
-@property (nonatomic, copy)     NSString        *strName;
-@property (nonatomic, copy)     NSString        *strAddress;
+@property (nonatomic, strong)   ABCWallet       *wallet;
+@property (nonatomic, strong)   ABCMetaData     *metaData;
+@property (nonatomic, copy)     NSString        *txid;
+@property (nonatomic, copy)     NSString        *malleableTxid;
 @property (nonatomic, strong)   NSDate          *date;
 @property (nonatomic, assign)   BOOL            bConfirmed;
 @property (nonatomic, assign)   BOOL            bSyncing;
 @property (nonatomic, assign)   int             confirmations;
 @property (nonatomic, assign)   SInt64			amountSatoshi;
-@property (nonatomic, assign)   double          amountFiat;
 @property (nonatomic, assign)   SInt64			minerFees;
-@property (nonatomic, assign)   SInt64			abFees;
+@property (nonatomic, assign)   SInt64          providerFee;
 @property (nonatomic, assign)   SInt64          balance;
-@property (nonatomic, copy)     NSString        *strCategory;
-@property (nonatomic, copy)     NSString        *strNotes;
-@property (nonatomic, strong)   NSArray         *outputs;
-@property (nonatomic, assign)   unsigned int    bizId;
+@property (nonatomic, strong)   NSArray         *outputList;
+@property (nonatomic, strong)   NSArray         *inputList;
+
+- (void)saveTransactionDetails;
 
 @end

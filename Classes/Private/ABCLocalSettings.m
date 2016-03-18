@@ -3,8 +3,7 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import "ABCLocalSettings.h"
-#import "AirbitzCore.h"
+#import "AirbitzCore+Internal.h"
 
 #define KEY_LOCAL_SETTINGS_TOUCHID_USERS_ENABLED    @"touchIDUsersEnabled"
 #define KEY_LOCAL_SETTINGS_TOUCHID_USERS_DISABLED   @"touchIDUsersDisabled"

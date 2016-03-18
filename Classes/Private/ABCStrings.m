@@ -7,6 +7,7 @@
 #define usePasswordText                             NSLocalizedString(@"Use Password", @"Touch ID [Use Password] button")
 #define defaultWalletName                           NSLocalizedString(@"My Wallet", @"Default wallet name for new accounts")
 #define touchIDPromptText                           NSLocalizedString(@"Touch to login user", @"Touch ID prompt text")
+#define invalidPINWaitSecondsText                   NSLocalizedString(@"Too many failed login attempts. Please try again in %d seconds.", nil)
 /*
 #define backButtonText                              NSLocalizedString(@"Back", @"Back button text on top left")
 #define exitButtonText                              NSLocalizedString(@"Exit", @"Exit button text on top left")
