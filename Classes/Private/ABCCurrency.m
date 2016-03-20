@@ -94,6 +94,18 @@ static NSArray                  *arrayCurrencyStrings = nil;
 }
 
 const NSString *syncToken = @"ABCCurrencySyncToken";
+#define DEFAULT_CURRENCY @"USD"
+
++ (NSString *)getCurrencyCodeOfLocale;
+{
+    NSLocale *locale = [NSLocale autoupdatingCurrentLocale];
+    NSString *code = [locale objectForKey:NSLocaleCurrencyCode];
+    
+    if (code)
+        return code;
+    else
+        return DEFAULT_CURRENCY;
+}
 
 + (void) initializeCurrencyArrays
 {

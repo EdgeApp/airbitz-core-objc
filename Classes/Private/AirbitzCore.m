@@ -2,8 +2,6 @@
 #import "AirbitzCore+Internal.h"
 #import <pthread.h>
 
-#define DEFAULT_CURRENCY @"USD"
-
 @class ABCUtil;
 
 @implementation ABCBitIDSignature
@@ -549,7 +547,7 @@
 
             [self setLastAccessedAccount:username];
             // update user's default currency num to match their locale
-            NSString *currencyCode = [self getCurrencyCodeOfLocale];
+            NSString *currencyCode = [ABCCurrency getCurrencyCodeOfLocale];
             [account.settings enableTouchID];
             [account setDefaultCurrency:currencyCode];
             [account login];
@@ -966,18 +964,6 @@
         }
     });
 }
-
-- (NSString *)getCurrencyCodeOfLocale
-{
-    NSLocale *locale = [NSLocale autoupdatingCurrentLocale];
-    NSString *code = [locale objectForKey:NSLocaleCurrencyCode];
-    
-    if (code)
-        return code;
-    else
-        return DEFAULT_CURRENCY;
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// Cleaned up methods above /////////////////////////////////
