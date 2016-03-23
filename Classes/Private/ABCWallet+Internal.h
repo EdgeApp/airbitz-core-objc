@@ -12,6 +12,8 @@
 
 @interface ABCWallet (Internal)
 
+@property                           BOOL                bAddressesLoaded;
+
 - (id)initWithUser:(ABCAccount *) user;
 - (void)handleSweepCallback:(ABCTransaction *)transaction amount:(uint64_t)amount error:(NSError *)error;
 - (void) loadTransactions;

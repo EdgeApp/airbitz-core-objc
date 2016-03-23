@@ -21,6 +21,7 @@ static const int importTimeout                  = 30;
 @property                       ABCImportDataModel          importDataModel;
 @property (nonatomic, strong)   NSString                    *sweptAddress;
 @property (nonatomic, strong)   NSTimer                     *importCallbackTimer;
+@property                       BOOL                        bAddressesLoaded;
 
 
 @end

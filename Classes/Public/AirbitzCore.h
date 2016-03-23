@@ -81,11 +81,8 @@
     }
 
     // Delegate method called when wallets are loaded after a signIn
-    - (void) abcAccountWalletsLoaded
+    - (void) abcAccountWalletLoaded:(ABCWallet *)wallet
     {
-        // Get the first wallet in the account
-        ABCWallet *wallet = gAccount.arrayWallets[0];
-
         // Create a bitcoin request
         ABCReceiveAddress *request = [wallet createNewReceiveAddress];
 

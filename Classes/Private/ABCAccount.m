@@ -33,7 +33,6 @@ static const int notifySyncDelay          = 1;
 
 @property (atomic, strong)      AirbitzCore         *abc;
 @property (nonatomic, strong)   NSTimer             *walletLoadingTimer;
-@property                       BOOL                bCoreSentAddressesLoaded;
 @property                       BOOL                bNewDeviceLogin;
 @property (atomic, copy)        NSString            *password;
 
@@ -74,7 +73,6 @@ static const int notifySyncDelay          = 1;
         
         bInitialized = YES;
         bHasSentWalletsLoaded = NO;
-        self.bCoreSentAddressesLoaded = NO;
         
         [self cleanWallets];
         
@@ -489,52 +487,35 @@ static const int notifySyncDelay          = 1;
     }];
 }
 
-//
-// Will send a notification if at least the primary wallet is loaded
-// In the case of a new device login, this will post a notification ONLY if all wallets are loaded
-// AND no updates have come in from the core in walletLoadingTimerInterval of time. (about 10 seconds).
-// This is a guesstimate of how long to wait before assuming a new device is synced on initial login.
-//
 - (void)checkWalletsLoadingNotification
 {
-    if (self.bNewDeviceLogin)
-    {
-        if (self.bCoreSentAddressesLoaded)
-        {
-            [self postWalletsLoadedNotification];
-        }
-    }
-    else
+    if (!self.bNewDeviceLogin)
     {
         ABCLog(1, @"************ numWalletsLoaded=%d", self.numWalletsLoaded);
-        if (!self.arrayWallets || self.numWalletsLoaded == 0)
-            [self postWalletsLoadingNotification];
-        else
-            [self postWalletsLoadedNotification];
-        
-    }
-}
-
-- (void)postWalletsLoadingNotification
-{
-    ABCLog(1, @"postWalletsLoading numWalletsLoaded=%d", self.numWalletsLoaded);
-    if (self.delegate) {
-        if ([self.delegate respondsToSelector:@selector(abcAccountWalletsLoading)]) {
-            dispatch_async(dispatch_get_main_queue(),^{
-                [self.delegate abcAccountWalletsLoading];
-            });
+        if (self.arrayWallets && self.numWalletsLoaded > 0)
+        {
+            // Loop over all wallets and post them as loaded if they are
+            for (ABCWallet *w in self.arrayWallets)
+            {
+                // This loaded flag only means the wallet info has been loaded from disk,
+                // not that all addresses have been checked on the blockchain. This is fine
+                // for logins on a previous device. For new device logins, we will wait for
+                // ABC_AsyncEventType_AddressCheckDone
+                if (w.loaded)
+                    [self postWalletsLoadedNotification:w];
+            }
         }
     }
 }
 
-- (void)postWalletsLoadedNotification
+- (void)postWalletsLoadedNotification:(ABCWallet *)wallet
 {
     self.bNewDeviceLogin = NO;
-    if (self.delegate && !bHasSentWalletsLoaded) {
-        bHasSentWalletsLoaded = YES;
-        if ([self.delegate respondsToSelector:@selector(abcAccountWalletsLoaded)]) {
+    if (self.delegate && !wallet.bAddressesLoaded) {
+        wallet.bAddressesLoaded = YES;
+        if ([self.delegate respondsToSelector:@selector(abcAccountWalletLoaded:)]) {
             dispatch_async(dispatch_get_main_queue(),^{
-                [self.delegate abcAccountWalletsLoaded];
+                [self.delegate abcAccountWalletLoaded:wallet];
             });
         }
     }
@@ -808,9 +789,9 @@ static const int notifySyncDelay          = 1;
 
 - (void)login
 {
-    dispatch_async(dispatch_get_main_queue(),^{
-        [self postWalletsLoadingNotification];
-    });
+//    dispatch_async(dispatch_get_main_queue(),^{
+//        [self postWalletsLoadingNotification];
+//    });
     [self.abc setLastAccessedAccount:self.name];
     [self.settings loadSettings];
     [self requestExchangeRateUpdate];
@@ -1444,36 +1425,40 @@ static const int notifySyncDelay          = 1;
 }
 
 
+
 void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 {
     ABCAccount *user = (__bridge id) pInfo->pData;
-    ABCWallet *wallet = nil;
-    ABCTransaction *tx = nil;
     NSError *error = [ABCError makeNSError:pInfo->status];
     uint64_t amount = (uint64_t) pInfo->sweepSatoshi;
+    
+    NSString *walletUUID;
+    NSString *txid;
+    
 
     if (pInfo)
     {
         if (pInfo->szWalletUUID)
         {
-            wallet = [user getWallet:[NSString stringWithUTF8String:pInfo->szWalletUUID]];
+            walletUUID = [NSString stringWithUTF8String:pInfo->szWalletUUID];
+            
             if (pInfo->szTxID)
             {
-                NSString *txid = nil;
                 txid = [NSString stringWithUTF8String:pInfo->szTxID];
-                tx = [wallet getTransaction:txid];
             }
         }
     }
     
     if (ABC_AsyncEventType_IncomingBitCoin == pInfo->eventType) {
-        if (!wallet || !tx) {
-            ABCLog(1, @"EventCallback: NULL pointer from ABC");
-        }
-        [user refreshWallets:^
-         {
+        [user refreshWallets:^ {
              if (user.delegate) {
                  if ([user.delegate respondsToSelector:@selector(abcAccountIncomingBitcoin:transaction:)]) {
+                     ABCWallet *wallet = nil;
+                     ABCTransaction *tx = nil;
+                     if (walletUUID)
+                         wallet = [user getWallet:walletUUID];
+                     if (txid)
+                         tx = [wallet getTransaction:txid];
                      [user.delegate abcAccountIncomingBitcoin:wallet transaction:tx];
                  }
              }
@@ -1489,31 +1474,37 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
          }];
         
     } else if (ABC_AsyncEventType_BalanceUpdate == pInfo->eventType) {
-        if (!wallet || !tx) {
-            ABCLog(1, @"EventCallback: NULL pointer from ABC");
-        }
         [user refreshWallets:^
          {
              if (user.delegate) {
                  if ([user.delegate respondsToSelector:@selector(abcAccountBalanceUpdate:transaction:)]) {
+                     ABCWallet *wallet = nil;
+                     ABCTransaction *tx = nil;
+                     if (walletUUID)
+                         wallet = [user getWallet:walletUUID];
+                     if (txid)
+                         tx = [wallet getTransaction:txid];
                      [user.delegate abcAccountBalanceUpdate:wallet transaction:tx];
                  }
              }
          }];
     } else if (ABC_AsyncEventType_IncomingSweep == pInfo->eventType) {
-        if (!wallet || !tx) {
-            ABCLog(1, @"EventCallback: NULL pointer from ABC");
-        }
+        ABCWallet *wallet = nil;
+        ABCTransaction *tx = nil;
+        if (walletUUID)
+            wallet = [user getWallet:walletUUID];
+        if (txid)
+            tx = [wallet getTransaction:txid];
         [wallet handleSweepCallback:tx amount:amount error:error];
+        
     } else if (ABC_AsyncEventType_AddressCheckDone == pInfo->eventType) {
-        if (!wallet) {
-            ABCLog(1, @"EventCallback: NULL pointer from ABC");
-        }
-        if (wallet == user.arrayWallets[0])
-        {
-            user.bCoreSentAddressesLoaded = YES;
-            [user refreshWallets];
-        }
+        [user refreshWallets:^{
+            ABCWallet *wallet = nil;
+            if (walletUUID)
+                wallet = [user getWallet:walletUUID];
+            [user postWalletsLoadedNotification:wallet];
+        }];
+        
     }
 }
 

@@ -436,11 +436,8 @@
 /// @param wallet ABCWallet
 - (void) abcAccountWalletChanged:(ABCWallet *)wallet;
 
-/// Called when the wallets in the account are still loading their prior transactions.
-- (void) abcAccountWalletsLoading;
-
-/// At minimum, the primary wallet has finished loading. Other wallets may still be loading
-- (void) abcAccountWalletsLoaded;
+/// Specific wallet has finished loading. Other wallets may still be loading
+- (void) abcAccountWalletLoaded:(ABCWallet *)wallet;
 
 /// Wallets in the account have changed. Changes may include new wallet order or wallet names.
 - (void) abcAccountWalletsChanged;
