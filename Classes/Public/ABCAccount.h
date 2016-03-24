@@ -149,8 +149,8 @@
  * @param error (Optional) NSError* Error object. Nil if success
  * @return BOOL true if user has a password
  */
-- (BOOL)passwordExists:(NSError **)error;
-- (BOOL)passwordExists;
+- (BOOL)accountHasPassword:(NSError **)error;
+- (BOOL)accountHasPassword;
 
 /**
  * Check if this user has logged in "recently". Currently fixed to return TRUE
@@ -183,7 +183,7 @@
  * Enable or disable PIN login on this account. Set enable = YES to allow
  * PIN login. Enabling PIN login creates a local account decryption key that
  * is split with one have in local device storage and the other half on Airbitz
- * servers. When using [AirbitzCore signInWithPIN:username:pin:delegate:error] the PIN is sent to Airbitz servers
+ * servers. When using [AirbitzCore pinLogin:username:pin:delegate:error] the PIN is sent to Airbitz servers
  * to authenticate the user. If the PIN is correct, the second half of the decryption
  * key is sent back to the device. Combined with the locally saved key, the two
  * are then used to decrypt the local account thereby loggin in the user.
@@ -197,6 +197,14 @@
  * @return BOOL YES if PIN login is enabled
  */
 - (BOOL) isPINLoginEnabled;
+
+/**
+ * Logout the current ABCAccount object
+ * @return void
+ */
+- (void)logout;
+
+
 
 /// -----------------------------------------------------------------------------
 /// @name Wallet Management
@@ -266,12 +274,13 @@
 /// -----------------------------------------------------------------------------
 
 /**
- * Checks if the current account has a pending request to reset (disable)
- * OTP.
- * @param error NSError error object or nil if success
- * @return BOOL YES if account has pending reset
+ * Associates an OTP key with the account. An OTP key can be retrieved from
+ * a previously logged in account using [ABCAccount getOTPLocalKey]. The account
+ * must have had OTP enabled by using [ABCAccount setOTPAuth]
+ * @param key NSString* key to set
+ * @return NSError*
  */
-- (BOOL) hasOTPResetPending:(NSError **)error;
+- (NSError *)setOTPKey:(NSString *)key;
 
 /**
  * Gets the locally saved OTP key for the current user.

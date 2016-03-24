@@ -48,7 +48,7 @@ static const int notifySyncDelay          = 1;
         if (!airbitzCore) return nil;
         
         self.abc                    = airbitzCore;
-        self.exchangeCache          = [self.abc exchangeCacheGet];
+        self.exchangeCache          = self.abc.exchangeCache;
         self.dataStore              = [ABCDataStore alloc];
         self.dataStore.account      = self;
         self.categories             = [[ABCCategories alloc] initWithAccount:self];
@@ -931,23 +931,38 @@ static const int notifySyncDelay          = 1;
     [self cleanWallets];
 }
 
-- (void)restoreConnectivity
+- (void)setConnectivity:(BOOL)hasConnectivity;
 {
-    [self connectWatchers];
-    [self startQueues];
-}
-
-- (void)lostConnectivity
-{
+    if (hasConnectivity)
+    {
+        [self connectWatchers];
+        [self startQueues];
+    }
+    else
+    {
+        [self disconnectWatchers];
+        [self stopQueues];
+    }
 }
 
 - (void)logout;
 {
+    [self.abc.keyChain disableRelogin:self.name];
+    [self.abc.loggedInUsers removeObject:self];
+
     [self stopAsyncTasks];
     
     self.password = nil;
     self.name = nil;
-    
+
+    //
+    // XXX Hack. Right now ABC only holds one logged in user using a key cache.
+    // This should change and allow us to have multiple concurrent logged in
+    // users.
+    //
+    tABC_Error Error;
+    ABC_ClearKeyCache(&Error);
+
     dispatch_async(dispatch_get_main_queue(), ^
                    {
                        if (self.delegate) {
@@ -972,10 +987,10 @@ static const int notifySyncDelay          = 1;
     return ok == true ? YES : NO;
 }
 
-- (BOOL)passwordExists { return [self passwordExists:nil]; }
-- (BOOL)passwordExists:(NSError **)error;
+- (BOOL)accountHasPassword { return [self accountHasPassword:nil]; }
+- (BOOL)accountHasPassword:(NSError **)error;
 {
-    return [self.abc passwordExists:self.name error:error];
+    return [self.abc accountHasPassword:self.name error:error];
 }
 
 - (void)startWatchers
@@ -1701,34 +1716,11 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return [self.settings saveSettings];
 }
 
-/* === OTP authentication: === */
+#pragma mark - OTP Authentication
 
-
-- (BOOL) hasOTPResetPending:(NSError **)nserror;
+- (NSError *)setOTPKey:(NSString *)key;
 {
-    char *szUsernames = NULL;
-    NSString *usernames = nil;
-    BOOL needsReset = NO;
-    tABC_Error error;
-    NSError *nserror2 = nil;
-    
-    ABC_OtpResetGet(&szUsernames, &error);
-    nserror2 = [ABCError makeNSError:error];
-    
-    NSMutableArray *usernameArray = [[NSMutableArray alloc] init];
-    if (!nserror2 && szUsernames)
-    {
-        usernames = [NSString stringWithUTF8String:szUsernames];
-        usernames = [self formatUsername:usernames];
-        usernameArray = [[NSMutableArray alloc] initWithArray:[usernames componentsSeparatedByString:@"\n"]];
-        if ([usernameArray containsObject:[self formatUsername:self.name]])
-            needsReset = YES;
-    }
-    if (szUsernames)
-        free(szUsernames);
-    
-    if (nserror) *nserror = nserror2;
-    return needsReset;
+    return [self.abc setOTPKey:self.name key:key];
 }
 
 - (NSString *)getOTPLocalKey:(NSError **)nserror;
@@ -1895,7 +1887,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 
 - (BOOL) shouldAskUserToEnableTouchID;
 {
-    if ([self.abc hasDeviceCapability:ABCDeviceCapsTouchID] && [self.abc passwordExists:self.name error:nil])
+    if ([self.abc hasDeviceCapability:ABCDeviceCapsTouchID] && [self.abc accountHasPassword:self.name error:nil])
     {
         //
         // Check if user has not yet been asked to enable touchID on this device

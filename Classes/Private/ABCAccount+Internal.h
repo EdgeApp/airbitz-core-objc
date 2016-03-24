@@ -13,7 +13,6 @@
 @property (atomic, copy)     NSString                *password;
 
 - (void)login;
-- (void)logout;
 - (void)enterBackground;
 - (void)enterForeground;
 - (BOOL)didLoginExpire;
@@ -22,8 +21,7 @@
 - (void)postToWatcherQueue:(void(^)(void))cb;
 - (void)postToDataQueue:(void(^)(void))cb;
 - (NSError *)setDefaultCurrency:(NSString *)currencyCode;
-- (void)restoreConnectivity;
-- (void)lostConnectivity;
+- (void)setConnectivity:(BOOL)hasConnectivity;
 - (void)setupLoginPIN;
 - (void)watchAddresses: (NSString *) walletUUID;
 - (void)refreshWallets;
