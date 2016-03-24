@@ -372,11 +372,12 @@ static const int notifySyncDelay          = 1;
     //
     // Set new wallet. Hide the dropdown. Then reload the TransactionsView table
     //
+    ABCWallet *wallet = nil;
     if(indexPath.section == 0)
     {
         if ([self.arrayWallets count] > indexPath.row)
         {
-            self.currentWallet = [self.arrayWallets objectAtIndex:indexPath.row];
+            wallet = [self.arrayWallets objectAtIndex:indexPath.row];
             
         }
     }
@@ -384,11 +385,15 @@ static const int notifySyncDelay          = 1;
     {
         if ([self.arrayArchivedWallets count] > indexPath.row)
         {
-            self.currentWallet = [self.arrayArchivedWallets objectAtIndex:indexPath.row];
+            wallet = [self.arrayArchivedWallets objectAtIndex:indexPath.row];
         }
     }
-    
-    [self postNotificationWalletsChanged];
+
+    if (wallet)
+    {
+        [self makeCurrentWallet:wallet];
+        [self postNotificationWalletsChanged];
+    }
     
 }
 
