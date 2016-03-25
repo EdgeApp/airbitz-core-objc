@@ -92,11 +92,15 @@
 	
 	<optgroup label="Instance Methods">
 		
+		<option value="//api/name/accountHasPassword:">- accountHasPassword:</option>
+		
 		<option value="//api/name/bitidLogin:">- bitidLogin:</option>
 		
 		<option value="//api/name/bitidParseURI:">- bitidParseURI:</option>
 		
 		<option value="//api/name/bitidSign:message:">- bitidSign:message:</option>
+		
+		<option value="//api/name/cancelOTPResetRequest">- cancelOTPResetRequest</option>
 		
 		<option value="//api/name/changePIN:complete:error:">- changePIN:complete:error:</option>
 		
@@ -114,7 +118,9 @@
 		
 		<option value="//api/name/createWallet:currency:error:">- createWallet:currency:error:</option>
 		
-		<option value="//api/name/getNumWalletsInAccount:">- getNumWalletsInAccount:</option>
+		<option value="//api/name/disableOTP">- disableOTP</option>
+		
+		<option value="//api/name/enableOTP:">- enableOTP:</option>
 		
 		<option value="//api/name/getOTPDetails:timeout:">- getOTPDetails:timeout:</option>
 		
@@ -122,27 +128,21 @@
 		
 		<option value="//api/name/getWallet:">- getWallet:</option>
 		
-		<option value="//api/name/hasOTPResetPending:">- hasOTPResetPending:</option>
+		<option value="//api/name/hasPINLogin">- hasPINLogin</option>
 		
-		<option value="//api/name/isPINLoginEnabled">- isPINLoginEnabled</option>
+		<option value="//api/name/listWalletIDs:">- listWalletIDs:</option>
+		
+		<option value="//api/name/logout">- logout</option>
 		
 		<option value="//api/name/needsRecoveryQuestionsReminder">- needsRecoveryQuestionsReminder</option>
-		
-		<option value="//api/name/passwordExists:">- passwordExists:</option>
 		
 		<option value="//api/name/pinLoginSetup:">- pinLoginSetup:</option>
 		
 		<option value="//api/name/recentlyLoggedIn">- recentlyLoggedIn</option>
 		
-		<option value="//api/name/removeOTPAuth">- removeOTPAuth</option>
-		
-		<option value="//api/name/removeOTPKey">- removeOTPKey</option>
-		
-		<option value="//api/name/removeOTPResetRequest">- removeOTPResetRequest</option>
-		
 		<option value="//api/name/reorderWallets:toIndexPath:">- reorderWallets:toIndexPath:</option>
 		
-		<option value="//api/name/setOTPAuth:">- setOTPAuth:</option>
+		<option value="//api/name/setOTPKey:">- setOTPKey:</option>
 		
 		<option value="//api/name/setupRecoveryQuestions:answers:complete:error:">- setupRecoveryQuestions:answers:complete:error:</option>
 		
@@ -610,7 +610,7 @@ arrayWallets[currentWalletIndex] = <a href="#//api/name/currentWallet">currentWa
 			
 			
 			<div class="method-subsection brief-description">
-				<p>ABCCategories object which lists category options a user could choose to tag a transaction with.
+				<p><a href="../Classes/ABCCategories.html">ABCCategories</a> object which lists category options a user could choose to tag a transaction with.
 Categories must start with &ldquo;Income&rdquo;, &ldquo;Expense&rdquo;, &ldquo;Transfer&rdquo; or &ldquo;Exchange&rdquo; plus a &ldquo;:&rdquo; and then
 an arbitrary subcategory such as &ldquo;Food &amp; Dining&rdquo;. ie. &ldquo;Expense:Rent&rdquo;</p>
 			</div>
@@ -629,7 +629,7 @@ an arbitrary subcategory such as &ldquo;Food &amp; Dining&rdquo;. ie. &ldquo;Exp
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>ABCCategories object which lists category options a user could choose to tag a transaction with.
+				<p><a href="../Classes/ABCCategories.html">ABCCategories</a> object which lists category options a user could choose to tag a transaction with.
 Categories must start with &ldquo;Income&rdquo;, &ldquo;Expense&rdquo;, &ldquo;Transfer&rdquo; or &ldquo;Exchange&rdquo; plus a &ldquo;:&rdquo; and then
 an arbitrary subcategory such as &ldquo;Food &amp; Dining&rdquo;. ie. &ldquo;Expense:Rent&rdquo;</p>
 			</div>
@@ -908,7 +908,7 @@ denomination <a href="#//api/name/settings">settings</a>. ie. &ldquo;1 BTC = $45
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>currency</code></th>
-						<td><p>ABCCurrency object representing choice of fiat
+						<td><p><a href="../Classes/ABCCurrency.html">ABCCurrency</a> object representing choice of fiat
 currency to use for conversion</p></td>
 					</tr>
 				
@@ -1099,8 +1099,8 @@ handler</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/passwordExists:" title="passwordExists:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/passwordExists:">&ndash;&nbsp;passwordExists:</a></code>
+	<a name="//api/name/accountHasPassword:" title="accountHasPassword:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/accountHasPassword:">&ndash;&nbsp;accountHasPassword:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1116,7 +1116,7 @@ a PIN-only account.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (BOOL)passwordExists:(NSError **)<em>error</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (BOOL)accountHasPassword:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -1370,7 +1370,7 @@ This is used to guard access to certain actions in the GUI.</p>
 				<p>Enable or disable PIN login on this account. Set enable = YES to allow
 PIN login. Enabling PIN login creates a local account decryption key that
 is split with one have in local device storage and the other half on Airbitz
-servers. When using [AirbitzCore signInWithPIN:username:pin:delegate:error] the PIN is sent to Airbitz servers
+servers. When using [AirbitzCore pinLogin:username:pin:delegate:error] the PIN is sent to Airbitz servers
 to authenticate the user. If the PIN is correct, the second half of the decryption
 key is sent back to the device. Combined with the locally saved key, the two
 are then used to decrypt the local account thereby loggin in the user.</p>
@@ -1410,7 +1410,7 @@ are then used to decrypt the local account thereby loggin in the user.</p>
 				<p>Enable or disable PIN login on this account. Set enable = YES to allow
 PIN login. Enabling PIN login creates a local account decryption key that
 is split with one have in local device storage and the other half on Airbitz
-servers. When using [AirbitzCore signInWithPIN:username:pin:delegate:error] the PIN is sent to Airbitz servers
+servers. When using [AirbitzCore pinLogin:username:pin:delegate:error] the PIN is sent to Airbitz servers
 to authenticate the user. If the PIN is correct, the second half of the decryption
 key is sent back to the device. Combined with the locally saved key, the two
 are then used to decrypt the local account thereby loggin in the user.</p>
@@ -1431,8 +1431,8 @@ are then used to decrypt the local account thereby loggin in the user.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/isPINLoginEnabled" title="isPINLoginEnabled"></a>
-	<h3 class="method-title"><code><a href="#//api/name/isPINLoginEnabled">&ndash;&nbsp;isPINLoginEnabled</a></code>
+	<a name="//api/name/hasPINLogin" title="hasPINLogin"></a>
+	<h3 class="method-title"><code><a href="#//api/name/hasPINLogin">&ndash;&nbsp;hasPINLogin</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1447,7 +1447,7 @@ are then used to decrypt the local account thereby loggin in the user.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (BOOL)isPINLoginEnabled</code></div>
+			<div class="method-subsection method-declaration"><code>- (BOOL)hasPINLogin</code></div>
 
 		    
 			
@@ -1465,6 +1465,57 @@ are then used to decrypt the local account thereby loggin in the user.</p>
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>Check if this account is allowed to login via PIN</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCAccount.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/logout" title="logout"></a>
+	<h3 class="method-title"><code><a href="#//api/name/logout">&ndash;&nbsp;logout</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Logout the current ABCAccount object</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (void)logout</code></div>
+
+		    
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>void</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Logout the current ABCAccount object</p>
 			</div>
 			
 
@@ -1785,8 +1836,8 @@ position in sourceIndexPath and destination position in destinationIndexPath.</p
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/getNumWalletsInAccount:" title="getNumWalletsInAccount:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/getNumWalletsInAccount:">&ndash;&nbsp;getNumWalletsInAccount:</a></code>
+	<a name="//api/name/listWalletIDs:" title="listWalletIDs:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/listWalletIDs:">&ndash;&nbsp;listWalletIDs:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1796,12 +1847,12 @@ position in sourceIndexPath and destination position in destinationIndexPath.</p
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Returns the number of wallets in the account</p>
+				<p>Returns an array of the wallet IDs in the account</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (int)getNumWalletsInAccount:(NSError **)<em>error</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (NSArray *)listWalletIDs:(NSError **)<em>nserror</em></code></div>
 
 		    
 			
@@ -1811,7 +1862,7 @@ position in sourceIndexPath and destination position in destinationIndexPath.</p
 				
 					<tr>
 						<th scope="row" class="argument-name"><code>error</code></th>
-						<td><p>NSError</p></td>
+						<td><p>NSError (optional)</p></td>
 					</tr>
 				
 				</table>
@@ -1821,7 +1872,7 @@ position in sourceIndexPath and destination position in destinationIndexPath.</p
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>int Number of wallets</p>
+				<p>NSArray array of NSString wallet IDs</p>
 			</div>
 			
 
@@ -1830,7 +1881,7 @@ position in sourceIndexPath and destination position in destinationIndexPath.</p
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Returns the number of wallets in the account</p>
+				<p>Returns an array of the wallet IDs in the account</p>
 			</div>
 			
 
@@ -1856,8 +1907,8 @@ position in sourceIndexPath and destination position in destinationIndexPath.</p
 
 						<div class="task-list">
 							<div class="section-method">
-	<a name="//api/name/hasOTPResetPending:" title="hasOTPResetPending:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/hasOTPResetPending:">&ndash;&nbsp;hasOTPResetPending:</a></code>
+	<a name="//api/name/setOTPKey:" title="setOTPKey:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/setOTPKey:">&ndash;&nbsp;setOTPKey:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1867,13 +1918,14 @@ position in sourceIndexPath and destination position in destinationIndexPath.</p
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Checks if the current account has a pending request to reset (disable)
-OTP.</p>
+				<p>Associates an OTP key with the account. An OTP key can be retrieved from
+a previously logged in account using [ABCAccount getOTPLocalKey]. The account
+must have had OTP enabled by using [ABCAccount enableOTP]</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (BOOL)hasOTPResetPending:(NSError **)<em>error</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (NSError *)setOTPKey:(NSString *)<em>key</em></code></div>
 
 		    
 			
@@ -1882,8 +1934,8 @@ OTP.</p>
 				<table class="argument-def parameter-def">
 				
 					<tr>
-						<th scope="row" class="argument-name"><code>error</code></th>
-						<td><p>NSError error object or nil if success</p></td>
+						<th scope="row" class="argument-name"><code>key</code></th>
+						<td><p>NSString* key to set</p></td>
 					</tr>
 				
 				</table>
@@ -1893,7 +1945,7 @@ OTP.</p>
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>BOOL YES if account has pending reset</p>
+				<p>NSError*</p>
 			</div>
 			
 
@@ -1902,8 +1954,9 @@ OTP.</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Checks if the current account has a pending request to reset (disable)
-OTP.</p>
+				<p>Associates an OTP key with the account. An OTP key can be retrieved from
+a previously logged in account using [ABCAccount getOTPLocalKey]. The account
+must have had OTP enabled by using [ABCAccount enableOTP]</p>
 			</div>
 			
 
@@ -1967,59 +2020,6 @@ OTP.</p>
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>Gets the locally saved OTP key for the current user.</p>
-			</div>
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection declared-in-section">
-				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCAccount.h</code></p>
-			</div>
-			
-			
-		</div>
-	</div>
-</div><div class="section-method">
-	<a name="//api/name/removeOTPKey" title="removeOTPKey"></a>
-	<h3 class="method-title"><code><a href="#//api/name/removeOTPKey">&ndash;&nbsp;removeOTPKey</a></code>
-</h3>
-
-	<div class="method-info">
-		<div class="pointy-thing"></div>
-
-		<div class="method-info-container">
-			
-			
-			<div class="method-subsection brief-description">
-				<p>Removes the OTP key for current user.
-This will remove the key from disk as well.</p>
-			</div>
-			
-		    
-
-			<div class="method-subsection method-declaration"><code>- (NSError *)removeOTPKey</code></div>
-
-		    
-			
-
-			
-			<div class="method-subsection return">
-				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>NSError* or nil if no error</p>
-			</div>
-			
-
-			
-
-			
-			<div class="method-subsection discussion-section">
-				<h4 class="method-subtitle">Discussion</h4>
-				<p>Removes the OTP key for current user.
-This will remove the key from disk as well.</p>
 			</div>
 			
 
@@ -2111,8 +2111,8 @@ An OTP reset is a request to disable OTP made through the method
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/setOTPAuth:" title="setOTPAuth:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/setOTPAuth:">&ndash;&nbsp;setOTPAuth:</a></code>
+	<a name="//api/name/enableOTP:" title="enableOTP:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/enableOTP:">&ndash;&nbsp;enableOTP:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -2128,7 +2128,7 @@ This will generate a new token if the user<a href="#//api/name/name">name</a> do
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (NSError *)setOTPAuth:(long)<em>timeout</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (NSError *)enableOTP:(long)<em>timeout</em></code></div>
 
 		    
 			
@@ -2177,8 +2177,8 @@ This will generate a new token if the user<a href="#//api/name/name">name</a> do
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/removeOTPAuth" title="removeOTPAuth"></a>
-	<h3 class="method-title"><code><a href="#//api/name/removeOTPAuth">&ndash;&nbsp;removeOTPAuth</a></code>
+	<a name="//api/name/disableOTP" title="disableOTP"></a>
+	<h3 class="method-title"><code><a href="#//api/name/disableOTP">&ndash;&nbsp;disableOTP</a></code>
 </h3>
 
 	<div class="method-info">
@@ -2189,12 +2189,12 @@ This will generate a new token if the user<a href="#//api/name/name">name</a> do
 			
 			<div class="method-subsection brief-description">
 				<p>Removes the OTP authentication requirement from the server for the
-currently logged in user</p>
+currently logged in user. Also removes local key from device</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (NSError *)removeOTPAuth</code></div>
+			<div class="method-subsection method-declaration"><code>- (NSError *)disableOTP</code></div>
 
 		    
 			
@@ -2212,7 +2212,7 @@ currently logged in user</p>
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>Removes the OTP authentication requirement from the server for the
-currently logged in user</p>
+currently logged in user. Also removes local key from device</p>
 			</div>
 			
 
@@ -2230,8 +2230,8 @@ currently logged in user</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/removeOTPResetRequest" title="removeOTPResetRequest"></a>
-	<h3 class="method-title"><code><a href="#//api/name/removeOTPResetRequest">&ndash;&nbsp;removeOTPResetRequest</a></code>
+	<a name="//api/name/cancelOTPResetRequest" title="cancelOTPResetRequest"></a>
+	<h3 class="method-title"><code><a href="#//api/name/cancelOTPResetRequest">&ndash;&nbsp;cancelOTPResetRequest</a></code>
 </h3>
 
 	<div class="method-info">
@@ -2247,7 +2247,7 @@ currently logged in user</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (NSError *)removeOTPResetRequest</code></div>
+			<div class="method-subsection method-declaration"><code>- (NSError *)cancelOTPResetRequest</code></div>
 
 		    
 			
@@ -2787,7 +2787,7 @@ used to sign the message.</p>
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-18</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-25</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

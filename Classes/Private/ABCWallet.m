@@ -14,6 +14,9 @@
 static const int importTimeout                  = 30;
 
 @interface ABCWallet ()
+{
+    int                 _blockHeight;
+}
 
 @property (nonatomic, strong)   ABCError                    *abcError;
 @property (nonatomic, strong)   void                        (^importCompletionHandler)(ABCImportDataModel dataModel, NSString *address, ABCTransaction *transaction, uint64_t amount);
@@ -22,6 +25,8 @@ static const int importTimeout                  = 30;
 @property (nonatomic, strong)   NSString                    *sweptAddress;
 @property (nonatomic, strong)   NSTimer                     *importCallbackTimer;
 @property                       BOOL                        bAddressesLoaded;
+@property                       BOOL                        bBlockHeightChanged;
+
 
 
 @end
@@ -40,6 +45,7 @@ static const int importTimeout                  = 30;
         self.arrayTransactions = [[NSArray alloc] init];
         self.abcError = [[ABCError alloc] init];
         self.account = account;
+        self.bBlockHeightChanged = YES;
 
     }
     return self;
@@ -481,10 +487,9 @@ static const int importTimeout                  = 30;
         transaction.malleableTxid = [NSString stringWithUTF8String: pTrans->szMalleableTxId];
     }
     bool bSyncing = NO;
-    transaction.confirmations = [self calcTxConfirmations:transaction.txid
-                                                isSyncing:&bSyncing];
-    transaction.bConfirmed = transaction.confirmations >= ABCConfirmedConfirmationCount;
-    transaction.bSyncing = bSyncing;
+    transaction.height = [self getTxHeight:transaction.txid
+                                 isSyncing:&bSyncing];
+//    transaction.bConfirmed = transaction.confirmations >= ABCConfirmedConfirmationCount;
     NSMutableArray *outputs = [[NSMutableArray alloc] init];
     for (int i = 0; i < pTrans->countOutputs; ++i)
     {
@@ -500,11 +505,29 @@ static const int importTimeout                  = 30;
     transaction.metaData.bizId = pTrans->pDetails->bizId;
 }
 
-- (int)calcTxConfirmations:(NSString *)txId isSyncing:(bool *)syncing
+- (int)blockHeight;
+{
+    if (_bBlockHeightChanged)
+    {
+        _bBlockHeightChanged = NO;
+        tABC_Error error;
+        int blockHeight = 0;
+        ABC_BlockHeight([self.uuid UTF8String], &blockHeight, &error);
+        _blockHeight = blockHeight;
+        return _blockHeight;
+    }
+    return _blockHeight;
+}
+
+- (void)setBlockHeight:(int)blockHeight;
+{
+    _blockHeight = blockHeight;
+}
+
+- (int)getTxHeight:(NSString *)txId isSyncing:(bool *)syncing
 {
     tABC_Error Error;
     int txHeight = 0;
-    int blockHeight = 0;
     *syncing = NO;
     if ([self.uuid length] == 0 || [txId length] == 0) {
         return 0;
@@ -519,21 +542,7 @@ static const int importTimeout                  = 30;
         else
             return 0;
     }
-    if (ABC_BlockHeight([self.uuid UTF8String], &blockHeight, &Error) != ABC_CC_Ok) {
-        *syncing = YES;
-        return 0;
-    }
-    if (txHeight == 0 || blockHeight == 0) {
-        return 0;
-    }
-    
-    int retHeight = (blockHeight - txHeight) + 1;
-    
-    if (retHeight < 0)
-    {
-        retHeight = 0;
-    }
-    return retHeight;
+    return txHeight;
 }
 
 - (NSError *)searchTransactionsIn:(NSString *)term addTo:(NSMutableArray *) arrayTransactions;

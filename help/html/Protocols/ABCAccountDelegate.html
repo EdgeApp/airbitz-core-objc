@@ -62,7 +62,7 @@
 		
 		<option value="//api/name/abcAccountBalanceUpdate:transaction:">- abcAccountBalanceUpdate:transaction:</option>
 		
-		<option value="//api/name/abcAccountBlockHeightChanged">- abcAccountBlockHeightChanged</option>
+		<option value="//api/name/abcAccountBlockHeightChanged:">- abcAccountBlockHeightChanged:</option>
 		
 		<option value="//api/name/abcAccountIncomingBitcoin:transaction:">- abcAccountIncomingBitcoin:transaction:</option>
 		
@@ -76,11 +76,9 @@
 		
 		<option value="//api/name/abcAccountWalletChanged:">- abcAccountWalletChanged:</option>
 		
+		<option value="//api/name/abcAccountWalletLoaded:">- abcAccountWalletLoaded:</option>
+		
 		<option value="//api/name/abcAccountWalletsChanged">- abcAccountWalletsChanged</option>
-		
-		<option value="//api/name/abcAccountWalletsLoaded">- abcAccountWalletsLoaded</option>
-		
-		<option value="//api/name/abcAccountWalletsLoading">- abcAccountWalletsLoading</option>
 		
 	</optgroup>
 	
@@ -183,7 +181,7 @@ with old password. One user logs in with new password, old password will cease t
 			
 			
 			<div class="method-subsection brief-description">
-				<p>User has been logged out. Always called after [ABCAccount logout] once Core has finished logout
+				<p>User has been logged out. Always called after <a href="../Classes/ABCAccount.html#//api/name/logout">[ABCAccount logout]</a> once Core has finished logout
 Also called under some error conditions such as corrupt local data.</p>
 			</div>
 			
@@ -213,7 +211,7 @@ Also called under some error conditions such as corrupt local data.</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>User has been logged out. Always called after [ABCAccount logout] once Core has finished logout
+				<p>User has been logged out. Always called after <a href="../Classes/ABCAccount.html#//api/name/logout">[ABCAccount logout]</a> once Core has finished logout
 Also called under some error conditions such as corrupt local data.</p>
 			</div>
 			
@@ -336,8 +334,8 @@ Also called under some error conditions such as corrupt local data.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/abcAccountWalletsLoading" title="abcAccountWalletsLoading"></a>
-	<h3 class="method-title"><code><a href="#//api/name/abcAccountWalletsLoading">&ndash;&nbsp;abcAccountWalletsLoading</a></code>
+	<a name="//api/name/abcAccountWalletLoaded:" title="abcAccountWalletLoaded:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountWalletLoaded:">&ndash;&nbsp;abcAccountWalletLoaded:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -347,12 +345,12 @@ Also called under some error conditions such as corrupt local data.</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Called when the wallets in the account are still loading their prior transactions.</p>
+				<p>Specific wallet has finished loading. Other wallets may still be loading</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)abcAccountWalletsLoading</code></div>
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountWalletLoaded:(ABCWallet *)<em>wallet</em></code></div>
 
 		    
 			
@@ -364,53 +362,7 @@ Also called under some error conditions such as corrupt local data.</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Called when the wallets in the account are still loading their prior transactions.</p>
-			</div>
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection declared-in-section">
-				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">ABCAccount.h</code></p>
-			</div>
-			
-			
-		</div>
-	</div>
-</div><div class="section-method">
-	<a name="//api/name/abcAccountWalletsLoaded" title="abcAccountWalletsLoaded"></a>
-	<h3 class="method-title"><code><a href="#//api/name/abcAccountWalletsLoaded">&ndash;&nbsp;abcAccountWalletsLoaded</a></code>
-</h3>
-
-	<div class="method-info">
-		<div class="pointy-thing"></div>
-
-		<div class="method-info-container">
-			
-			
-			<div class="method-subsection brief-description">
-				<p>At minimum, the primary wallet has finished loading. Other wallets may still be loading</p>
-			</div>
-			
-		    
-
-			<div class="method-subsection method-declaration"><code>- (void)abcAccountWalletsLoaded</code></div>
-
-		    
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection discussion-section">
-				<h4 class="method-subtitle">Discussion</h4>
-				<p>At minimum, the primary wallet has finished loading. Other wallets may still be loading</p>
+				<p>Specific wallet has finished loading. Other wallets may still be loading</p>
 			</div>
 			
 
@@ -570,8 +522,8 @@ device or user&rsquo;s time clock is skewed.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/abcAccountBlockHeightChanged" title="abcAccountBlockHeightChanged"></a>
-	<h3 class="method-title"><code><a href="#//api/name/abcAccountBlockHeightChanged">&ndash;&nbsp;abcAccountBlockHeightChanged</a></code>
+	<a name="//api/name/abcAccountBlockHeightChanged:" title="abcAccountBlockHeightChanged:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/abcAccountBlockHeightChanged:">&ndash;&nbsp;abcAccountBlockHeightChanged:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -581,12 +533,12 @@ device or user&rsquo;s time clock is skewed.</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>The current blockheight has changed. Use should refresh GUI by rereading <a href="../Classes/ABCAccount.html">ABCAccount</a>.arrayWallets</p>
+				<p>The current blockheight has changed for the specified wallet.</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)abcAccountBlockHeightChanged</code></div>
+			<div class="method-subsection method-declaration"><code>- (void)abcAccountBlockHeightChanged:(ABCWallet *)<em>wallet</em></code></div>
 
 		    
 			
@@ -598,7 +550,7 @@ device or user&rsquo;s time clock is skewed.</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>The current blockheight has changed. Use should refresh GUI by rereading <a href="../Classes/ABCAccount.html">ABCAccount</a>.arrayWallets</p>
+				<p>The current blockheight has changed for the specified wallet.</p>
 			</div>
 			
 
@@ -762,7 +714,7 @@ been seen by other devices with this account.</p>
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-18</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-25</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

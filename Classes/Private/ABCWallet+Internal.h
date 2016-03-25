@@ -13,10 +13,13 @@
 @interface ABCWallet (Internal)
 
 @property                           BOOL                bAddressesLoaded;
+@property                           BOOL                bBlockHeightChanged;
 
 - (id)initWithUser:(ABCAccount *) user;
 - (void)handleSweepCallback:(ABCTransaction *)transaction amount:(uint64_t)amount error:(NSError *)error;
-- (void) loadTransactions;
+- (void)loadTransactions;
 - (void)loadWalletFromCore:(NSString *)uuid;
+- (int)getBlockHeight:(NSError **)nserror;
+
 
 @end

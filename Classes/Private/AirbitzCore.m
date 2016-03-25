@@ -420,8 +420,8 @@
     return nserror;
 }
 
-- (BOOL)PINLoginExists:(NSString *)username; { return [self PINLoginExists:username error:nil]; }
-- (BOOL)PINLoginExists:(NSString *)username error:(NSError **)nserror;
+- (BOOL)accountHasPINLogin:(NSString *)username; { return [self accountHasPINLogin:username error:nil]; }
+- (BOOL)accountHasPINLogin:(NSString *)username error:(NSError **)nserror;
 {
     NSError *lnserror;
     tABC_Error error;
@@ -716,7 +716,7 @@
     }
     else
     {
-        if ([self PINLoginExists:username error:nil])
+        if ([self accountHasPINLogin:username error:nil])
         {
             ABC_PinLogin([username UTF8String],
                          [pin UTF8String],

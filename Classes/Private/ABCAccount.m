@@ -291,16 +291,25 @@ static const int notifySyncDelay          = 1;
     return wallet;
 }
 
-- (void)loadWalletUUIDs:(NSMutableArray *)arrayUUIDs
+- (NSArray *)listWalletIDs;
 {
-    tABC_Error Error;
+    return [self listWalletIDs:nil];
+}
+
+- (NSArray *)listWalletIDs:(NSError **)nserror;
+{
+    NSError *lnserror = nil;
+    tABC_Error error;
     char **aUUIDS = NULL;
     unsigned int nCount;
+    NSMutableArray *arrayUUIDs = [[NSMutableArray alloc] init];
     
-    tABC_CC result = ABC_GetWalletUUIDs([self.name UTF8String],
-                                        [self.password UTF8String],
-                                        &aUUIDS, &nCount, &Error);
-    if (ABC_CC_Ok == result)
+    ABC_GetWalletUUIDs([self.name UTF8String],
+                       [self.password UTF8String],
+                       &aUUIDS, &nCount, &error);
+    
+    lnserror = [ABCError makeNSError:error];
+    if (!lnserror)
     {
         if (aUUIDS)
         {
@@ -318,16 +327,18 @@ static const int notifySyncDelay          = 1;
             free(aUUIDS);
         }
     }
+    if (nserror) *nserror = lnserror;
+    
+    return [NSArray arrayWithArray:arrayUUIDs];
 }
 
 - (void)loadWallets:(NSMutableArray *)arrayWallets withTxs:(BOOL)bWithTx
 {
     ABCLog(2,@"ENTER loadWallets: %@", [NSThread currentThread].name);
     
-    NSMutableArray *arrayUuids = [[NSMutableArray alloc] init];
-    [self loadWalletUUIDs:arrayUuids];
+    NSArray *arrayIDs = [self listWalletIDs];
     ABCWallet *wallet;
-    for (NSString *uuid in arrayUuids) {
+    for (NSString *uuid in arrayIDs) {
         wallet = [self getWallet:uuid];
         if (!wallet){
             wallet = [[ABCWallet alloc] initWithUser:self];
@@ -890,9 +901,8 @@ static const int notifySyncDelay          = 1;
 
 - (void)startAllWallets
 {
-    NSMutableArray *arrayWallets = [[NSMutableArray alloc] init];
-    [self loadWalletUUIDs: arrayWallets];
-    for (NSString *uuid in arrayWallets) {
+    NSArray *arrayIDs = [self listWalletIDs];
+    for (NSString *uuid in arrayIDs) {
         [self postToWatcherQueue:^{
             tABC_Error error;
             ABC_WalletLoad([self.name UTF8String], [uuid UTF8String], &error);
@@ -995,9 +1005,8 @@ static const int notifySyncDelay          = 1;
 
 - (void)startWatchers
 {
-    NSMutableArray *arrayWallets = [[NSMutableArray alloc] init];
-    [self loadWalletUUIDs: arrayWallets];
-    for (NSString *uuid in arrayWallets) {
+    NSArray *arrayIDs = [self listWalletIDs];
+    for (NSString *uuid in arrayIDs) {
         [self startWatcher:uuid];
     }
     [self connectWatchers];
@@ -1006,9 +1015,8 @@ static const int notifySyncDelay          = 1;
 - (void)connectWatchers
 {
     if ([self isLoggedIn]) {
-        NSMutableArray *arrayWallets = [[NSMutableArray alloc] init];
-        [self loadWalletUUIDs:arrayWallets];
-        for (NSString *uuid in arrayWallets)
+        NSArray *arrayIDs = [self listWalletIDs];
+        for (NSString *uuid in arrayIDs)
         {
             [self connectWatcher:uuid];
         }
@@ -1031,9 +1039,8 @@ static const int notifySyncDelay          = 1;
 {
     if ([self isLoggedIn])
     {
-        NSMutableArray *arrayWallets = [[NSMutableArray alloc] init];
-        [self loadWalletUUIDs: arrayWallets];
-        for (NSString *uuid in arrayWallets) {
+        NSArray *arrayIDs = [self listWalletIDs];
+        for (NSString *uuid in arrayIDs) {
             [self postToWatcherQueue: ^{
                 const char *szUUID = [uuid UTF8String];
                 tABC_Error Error;
@@ -1101,16 +1108,15 @@ static const int notifySyncDelay          = 1;
 
 - (void)stopWatchers
 {
-    NSMutableArray *arrayWallets = [[NSMutableArray alloc] init];
-    [self loadWalletUUIDs: arrayWallets];
+    NSArray *arrayIDs = [self listWalletIDs];
     // stop watchers
     [self postToWatcherQueue: ^{
-        for (NSString *uuid in arrayWallets) {
+        for (NSString *uuid in arrayIDs) {
             tABC_Error Error;
             ABC_WatcherStop([uuid UTF8String], &Error);
         }
         // wait for threads to finish
-        for (NSString *uuid in arrayWallets) {
+        for (NSString *uuid in arrayIDs) {
             NSOperationQueue *queue = [self watcherGet:uuid];
             if (queue == nil) {
                 continue;
@@ -1121,7 +1127,7 @@ static const int notifySyncDelay          = 1;
             [self watcherRemove:uuid];
         }
         // Destroy watchers
-        for (NSString *uuid in arrayWallets) {
+        for (NSString *uuid in arrayIDs) {
             tABC_Error Error;
             ABC_WatcherDelete([uuid UTF8String], &Error);
         }
@@ -1303,10 +1309,9 @@ static const int notifySyncDelay          = 1;
 - (NSError *)createFirstWalletIfNeeded;
 {
     NSError *error = nil;
-    NSMutableArray *wallets = [[NSMutableArray alloc] init];
-    [self loadWalletUUIDs:wallets];
+    NSArray *arrayIDs = [self listWalletIDs];
     
-    if ([wallets count] == 0)
+    if ([arrayIDs count] == 0)
     {
         // create first wallet if it doesn't already exist
         ABCLog(1, @"Creating first wallet in account");
@@ -1484,14 +1489,20 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
              }
          }];
     } else if (ABC_AsyncEventType_BlockHeightChange == pInfo->eventType) {
-        [user refreshWallets:^
-         {
-             if (user.delegate) {
-                 if ([user.delegate respondsToSelector:@selector(abcAccountBlockHeightChanged)]) {
-                     [user.delegate abcAccountBlockHeightChanged];
-                 }
-             }
-         }];
+        ABCWallet *wallet = nil;
+        if (walletUUID)
+        {
+            wallet = [user getWallet:walletUUID];
+            if (wallet)
+            {
+                wallet.bBlockHeightChanged = YES;
+                if (user.delegate) {
+                    if ([user.delegate respondsToSelector:@selector(abcAccountBlockHeightChanged:)]) {
+                        [user.delegate abcAccountBlockHeightChanged:wallet];
+                    }
+                }
+            }
+        }
         
     } else if (ABC_AsyncEventType_BalanceUpdate == pInfo->eventType) {
         [user refreshWallets:^
@@ -1705,7 +1716,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
      }];
 }
 
-- (BOOL) isPINLoginEnabled;
+- (BOOL) hasPINLogin;
 {
     return !self.settings.bDisablePINLogin;
 }
@@ -1758,14 +1769,14 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return [ABCError makeNSError:error];
 }
 
-- (NSError *)setOTPAuth:(long)timeout;
+- (NSError *)enableOTP:(long)timeout;
 {
     tABC_Error error;
     ABC_OtpAuthSet([self.name UTF8String], [self.password UTF8String], timeout, &error);
     return [ABCError makeNSError:error];
 }
 
-- (NSError *)removeOTPAuth;
+- (NSError *)disableOTP;
 {
     tABC_Error error;
     ABC_OtpAuthRemove([self.name UTF8String], [self.password UTF8String], &error);
@@ -1777,7 +1788,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return nserror2;
 }
 
-- (NSError *)removeOTPResetRequest;
+- (NSError *)cancelOTPResetRequest;
 {
     tABC_Error error;
     ABC_OtpResetRemove([self.name UTF8String], [self.password UTF8String], &error);

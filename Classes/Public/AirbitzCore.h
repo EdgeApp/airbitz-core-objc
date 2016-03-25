@@ -390,15 +390,15 @@ typedef enum eABCDeviceCaps
                      completionNoLogin:(void (^)(void)) completionNoLogin
                                  error:(void (^)(NSError *error)) errorHandler;
 
-/** accountHasPINLogin
+/**
  * Checks if PIN login is possible for the given username. This checks if
  * there is a local PIN package on the device from a prior login
  * @param username NSString* username to check
  * @param error NSError** (optional) May be set to nil.
  * @return BOOL YES PIN login is possible
  */
-- (BOOL)PINLoginExists:(NSString *)username error:(NSError **)error;
-- (BOOL)PINLoginExists:(NSString *)username;
+- (BOOL)accountHasPINLogin:(NSString *)username error:(NSError **)error;
+- (BOOL)accountHasPINLogin:(NSString *)username;
 
 /**
  * Deletes named account from local device. Account is recoverable if it contains a password.

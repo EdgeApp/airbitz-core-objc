@@ -18,9 +18,7 @@
 @property (nonatomic, copy)     NSString        *txid;
 @property (nonatomic, copy)     NSString        *malleableTxid;
 @property (nonatomic, strong)   NSDate          *date;
-@property (nonatomic, assign)   BOOL            bConfirmed;
-@property (nonatomic, assign)   BOOL            bSyncing;
-@property (nonatomic, assign)   int             confirmations;
+@property (nonatomic, assign)   int             height;
 @property (nonatomic, assign)   SInt64			amountSatoshi;
 @property (nonatomic, assign)   SInt64			minerFees;
 @property (nonatomic, assign)   SInt64          providerFee;

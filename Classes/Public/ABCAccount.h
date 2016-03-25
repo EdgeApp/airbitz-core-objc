@@ -196,7 +196,7 @@
  * Check if this account is allowed to login via PIN
  * @return BOOL YES if PIN login is enabled
  */
-- (BOOL) isPINLoginEnabled;
+- (BOOL) hasPINLogin;
 
 /**
  * Logout the current ABCAccount object
@@ -262,12 +262,12 @@
                 toIndexPath:(NSIndexPath *)destinationIndexPath;
 
 /**
- * Returns the number of wallets in the account
- * @param error NSError
- * @return int Number of wallets
+ * Returns an array of the wallet IDs in the account
+ * @param error NSError (optional)
+ * @return NSArray array of NSString wallet IDs
  */
-- (int) getNumWalletsInAccount:(NSError **)error;
-
+- (NSArray *)listWalletIDs:(NSError **)nserror;
+- (NSArray *)listWalletIDs;
 
 /// -----------------------------------------------------------------------------
 /// @name One Time Password (OTP) (2 Factor Authentication)
@@ -276,7 +276,7 @@
 /**
  * Associates an OTP key with the account. An OTP key can be retrieved from
  * a previously logged in account using [ABCAccount getOTPLocalKey]. The account
- * must have had OTP enabled by using [ABCAccount setOTPAuth]
+ * must have had OTP enabled by using [ABCAccount enableOTP]
  * @param key NSString* key to set
  * @return NSError*
  */
@@ -288,13 +288,6 @@
  * @return NSString OTP key
  */
 - (NSString *)getOTPLocalKey:(NSError **)error;
-
-/**
- * Removes the OTP key for current user.
- * This will remove the key from disk as well.
- * @return NSError* or nil if no error
- */
-- (NSError *)removeOTPKey;
 
 /**
  * Reads the OTP configuration from the server. Gets information on whether OTP
@@ -315,21 +308,21 @@
  * before OTP is disabled.
  * @return NSError* or nil if no error
  */
-- (NSError *)setOTPAuth:(long)timeout;
+- (NSError *)enableOTP:(long)timeout;
 
 /**
  * Removes the OTP authentication requirement from the server for the
- * currently logged in user
+ * currently logged in user. Also removes local key from device
  * @return NSError* or nil if no error
  */
-- (NSError *)removeOTPAuth;
+- (NSError *)disableOTP;
 
 /**
  * Removes the OTP reset request from the server for the
  * currently logged in user
  * @return NSError* or nil if no error
  */
-- (NSError *)removeOTPResetRequest;
+- (NSError *)cancelOTPResetRequest;
 
 /// -----------------------------------------------------------------------------
 /// @name Password Recovery
@@ -459,8 +452,8 @@
 /// device or user's time clock is skewed.
 - (void) abcAccountOTPSkew;
 
-/// The current blockheight has changed. Use should refresh GUI by rereading ABCAccount.arrayWallets
-- (void) abcAccountBlockHeightChanged;
+/// The current blockheight has changed for the specified wallet.
+- (void) abcAccountBlockHeightChanged:(ABCWallet *)wallet;
 
 /// This device has just sync'ed a transaction to the specified wallet from another device
 /// causing a change in balance. This happens if two devices share a wallet. First device will see

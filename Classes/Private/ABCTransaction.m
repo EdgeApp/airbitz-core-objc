@@ -107,13 +107,11 @@
 // overriding the description - used in debugging
 - (NSString *)description
 {
-    return([NSString stringWithFormat:@"ABCTransaction - ID: %@, WalletUUID: %@, PayeeName: %@, Date: %@, Confirmed: %@, Confirmations: %u, AmountSatoshi: %lli, AmountFiat: %lf, Balance: %lli, Category: %@, Notes: %@",
+    return([NSString stringWithFormat:@"ABCTransaction - ID: %@, WalletUUID: %@, PayeeName: %@, Date: %@, AmountSatoshi: %lli, AmountFiat: %lf, Balance: %lli, Category: %@, Notes: %@",
                                       self.txid,
                                       self.wallet.uuid,
                                       self.metaData.payeeName,
                                       [self.date descriptionWithLocale:[NSLocale currentLocale]],
-                                      (self.bConfirmed == YES ? @"Yes" : @"No"),
-                                      self.confirmations,
                                       self.amountSatoshi,
                                       self.metaData.amountFiat,
                                       self.balance,
