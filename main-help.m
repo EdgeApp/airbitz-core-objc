@@ -13,6 +13,13 @@
  automatically backed up, and automatically synchronized between the user's authenticated 
  devices.
 
+ To get started, you'll first need an API key. Get one at http://developer.airbitz.co
+
+ Next create an xcode project and install CocoaPods in the project. Include ABC by adding
+ the following line to your 'Podfile'.
+
+ ```pod 'AirbitzCore', :http => "https://developer.airbitz.co/download/airbitz-core-objc-newest.tgz"```
+
     // Global account object
     ABCAccount *gAccount;
 
