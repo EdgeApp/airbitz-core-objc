@@ -34,6 +34,10 @@
  * wallet is the wallet that created this ABCSpend and once the transaction
  * is sent, the source wallet is tagged with the metaData from this ABCSpend object.
  * The destWallet is tagged with metadata supplied in detaMeta
+ * @param destWallet ABCWallet Destination wallet for transfer
+ * @param amountSatoshi uint64_t Amount of transfer
+ * @param destMeta ABCMetaData Metadata to tag the destination transaction with
+ * @return NSError Error object. Nil if success
  */
 - (NSError *)addTransfer:(ABCWallet *)destWallet amount:(uint64_t)amountSatoshi destMeta:(ABCMetaData *)destMeta;
 
@@ -41,6 +45,8 @@
  * Adds a BIP70 payment request to this ABCSpend transaction. No amount parameter is
  * provided as the payment request always has the amount included. Generate an
  * ABCPaymentRequest object by calling parseURI then getPaymentRequest
+ * @param paymentRequest ABCPaymentRequest object to add
+ * @return NSError Error object. Nil if success
  */
 - (NSError *)addPaymentRequest:(ABCPaymentRequest *)paymentRequest;
 

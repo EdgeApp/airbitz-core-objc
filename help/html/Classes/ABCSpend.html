@@ -222,7 +222,34 @@ The destWallet is tagged with metadata supplied in detaMeta</p>
 
 		    
 			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>destWallet</code></th>
+						<td><p><a href="../Classes/ABCWallet.html">ABCWallet</a> Destination wallet for transfer</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>amountSatoshi</code></th>
+						<td><p>uint64_t Amount of transfer</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>destMeta</code></th>
+						<td><p><a href="../Classes/ABCMetaData.html">ABCMetaData</a> Metadata to tag the destination transaction with</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
 
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>NSError Error object. Nil if success</p>
+			</div>
 			
 
 			
@@ -273,7 +300,24 @@ ABCPaymentRequest object by calling parseURI then getPaymentRequest</p>
 
 		    
 			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>paymentRequest</code></th>
+						<td><p>ABCPaymentRequest object to add</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
 
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>NSError Error object. Nil if success</p>
+			</div>
 			
 
 			

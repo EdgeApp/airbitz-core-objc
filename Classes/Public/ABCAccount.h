@@ -266,7 +266,7 @@
  * @param error NSError (optional)
  * @return NSArray array of NSString wallet IDs
  */
-- (NSArray *)listWalletIDs:(NSError **)nserror;
+- (NSArray *)listWalletIDs:(NSError **)error;
 - (NSArray *)listWalletIDs;
 
 /// -----------------------------------------------------------------------------
@@ -439,6 +439,7 @@
 - (void) abcAccountWalletChanged:(ABCWallet *)wallet;
 
 /// Specific wallet has finished loading. Other wallets may still be loading
+/// @param wallet ABCWallet
 - (void) abcAccountWalletLoaded:(ABCWallet *)wallet;
 
 /// Wallets in the account have changed. Changes may include new wallet order or wallet names.
@@ -453,6 +454,7 @@
 - (void) abcAccountOTPSkew;
 
 /// The current blockheight has changed for the specified wallet.
+/// @param wallet ABCWallet
 - (void) abcAccountBlockHeightChanged:(ABCWallet *)wallet;
 
 /// This device has just sync'ed a transaction to the specified wallet from another device
