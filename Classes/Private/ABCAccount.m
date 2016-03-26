@@ -1498,7 +1498,9 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
                 wallet.bBlockHeightChanged = YES;
                 if (user.delegate) {
                     if ([user.delegate respondsToSelector:@selector(abcAccountBlockHeightChanged:)]) {
-                        [user.delegate abcAccountBlockHeightChanged:wallet];
+                        dispatch_async(dispatch_get_main_queue(), ^(void) {
+                            [user.delegate abcAccountBlockHeightChanged:wallet];
+                        });
                     }
                 }
             }
