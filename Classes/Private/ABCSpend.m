@@ -49,6 +49,7 @@
     ABCTransaction *transaction = nil;
     
     ABC_SpendSaveTx(self.spend.pSpend, (char *)[self.base16 UTF8String], &szTxId, &error);
+    lnserror = [ABCError makeNSError:error];
     if (!lnserror)
     {
         transaction = [self.spend.wallet getTransaction:[NSString stringWithUTF8String:szTxId]];
