@@ -57,21 +57,21 @@ static NSArray                  *arrayCurrencyStrings = nil;
 
 + (NSArray *) listCurrencyCodes;
 {
-    if (!arrayCurrency)
+    if (!arrayCurrencyCodes)
         [ABCCurrency initializeCurrencyArrays];
     return arrayCurrencyCodes;
 }
 
 + (NSArray *) listCurrencyStrings;
 {
-    if (!arrayCurrency)
+    if (!arrayCurrencyStrings)
         [ABCCurrency initializeCurrencyArrays];
     return arrayCurrencyStrings;
 }
 
 + (NSArray *) listCurrencyNums;
 {
-    if (!arrayCurrency)
+    if (!arrayCurrencyNums)
         [ABCCurrency initializeCurrencyArrays];
     
     return arrayCurrencyNums;

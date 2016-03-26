@@ -32,9 +32,10 @@
 {
     int index = (int) [[ABCCurrency listCurrencyCodes] indexOfObject:code];
     if (index < 0)
-    {
-        return 0;
-    }
+        return [ABCCurrency noCurrency].currencyNum;
+    if (index >= [[ABCCurrency listCurrencyNums] count])
+        return [ABCCurrency noCurrency].currencyNum;
+    
     NSNumber *currencyNum = [ABCCurrency listCurrencyNums][index];
     
     return (int)[currencyNum integerValue];
@@ -43,7 +44,10 @@
 - (ABCCurrency *) getCurrencyFromCode:(NSString *)code;
 {
     int index = (int) [[ABCCurrency listCurrencyCodes] indexOfObject:code];
-    if (index < 0) return [ABCCurrency noCurrency];
+    if (index < 0)
+        return [ABCCurrency noCurrency];
+    if (index >= [[ABCCurrency listCurrencies] count])
+        return [ABCCurrency noCurrency];
     
     return [ABCCurrency listCurrencies][index];
 }
@@ -51,7 +55,10 @@
 - (NSString *) getCurrencyCodeFromNum:(int) num;
 {
     int index = (int) [[ABCCurrency listCurrencyNums] indexOfObject:[NSNumber numberWithInt:num]];
-    if (index < 0) return @"";
+    if (index < 0)
+        return [ABCCurrency noCurrency].code;
+    if (index >= [[ABCCurrency listCurrencyCodes] count])
+        return [ABCCurrency noCurrency].code;
     
     return [ABCCurrency listCurrencyCodes][index];
 }
@@ -59,7 +66,10 @@
 - (ABCCurrency *) getCurrencyFromNum:(int) num;
 {
     int index = (int) [[ABCCurrency listCurrencyNums] indexOfObject:[NSNumber numberWithInt:num]];
-    if (index < 0) return [ABCCurrency noCurrency];
+    if (index < 0)
+        return [ABCCurrency noCurrency];
+    if (index >= [[ABCCurrency listCurrencies] count])
+        return [ABCCurrency noCurrency];
     
     return [ABCCurrency listCurrencies][index];
 }
