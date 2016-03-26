@@ -44,7 +44,7 @@ static NSArray                  *arrayCurrencyStrings = nil;
         staticDefaultCurrency.symbol = @"$";
         staticDefaultCurrency.currencyNum = 840;
     }
-    return staticNoCurrency;
+    return staticDefaultCurrency;
 }
 
 + (NSArray *) listCurrencies;
