@@ -1942,13 +1942,16 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 {
     if (!self.settings.bDisablePINLogin)
     {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
-            tABC_Error error;
-            ABC_PinSetup([self.name UTF8String],
-                         [self.password length] > 0 ? [self.password UTF8String] : nil,
-                         [self.settings.strPIN UTF8String],
-                         &error);
-        });
+        if (self.settings.strPIN)
+        {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
+                tABC_Error error;
+                ABC_PinSetup([self.name UTF8String],
+                             [self.password length] > 0 ? [self.password UTF8String] : nil,
+                             [self.settings.strPIN UTF8String],
+                             &error);
+            });
+        }
     }
 }
 
