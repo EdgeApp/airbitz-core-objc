@@ -1029,8 +1029,6 @@ static const int notifySyncDelay          = 1;
         if ([self isLoggedIn]) {
             tABC_Error Error;
             ABC_WatcherConnect([uuid UTF8String], &Error);
-            
-            [self watchAddresses:uuid];
         }
     }];
 }
@@ -1100,8 +1098,6 @@ static const int notifySyncDelay          = 1;
                                 (__bridge void *) self,
                                 &Error);
             }];
-            
-            [self watchAddresses:walletUUID];
         }
     }];
 }
@@ -1134,14 +1130,6 @@ static const int notifySyncDelay          = 1;
     }];
     
     while ([watcherQueue operationCount]);
-}
-
-- (void)watchAddresses: (NSString *) walletUUID
-{
-    tABC_Error Error;
-    ABC_WatchAddresses([self.name UTF8String],
-                       [self.password UTF8String],
-                       [walletUUID UTF8String], &Error);
 }
 
 - (void)requestExchangeRateUpdate

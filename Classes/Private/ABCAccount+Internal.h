@@ -23,7 +23,6 @@
 - (NSError *)setDefaultCurrency:(NSString *)currencyCode;
 - (void)setConnectivity:(BOOL)hasConnectivity;
 - (void)setupLoginPIN;
-- (void)watchAddresses: (NSString *) walletUUID;
 - (void)refreshWallets;
 - (void)connectWatcher:(NSString *)uuid;
 - (void)clearDataQueue;
