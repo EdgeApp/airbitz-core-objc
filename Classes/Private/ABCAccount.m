@@ -1745,7 +1745,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 
     ABC_OtpKeyGet([self.name UTF8String], &szSecret, &error);
     nserror2 = [ABCError makeNSError:error];
-    if (nserror2 && szSecret) {
+    if (!nserror2 && szSecret) {
         key = [NSString stringWithUTF8String:szSecret];
     }
     if (szSecret) {
