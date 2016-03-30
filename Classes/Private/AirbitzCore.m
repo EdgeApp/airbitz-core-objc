@@ -2,6 +2,8 @@
 #import "AirbitzCore+Internal.h"
 #import <pthread.h>
 
+#define ABC_VERSION_STRING @"0.9.0"
+
 @class ABCUtil;
 
 @implementation ABCBitIDSignature
@@ -357,14 +359,15 @@
     return result;
 }
 
-- (NSString *)coreVersion
+- (NSString *)getVersion;
 {
-    NSString *version;
-    char *szVersion = NULL;
-    ABC_Version(&szVersion, NULL);
-    version = [NSString stringWithUTF8String:szVersion];
-    free(szVersion);
-    return version;
+//    NSString *version;
+//    char *szVersion = NULL;
+//    ABC_Version(&szVersion, NULL);
+//    version = [NSString stringWithUTF8String:szVersion];
+//    free(szVersion);
+//    return version;
+    return ABC_VERSION_STRING;
 }
 
 + (NSString *)fixUsername:(NSString *)username

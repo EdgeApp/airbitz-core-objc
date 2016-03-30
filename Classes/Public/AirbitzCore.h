@@ -428,7 +428,7 @@ typedef enum eABCDeviceCaps
  * Gets the version of AirbitzCore compiled into this implementation
  * @return NSString* Version number if string format. ie. "1.8.5"
  */
-- (NSString *)coreVersion;
+- (NSString *)getVersion;
 
 /**
  * Check if device has a capability from ABCDeviceCaps
