@@ -483,12 +483,10 @@ static const int importTimeout                  = 30;
     transaction.metaData.amountFiat = pTrans->pDetails->amountCurrency;
     transaction.providerFee = pTrans->pDetails->amountFeesAirbitzSatoshi;
     transaction.minerFees = pTrans->pDetails->amountFeesMinersSatoshi;
-    if (pTrans->szMalleableTxId) {
-        transaction.malleableTxid = [NSString stringWithUTF8String: pTrans->szMalleableTxId];
-    }
-    bool bSyncing = NO;
-    transaction.height = [self getTxHeight:transaction.txid
-                                 isSyncing:&bSyncing];
+    transaction.isDoubleSpend = pTrans->bDoubleSpent;
+    transaction.isReplaceByFee = pTrans->bReplaceByFee;
+    transaction.height = pTrans->height;
+    
 //    transaction.bConfirmed = transaction.confirmations >= ABCConfirmedConfirmationCount;
     NSMutableArray *outputs = [[NSMutableArray alloc] init];
     for (int i = 0; i < pTrans->countOutputs; ++i)
@@ -500,7 +498,7 @@ static const int importTimeout                  = 30;
         
         [outputs addObject:output];
     }
-    transaction.outputList = outputs;
+    transaction.inputOutputList = outputs;
     transaction.metaData.bizId = pTrans->pDetails->bizId;
 }
 
@@ -521,27 +519,6 @@ static const int importTimeout                  = 30;
 - (void)setBlockHeight:(int)blockHeight;
 {
     _blockHeight = blockHeight;
-}
-
-- (int)getTxHeight:(NSString *)txId isSyncing:(bool *)syncing
-{
-    tABC_Error Error;
-    int txHeight = 0;
-    *syncing = NO;
-    if ([self.uuid length] == 0 || [txId length] == 0) {
-        return 0;
-    }
-    if (ABC_TxHeight([self.uuid UTF8String], [txId UTF8String], &txHeight, &Error) != ABC_CC_Ok) {
-        *syncing = YES;
-        if (txHeight < 0)
-        {
-            ABCLog(0, @"calcTxConfirmations returning negative txHeight=%d", txHeight);
-            return txHeight;
-        }
-        else
-            return 0;
-    }
-    return txHeight;
 }
 
 - (NSError *)searchTransactionsIn:(NSString *)term addTo:(NSMutableArray *) arrayTransactions;

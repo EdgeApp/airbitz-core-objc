@@ -25,8 +25,7 @@
         self.metaData = [ABCMetaData alloc];
         self.txid = @"";
         self.date = [NSDate date];
-        self.inputList = [[NSArray alloc] init];
-        self.outputList = [[NSArray alloc] init];
+        self.inputOutputList = [[NSArray alloc] init];
         self.metaData.payeeName = @"";
         self.metaData.category = @"";
         self.metaData.notes = @"";
