@@ -149,8 +149,8 @@
  * @param error (Optional) NSError* Error object. Nil if success
  * @return BOOL true if user has a password
  */
-- (BOOL)passwordExists:(NSError **)error;
-- (BOOL)passwordExists;
+- (BOOL)accountHasPassword:(NSError **)error;
+- (BOOL)accountHasPassword;
 
 /**
  * Check if this user has logged in "recently". Currently fixed to return TRUE
@@ -183,7 +183,7 @@
  * Enable or disable PIN login on this account. Set enable = YES to allow
  * PIN login. Enabling PIN login creates a local account decryption key that
  * is split with one have in local device storage and the other half on Airbitz
- * servers. When using [AirbitzCore signInWithPIN:username:pin:delegate:error] the PIN is sent to Airbitz servers
+ * servers. When using [AirbitzCore pinLogin:username:pin:delegate:error] the PIN is sent to Airbitz servers
  * to authenticate the user. If the PIN is correct, the second half of the decryption
  * key is sent back to the device. Combined with the locally saved key, the two
  * are then used to decrypt the local account thereby loggin in the user.
@@ -196,7 +196,15 @@
  * Check if this account is allowed to login via PIN
  * @return BOOL YES if PIN login is enabled
  */
-- (BOOL) isPINLoginEnabled;
+- (BOOL) hasPINLogin;
+
+/**
+ * Logout the current ABCAccount object
+ * @return void
+ */
+- (void)logout;
+
+
 
 /// -----------------------------------------------------------------------------
 /// @name Wallet Management
@@ -254,24 +262,25 @@
                 toIndexPath:(NSIndexPath *)destinationIndexPath;
 
 /**
- * Returns the number of wallets in the account
- * @param error NSError
- * @return int Number of wallets
+ * Returns an array of the wallet IDs in the account
+ * @param error NSError (optional)
+ * @return NSArray array of NSString wallet IDs
  */
-- (int) getNumWalletsInAccount:(NSError **)error;
-
+- (NSArray *)listWalletIDs:(NSError **)error;
+- (NSArray *)listWalletIDs;
 
 /// -----------------------------------------------------------------------------
 /// @name One Time Password (OTP) (2 Factor Authentication)
 /// -----------------------------------------------------------------------------
 
 /**
- * Checks if the current account has a pending request to reset (disable)
- * OTP.
- * @param error NSError error object or nil if success
- * @return BOOL YES if account has pending reset
+ * Associates an OTP key with the account. An OTP key can be retrieved from
+ * a previously logged in account using [ABCAccount getOTPLocalKey]. The account
+ * must have had OTP enabled by using [ABCAccount enableOTP]
+ * @param key NSString* key to set
+ * @return NSError*
  */
-- (BOOL) hasOTPResetPending:(NSError **)error;
+- (NSError *)setOTPKey:(NSString *)key;
 
 /**
  * Gets the locally saved OTP key for the current user.
@@ -279,13 +288,6 @@
  * @return NSString OTP key
  */
 - (NSString *)getOTPLocalKey:(NSError **)error;
-
-/**
- * Removes the OTP key for current user.
- * This will remove the key from disk as well.
- * @return NSError* or nil if no error
- */
-- (NSError *)removeOTPKey;
 
 /**
  * Reads the OTP configuration from the server. Gets information on whether OTP
@@ -306,21 +308,21 @@
  * before OTP is disabled.
  * @return NSError* or nil if no error
  */
-- (NSError *)setOTPAuth:(long)timeout;
+- (NSError *)enableOTP:(long)timeout;
 
 /**
  * Removes the OTP authentication requirement from the server for the
- * currently logged in user
+ * currently logged in user. Also removes local key from device
  * @return NSError* or nil if no error
  */
-- (NSError *)removeOTPAuth;
+- (NSError *)disableOTP;
 
 /**
  * Removes the OTP reset request from the server for the
  * currently logged in user
  * @return NSError* or nil if no error
  */
-- (NSError *)removeOTPResetRequest;
+- (NSError *)cancelOTPResetRequest;
 
 /// -----------------------------------------------------------------------------
 /// @name Password Recovery
@@ -436,11 +438,9 @@
 /// @param wallet ABCWallet
 - (void) abcAccountWalletChanged:(ABCWallet *)wallet;
 
-/// Called when the wallets in the account are still loading their prior transactions.
-- (void) abcAccountWalletsLoading;
-
-/// At minimum, the primary wallet has finished loading. Other wallets may still be loading
-- (void) abcAccountWalletsLoaded;
+/// Specific wallet has finished loading. Other wallets may still be loading
+/// @param wallet ABCWallet
+- (void) abcAccountWalletLoaded:(ABCWallet *)wallet;
 
 /// Wallets in the account have changed. Changes may include new wallet order or wallet names.
 - (void) abcAccountWalletsChanged;
@@ -453,8 +453,9 @@
 /// device or user's time clock is skewed.
 - (void) abcAccountOTPSkew;
 
-/// The current blockheight has changed. Use should refresh GUI by rereading ABCAccount.arrayWallets
-- (void) abcAccountBlockHeightChanged;
+/// The current blockheight has changed for the specified wallet.
+/// @param wallet ABCWallet
+- (void) abcAccountBlockHeightChanged:(ABCWallet *)wallet;
 
 /// This device has just sync'ed a transaction to the specified wallet from another device
 /// causing a change in balance. This happens if two devices share a wallet. First device will see

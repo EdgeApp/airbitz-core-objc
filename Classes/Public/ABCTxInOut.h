@@ -13,6 +13,5 @@
 @property (nonatomic, strong)   NSString            *address;
 @property (nonatomic)           SInt64              amountSatoshi;
 @property (nonatomic)           BOOL                isInput;
-@property (nonatomic, strong)   NSString            *txid;
 
 @end

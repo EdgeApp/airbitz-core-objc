@@ -25,8 +25,7 @@
         self.metaData = [ABCMetaData alloc];
         self.txid = @"";
         self.date = [NSDate date];
-        self.inputList = [[NSArray alloc] init];
-        self.outputList = [[NSArray alloc] init];
+        self.inputOutputList = [[NSArray alloc] init];
         self.metaData.payeeName = @"";
         self.metaData.category = @"";
         self.metaData.notes = @"";
@@ -107,13 +106,11 @@
 // overriding the description - used in debugging
 - (NSString *)description
 {
-    return([NSString stringWithFormat:@"ABCTransaction - ID: %@, WalletUUID: %@, PayeeName: %@, Date: %@, Confirmed: %@, Confirmations: %u, AmountSatoshi: %lli, AmountFiat: %lf, Balance: %lli, Category: %@, Notes: %@",
+    return([NSString stringWithFormat:@"ABCTransaction - ID: %@, WalletUUID: %@, PayeeName: %@, Date: %@, AmountSatoshi: %lli, AmountFiat: %lf, Balance: %lli, Category: %@, Notes: %@",
                                       self.txid,
                                       self.wallet.uuid,
                                       self.metaData.payeeName,
                                       [self.date descriptionWithLocale:[NSLocale currentLocale]],
-                                      (self.bConfirmed == YES ? @"Yes" : @"No"),
-                                      self.confirmations,
                                       self.amountSatoshi,
                                       self.metaData.amountFiat,
                                       self.balance,

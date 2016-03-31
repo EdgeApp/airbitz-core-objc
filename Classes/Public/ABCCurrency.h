@@ -16,6 +16,7 @@
 + (ABCCurrency *) noCurrency;
 + (ABCCurrency *) defaultCurrency;
 
++ (NSString *) getCurrencyCodeOfLocale;
 + (NSArray *) listCurrencies;
 + (NSArray *) listCurrencyCodes;
 + (NSArray *) listCurrencyStrings;

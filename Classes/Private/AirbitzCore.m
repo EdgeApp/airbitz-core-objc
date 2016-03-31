@@ -2,7 +2,7 @@
 #import "AirbitzCore+Internal.h"
 #import <pthread.h>
 
-#define DEFAULT_CURRENCY @"USD"
+#define ABC_VERSION_STRING @"0.9.0"
 
 @class ABCUtil;
 
@@ -30,12 +30,13 @@
 {
     BOOL                                            bInitialized;
     ABCError                                        *abcError;
+    ABCExchangeCache                                *_exchangeCache;
 }
 
 @property (atomic, strong) ABCLocalSettings         *localSettings;
 @property (atomic, strong) ABCKeychain              *keyChain;
 @property (atomic, strong) NSMutableArray           *loggedInUsers;
-@property (atomic, strong) ABCExchangeCache         *exchangeCache;
+//@property (atomic, strong) ABCExchangeCache         *exchangeCache;
 
 @end
 
@@ -104,13 +105,18 @@
     }
 }
 
-- (ABCExchangeCache *) exchangeCacheGet;
+- (void)setExchangeCache:(ABCExchangeCache *)exchangeCache;
 {
-//    if (!self.exchangeCache)
+    _exchangeCache = exchangeCache;
+}
+
+- (ABCExchangeCache *) exchangeCache;
+{
+    if (!_exchangeCache)
     {
-        self.exchangeCache = [[ABCExchangeCache alloc] init:self];
+        _exchangeCache = [[ABCExchangeCache alloc] init:self];
     }
-    return self.exchangeCache;
+    return _exchangeCache;
 }
 
 
@@ -317,19 +323,11 @@
     }
 }
 
-- (void)restoreConnectivity;
+- (void)setConnectivity:(BOOL)hasConnectivity
 {
     for (ABCAccount *user in self.loggedInUsers)
     {
-        [user restoreConnectivity];
-    }
-}
-
-- (void)lostConnectivity;
-{
-    for (ABCAccount *user in self.loggedInUsers)
-    {
-        [user lostConnectivity];
+        [user setConnectivity:hasConnectivity];
     }
 }
 
@@ -361,14 +359,15 @@
     return result;
 }
 
-- (NSString *)coreVersion
+- (NSString *)getVersion;
 {
-    NSString *version;
-    char *szVersion = NULL;
-    ABC_Version(&szVersion, NULL);
-    version = [NSString stringWithUTF8String:szVersion];
-    free(szVersion);
-    return version;
+//    NSString *version;
+//    char *szVersion = NULL;
+//    ABC_Version(&szVersion, NULL);
+//    version = [NSString stringWithUTF8String:szVersion];
+//    free(szVersion);
+//    return version;
+    return ABC_VERSION_STRING;
 }
 
 + (NSString *)fixUsername:(NSString *)username
@@ -424,8 +423,8 @@
     return nserror;
 }
 
-- (BOOL)PINLoginExists:(NSString *)username; { return [self PINLoginExists:username error:nil]; }
-- (BOOL)PINLoginExists:(NSString *)username error:(NSError **)nserror;
+- (BOOL)accountHasPINLogin:(NSString *)username; { return [self accountHasPINLogin:username error:nil]; }
+- (BOOL)accountHasPINLogin:(NSString *)username error:(NSError **)nserror;
 {
     NSError *lnserror;
     tABC_Error error;
@@ -549,7 +548,7 @@
 
             [self setLastAccessedAccount:username];
             // update user's default currency num to match their locale
-            NSString *currencyCode = [self getCurrencyCodeOfLocale];
+            NSString *currencyCode = [ABCCurrency getCurrencyCodeOfLocale];
             [account.settings enableTouchID];
             [account setDefaultCurrency:currencyCode];
             [account login];
@@ -582,12 +581,12 @@
     });
 }
 
-- (ABCAccount *)signIn:(NSString *)username
+- (ABCAccount *)passwordLogin:(NSString *)username
               password:(NSString *)password
               delegate:(id)delegate
                  error:(NSError **)nserror;
 {
-    return [self signIn:username
+    return [self passwordLogin:username
                password:password
                delegate:delegate
                     otp:nil
@@ -596,7 +595,7 @@
                   error:nil];
 }
 
-- (ABCAccount *)signIn:(NSString *)username
+- (ABCAccount *)passwordLogin:(NSString *)username
               password:(NSString *)password
               delegate:(id)delegate
                    otp:(NSString *)otp
@@ -671,7 +670,7 @@
     return account;
 }
 
-- (void)signIn:(NSString *)username password:(NSString *)password
+- (void)passwordLogin:(NSString *)username password:(NSString *)password
       delegate:(id)delegate otp:(NSString *)otp
       complete:(void (^)(ABCAccount *account)) completionHandler
          error:(void (^)(NSError *, NSDate *resetDate, NSString *resetToken)) errorHandler;
@@ -681,7 +680,7 @@
         NSDate *resetDate;
         NSString *resetToken;
         NSMutableString *mResetToken = [[NSMutableString alloc] init];
-        ABCAccount *account = [self signIn:username
+        ABCAccount *account = [self passwordLogin:username
                                   password:password
                                   delegate:delegate
                                        otp:otp
@@ -703,7 +702,7 @@
     });
 }
 
-- (ABCAccount *)signInWithPIN:(NSString *)username
+- (ABCAccount *)pinLogin:(NSString *)username
                           pin:(NSString *)pin
                      delegate:(id)delegate
                         error:(NSError **)nserror;
@@ -720,7 +719,7 @@
     }
     else
     {
-        if ([self PINLoginExists:username error:nil])
+        if ([self accountHasPINLogin:username error:nil])
         {
             ABC_PinLogin([username UTF8String],
                          [pin UTF8String],
@@ -751,13 +750,13 @@
     
 }
 
-- (void)signInWithPIN:(NSString *)username pin:(NSString *)pin delegate:(id)delegate
+- (void)pinLogin:(NSString *)username pin:(NSString *)pin delegate:(id)delegate
              complete:(void (^)(ABCAccount *user)) completionHandler
                 error:(void (^)(NSError *)) errorHandler;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
         NSError *error;
-        ABCAccount *account = [self signInWithPIN:username pin:pin delegate:delegate error:&error];
+        ABCAccount *account = [self pinLogin:username pin:pin delegate:delegate error:&error];
         
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             if (account)
@@ -772,7 +771,7 @@
     });
 }
 
-- (void)signInWithRecoveryAnswers:(NSString *)username
+- (void)recoveryLogin:(NSString *)username
                           answers:(NSString *)answers
                          delegate:(id)delegate
                               otp:(NSString *)otp
@@ -931,7 +930,7 @@
     return result;
 }
 
-- (NSError *)isAccountUsernameAvailable:(NSString *)username;
+- (NSError *)isUsernameAvailable:(NSString *)username;
 {
     tABC_Error error;
     ABC_AccountAvailable([username UTF8String], &error);
@@ -954,7 +953,7 @@
         if (doRelogin)
         {
             if (doBeforeLogin) doBeforeLogin();
-            [self signIn:username password:password delegate:delegate otp:nil complete:^(ABCAccount *account){
+            [self passwordLogin:username password:password delegate:delegate otp:nil complete:^(ABCAccount *account){
                 if (completionWithLogin) completionWithLogin(account, usedTouchID);
             } error:^(NSError *error, NSDate *resetDate, NSString *resetToken) {
                 if (errorHandler) errorHandler(error);
@@ -966,18 +965,6 @@
         }
     });
 }
-
-- (NSString *)getCurrencyCodeOfLocale
-{
-    NSLocale *locale = [NSLocale autoupdatingCurrentLocale];
-    NSString *code = [locale objectForKey:NSLocaleCurrencyCode];
-    
-    if (code)
-        return code;
-    else
-        return DEFAULT_CURRENCY;
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// Cleaned up methods above /////////////////////////////////
@@ -995,6 +982,34 @@
 }
 
 /* === OTP authentication: === */
+
+- (BOOL) hasOTPResetPending:(NSString *)username error:(NSError **)nserror;
+{
+    char *szUsernames = NULL;
+    NSString *usernames = nil;
+    BOOL needsReset = NO;
+    tABC_Error error;
+    NSError *nserror2 = nil;
+
+    ABC_OtpResetGet(&szUsernames, &error);
+    nserror2 = [ABCError makeNSError:error];
+
+    NSMutableArray *usernameArray = [[NSMutableArray alloc] init];
+    if (!nserror2 && szUsernames)
+    {
+        usernames = [NSString stringWithUTF8String:szUsernames];
+        usernames = [self formatUsername:usernames];
+        usernameArray = [[NSMutableArray alloc] initWithArray:[usernames componentsSeparatedByString:@"\n"]];
+        if ([usernameArray containsObject:[self formatUsername:username]])
+            needsReset = YES;
+    }
+    if (szUsernames)
+        free(szUsernames);
+
+    if (nserror) *nserror = nserror2;
+    return needsReset;
+}
+
 
 
 - (NSArray *)listPendingOTPResetUsernames:(NSError **)nserror;
@@ -1055,7 +1070,7 @@
     });
 }
 
-+ (void)listRecoveryQuestionsChoices: (void (^)(
++ (void)listRecoveryQuestionChoices: (void (^)(
                                                NSMutableArray *arrayCategoryString,
                                                NSMutableArray *arrayCategoryNumeric,
                                                NSMutableArray *arrayCategoryMust)) completionHandler
@@ -1096,7 +1111,7 @@
     });
 }
 
-- (BOOL)passwordExists:(NSString *)username error:(NSError **)nserror;
+- (BOOL)accountHasPassword:(NSString *)username error:(NSError **)nserror;
 {
     tABC_Error error;
     NSError *nserror2 = nil;

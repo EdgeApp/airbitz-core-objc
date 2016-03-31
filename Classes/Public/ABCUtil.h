@@ -50,7 +50,14 @@
  * @param amount uint64_t Amount of request in satoshis
  * @param label NSString Name of requestor
  * @param message NSString Misc notes of transaction request
+ * @param category NSString Airbitz formatted category in the form "[Category]:[Subcategory]"<br>
+ *  ie.<br>
+ *  Income:Salary<br>
+ *  Expense:Rent<br>
+ *  Transfer:Airbitz Wallet<br>
+ *  Exchange:Buy Bitcoin<br>
  * @param ret NSString Return URI to send user to after payment is made
+ * @return NSString Complete BIP21 URI
  */
 + (NSString *)encodeURI:(NSString *)address
                  amount:(uint64_t)amount

@@ -44,7 +44,7 @@ static NSArray                  *arrayCurrencyStrings = nil;
         staticDefaultCurrency.symbol = @"$";
         staticDefaultCurrency.currencyNum = 840;
     }
-    return staticNoCurrency;
+    return staticDefaultCurrency;
 }
 
 + (NSArray *) listCurrencies;
@@ -57,21 +57,21 @@ static NSArray                  *arrayCurrencyStrings = nil;
 
 + (NSArray *) listCurrencyCodes;
 {
-    if (!arrayCurrency)
+    if (!arrayCurrencyCodes)
         [ABCCurrency initializeCurrencyArrays];
     return arrayCurrencyCodes;
 }
 
 + (NSArray *) listCurrencyStrings;
 {
-    if (!arrayCurrency)
+    if (!arrayCurrencyStrings)
         [ABCCurrency initializeCurrencyArrays];
     return arrayCurrencyStrings;
 }
 
 + (NSArray *) listCurrencyNums;
 {
-    if (!arrayCurrency)
+    if (!arrayCurrencyNums)
         [ABCCurrency initializeCurrencyArrays];
     
     return arrayCurrencyNums;
@@ -94,6 +94,18 @@ static NSArray                  *arrayCurrencyStrings = nil;
 }
 
 const NSString *syncToken = @"ABCCurrencySyncToken";
+#define DEFAULT_CURRENCY @"USD"
+
++ (NSString *)getCurrencyCodeOfLocale;
+{
+    NSLocale *locale = [NSLocale autoupdatingCurrentLocale];
+    NSString *code = [locale objectForKey:NSLocaleCurrencyCode];
+    
+    if (code)
+        return code;
+    else
+        return DEFAULT_CURRENCY;
+}
 
 + (void) initializeCurrencyArrays
 {

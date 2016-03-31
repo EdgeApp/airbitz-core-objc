@@ -14,23 +14,7 @@
 
 + (NSError *)makeNSError:(tABC_Error)error;
 {
-    if (ABCConditionCodeOk == error.code)
-    {
-        return nil;
-    }
-    else
-    {
-        NSString *failureReason = [NSString stringWithUTF8String:error.szDescription];
-        NSString *failureDetail = [NSString stringWithFormat:@"%@: %@:%d",
-                                   [NSString stringWithUTF8String:error.szSourceFunc],
-                                   [NSString stringWithUTF8String:error.szSourceFile],
-                                   error.nSourceLine];
-        return [NSError errorWithDomain:ABCErrorDomain
-                                   code:error.code
-                               userInfo:@{ NSLocalizedDescriptionKey:[ABCError errorMap:error] ,
-                                           NSLocalizedFailureReasonErrorKey:failureReason,
-                                           NSLocalizedRecoverySuggestionErrorKey:failureDetail }];
-    }
+    return [ABCError makeNSError:error description:[ABCError errorMap:error]];
 }
 
 + (NSError *)makeNSError:(tABC_Error)error description:(NSString *)description;
@@ -41,11 +25,16 @@
     }
     else
     {
-        NSString *failureReason = [NSString stringWithUTF8String:error.szDescription];
-        NSString *failureDetail = [NSString stringWithFormat:@"%@: %@:%d",
-                                   [NSString stringWithUTF8String:error.szSourceFunc],
-                                   [NSString stringWithUTF8String:error.szSourceFile],
-                                   error.nSourceLine];
+        NSString *failureReason = @"";
+        NSString *failureDetail = @"";
+        if (ABCConditionCodeNULLPtr != error.code)
+        {
+            failureReason = [NSString stringWithUTF8String:error.szDescription];
+            failureDetail = [NSString stringWithFormat:@"%@: %@:%d",
+                             [NSString stringWithUTF8String:error.szSourceFunc],
+                             [NSString stringWithUTF8String:error.szSourceFile],
+                             error.nSourceLine];
+        }
         return [NSError errorWithDomain:ABCErrorDomain
                                    code:error.code
                                userInfo:@{ NSLocalizedDescriptionKey:description,

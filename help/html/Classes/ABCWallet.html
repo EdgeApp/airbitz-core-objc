@@ -64,6 +64,8 @@
 		
 		<option value="//api/name/balance">balance</option>
 		
+		<option value="//api/name/blockHeight">blockHeight</option>
+		
 		<option value="//api/name/currency">currency</option>
 		
 		<option value="//api/name/loaded">loaded</option>
@@ -258,7 +260,7 @@ generate an <a href="../Classes/ABCReceiveAddress.html">ABCReceiveAddress</a> wh
 			
 			
 			<div class="method-subsection brief-description">
-				<p>ABCCurrency object determines the fiat currency which this wallet uses to save
+				<p><a href="../Classes/ABCCurrency.html">ABCCurrency</a> object determines the fiat currency which this wallet uses to save
 exchange rate values of each transaction.</p>
 			</div>
 			
@@ -276,7 +278,7 @@ exchange rate values of each transaction.</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>ABCCurrency object determines the fiat currency which this wallet uses to save
+				<p><a href="../Classes/ABCCurrency.html">ABCCurrency</a> object determines the fiat currency which this wallet uses to save
 exchange rate values of each transaction.</p>
 			</div>
 			
@@ -400,7 +402,7 @@ spend money from an archived wallet although the SDK does not enforce such rules
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Array of ABCTransaction objects in this wallet</p>
+				<p>Array of <a href="../Classes/ABCTransaction.html">ABCTransaction</a> objects in this wallet</p>
 			</div>
 			
 		    
@@ -417,7 +419,7 @@ spend money from an archived wallet although the SDK does not enforce such rules
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Array of ABCTransaction objects in this wallet</p>
+				<p>Array of <a href="../Classes/ABCTransaction.html">ABCTransaction</a> objects in this wallet</p>
 			</div>
 			
 
@@ -512,6 +514,52 @@ signIn while wallet info is being decrypted and loaded</p>
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>The <a href="../Classes/ABCAccount.html">ABCAccount</a> object which contains this wallet.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">ABCWallet.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/blockHeight" title="blockHeight"></a>
+	<h3 class="method-title"><code><a href="#//api/name/blockHeight">&nbsp;&nbsp;blockHeight</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>The current blockheight of the bitcoin network</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>@property (nonatomic, assign) int blockHeight</code></div>
+
+		    
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>The current blockheight of the bitcoin network</p>
 			</div>
 			
 
@@ -685,7 +733,7 @@ calling this routine.</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Gets an ABCTransaction object for bitcoin transactionID txid</p>
+				<p>Gets an <a href="../Classes/ABCTransaction.html">ABCTransaction</a> object for bitcoin transactionID txid</p>
 			</div>
 			
 		    
@@ -710,7 +758,7 @@ calling this routine.</p>
 			
 			<div class="method-subsection return">
 				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>ABCTransaction Transaction object or nil if fails to find
+				<p><a href="../Classes/ABCTransaction.html">ABCTransaction</a> Transaction object or nil if fails to find
 transaction in wallet.</p>
 			</div>
 			
@@ -720,7 +768,7 @@ transaction in wallet.</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Gets an ABCTransaction object for bitcoin transactionID txid</p>
+				<p>Gets an <a href="../Classes/ABCTransaction.html">ABCTransaction</a> object for bitcoin transactionID txid</p>
 			</div>
 			
 
@@ -1200,7 +1248,7 @@ after sweep.</p>
 						<td><p>Called on success.<br>
 - <em>param</em> dataModel <a href="../Constants/ABCImportDataModel.html">ABCImportDataModel</a> of private key<br>
 - <em>param</em> address NSString<em> public address of private key<br>
-- </em>param<em> transaction ABCTransaction that swept funds<br>
+- </em>param<em> transaction <a href="../Classes/ABCTransaction.html">ABCTransaction</a> that swept funds<br>
 - </em>param* amount uint64_t amount of satoshis swept into wallet</p></td>
 					</tr>
 				
@@ -1387,7 +1435,7 @@ Must not be nil.</p></td>
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-18</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-31</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>

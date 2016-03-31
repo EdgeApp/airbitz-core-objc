@@ -60,6 +60,9 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 /// The ABCAccount object which contains this wallet.
 @property (nonatomic, strong)   ABCAccount      *account;
 
+/// The current blockheight of the bitcoin network
+@property (nonatomic, assign)   int             blockHeight;
+
 
 ///----------------------------------------------------------
 /// @name Wallet Management

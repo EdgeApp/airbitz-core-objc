@@ -33,6 +33,8 @@
 @property (atomic, strong) ABCExchangeCache         *exchangeCache;
 
 - (NSDate *)dateFromTimestamp:(int64_t) intDate;
+- (NSError *)setOTPKey:(NSString *)username
+                   key:(NSString *)key;
 
 @end
 

@@ -68,7 +68,7 @@
 		
 		<option value="//api/name/getMinimumUsernamedLength">+ getMinimumUsernamedLength</option>
 		
-		<option value="//api/name/listRecoveryQuestionsChoices:error:">+ listRecoveryQuestionsChoices:error:</option>
+		<option value="//api/name/listRecoveryQuestionChoices:error:">+ listRecoveryQuestionChoices:error:</option>
 		
 	</optgroup>
 	
@@ -76,11 +76,11 @@
 	
 	<optgroup label="Instance Methods">
 		
-		<option value="//api/name/PINLoginExists:error:">- PINLoginExists:error:</option>
-		
 		<option value="//api/name/accountExistsLocal:">- accountExistsLocal:</option>
 		
-		<option value="//api/name/coreVersion">- coreVersion</option>
+		<option value="//api/name/accountHasPINLogin:error:">- accountHasPINLogin:error:</option>
+		
+		<option value="//api/name/accountHasPassword:error:">- accountHasPassword:error:</option>
 		
 		<option value="//api/name/createAccount:password:pin:delegate:complete:error:">- createAccount:password:pin:delegate:complete:error:</option>
 		
@@ -92,8 +92,6 @@
 		
 		<option value="//api/name/enterForeground">- enterForeground</option>
 		
-		<option value="//api/name/exchangeCacheGet">- exchangeCacheGet</option>
-		
 		<option value="//api/name/free">- free</option>
 		
 		<option value="//api/name/getLastAccessedAccount">- getLastAccessedAccount</option>
@@ -102,43 +100,39 @@
 		
 		<option value="//api/name/getRecoveryQuestionsForUserName:error:">- getRecoveryQuestionsForUserName:error:</option>
 		
+		<option value="//api/name/getVersion">- getVersion</option>
+		
 		<option value="//api/name/hasDeviceCapability:">- hasDeviceCapability:</option>
+		
+		<option value="//api/name/hasOTPResetPending:error:">- hasOTPResetPending:error:</option>
 		
 		<option value="//api/name/init:hbits:">- init:hbits:</option>
 		
-		<option value="//api/name/isAccountUsernameAvailable:">- isAccountUsernameAvailable:</option>
-		
 		<option value="//api/name/isTestNet">- isTestNet</option>
+		
+		<option value="//api/name/isUsernameAvailable:">- isUsernameAvailable:</option>
 		
 		<option value="//api/name/listLocalAccounts:">- listLocalAccounts:</option>
 		
 		<option value="//api/name/listPendingOTPResetUsernames:">- listPendingOTPResetUsernames:</option>
 		
-		<option value="//api/name/logout:">- logout:</option>
+		<option value="//api/name/passwordLogin:password:delegate:error:">- passwordLogin:password:delegate:error:</option>
 		
-		<option value="//api/name/lostConnectivity">- lostConnectivity</option>
+		<option value="//api/name/passwordLogin:password:delegate:otp:complete:error:">- passwordLogin:password:delegate:otp:complete:error:</option>
 		
-		<option value="//api/name/passwordExists:error:">- passwordExists:error:</option>
+		<option value="//api/name/passwordLogin:password:delegate:otp:otpResetToken:otpResetDate:error:">- passwordLogin:password:delegate:otp:otpResetToken:otpResetDate:error:</option>
+		
+		<option value="//api/name/pinLogin:pin:delegate:complete:error:">- pinLogin:pin:delegate:complete:error:</option>
+		
+		<option value="//api/name/pinLogin:pin:delegate:error:">- pinLogin:pin:delegate:error:</option>
+		
+		<option value="//api/name/recoveryLogin:answers:delegate:otp:complete:error:">- recoveryLogin:answers:delegate:otp:complete:error:</option>
 		
 		<option value="//api/name/requestOTPReset:token:complete:error:">- requestOTPReset:token:complete:error:</option>
 		
-		<option value="//api/name/restoreConnectivity">- restoreConnectivity</option>
+		<option value="//api/name/setConnectivity:">- setConnectivity:</option>
 		
 		<option value="//api/name/setLastAccessedAccount:">- setLastAccessedAccount:</option>
-		
-		<option value="//api/name/setOTPKey:key:">- setOTPKey:key:</option>
-		
-		<option value="//api/name/signIn:password:delegate:error:">- signIn:password:delegate:error:</option>
-		
-		<option value="//api/name/signIn:password:delegate:otp:complete:error:">- signIn:password:delegate:otp:complete:error:</option>
-		
-		<option value="//api/name/signIn:password:delegate:otp:otpResetToken:otpResetDate:error:">- signIn:password:delegate:otp:otpResetToken:otpResetDate:error:</option>
-		
-		<option value="//api/name/signInWithPIN:pin:delegate:complete:error:">- signInWithPIN:pin:delegate:complete:error:</option>
-		
-		<option value="//api/name/signInWithPIN:pin:delegate:error:">- signInWithPIN:pin:delegate:error:</option>
-		
-		<option value="//api/name/signInWithRecoveryAnswers:answers:delegate:otp:complete:error:">- signInWithRecoveryAnswers:answers:delegate:otp:complete:error:</option>
 		
 	</optgroup>
 	
@@ -174,94 +168,12 @@
 					<div class="section section-overview">
 						<a title="Overview" name="overview"></a>
 						<h2 class="subtitle subtitle-overview">Overview</h2>
-						<p>AirbitzCore (ABC) is a client-side blockchain and Edge Security SDK providing auto-encrypted
-and auto-backed up accounts and wallets with zero-knowledge security and privacy.
-All blockchain/bitcoin private and public keys are fully encrypted by the users' credentials
-before being backed up on to peer to peer servers. ABC allows developers to create new
-Airbitz wallet accounts or login to pre-existing accounts. Account encrypted data is
-automatically synchronized between all devices and apps using the Airbitz SDK. This allows a
-third party application to generate payment requests or send funds for the users' account
-that may have been created on the Airbitz Mobile Bitcoin Wallet or any other Airbitz SDK
-application.</p>
-
-<p>In addition, the <a href="../Classes/ABCDataStore.html">ABCDataStore</a> object in the Airbitz <a href="../Classes/ABCAccount.html">ABCAccount</a> object allows developers to
-store arbitrary Edge-Secured data on the user&rsquo;s account which is automatically encrypted,
-automatically backed up, and automatically synchronized between the user&rsquo;s authenticated
-devices.</p>
-
-<pre><code>// Global account object
-ABCAccount *gAccount;
-
-- (void) exampleMethod
-{
-    // Create an account
-    AirbitzCore *abc  = [[AirbitzCore alloc] init:@"YourAPIKeyHere"];
-    ABCAccount *abcAccount = [abc createAccount:@"myusername" password:@"MyPa55w0rd!&amp;" pin:@"4283" delegate:self error:nil];
-    // New account is auto logged in after creation
-
-    // Use Airbitz Edge Security to write encrypted/backed up/synchronized data to the account
-    [gAccount.dataStore dataWrite:@"myAppUserInfo" withKey:@"user_email" withValue:@"theuser@hisdomain.com"];
-
-    // Read back the data
-    NSMutableString *usersEmail = [[NSMutableString alloc] init];
-    [gAccount.dataStore dataRead:@"myAppUserInfo" withKey:@"user_email" data:usersEmail];
-
-    // usersEmail now contains "theuser@hisdomain.com"
-
-    // Create a wallet in the user account
-    ABCWallet *wallet = [abcAccount createWallet:@"My Awesome Wallet" currency:nil];
-
-    // Logout
-    [abc logout:abcAccount];
-
-    // Log back in with full credentials
-    abcAccount = [abc signIn:@"myusername" password:@"MyPa55w0rd!&amp;" delegate:self error:nil];
-
-    // Logout
-    [abc logout:abcAccount];
-
-    // Log back in with PIN using completion handler codeblock
-    [abc signInWithPIN:@"myusername" pin:@"4283" delegate:self complete:^(ABCAccount *account)
-    {
-        gAccount = account;
-
-    } error:^(NSError *error) {
-        NSLog(@"Argh! Error code: %d. Error string:%@", (int)error.code, error.userInfo[NSLocalizedDescriptionKey]);
-    }];
-
-}
-
-// Delegate method called when wallets are loaded after a signIn
-- (void) abcAccountWalletsLoaded
-{
-    // Get the first wallet in the account
-    ABCWallet *wallet = gAccount.arrayWallets[0];
-
-    // Create a bitcoin request
-    ABCReceiveAddress *request = [wallet createNewReceiveAddress];
-
-    // Put in some optional meta data into this request so incoming funds are automatically tagged
-    request.metaData.payeeName     = @"William Swanson"; // Name of the person receiving request
-    request.metaData.category      = @"Income:Rent";     // Category of payment. Auto tags category when funds come in
-    request.metaData.notes         = @"Rent payment for Jan 2016";
-
-    // Put in an optional request amount and use fiat exchange rate conversion methods
-    request.amountSatoshi          = [gAccount.exchangeCache currencyToSatoshi:5.00 currencyCode:@"USD" error:nil];
-
-    // Use the request results
-    NSString *bitcoinAddress = request.address;
-    NSString *bitcoinURI     = request.uri;
-    UIImage  *bitcoinQRCode  = request.qrCode;
-
-    // Now go and display the QR code or send payment to address in some other way.
-}
-
-// Delegate method called when bitcoin is received
-- (void) abcAccountIncomingBitcoin:(ABCWallet *)wallet txid:(NSString *)txid;
-{
-    NSLog(@"Yay, my wallet just received bitcoin");
-}
-</code></pre>
+						<p>The AirbitzCore object is the starting point in accessing the entire Airbitz SDK. AirbitzCore should
+first be initialized using init. From here, developers can create and login to accounts which will
+return an <a href="../Classes/ABCAccount.html">ABCAccount</a> object representing a logged in account. Within each account, you can create
+<a href="../Classes/ABCWallet.html">ABCWallet</a> objects using createWallet. Each <a href="../Classes/ABCWallet.html">ABCWallet</a> represents a single BIP32 HD chain of addresses which don&rsquo;t cross
+over to other wallets. ABCWallets contain <a href="../Classes/ABCTransaction.html">ABCTransaction</a> objects representing each incoming or outgoing
+transaction.</p>
 					</div>
 					
 					
@@ -575,8 +487,8 @@ callback handler</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/signIn:password:delegate:otp:complete:error:" title="signIn:password:delegate:otp:complete:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/signIn:password:delegate:otp:complete:error:">&ndash;&nbsp;signIn:password:delegate:otp:complete:error:</a></code>
+	<a name="//api/name/passwordLogin:password:delegate:otp:complete:error:" title="passwordLogin:password:delegate:otp:complete:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/passwordLogin:password:delegate:otp:complete:error:">&ndash;&nbsp;passwordLogin:password:delegate:otp:complete:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -586,12 +498,12 @@ callback handler</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Sign In to an Airbitz account using completion handlers.</p>
+				<p>Login to an Airbitz account using completion handlers.</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)signIn:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> complete:(void ( ^ ) ( ABCAccount *account ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *, NSDate *otpResetDate , NSString *otpResetToken ))<em>errorHandler</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)passwordLogin:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> complete:(void ( ^ ) ( ABCAccount *account ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *, NSDate *otpResetDate , NSString *otpResetToken ))<em>errorHandler</em></code></div>
 
 		    
 			
@@ -652,7 +564,7 @@ in requestOTPReset to request a reset of OTP. The reset will take 7 days</p></td
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Sign In to an Airbitz account using completion handlers.</p>
+				<p>Login to an Airbitz account using completion handlers.</p>
 			</div>
 			
 
@@ -670,8 +582,8 @@ in requestOTPReset to request a reset of OTP. The reset will take 7 days</p></td
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/signIn:password:delegate:error:" title="signIn:password:delegate:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/signIn:password:delegate:error:">&ndash;&nbsp;signIn:password:delegate:error:</a></code>
+	<a name="//api/name/passwordLogin:password:delegate:error:" title="passwordLogin:password:delegate:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/passwordLogin:password:delegate:error:">&ndash;&nbsp;passwordLogin:password:delegate:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -681,12 +593,12 @@ in requestOTPReset to request a reset of OTP. The reset will take 7 days</p></td
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Sign In to an Airbitz account.</p>
+				<p>Login to an Airbitz account.</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (ABCAccount *)signIn:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> error:(NSError **)<em>error</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (ABCAccount *)passwordLogin:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> error:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -730,7 +642,7 @@ in requestOTPReset to request a reset of OTP. The reset will take 7 days</p></td
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Sign In to an Airbitz account.</p>
+				<p>Login to an Airbitz account.</p>
 			</div>
 			
 
@@ -748,8 +660,8 @@ in requestOTPReset to request a reset of OTP. The reset will take 7 days</p></td
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/signIn:password:delegate:otp:otpResetToken:otpResetDate:error:" title="signIn:password:delegate:otp:otpResetToken:otpResetDate:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/signIn:password:delegate:otp:otpResetToken:otpResetDate:error:">&ndash;&nbsp;signIn:password:delegate:otp:otpResetToken:otpResetDate:error:</a></code>
+	<a name="//api/name/passwordLogin:password:delegate:otp:otpResetToken:otpResetDate:error:" title="passwordLogin:password:delegate:otp:otpResetToken:otpResetDate:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/passwordLogin:password:delegate:otp:otpResetToken:otpResetDate:error:">&ndash;&nbsp;passwordLogin:password:delegate:otp:otpResetToken:otpResetDate:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -759,7 +671,7 @@ in requestOTPReset to request a reset of OTP. The reset will take 7 days</p></td
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Sign In to an Airbitz account. This routine allows caller to receive back an otpResetToken
+				<p>Login to an Airbitz account. This routine allows caller to receive back an otpResetToken
 which is used with [AirbitzCore requestOTPReset] to remove OTP from the specified account.
 The otpResetToken is only returned if the caller has provided the correct username and password
 but the account had OTP enabled. In such case, signIn will also provide an otpResetDate which is
@@ -769,7 +681,7 @@ The reset date is set to 7 days from when a reset was initially requested.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (ABCAccount *)signIn:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> otpResetToken:(NSMutableString *)<em>otpResetToken</em> otpResetDate:(NSDate **)<em>otpResetDate</em> error:(NSError **)<em>error</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (ABCAccount *)passwordLogin:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> otpResetToken:(NSMutableString *)<em>otpResetToken</em> otpResetDate:(NSDate **)<em>otpResetDate</em> error:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -830,7 +742,7 @@ this account.</p></td>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Sign In to an Airbitz account. This routine allows caller to receive back an otpResetToken
+				<p>Login to an Airbitz account. This routine allows caller to receive back an otpResetToken
 which is used with [AirbitzCore requestOTPReset] to remove OTP from the specified account.
 The otpResetToken is only returned if the caller has provided the correct username and password
 but the account had OTP enabled. In such case, signIn will also provide an otpResetDate which is
@@ -853,8 +765,8 @@ The reset date is set to 7 days from when a reset was initially requested.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/signInWithPIN:pin:delegate:complete:error:" title="signInWithPIN:pin:delegate:complete:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/signInWithPIN:pin:delegate:complete:error:">&ndash;&nbsp;signInWithPIN:pin:delegate:complete:error:</a></code>
+	<a name="//api/name/pinLogin:pin:delegate:complete:error:" title="pinLogin:pin:delegate:complete:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/pinLogin:pin:delegate:complete:error:">&ndash;&nbsp;pinLogin:pin:delegate:complete:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -864,13 +776,13 @@ The reset date is set to 7 days from when a reset was initially requested.</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Sign In to an Airbitz account with PIN using completion handlers. Used to sign into
+				<p>Login to an Airbitz account with PIN using completion handlers. Used to sign into
 devices that have previously been logged into using a full username &amp; password</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)signInWithPIN:(NSString *)<em>username</em> pin:(NSString *)<em>pin</em> delegate:(id)<em>delegate</em> complete:(void ( ^ ) ( ABCAccount *user ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *))<em>errorHandler</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)pinLogin:(NSString *)<em>username</em> pin:(NSString *)<em>pin</em> delegate:(id)<em>delegate</em> complete:(void ( ^ ) ( ABCAccount *user ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *))<em>errorHandler</em></code></div>
 
 		    
 			
@@ -922,7 +834,7 @@ requested, the data that the reset will occur will be returned in this argument<
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Sign In to an Airbitz account with PIN using completion handlers. Used to sign into
+				<p>Login to an Airbitz account with PIN using completion handlers. Used to sign into
 devices that have previously been logged into using a full username &amp; password</p>
 			</div>
 			
@@ -941,8 +853,8 @@ devices that have previously been logged into using a full username &amp; passwo
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/signInWithPIN:pin:delegate:error:" title="signInWithPIN:pin:delegate:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/signInWithPIN:pin:delegate:error:">&ndash;&nbsp;signInWithPIN:pin:delegate:error:</a></code>
+	<a name="//api/name/pinLogin:pin:delegate:error:" title="pinLogin:pin:delegate:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/pinLogin:pin:delegate:error:">&ndash;&nbsp;pinLogin:pin:delegate:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -958,7 +870,7 @@ been logged into using a full username &amp; password</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (ABCAccount *)signInWithPIN:(NSString *)<em>username</em> pin:(NSString *)<em>pin</em> delegate:(id)<em>delegate</em> error:(NSError **)<em>error</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (ABCAccount *)pinLogin:(NSString *)<em>username</em> pin:(NSString *)<em>pin</em> delegate:(id)<em>delegate</em> error:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -1021,8 +933,8 @@ been logged into using a full username &amp; password</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/signInWithRecoveryAnswers:answers:delegate:otp:complete:error:" title="signInWithRecoveryAnswers:answers:delegate:otp:complete:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/signInWithRecoveryAnswers:answers:delegate:otp:complete:error:">&ndash;&nbsp;signInWithRecoveryAnswers:answers:delegate:otp:complete:error:</a></code>
+	<a name="//api/name/recoveryLogin:answers:delegate:otp:complete:error:" title="recoveryLogin:answers:delegate:otp:complete:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/recoveryLogin:answers:delegate:otp:complete:error:">&ndash;&nbsp;recoveryLogin:answers:delegate:otp:complete:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1038,7 +950,7 @@ set in their account. Use [ABCAccount setupRecoveryQuestions] to set questions a
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)signInWithRecoveryAnswers:(NSString *)<em>username</em> answers:(NSString *)<em>answers</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> complete:(void ( ^ ) ( ABCAccount *account ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *, NSDate *resetDate , NSString *resetToken ))<em>errorHandler</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)recoveryLogin:(NSString *)<em>username</em> answers:(NSString *)<em>answers</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> complete:(void ( ^ ) ( ABCAccount *account ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *, NSDate *resetDate , NSString *resetToken ))<em>errorHandler</em></code></div>
 
 		    
 			
@@ -1179,71 +1091,8 @@ set in their account. Use [ABCAccount setupRecoveryQuestions] to set questions a
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/logout:" title="logout:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/logout:">&ndash;&nbsp;logout:</a></code>
-</h3>
-
-	<div class="method-info">
-		<div class="pointy-thing"></div>
-
-		<div class="method-info-container">
-			
-			
-			<div class="method-subsection brief-description">
-				<p>Logout the specified <a href="../Classes/ABCAccount.html">ABCAccount</a> object</p>
-			</div>
-			
-		    
-
-			<div class="method-subsection method-declaration"><code>- (void)logout:(ABCAccount *)<em>abcAccount</em></code></div>
-
-		    
-			
-			<div class="method-subsection arguments-section parameters">
-				<h4 class="method-subtitle parameter-title">Parameters</h4>
-				<table class="argument-def parameter-def">
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>abcAccount</code></th>
-						<td><p><a href="../Classes/ABCAccount.html">ABCAccount</a> user to logout</p></td>
-					</tr>
-				
-				</table>
-			</div>
-			
-
-			
-			<div class="method-subsection return">
-				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>void</p>
-			</div>
-			
-
-			
-
-			
-			<div class="method-subsection discussion-section">
-				<h4 class="method-subtitle">Discussion</h4>
-				<p>Logout the specified <a href="../Classes/ABCAccount.html">ABCAccount</a> object</p>
-			</div>
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection declared-in-section">
-				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
-			</div>
-			
-			
-		</div>
-	</div>
-</div><div class="section-method">
-	<a name="//api/name/passwordExists:error:" title="passwordExists:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/passwordExists:error:">&ndash;&nbsp;passwordExists:error:</a></code>
+	<a name="//api/name/accountHasPassword:error:" title="accountHasPassword:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/accountHasPassword:error:">&ndash;&nbsp;accountHasPassword:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1259,7 +1108,7 @@ a PIN-only account.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (BOOL)passwordExists:(NSString *)<em>username</em> error:(NSError **)<em>error</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (BOOL)accountHasPassword:(NSString *)<em>username</em> error:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -1511,8 +1360,8 @@ does not require network connectivity to operate.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/isAccountUsernameAvailable:" title="isAccountUsernameAvailable:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/isAccountUsernameAvailable:">&ndash;&nbsp;isAccountUsernameAvailable:</a></code>
+	<a name="//api/name/isUsernameAvailable:" title="isUsernameAvailable:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/isUsernameAvailable:">&ndash;&nbsp;isUsernameAvailable:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1528,7 +1377,7 @@ network connectivity to function.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (NSError *)isAccountUsernameAvailable:(NSString *)<em>username</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (NSError *)isUsernameAvailable:(NSString *)<em>username</em></code></div>
 
 		    
 			
@@ -1576,8 +1425,8 @@ network connectivity to function.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/PINLoginExists:error:" title="PINLoginExists:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/PINLoginExists:error:">&ndash;&nbsp;PINLoginExists:error:</a></code>
+	<a name="//api/name/accountHasPINLogin:error:" title="accountHasPINLogin:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/accountHasPINLogin:error:">&ndash;&nbsp;accountHasPINLogin:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1593,7 +1442,7 @@ there is a local PIN package on the device from a prior login</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (BOOL)PINLoginExists:(NSString *)<em>username</em> error:(NSError **)<em>error</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (BOOL)accountHasPINLogin:(NSString *)<em>username</em> error:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -1658,8 +1507,8 @@ there is a local PIN package on the device from a prior login</p>
 			
 			<div class="method-subsection brief-description">
 				<p>Deletes named account from local device. Account is recoverable if it contains a password.
-Use [AirbitzCore passwordExists] to determine if account has a password. Recommend warning
-user before executing deleteLocalAccount if passwordExists returns FALSE.</p>
+Use [AirbitzCore accountHasPassword] to determine if account has a password. Recommend warning
+user before executing deleteLocalAccount if accountHasPassword returns FALSE.</p>
 			</div>
 			
 		    
@@ -1694,8 +1543,8 @@ user before executing deleteLocalAccount if passwordExists returns FALSE.</p>
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>Deletes named account from local device. Account is recoverable if it contains a password.
-Use [AirbitzCore passwordExists] to determine if account has a password. Recommend warning
-user before executing deleteLocalAccount if passwordExists returns FALSE.</p>
+Use [AirbitzCore accountHasPassword] to determine if account has a password. Recommend warning
+user before executing deleteLocalAccount if accountHasPassword returns FALSE.</p>
 			</div>
 			
 
@@ -1907,8 +1756,8 @@ with a call to [ABCAccount setupRecoveryQuestions]</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/listRecoveryQuestionsChoices:error:" title="listRecoveryQuestionsChoices:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/listRecoveryQuestionsChoices:error:">+&nbsp;listRecoveryQuestionsChoices:error:</a></code>
+	<a name="//api/name/listRecoveryQuestionChoices:error:" title="listRecoveryQuestionChoices:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/listRecoveryQuestionChoices:error:">+&nbsp;listRecoveryQuestionChoices:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1924,7 +1773,7 @@ servers, but app is <a href="#//api/name/free">free</a> to choose its own to pre
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>+ (void)listRecoveryQuestionsChoices:(void ( ^ ) ( NSMutableArray *arrayCategoryString , NSMutableArray *arrayCategoryNumeric , NSMutableArray *arrayCategoryMust ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *error ))<em>errorHandler</em></code></div>
+			<div class="method-subsection method-declaration"><code>+ (void)listRecoveryQuestionChoices:(void ( ^ ) ( NSMutableArray *arrayCategoryString , NSMutableArray *arrayCategoryNumeric , NSMutableArray *arrayCategoryMust ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *error ))<em>errorHandler</em></code></div>
 
 		    
 			
@@ -1990,82 +1839,6 @@ servers, but app is <a href="#//api/name/free">free</a> to choose its own to pre
 
 						<div class="task-list">
 							<div class="section-method">
-	<a name="//api/name/setOTPKey:key:" title="setOTPKey:key:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/setOTPKey:key:">&ndash;&nbsp;setOTPKey:key:</a></code>
-</h3>
-
-	<div class="method-info">
-		<div class="pointy-thing"></div>
-
-		<div class="method-info-container">
-			
-			
-			<div class="method-subsection brief-description">
-				<p>Associates an OTP key with the given username. An OTP key can be retrieved from
-a previously logged in account using [ABCAccount getOTPLocalKey]. The account
-must have had OTP enabled by using [ABCAccount setOTPAuth]
-This will not write to disk until the user has successfully logged in
-at least once.</p>
-			</div>
-			
-		    
-
-			<div class="method-subsection method-declaration"><code>- (NSError *)setOTPKey:(NSString *)<em>username</em> key:(NSString *)<em>key</em></code></div>
-
-		    
-			
-			<div class="method-subsection arguments-section parameters">
-				<h4 class="method-subtitle parameter-title">Parameters</h4>
-				<table class="argument-def parameter-def">
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>username</code></th>
-						<td><p>NSString* user to set the OTP key for</p></td>
-					</tr>
-				
-					<tr>
-						<th scope="row" class="argument-name"><code>key</code></th>
-						<td><p>NSString* key to set</p></td>
-					</tr>
-				
-				</table>
-			</div>
-			
-
-			
-			<div class="method-subsection return">
-				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>NSError*</p>
-			</div>
-			
-
-			
-
-			
-			<div class="method-subsection discussion-section">
-				<h4 class="method-subtitle">Discussion</h4>
-				<p>Associates an OTP key with the given username. An OTP key can be retrieved from
-a previously logged in account using [ABCAccount getOTPLocalKey]. The account
-must have had OTP enabled by using [ABCAccount setOTPAuth]
-This will not write to disk until the user has successfully logged in
-at least once.</p>
-			</div>
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection declared-in-section">
-				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
-			</div>
-			
-			
-		</div>
-	</div>
-</div><div class="section-method">
 	<a name="//api/name/listPendingOTPResetUsernames:" title="listPendingOTPResetUsernames:"></a>
 	<h3 class="method-title"><code><a href="#//api/name/listPendingOTPResetUsernames:">&ndash;&nbsp;listPendingOTPResetUsernames:</a></code>
 </h3>
@@ -2114,6 +1887,76 @@ have a pending OTP reset on the server.</p>
 				<h4 class="method-subtitle">Discussion</h4>
 				<p>Returns an array of usernames of accounts local to device that
 have a pending OTP reset on the server.</p>
+			</div>
+			
+
+			
+
+			
+
+			
+			<div class="method-subsection declared-in-section">
+				<h4 class="method-subtitle">Declared In</h4>
+				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
+			</div>
+			
+			
+		</div>
+	</div>
+</div><div class="section-method">
+	<a name="//api/name/hasOTPResetPending:error:" title="hasOTPResetPending:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/hasOTPResetPending:error:">&ndash;&nbsp;hasOTPResetPending:error:</a></code>
+</h3>
+
+	<div class="method-info">
+		<div class="pointy-thing"></div>
+
+		<div class="method-info-container">
+			
+			
+			<div class="method-subsection brief-description">
+				<p>Checks if the current account has a pending request to reset (disable)
+OTP.</p>
+			</div>
+			
+		    
+
+			<div class="method-subsection method-declaration"><code>- (BOOL)hasOTPResetPending:(NSString *)<em>username</em> error:(NSError **)<em>error</em></code></div>
+
+		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>username</code></th>
+						<td><p>NSString username to check</p></td>
+					</tr>
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>error</code></th>
+						<td><p>NSError error object or nil if success</p></td>
+					</tr>
+				
+				</table>
+			</div>
+			
+
+			
+			<div class="method-subsection return">
+				<h4 class="method-subtitle parameter-title">Return Value</h4>
+				<p>BOOL YES if account has pending reset</p>
+			</div>
+			
+
+			
+
+			
+			<div class="method-subsection discussion-section">
+				<h4 class="method-subtitle">Discussion</h4>
+				<p>Checks if the current account has a pending request to reset (disable)
+OTP.</p>
 			</div>
 			
 
@@ -2218,72 +2061,13 @@ which will disable the OTP authentication requirement when it expires.</p>
 						</div>
 						
 
-						<a title="ABCExchange Calls" name="task_ABCExchange Calls"></a>
-						<h2 class="task-title">ABCExchange Calls</h2>
-
-						<div class="task-list">
-							<div class="section-method">
-	<a name="//api/name/exchangeCacheGet" title="exchangeCacheGet"></a>
-	<h3 class="method-title"><code><a href="#//api/name/exchangeCacheGet">&ndash;&nbsp;exchangeCacheGet</a></code>
-</h3>
-
-	<div class="method-info">
-		<div class="pointy-thing"></div>
-
-		<div class="method-info-container">
-			
-			
-			<div class="method-subsection brief-description">
-				<p>Gets an <a href="../Classes/ABCExchangeCache.html">ABCExchangeCache</a> object for use in doing currency conversion</p>
-			</div>
-			
-		    
-
-			<div class="method-subsection method-declaration"><code>- (ABCExchangeCache *)exchangeCacheGet</code></div>
-
-		    
-			
-
-			
-			<div class="method-subsection return">
-				<h4 class="method-subtitle parameter-title">Return Value</h4>
-				<p>ABCExchangeCache*</p>
-			</div>
-			
-
-			
-
-			
-			<div class="method-subsection discussion-section">
-				<h4 class="method-subtitle">Discussion</h4>
-				<p>Gets an <a href="../Classes/ABCExchangeCache.html">ABCExchangeCache</a> object for use in doing currency conversion</p>
-			</div>
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection declared-in-section">
-				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
-			</div>
-			
-			
-		</div>
-	</div>
-</div>
-						</div>
-						
-
 						<a title="System Calls and Queries" name="task_System Calls and Queries"></a>
 						<h2 class="task-title">System Calls and Queries</h2>
 
 						<div class="task-list">
 							<div class="section-method">
-	<a name="//api/name/coreVersion" title="coreVersion"></a>
-	<h3 class="method-title"><code><a href="#//api/name/coreVersion">&ndash;&nbsp;coreVersion</a></code>
+	<a name="//api/name/getVersion" title="getVersion"></a>
+	<h3 class="method-title"><code><a href="#//api/name/getVersion">&ndash;&nbsp;getVersion</a></code>
 </h3>
 
 	<div class="method-info">
@@ -2298,7 +2082,7 @@ which will disable the OTP authentication requirement when it expires.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (NSString *)coreVersion</code></div>
+			<div class="method-subsection method-declaration"><code>- (NSString *)getVersion</code></div>
 
 		    
 			
@@ -2543,8 +2327,8 @@ spin up any background queues</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/restoreConnectivity" title="restoreConnectivity"></a>
-	<h3 class="method-title"><code><a href="#//api/name/restoreConnectivity">&ndash;&nbsp;restoreConnectivity</a></code>
+	<a name="//api/name/setConnectivity:" title="setConnectivity:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/setConnectivity:">&ndash;&nbsp;setConnectivity:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -2554,15 +2338,27 @@ spin up any background queues</p>
 			
 			
 			<div class="method-subsection brief-description">
-				<p>Call this routine when application loses network connectibity to have ABC
+				<p>Call this routine when application loses and regains network connectibity to have ABC
 prevent repeated network calls</p>
 			</div>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)restoreConnectivity</code></div>
+			<div class="method-subsection method-declaration"><code>- (void)setConnectivity:(BOOL)<em>hasConnectivity</em></code></div>
 
 		    
+			
+			<div class="method-subsection arguments-section parameters">
+				<h4 class="method-subtitle parameter-title">Parameters</h4>
+				<table class="argument-def parameter-def">
+				
+					<tr>
+						<th scope="row" class="argument-name"><code>hasConnectivity</code></th>
+						<td><p>BOOL set to YES when app has connectvity. NO otherwise</p></td>
+					</tr>
+				
+				</table>
+			</div>
 			
 
 			
@@ -2572,56 +2368,8 @@ prevent repeated network calls</p>
 			
 			<div class="method-subsection discussion-section">
 				<h4 class="method-subtitle">Discussion</h4>
-				<p>Call this routine when application loses network connectibity to have ABC
+				<p>Call this routine when application loses and regains network connectibity to have ABC
 prevent repeated network calls</p>
-			</div>
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection declared-in-section">
-				<h4 class="method-subtitle">Declared In</h4>
-				<p><code class="declared-in-ref">AirbitzCore.h</code></p>
-			</div>
-			
-			
-		</div>
-	</div>
-</div><div class="section-method">
-	<a name="//api/name/lostConnectivity" title="lostConnectivity"></a>
-	<h3 class="method-title"><code><a href="#//api/name/lostConnectivity">&ndash;&nbsp;lostConnectivity</a></code>
-</h3>
-
-	<div class="method-info">
-		<div class="pointy-thing"></div>
-
-		<div class="method-info-container">
-			
-			
-			<div class="method-subsection brief-description">
-				<p>Call this routine when application re-gains network connectibity to have ABC
-re-initiate networking</p>
-			</div>
-			
-		    
-
-			<div class="method-subsection method-declaration"><code>- (void)lostConnectivity</code></div>
-
-		    
-			
-
-			
-
-			
-
-			
-			<div class="method-subsection discussion-section">
-				<h4 class="method-subtitle">Discussion</h4>
-				<p>Call this routine when application re-gains network connectibity to have ABC
-re-initiate networking</p>
 			</div>
 			
 
@@ -2895,7 +2643,7 @@ and checks for invalid characters.</p>
 				<footer>
 					<div class="footer-copyright">
 						
-						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-18</p>
+						<p class="copyright">Copyright &copy; 2016 Airbitz. All rights reserved. Updated: 2016-03-31</p>
 						
 						
 						<p class="generator">Generated by <a href="http://appledoc.gentlebytes.com">appledoc 2.2.1 (build 1334)</a>.</p>
