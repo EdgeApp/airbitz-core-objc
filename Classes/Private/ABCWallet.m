@@ -521,6 +521,25 @@ static const int importTimeout                  = 30;
     _blockHeight = blockHeight;
 }
 
+- (int)getTxHeight:(NSString *)txid;
+{
+    tABC_Error Error;
+    int txHeight = 0;
+    if ([self.uuid length] == 0 || [txid length] == 0) {
+        return 0;
+    }
+    if (ABC_TxHeight([self.uuid UTF8String], [txid UTF8String], &txHeight, &Error) != ABC_CC_Ok) {
+        if (txHeight < 0)
+        {
+            ABCLog(0, @"calcTxConfirmations returning negative txHeight=%d", txHeight);
+            return txHeight;
+        }
+        else
+            return 0;
+    }
+    return txHeight;
+}
+
 - (NSError *)searchTransactionsIn:(NSString *)term addTo:(NSMutableArray *) arrayTransactions;
 {
     tABC_Error Error;

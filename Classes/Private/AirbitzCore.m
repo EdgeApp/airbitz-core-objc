@@ -2,7 +2,7 @@
 #import "AirbitzCore+Internal.h"
 #import <pthread.h>
 
-#define ABC_VERSION_STRING @"0.9.0"
+#define ABC_VERSION_STRING @"0.9.1"
 
 @class ABCUtil;
 

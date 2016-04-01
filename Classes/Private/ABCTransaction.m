@@ -10,6 +10,9 @@
 #import "AirbitzCore+Internal.h"
 
 @interface ABCTransaction ()
+{
+    unsigned long           _height;
+}
 
 @end
 
@@ -20,7 +23,7 @@
 - (id)initWithWallet:(ABCWallet *)wallet;
 {
     self = [super init];
-    if (self) 
+    if (self)
     {
         self.metaData = [ABCMetaData alloc];
         self.txid = @"";
@@ -35,9 +38,23 @@
     return self;
 }
 
-- (void)dealloc 
+- (void)dealloc
 {
- 
+    
+}
+
+- (unsigned long)height;
+{
+    if (_height == 0)
+    {
+        _height = [self.wallet getTxHeight:self.txid];
+    }
+    return _height;
+}
+
+- (void)setHeight:(unsigned long)height;
+{
+    _height = height;
 }
 
 - (void)saveTransactionDetails;
