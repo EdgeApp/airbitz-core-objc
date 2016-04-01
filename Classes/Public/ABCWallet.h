@@ -215,6 +215,7 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  * @return NSError* error object. nil if success
  */
 - (NSError *)exportTransactionsToCSV:(NSMutableString *) csv;
+- (NSError *)exportTransactionsToCSV:(NSMutableString *) csv start:(NSDate *)start end:(NSDate* )end;
 
 /**
  * Export a wallet's transactions to Quickbooks QBO format
@@ -223,6 +224,7 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  * @return NSError* error object. nil if success
  */
 - (NSError *)exportTransactionsToQBO:(NSMutableString *) qbo;
+- (NSError *)exportTransactionsToQBO:(NSMutableString *) qbo start:(NSDate *)start end:(NSDate* )end;
 
 /*
  * Export a wallet's private seed in raw entropy format
