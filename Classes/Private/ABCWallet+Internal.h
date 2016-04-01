@@ -20,6 +20,7 @@
 - (void)loadTransactions;
 - (void)loadWalletFromCore:(NSString *)uuid;
 - (int)getBlockHeight:(NSError **)nserror;
+- (int)getTxHeight:(NSString *)txid;
 
 
 @end
