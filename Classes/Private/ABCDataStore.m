@@ -47,7 +47,13 @@
                       [key UTF8String],
                       [value UTF8String],
                       &error);
-    return [ABCError makeNSError:error];
+    
+    NSError *nserror = [ABCError makeNSError:error];
+    if (!nserror)
+    {
+        [self.account dataSyncAccount];
+    }
+    return nserror;
 }
 
 - (NSError *)dataRemoveKey:(NSString *)folder withKey:(NSString *)key;
@@ -56,7 +62,12 @@
     ABC_PluginDataRemove([self.account.name UTF8String],
                          [self.account.password UTF8String],
                          [folder UTF8String], [key UTF8String], &error);
-    return [ABCError makeNSError:error];
+    NSError *nserror = [ABCError makeNSError:error];
+    if (!nserror)
+    {
+        [self.account dataSyncAccount];
+    }
+    return nserror;
 }
 
 - (NSError *)dataRemoveFolder:(NSString *)folder;
@@ -65,7 +76,12 @@
     ABC_PluginDataClear([self.account.name UTF8String],
                         [self.account.password UTF8String],
                         [folder UTF8String], &error);
-    return [ABCError makeNSError:error];
+    NSError *nserror = [ABCError makeNSError:error];
+    if (!nserror)
+    {
+        [self.account dataSyncAccount];
+    }
+    return nserror;
 }
 
 
