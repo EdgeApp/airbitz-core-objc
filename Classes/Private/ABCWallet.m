@@ -301,12 +301,28 @@ static const int importTimeout                  = 30;
     }
 }
 
+
 - (NSError *)exportTransactionsToCSV:(NSMutableString *) csv;
+{
+    return [self exportTransactionsToCSV:csv start:nil end:nil];
+}
+
+- (NSError *)exportTransactionsToCSV:(NSMutableString *) csv start:(NSDate *)start end:(NSDate* )end;
 {
     char *szCsvData = nil;
     tABC_Error error;
-    int64_t startTime = 0; // Need to pull this from GUI
-    int64_t endTime = 0x0FFFFFFFFFFFFFFF; // Need to pull this from GUI
+    int64_t startTime;
+    int64_t endTime;
+    
+    if (!start)
+        startTime = 0;
+    else
+        startTime = [start timeIntervalSince1970];
+    
+    if (!end)
+        endTime = 0x0FFFFFFFFFFFFFFF;
+    else
+        endTime = [end timeIntervalSince1970];
     
     if (!csv)
     {
@@ -329,10 +345,25 @@ static const int importTimeout                  = 30;
 
 - (NSError *)exportTransactionsToQBO:(NSMutableString *) qbo;
 {
+    return [self exportTransactionsToQBO:qbo start:nil end:nil];
+}
+
+- (NSError *)exportTransactionsToQBO:(NSMutableString *) qbo start:(NSDate *)start end:(NSDate* )end;
+{
     char *szQBOData = nil;
     tABC_Error error;
-    int64_t startTime = 0; // Need to pull this from GUI
-    int64_t endTime = 0x0FFFFFFFFFFFFFFF; // Need to pull this from GUI
+    int64_t startTime;
+    int64_t endTime;
+    
+    if (!start)
+        startTime = 0;
+    else
+        startTime = [start timeIntervalSince1970];
+    
+    if (!end)
+        endTime = 0x0FFFFFFFFFFFFFFF;
+    else
+        endTime = [end timeIntervalSince1970];
     
     if (!qbo)
     {
