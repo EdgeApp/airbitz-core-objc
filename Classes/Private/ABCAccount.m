@@ -151,12 +151,6 @@ static const int notifySyncDelay          = 1;
                                                            userInfo:nil
                                                             repeats:YES];
             
-            // Initialize data sync queue
-            dataSyncTimer = [NSTimer scheduledTimerWithTimeInterval:fileSyncFrequencySeconds
-                                                             target:self
-                                                           selector:@selector(dataSyncAllWalletsAndAccount)
-                                                           userInfo:nil
-                                                            repeats:YES];
         });
     }
 }
@@ -1209,26 +1203,9 @@ static const int notifySyncDelay          = 1;
                                                              repeats:NO];
 }
 
-
-
-- (void)dataSyncAllWalletsAndAccount
+- (void)dataSyncAccount;
 {
-    // Do not request a sync one is currently in progress
-    if ([dataQueue operationCount] > 0) {
-        return;
-    }
-
-    NSArray *arrayWallets;
-    
-    // Sync Wallets First
-    arrayWallets = [NSArray arrayWithArray:self.arrayWallets];
-    for (ABCWallet *wallet in arrayWallets)
-    {
-        [self requestWalletDataSync:wallet];
-    }
-    
-    // Sync Account second
-    [dataQueue addOperationWithBlock:^{
+    [self postToDataQueue:^{
         [[NSThread currentThread] setName:@"Data Sync"];
         tABC_Error error;
         bool bDirty = false;
@@ -1275,11 +1252,48 @@ static const int notifySyncDelay          = 1;
             });
         }
     }];
+
+}
+
+
+- (void)dataSyncAllWalletsAndAccount
+{
+    // Do not request a sync one is currently in progress
+    if ([dataQueue operationCount] > 0) {
+        return;
+    }
+
+    NSArray *arrayWallets;
+    
+    // Sync Wallets First
+    arrayWallets = [NSArray arrayWithArray:self.arrayWallets];
+    for (ABCWallet *wallet in arrayWallets)
+    {
+        [self requestWalletDataSync:wallet];
+    }
+    
+    // Sync Account second
+    [self dataSyncAccount];
     
     // Fetch general info last
     [dataQueue addOperationWithBlock:^{
         tABC_Error error;
         ABC_GeneralInfoUpdate(&error);
+    }];
+    
+    [self postToDataQueue:^{
+        dispatch_async(dispatch_get_main_queue(),^{
+            
+            // First off another data sync in a few seconds after this one completes
+            if (dataSyncTimer)
+                [dataSyncTimer invalidate];
+            
+            dataSyncTimer = [NSTimer scheduledTimerWithTimeInterval:fileSyncFrequencySeconds
+                                                             target:self
+                                                           selector:@selector(dataSyncAllWalletsAndAccount)
+                                                           userInfo:nil
+                                                            repeats:YES];
+        });
     }];
 }
 

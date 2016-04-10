@@ -101,7 +101,6 @@
     details.szCategory = (char *) [_metaData.category UTF8String];
     details.szNotes = (char *) [_metaData.notes UTF8String];
     details.bizId = _metaData.bizId;
-    details.attributes = 0x0; //for our own use (not used by the core)
 
     //the true fee values will be set by the core
     details.amountFeesAirbitzSatoshi = 0;
@@ -199,7 +198,6 @@
     details.szCategory = (char *)   [self.metaData.category UTF8String];
     details.szNotes = (char *)      [self.metaData.notes UTF8String];
     details.bizId = (unsigned int) self.metaData.bizId;
-    details.attributes = 0x0; //for our own use (not used by the core)
     
     //the true fee values will be set by the core
     details.amountFeesAirbitzSatoshi = 0;

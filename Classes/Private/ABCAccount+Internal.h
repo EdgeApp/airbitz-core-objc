@@ -34,6 +34,8 @@
 - (int)dataOperationCount;
 - (long) saveLogoutDate;
 - (void)requestExchangeRateUpdate;
+- (void)dataSyncAccount;
+
 
 
 @end
