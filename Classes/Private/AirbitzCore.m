@@ -100,6 +100,11 @@
 {
     if (YES == bInitialized)
     {
+        for (ABCAccount *user in self.loggedInUsers)
+        {
+            [user logout];
+        }
+
         ABC_Terminate();
         bInitialized = NO;
     }
