@@ -4,7 +4,9 @@
 //
 
 
+#if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
+#endif
 #import <sys/sysctl.h>
 #import "ABCUtil.h"
 #import "AirbitzCore+Internal.h"
@@ -147,7 +149,7 @@
     }
 }
 
-
+#if TARGET_OS_IPHONE
 + (UIImage *)dataToImage:(const unsigned char *)data withWidth:(int)width andHeight:(int)height
 {
     //converts raw monochrome bitmap data (each byte is a 1 or a 0 representing a pixel) into a UIImage
@@ -198,6 +200,7 @@
     free(pixels);
     return rawImage;
 }
+#endif
 
 + (NSString *)platform;
 {

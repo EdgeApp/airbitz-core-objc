@@ -1248,7 +1248,9 @@ void abcDebugLog(int level, NSString *statement)
     CFRelease(string);
     
     // add the device name
+#if TARGET_OS_IPHONE
     [strSeed appendString:[[UIDevice currentDevice] name]];
+#endif
     
     // add the string to the data
     [data appendData:[strSeed dataUsingEncoding:NSUTF8StringEncoding]];

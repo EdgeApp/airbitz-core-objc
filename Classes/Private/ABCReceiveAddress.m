@@ -58,12 +58,14 @@
     return _address;
 }
 
+#if TARGET_OS_IPHONE
 - (UIImage *)qrCode
 {
     if (_requestChanged)
         [self modifyReceiveAddress];
     return _qrCode;
 }
+#endif
 
 - (NSString *)uri;
 {
@@ -129,7 +131,9 @@
     lnserror = [ABCError makeNSError:error];
     if (lnserror) goto exitnow;
 
+#if TARGET_OS_IPHONE
     _qrCode = [ABCUtil dataToImage:pData withWidth:width andHeight:width];
+#endif
     _uri    = [NSString stringWithUTF8String:pszURI];
 
     exitnow:
@@ -138,7 +142,9 @@
 
     if (lnserror)
     {
+#if TARGET_OS_IPHONE
         _qrCode = nil;
+#endif
         _uri = nil;
     }
     
@@ -229,7 +235,9 @@
     nserror = [ABCError makeNSError:error];
     if (nserror) goto exitnow;
     
+#if TARGET_OS_IPHONE
     self.qrCode = [ABCUtil dataToImage:pData withWidth:width andHeight:width];
+#endif
     self.uri    = [NSString stringWithUTF8String:pszURI];
     
 exitnow:

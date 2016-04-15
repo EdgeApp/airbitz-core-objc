@@ -63,12 +63,12 @@ Pod::Spec.new do |s|
   #  the deployment target. You can optionally include the target after the platform.
   #
 
- s.platform     = :ios
- s.platform     = :ios, "8.0"
+# s.platform     = :ios
+# s.platform     = :ios, "8.0"
 
   #  When using multiple platforms
-  # s.ios.deployment_target = "5.0"
-  # s.osx.deployment_target = "10.7"
+  s.ios.deployment_target = "8.0"
+  s.osx.deployment_target = "10.10"
   # s.watchos.deployment_target = "2.0"
   # s.tvos.deployment_target = "9.0"
 
@@ -120,7 +120,31 @@ Pod::Spec.new do |s|
 #  s.library   = "AirbitzCore"
 #  s.libraries = "abc", "bitcoin", "boost_atomic", "boost_chrono", "boost_date_time", "boost_filesystem", "boost_program_options"
 
-  s.vendored_libraries =
+  s.osx.vendored_libraries =
+    "LibrariesOSX/libabc.a",
+    "LibrariesOSX/libbitcoin.a",
+    "LibrariesOSX/libboost_atomic.a",
+    "LibrariesOSX/libboost_chrono.a",
+    "LibrariesOSX/libboost_date_time.a",
+    "LibrariesOSX/libboost_filesystem.a",
+    "LibrariesOSX/libboost_program_options.a",
+    "LibrariesOSX/libboost_regex.a",
+    "LibrariesOSX/libboost_system.a",
+    "LibrariesOSX/libboost_thread.a",
+    "LibrariesOSX/libcrypto.a",
+    "LibrariesOSX/libcsv.a",
+    "LibrariesOSX/libcurl.a",
+    "LibrariesOSX/libgit2.a",
+    "LibrariesOSX/libjansson.a",
+    "LibrariesOSX/libprotobuf-lite.a",
+    "LibrariesOSX/libqrencode.a",
+    "LibrariesOSX/libsecp256k1.a",
+    "LibrariesOSX/libsodium.a",
+    "LibrariesOSX/libssl.a",
+    "LibrariesOSX/libz.a",
+    "LibrariesOSX/libzmq.a"
+
+  s.ios.vendored_libraries =
     "Libraries/libabc.a",
     "Libraries/libbitcoin.a",
     "Libraries/libboost_atomic.a",
