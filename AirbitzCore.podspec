@@ -103,7 +103,7 @@ Pod::Spec.new do |s|
   #
 
   # s.resource  = "icon.png"
-  # s.resources = "Resources/*.png"
+  s.resources = "Resources/api.cer", "Resources/ca-certificates.crt"
 
   # s.preserve_paths = "FilesToSave", "MoreFilesToSave"
 

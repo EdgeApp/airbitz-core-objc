@@ -122,6 +122,8 @@
 		DA5E8E4E1C643A23005E3093 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = Libraries/libssl.a; sourceTree = SOURCE_ROOT; };
 		DA5E8E4F1C643A23005E3093 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = Libraries/libz.a; sourceTree = SOURCE_ROOT; };
 		DA5E8E501C643A23005E3093 /* libzmq.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libzmq.a; path = Libraries/libzmq.a; sourceTree = SOURCE_ROOT; };
+		DA6E1DBA1CC3AA6C005A456E /* api.cer */ = {isa = PBXFileReference; lastKnownFileType = file; name = api.cer; path = Resources/api.cer; sourceTree = SOURCE_ROOT; };
+		DA6E1DBB1CC3AA6C005A456E /* ca-certificates.crt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "ca-certificates.crt"; path = "Resources/ca-certificates.crt"; sourceTree = SOURCE_ROOT; };
 		DA7236F71C90E4EE00E9966B /* ABCParsedURI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCParsedURI.m; path = Classes/Private/ABCParsedURI.m; sourceTree = SOURCE_ROOT; };
 		DA7236F91C90E4F900E9966B /* ABCParsedURI+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ABCParsedURI+Internal.h"; path = "Classes/Private/ABCParsedURI+Internal.h"; sourceTree = SOURCE_ROOT; };
 		DA7236FA1C90E51200E9966B /* ABCParsedURI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCParsedURI.h; path = Classes/Public/ABCParsedURI.h; sourceTree = SOURCE_ROOT; };
@@ -284,6 +286,15 @@
 			name = Libraries;
 			sourceTree = "<group>";
 		};
+		DA6E1DB91CC3AA50005A456E /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				DA6E1DBA1CC3AA6C005A456E /* api.cer */,
+				DA6E1DBB1CC3AA6C005A456E /* ca-certificates.crt */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		DAD1863E1C62FAC60082CB21 = {
 			isa = PBXGroup;
 			children = (
@@ -303,6 +314,7 @@
 		DAD186491C62FAC60082CB21 /* AirbitzCore */ = {
 			isa = PBXGroup;
 			children = (
+				DA6E1DB91CC3AA50005A456E /* Resources */,
 				DA5E8E0E1C6439D4005E3093 /* Libraries */,
 				DA5E8D331C632E4F005E3093 /* Private */,
 				DA5E8D321C632E47005E3093 /* Public */,
