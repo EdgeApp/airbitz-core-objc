@@ -91,51 +91,6 @@
     return nil;
 }
 
-
-- (BOOL) setKeychainString:(NSString *)s key:(NSString *)key authenticated:(BOOL) authenticated;
-{
-    @autoreleasepool {
-        NSData *d = (s) ? CFBridgingRelease(CFStringCreateExternalRepresentation(SecureAllocator(), (CFStringRef)s,
-                kCFStringEncodingUTF8, 0)) : nil;
-
-        return [self setKeychainData:d key:key authenticated:authenticated];
-    }
-}
-
-- (NSString *) getKeychainString:(NSString *)key error:(NSError **)error;
-{
-    @autoreleasepool {
-        NSData *d = [self getKeychainData:key error:error];
-
-        return (d) ? CFBridgingRelease(CFStringCreateFromExternalRepresentation(SecureAllocator(), (CFDataRef)d,
-                kCFStringEncodingUTF8)) : nil;
-    }
-}
-
-- (BOOL) setKeychainInt:(int64_t) i key:(NSString *)key authenticated:(BOOL) authenticated;
-{
-    @autoreleasepool {
-        NSMutableData *d = [NSMutableData secureDataWithLength:sizeof(int64_t)];
-
-        *(int64_t *)d.mutableBytes = i;
-        return [self setKeychainData:d key:key authenticated:authenticated];
-    }
-}
-
-- (int64_t) getKeychainInt:(NSString *)key error:(NSError **)error;
-{
-    @autoreleasepool {
-        NSData *d = [self getKeychainData:key error:error];
-
-        return (d.length == sizeof(int64_t)) ? *(int64_t *)d.bytes : 0;
-    }
-}
-
-- (NSString *) createKeyWithUsername:(NSString *)username key:(NSString *)key;
-{
-    return [NSString stringWithFormat:@"%@___%@",username,key];
-}
-
 - (BOOL) bHasSecureEnclave;
 {
     LAContext *context = [LAContext new];
@@ -190,6 +145,63 @@
 
     return NO;
 }
+
+#else
+- (BOOL) setKeychainData:(NSData *)data key:(NSString *)key authenticated:(BOOL) authenticated;
+{ return NO; }
+- (NSData *) getKeychainData:(NSString *)key error:(NSError **)error;
+{ return nil; }
+- (BOOL) bHasSecureEnclave;
+{ return NO; }
+- (BOOL)authenticateTouchID:(NSString *)promptString fallbackString:(NSString *)fallbackString;
+{ return NO; }
+
+#endif
+
+- (NSString *) createKeyWithUsername:(NSString *)username key:(NSString *)key;
+{
+    return [NSString stringWithFormat:@"%@___%@",username,key];
+}
+
+- (BOOL) setKeychainString:(NSString *)s key:(NSString *)key authenticated:(BOOL) authenticated;
+{
+    @autoreleasepool {
+        NSData *d = (s) ? CFBridgingRelease(CFStringCreateExternalRepresentation(SecureAllocator(), (CFStringRef)s,
+                                                                                 kCFStringEncodingUTF8, 0)) : nil;
+        
+        return [self setKeychainData:d key:key authenticated:authenticated];
+    }
+}
+
+- (NSString *) getKeychainString:(NSString *)key error:(NSError **)error;
+{
+    @autoreleasepool {
+        NSData *d = [self getKeychainData:key error:error];
+        
+        return (d) ? CFBridgingRelease(CFStringCreateFromExternalRepresentation(SecureAllocator(), (CFDataRef)d,
+                                                                                kCFStringEncodingUTF8)) : nil;
+    }
+}
+
+- (BOOL) setKeychainInt:(int64_t) i key:(NSString *)key authenticated:(BOOL) authenticated;
+{
+    @autoreleasepool {
+        NSMutableData *d = [NSMutableData secureDataWithLength:sizeof(int64_t)];
+        
+        *(int64_t *)d.mutableBytes = i;
+        return [self setKeychainData:d key:key authenticated:authenticated];
+    }
+}
+
+- (int64_t) getKeychainInt:(NSString *)key error:(NSError **)error;
+{
+    @autoreleasepool {
+        NSData *d = [self getKeychainData:key error:error];
+        
+        return (d.length == sizeof(int64_t)) ? *(int64_t *)d.bytes : 0;
+    }
+}
+
 
 - (void) disableRelogin:(NSString *)username;
 {
@@ -263,7 +275,6 @@
         }
     });
 }
-#endif
 
 @end
 
