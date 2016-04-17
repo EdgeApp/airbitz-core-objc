@@ -12,7 +12,11 @@ run
     
     pod install
     
-And your done!
+In your target's 'General' settings, edit the 'Linked Frameworks and Libraries' and add the following
+    libiconv.tbd
+    libc++.tbd
+    
+And you're done. You should be able to call into AirbitzCore. See documentation below for code samples.
 
 ## Documentation
 
