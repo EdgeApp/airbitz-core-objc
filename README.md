@@ -13,6 +13,7 @@ run
     pod install
     
 In your target's 'General' settings, edit the 'Linked Frameworks and Libraries' and add the following
+
     libiconv.tbd
     libc++.tbd
     
