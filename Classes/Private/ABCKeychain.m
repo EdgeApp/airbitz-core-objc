@@ -6,7 +6,6 @@
 //  Copyright (c) 2015 Airbitz. All rights reserved.
 //
 
-#if TARGET_OS_IPHONE
 #import "NSMutableData+Secure.h"
 #import <LocalAuthentication/LocalAuthentication.h>
 #import "ABCKeychain+Internal.h"
@@ -31,6 +30,7 @@
 
     return self;
 }
+#if TARGET_OS_IPHONE
 
 - (BOOL) setKeychainData:(NSData *)data key:(NSString *)key authenticated:(BOOL) authenticated;
 {
@@ -263,7 +263,7 @@
         }
     });
 }
+#endif
 
 @end
 
-#endif
