@@ -48,8 +48,13 @@
 @property (nonatomic, copy)         NSString                *address;
 
 #if TARGET_OS_IPHONE
-/// QRCode of request.
+
+/// QRCode of request in UIImage format (iOS Only)
 @property (nonatomic, copy)         UIImage                 *qrCode;
+#else
+
+/// QRCode of request in NSImage format (OSX Only)
+@property (nonatomic, copy)         NSImage                 *qrCode;
 #endif
 
 
