@@ -94,7 +94,9 @@ static const int notifySyncDelay          = 1;
     CFRelease(string);
     
     // add the device name
+#if TARGET_OS_IPHONE
     [strSeed appendString:[[UIDevice currentDevice] name]];
+#endif
     
     // add the string to the data
     [data appendData:[strSeed dataUsingEncoding:NSUTF8StringEncoding]];
@@ -372,6 +374,7 @@ static const int notifySyncDelay          = 1;
     }
 }
 
+#if TARGET_OS_IPHONE
 - (void)makeCurrentWalletWithIndex:(NSIndexPath *)indexPath
 {
     //
@@ -401,6 +404,7 @@ static const int notifySyncDelay          = 1;
     }
     
 }
+#endif
 
 - (void)cleanWallets
 {
@@ -582,6 +586,7 @@ static const int notifySyncDelay          = 1;
     return nil;
 }
 
+#if TARGET_OS_IPHONE
 - (NSError *)reorderWallets:(NSIndexPath *)sourceIndexPath
                 toIndexPath:(NSIndexPath *)destinationIndexPath;
 {
@@ -643,6 +648,7 @@ static const int notifySyncDelay          = 1;
     
     return nserror;
 }
+#endif
 
 - (bool)setWalletAttributes: (ABCWallet *) wallet
 {

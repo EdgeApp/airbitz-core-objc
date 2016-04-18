@@ -4,7 +4,11 @@
 //
 
 
+#if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
+#else
+#import <Cocoa/Cocoa.h>
+#endif
 #import <sys/sysctl.h>
 #import "ABCUtil.h"
 #import "AirbitzCore+Internal.h"
@@ -147,6 +151,7 @@
     }
 }
 
+#if TARGET_OS_IPHONE
 
 + (UIImage *)dataToImage:(const unsigned char *)data withWidth:(int)width andHeight:(int)height
 {
@@ -198,6 +203,63 @@
     free(pixels);
     return rawImage;
 }
+
+#else // OSX Version
+
++ (NSImage *)dataToImage:(const unsigned char *)data withWidth:(int)width andHeight:(int)height
+{
+    //converts raw monochrome bitmap data (each byte is a 1 or a 0 representing a pixel) into a UIImage
+    char *pixels = malloc(4 * width * width);
+    char *buf = pixels;
+    
+    for (int y = 0; y < height; y++)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            if (data[(y * width) + x] & 0x1)
+            {
+                //printf("%c", '*');
+                *buf++ = 0;
+                *buf++ = 0;
+                *buf++ = 0;
+                *buf++ = 255;
+            }
+            else
+            {
+                printf(" ");
+                *buf++ = 255;
+                *buf++ = 255;
+                *buf++ = 255;
+                *buf++ = 255;
+            }
+        }
+        //printf("\n");
+    }
+    
+    CGContextRef ctx;
+    CGImageRef imageRef;
+    
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    ctx = CGBitmapContextCreate(pixels,
+                                (float)width,
+                                (float)height,
+                                8,
+                                width * 4,
+                                colorSpace,
+                                (CGBitmapInfo)kCGImageAlphaPremultipliedLast ); //documentation says this is OK
+    CGColorSpaceRelease(colorSpace);
+    imageRef = CGBitmapContextCreateImage (ctx);
+    CGSize size;
+    size.width = width;
+    size.height = height;
+    NSImage* rawImage = [[NSImage alloc] initWithCGImage:imageRef size:size];
+    
+    CGContextRelease(ctx);
+    CGImageRelease(imageRef);
+    free(pixels);
+    return rawImage;
+}
+#endif
 
 + (NSString *)platform;
 {

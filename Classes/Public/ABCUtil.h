@@ -74,6 +74,10 @@
 + (NSString *)safeStringWithUTF8String:(const char *)bytes;
 + (void)replaceString:(char **)ppszValue withString:(const char *)szNewValue;
 + (void)freeStringArray:(char **)aszStrings count:(unsigned int)count;
-+ (UIImage *)dataToImage:(const unsigned char *)data withWidth:(int)width andHeight:(int)height;
 
+#if TARGET_OS_IPHONE
++ (UIImage *)dataToImage:(const unsigned char *)data withWidth:(int)width andHeight:(int)height;
+#else
++ (NSImage *)dataToImage:(const unsigned char *)data withWidth:(int)width andHeight:(int)height;
+#endif
 @end
