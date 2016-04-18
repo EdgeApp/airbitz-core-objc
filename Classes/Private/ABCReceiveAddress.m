@@ -233,9 +233,7 @@
     nserror = [ABCError makeNSError:error];
     if (nserror) goto exitnow;
     
-#if TARGET_OS_IPHONE
     self.qrCode = [ABCUtil dataToImage:pData withWidth:width andHeight:width];
-#endif
     self.uri    = [NSString stringWithUTF8String:pszURI];
     
 exitnow:
