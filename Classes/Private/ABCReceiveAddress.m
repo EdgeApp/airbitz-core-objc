@@ -58,16 +58,20 @@
     return _address;
 }
 
+#if TARGET_OS_IPHONE
 - (UIImage *)qrCode
+#else
+- (NSImage *)qrCode
+#endif
 {
-    if (_requestChanged)
+    if (_requestChanged || !_qrCode)
         [self modifyReceiveAddress];
     return _qrCode;
 }
 
 - (NSString *)uri;
 {
-    if (_requestChanged)
+    if (_requestChanged || !_uri)
         [self modifyReceiveAddress];
     return _uri;
 }

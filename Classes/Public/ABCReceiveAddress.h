@@ -3,7 +3,9 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
+#if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
+#endif
 #import "AirbitzCore.h"
 
 @class AirbitzCore;
@@ -45,9 +47,15 @@
 /// Bitcoin public address for request
 @property (nonatomic, copy)         NSString                *address;
 
-/// QRCode of request.
-@property (nonatomic, copy)         UIImage                 *qrCode;
+#if TARGET_OS_IPHONE
 
+/// QRCode of request in UIImage format (iOS Only)
+@property (nonatomic, copy)         UIImage                 *qrCode;
+#else
+
+/// QRCode of request in NSImage format (OSX Only)
+@property (nonatomic, copy)         NSImage                 *qrCode;
+#endif
 
 
 /// ------------------------------------------------------

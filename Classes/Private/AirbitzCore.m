@@ -66,10 +66,22 @@
         NSMutableData *seedData = [[NSMutableData alloc] init];
         [self fillSeedData:seedData];
 
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *docs_dir = [paths objectAtIndex:0];
         NSString *ca_path = [[NSBundle mainBundle] pathForResource:@"ca-certificates" ofType:@"crt"];
 
+#if TARGET_OS_IPHONE
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *docs_dir = [paths objectAtIndex:0];
+#else
+        NSString *path = NSHomeDirectory();
+        NSString *dir = [NSString stringWithString:@".airbitz"];
+        NSString *docs_dir = [NSString stringWithFormat:@"%@/%@/", path, dir];
+        BOOL isDir = FALSE;
+        
+        NSFileManager *fileManager= [NSFileManager defaultManager];
+        if(![fileManager fileExistsAtPath:docs_dir isDirectory:&isDir])
+            if(![fileManager createDirectoryAtPath:docs_dir withIntermediateDirectories:YES attributes:nil error:NULL])
+                ABCLog(@"Error: Create folder failed %@", docs_dir);
+#endif
         Error.code = ABC_CC_Ok;
         ABC_Initialize([docs_dir UTF8String],
                 [ca_path UTF8String],
@@ -100,6 +112,11 @@
 {
     if (YES == bInitialized)
     {
+        for (ABCAccount *user in self.loggedInUsers)
+        {
+            [user logout];
+        }
+
         ABC_Terminate();
         bInitialized = NO;
     }
@@ -1243,7 +1260,9 @@ void abcDebugLog(int level, NSString *statement)
     CFRelease(string);
     
     // add the device name
+#if TARGET_OS_IPHONE
     [strSeed appendString:[[UIDevice currentDevice] name]];
+#endif
     
     // add the string to the data
     [data appendData:[strSeed dataUsingEncoding:NSUTF8StringEncoding]];
