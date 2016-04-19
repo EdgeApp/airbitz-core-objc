@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -u
+set -e
+
+CURRENT_DIR=$( /bin/pwd )
+
+mkdir -m 0775 -p LibrariesOSX
+
+touch ../airbitz-core/deps/recipes/abc/abc.recipe
+
+if [ "${1-}" = "testnet" ]; then
+    shift
+    (
+        cd ../airbitz-core/deps
+        export BUILD_DIR=${CURRENT_DIR}/../airbitz-core/deps/build-testnet
+	make abc.clean
+        make abc.package-osx-universal ENABLE_TESTNET=1 $@
+    )
+    cp -aL ../airbitz-core/deps/build-testnet/abc/abc-osx-universal/include/* Classes/Private 
+    cp -a ../airbitz-core/deps/build-testnet/abc/abc-osx-universal/lib/* LibrariesOSX/
+else
+    (
+        cd ../airbitz-core/deps
+        export BUILD_DIR=${CURRENT_DIR}/../airbitz-core/deps/build
+	make abc.clean
+        make abc.package-osx-universal $@
+    )
+    cp -aL ../airbitz-core/deps/build/abc/abc-osx-universal/include/* Classes/Private
+    cp -a ../airbitz-core/deps/build/abc/abc-osx-universal/lib/* LibrariesOSX/
+fi
