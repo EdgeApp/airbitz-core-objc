@@ -49,7 +49,7 @@
 
 #if TARGET_OS_IPHONE
 
-/// QRCode of request in UIImage format (iOS Only)
+/// QRCode of request in UIImage format for iOS and NSImage format for OSX
 @property (nonatomic, copy)         UIImage                 *qrCode;
 #else
 
