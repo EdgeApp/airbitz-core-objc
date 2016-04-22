@@ -604,7 +604,7 @@ static const int importTimeout                  = 30;
 {
     tABC_Error error;
     self.uuid = uuid;
-    self.name = loadingText;
+    self.name = abcStringLoadingText;
     self.currency = [ABCCurrency noCurrency];
     self.balance = 0;
     self.loaded = NO;
@@ -629,7 +629,7 @@ static const int importTimeout                  = 30;
         } else {
             self.loaded = NO;
             self.currency = [ABCCurrency noCurrency];
-            self.name = loadingText;
+            self.name = abcStringLoadingText;
         }
         
         int64_t balance;

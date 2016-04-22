@@ -243,10 +243,10 @@
     {
         if (bUseTouchID && !bReloginKey)
         {
-            NSString *prompt = [NSString stringWithFormat:@"%@ [%@]",touchIDPromptText, username];
+            NSString *prompt = [NSString stringWithFormat:@"%@ [%@]",abcStringTouchIDPromptText, username];
             
             ABCLog(1, @"Launching TouchID prompt");
-            if ([self.keyChain authenticateTouchID:prompt fallbackString:usePasswordText]) {
+            if ([self.keyChain authenticateTouchID:prompt fallbackString:abcStringUsePasswordText]) {
                 bReloginKey = YES;
                 *usedTouchID = YES;
             }
