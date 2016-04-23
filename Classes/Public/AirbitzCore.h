@@ -17,6 +17,7 @@
 #import "ABCReceiveAddress.h"
 #import "ABCSettings.h"
 #import "ABCSpend.h"
+#import "ABCStrings.h"
 #import "ABCTransaction.h"
 #import "ABCTxInOut.h"
 #import "ABCUtil.h"

@@ -1620,7 +1620,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
         currency = [self.exchangeCache getCurrencyFromCode:currencyCode];
     }
     
-    NSString *defaultWallet = [NSString stringWithString:defaultWalletName];
+    NSString *defaultWallet = [NSString stringWithString:abcStringDefaultWalletName];
     if (nil == walletName || [walletName length] == 0)
     {
         walletName = defaultWallet;
