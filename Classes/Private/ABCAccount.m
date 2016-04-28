@@ -1398,9 +1398,10 @@ static const int notifySyncDelay          = 1;
 {
     tABC_Error error;
     char *szURLDomain = NULL;
+    char *szURLCallback = NULL;
     NSString *urlDomain;
     
-    ABC_BitidParseUri([self.name UTF8String], nil, [uri UTF8String], &szURLDomain, &error);
+    ABC_BitidParseUri([self.name UTF8String], nil, [uri UTF8String], &szURLDomain, &szURLCallback, &error);
     
     if (error.code == ABC_CC_Ok && szURLDomain) {
         urlDomain = [NSString stringWithUTF8String:szURLDomain];
@@ -1419,6 +1420,16 @@ static const int notifySyncDelay          = 1;
     
     ABC_BitidLogin([self.name UTF8String], nil, [uri UTF8String], &error);
     return [ABCError makeNSError:error];    
+}
+
+- (NSError *) bitidLoginMeta:(NSString *)uri kycURI:(NSString *)kycURI;
+{
+    tABC_Error error;
+    
+    ABCWallet *wallet = self.arrayWallets[0];
+    
+    ABC_BitidLoginMeta([self.name UTF8String], nil, [uri UTF8String], [wallet.uuid UTF8String], [kycURI UTF8String], &error);
+    return [ABCError makeNSError:error];
 }
 
 - (ABCBitIDSignature *)bitidSign:(NSString *)uri message:(NSString *)message

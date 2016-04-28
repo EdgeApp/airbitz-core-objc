@@ -402,6 +402,9 @@
  */
 - (NSError *) bitidLogin:(NSString *)uri;
 
+// Undocumented. Do not use
+- (NSError *) bitidLoginMeta:(NSString *)uri kycURI:(NSString *)kycURI;
+
 /**
  * Sign an arbitrary message with a BitID URI. The URI determines the key derivation
  * used to sign the message.

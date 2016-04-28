@@ -24,6 +24,7 @@
 {
     tABC_ParsedUri *parsedUri = NULL;
     char *szBitidDomain = NULL;
+    char *szBitidCallbackURI = NULL;
     ABCParsedURI *abcParsedURI = nil;
     tABC_Error error;
     NSError *lnserror = nil;
@@ -44,6 +45,10 @@
         abcParsedURI                        = [ABCParsedURI alloc];
         abcParsedURI.metadata               = [ABCMetaData alloc];
         abcParsedURI.amountSatoshi          = parsedUri->amountSatoshi;
+        abcParsedURI.bitidKYCRequest        = parsedUri->bitidKYCRequest;
+        abcParsedURI.bitidKYCProvider       = parsedUri->bitidKYCProvider;
+        abcParsedURI.bitidPaymentAddress    = parsedUri->bitidPaymentAddress;
+        
         if (parsedUri->szAddress)
             abcParsedURI.address            = [NSString stringWithUTF8String:parsedUri->szAddress];
         if (parsedUri->szWif)
@@ -51,9 +56,11 @@
         if (parsedUri->szBitidUri)
         {
             abcParsedURI.bitIDURI           = [NSString stringWithUTF8String:parsedUri->szBitidUri];
-            ABC_BitidParseUri(nil, nil, [abcParsedURI.bitIDURI UTF8String], &szBitidDomain, &error);
+            ABC_BitidParseUri(nil, nil, [abcParsedURI.bitIDURI UTF8String], &szBitidDomain, &szBitidCallbackURI, &error);
             if (szBitidDomain)
                 abcParsedURI.bitIDDomain    = [NSString stringWithUTF8String:szBitidDomain];
+            if (szBitidCallbackURI)
+                abcParsedURI.bitIDCallbackURI    = [NSString stringWithUTF8String:szBitidCallbackURI];
         }
         if (parsedUri->szLabel)
             abcParsedURI.metadata.payeeName = [NSString stringWithUTF8String:parsedUri->szLabel];
