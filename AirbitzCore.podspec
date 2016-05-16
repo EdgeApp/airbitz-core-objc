@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "AirbitzCore"
-  s.version      = "0.10.2"
+  s.version      = "0.10.3"
   s.summary      = "Bitcoin and Edge Security Library"
 
   # This description is used to generate tags and improve search results.
@@ -25,6 +25,8 @@ Pod::Spec.new do |s|
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
   s.description  = <<-DESC
+AirbitzCore is an SDK providing Bitcoin transaction functionality with simple handling of HD wallets. AirbitzCore also allows
+developers to secure arbitrary data which provides automatic client-side encryption, auto backup, and auto device-to-device synchronization.
                    DESC
 
   s.homepage     = "https://airbitz.co"
@@ -78,6 +80,8 @@ Pod::Spec.new do |s|
   #  Specify the location from where the source should be retrieved.
   #  Supports git, hg, bzr, svn and HTTP.
   #
+  #s.source = { :git => 'https://github.com/Airbitz/airbitz-core-objc.git', :tag => '0.10.3' }
+  s.source = { :path => './' }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #

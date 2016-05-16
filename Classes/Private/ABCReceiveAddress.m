@@ -95,7 +95,7 @@
     unsigned char *pData = NULL;
     char *pszURI = NULL;
     unsigned int width = 0;
-    NSString *label = @"";
+    char *label = NULL;
 
     //first need to create a transaction details struct
     memset(&details, 0, sizeof(tABC_TxDetails));
@@ -120,12 +120,12 @@
     lnserror = [ABCError makeNSError:error];
     if (lnserror) goto exitnow;
 
-    if (self.wallet.account.settings.bNameOnPayments)
+    if (self.wallet.account.settings.bNameOnPayments && self.wallet.account.settings.fullName)
     {
-        label = self.wallet.account.settings.fullName;
+        label = [self.wallet.account.settings.fullName UTF8String];
     }
 
-    ABC_AddressUriEncode([_address UTF8String], _amountSatoshi, [label UTF8String], NULL, NULL, NULL, &pszURI, &error);
+    ABC_AddressUriEncode([_address UTF8String], _amountSatoshi, label, NULL, NULL, NULL, &pszURI, &error);
     lnserror = [ABCError makeNSError:error];
     if (lnserror) goto exitnow;
     
@@ -192,7 +192,7 @@
     char *szRequestAddress = NULL;
     char *pszURI = NULL;
     NSError *nserror = nil;
-    NSString *label = @"";
+    char *label = NULL;
     
     //first need to create a transaction details struct
     memset(&details, 0, sizeof(tABC_TxDetails));
@@ -220,12 +220,12 @@
     if (nserror) goto exitnow;
     
     unsigned int width = 0;
-    if (self.wallet.account.settings.bNameOnPayments)
+    if (self.wallet.account.settings.bNameOnPayments && self.wallet.account.settings.fullName)
     {
-        label = self.wallet.account.settings.fullName;
+        label = [self.wallet.account.settings.fullName UTF8String];
     }
     
-    ABC_AddressUriEncode([_address UTF8String], _amountSatoshi, [label UTF8String], NULL, NULL, NULL, &pszURI, &error);
+    ABC_AddressUriEncode([_address UTF8String], _amountSatoshi, label, NULL, NULL, NULL, &pszURI, &error);
     nserror = [ABCError makeNSError:error];
     if (nserror) goto exitnow;
     
