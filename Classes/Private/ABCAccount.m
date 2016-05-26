@@ -524,7 +524,6 @@ static const int notifySyncDelay          = 1;
 
 - (void)postWalletsLoadedNotification:(ABCWallet *)wallet
 {
-    self.bNewDeviceLogin = NO;
     if (self.delegate && !wallet.bAddressesLoaded) {
         wallet.bAddressesLoaded = YES;
         if ([self.delegate respondsToSelector:@selector(abcAccountWalletLoaded:)]) {
