@@ -236,7 +236,7 @@
     tABC_Error error;
 
     _feeLevel = feeLevel;
-    ABC_SpendChangeFee(self.pSpend, (tABC_SpendFeeLevel) feeLevel, self.customFeeSatoshis, &error);
+    ABC_SpendSetFee(self.pSpend, (tABC_SpendFeeLevel) feeLevel, self.customFeeSatoshis, &error);
 }
 
 - (ABCSpendFeeLevel) feeLevel;
