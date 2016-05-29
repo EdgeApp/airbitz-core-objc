@@ -204,6 +204,7 @@ static const int importTimeout                  = 30;
     {
         spend = [[ABCSpend alloc]init:self];
         spend.pSpend = ptr;
+        spend.feeLevel = ABCSpendFeeLevelStandard;
     }
     
     if (nserror) *nserror = lnserror;
