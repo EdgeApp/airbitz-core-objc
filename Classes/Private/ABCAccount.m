@@ -1538,10 +1538,6 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
             tx = [wallet getTransaction:txid];
         [wallet handleSweepCallback:tx amount:amount error:error];
         
-    } else if (ABC_AsyncEventType_TransactionUpdate == pInfo->eventType) {
-        [user refreshWallets:^{
-            [user postNotificationWalletsChanged];
-        }];
     } else if (ABC_AsyncEventType_AddressCheckDone == pInfo->eventType) {
         [user refreshWallets:^{
             ABCWallet *wallet = nil;
