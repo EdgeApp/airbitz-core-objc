@@ -16,7 +16,6 @@ static const int notifySyncDelay          = 1;
     BOOL                                            bInitialized;
     BOOL                                            bHasSentWalletsLoaded;
     long                                            iLoginTimeSeconds;
-    NSOperationQueue                                *exchangeQueue;
     NSOperationQueue                                *dataQueue;
     NSOperationQueue                                *walletsQueue;
     NSOperationQueue                                *genQRQueue;
@@ -55,8 +54,6 @@ static const int notifySyncDelay          = 1;
         
         abcError = [[ABCError alloc] init];
         
-        exchangeQueue = [[NSOperationQueue alloc] init];
-        [exchangeQueue setMaxConcurrentOperationCount:1];
         dataQueue = [[NSOperationQueue alloc] init];
         [dataQueue setMaxConcurrentOperationCount:1];
         walletsQueue = [[NSOperationQueue alloc] init];
@@ -126,7 +123,6 @@ static const int notifySyncDelay          = 1;
             wait++;
         }
         
-        exchangeQueue = nil;
         dataQueue = nil;
         walletsQueue = nil;
         genQRQueue = nil;
@@ -192,8 +188,6 @@ static const int notifySyncDelay          = 1;
         [walletsQueue cancelAllOperations];
     if (genQRQueue)
         [genQRQueue cancelAllOperations];
-    if (exchangeQueue)
-        [exchangeQueue cancelAllOperations];
     if (miscQueue)
         [miscQueue cancelAllOperations];
     
@@ -228,7 +222,6 @@ static const int notifySyncDelay          = 1;
 {
     int total = 0;
     total += dataQueue == nil     ? 0 : [dataQueue operationCount];
-    total += exchangeQueue == nil ? 0 : [exchangeQueue operationCount];
     total += walletsQueue == nil  ? 0 : [walletsQueue operationCount];
     total += genQRQueue == nil  ? 0 : [genQRQueue operationCount];
     total += watcherQueue == nil  ? 0 : [watcherQueue operationCount];
@@ -930,16 +923,15 @@ static const int notifySyncDelay          = 1;
         wq = (unsigned long)[walletsQueue operationCount];
         dq = (unsigned long)[dataQueue operationCount];
         gq = (unsigned long)[genQRQueue operationCount];
-        eq = (unsigned long)[exchangeQueue operationCount];
         mq = (unsigned long)[miscQueue operationCount];
         
         //        if (0 == (wq + dq + gq + txq + eq + mq + lq))
-        if (0 == (wq + gq  + eq + mq))
+        if (0 == (wq + gq + mq))
             break;
         
         ABCLog(0,
-               @"Waiting for queues to complete wq=%lu dq=%lu gq=%lu eq=%lu mq=%lu",
-               wq, dq, gq, eq, mq);
+               @"Waiting for queues to complete wq=%lu dq=%lu gq=%lu mq=%lu",
+               wq, dq, gq, mq);
         [NSThread sleepForTimeInterval:.2];
     }
     
@@ -1156,10 +1148,7 @@ static const int notifySyncDelay          = 1;
                        }
                        [self.exchangeCache addCurrencyToCheck:self.settings.defaultCurrency];
                        
-                       [exchangeQueue addOperationWithBlock:^{
-                           [[NSThread currentThread] setName:@"Exchange Rate Update"];
-                           [self.exchangeCache requestExchangeUpdateBlocking];
-                       }];
+                       [self.exchangeCache requestExchangeUpdateBlocking];
                    });
 }
 
@@ -1538,6 +1527,10 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
             tx = [wallet getTransaction:txid];
         [wallet handleSweepCallback:tx amount:amount error:error];
         
+    } else if (ABC_AsyncEventType_TransactionUpdate == pInfo->eventType) {
+        [user refreshWallets:^{
+            [user postNotificationWalletsChanged];
+        }];
     } else if (ABC_AsyncEventType_AddressCheckDone == pInfo->eventType) {
         [user refreshWallets:^{
             ABCWallet *wallet = nil;

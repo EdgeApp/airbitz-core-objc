@@ -143,14 +143,20 @@
 - (void)requestExchangeUpdateBlocking;
 {
     tABC_Error error;
-    for (ABCCurrency *c in self.currenciesToCheck)
-    {
-        int num = c.currencyNum;
-        // We pass no callback so this call is blocking
-        ABC_RequestExchangeRateUpdate(nil,
-                                      nil,
-                                      num, &error);
-    }
+    NSArray *currencyList = [self.currenciesToCheck copy];
+    
+    [self.abc.exchangeQueue addOperationWithBlock:^{
+        
+        for (ABCCurrency *c in currencyList)
+        {
+            // We pass no callback so this call is blocking
+            ABC_RequestExchangeRateUpdate(nil,
+                                          nil,
+                                          c.currencyNum, &error);
+            
+        }
+        [[NSThread currentThread] setName:@"Exchange Rate Update"];
+    }];
 }
 
 
