@@ -134,20 +134,33 @@
 
 - (void)addCurrencyToCheck:(ABCCurrency *)currency;
 {
-    if ([self.currenciesToCheck indexOfObject:currency] == NSNotFound)
-    {
-        [self.currenciesToCheck addObject:currency];
-    }
+    [self.abc.exchangeQueue addOperationWithBlock:^{
+        if ([self.currenciesToCheck indexOfObject:currency] == NSNotFound)
+        {
+            [self.currenciesToCheck addObject:currency];
+        }
+    }];
 }
 
-- (void)requestExchangeUpdateBlocking;
+- (void)addCurrenciesToCheck:(NSMutableArray *)currencies;
+{
+    [self.abc.exchangeQueue addOperationWithBlock:^{
+        for (ABCCurrency *c in currencies)
+        {
+            if ([self.currenciesToCheck indexOfObject:c] == NSNotFound)
+            {
+                [self.currenciesToCheck addObject:c];
+            }
+        }
+    }];
+}
+
+- (void)updateExchangeCache;
 {
     tABC_Error error;
-    NSArray *currencyList = [self.currenciesToCheck copy];
     
     [self.abc.exchangeQueue addOperationWithBlock:^{
-        
-        for (ABCCurrency *c in currencyList)
+        for (ABCCurrency *c in self.currenciesToCheck)
         {
             // We pass no callback so this call is blocking
             ABC_RequestExchangeRateUpdate(nil,

@@ -1132,24 +1132,23 @@ static const int notifySyncDelay          = 1;
 
 - (void)requestExchangeRateUpdate
 {
-    dispatch_async(dispatch_get_main_queue(),^
-                   {
-                       for (ABCWallet *w in self.arrayWallets)
-                       {
-                           if (w.loaded) {
-                               [self.exchangeCache addCurrencyToCheck:w.currency];
-                           }
-                       }
-                       for (ABCWallet *w in self.arrayArchivedWallets)
-                       {
-                           if (w.loaded) {
-                               [self.exchangeCache addCurrencyToCheck:w.currency];
-                           }
-                       }
-                       [self.exchangeCache addCurrencyToCheck:self.settings.defaultCurrency];
-                       
-                       [self.exchangeCache requestExchangeUpdateBlocking];
-                   });
+    NSMutableArray *currencies = [[NSMutableArray alloc] init];
+    for (ABCWallet *w in self.arrayWallets)
+    {
+        if (w.loaded) {
+            [currencies addObject:w.currency];
+        }
+    }
+    for (ABCWallet *w in self.arrayArchivedWallets)
+    {
+        if (w.loaded) {
+            [currencies addObject:w.currency];
+        }
+    }
+    [currencies addObject:self.settings.defaultCurrency];
+    
+    [self.exchangeCache addCurrenciesToCheck:currencies];
+    [self.exchangeCache updateExchangeCache];
 }
 
 - (void)requestWalletDataSync:(ABCWallet *)wallet;
