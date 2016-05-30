@@ -15,6 +15,7 @@
 
 @property (atomic, strong)      AirbitzCore             *abc;
 @property (atomic, strong)      ABCAccount              *account;
+@property (atomic, strong)      NSMutableArray          *currenciesToCheck;
 
 @end
 
@@ -24,6 +25,8 @@
 {
     // get the currencies
     self.abc = abc;
+    
+    self.currenciesToCheck = [[NSMutableArray alloc] init];
     
     return self;
 }
@@ -87,6 +90,16 @@
     ABC_SatoshiToCurrency(nil, nil,
                           satoshi, &currency, currencyNum, &error);
     nserror2 = [ABCError makeNSError:error];
+    if (nserror2)
+    {
+        ABCCurrency *c = [self getCurrencyFromCode:currencyCode];
+        [self addCurrencyToCheck:c];
+        
+        ABCAccount *account = self.abc.loggedInUsers[0];
+        if (account)
+            [account requestExchangeRateUpdate];
+    }
+    
     if (nserror) *nserror = nserror2;
     
     return currency;
@@ -104,15 +117,33 @@
     
     ABC_CurrencyToSatoshi(nil, nil, currency, currencyNum, &satoshi, &error);
     nserror2 = [ABCError makeNSError:error];
+    if (nserror2)
+    {
+        ABCCurrency *c = [self getCurrencyFromCode:currencyCode];
+        [self addCurrencyToCheck:c];
+        
+        ABCAccount *account = self.abc.loggedInUsers[0];
+        if (account)
+            [account requestExchangeRateUpdate];
+    }
+
     if (nserror) *nserror = nserror2;
     
     return (uint64_t) satoshi;
 }
 
-- (void)requestExchangeUpdateBlocking:(NSArray *)exchangeList arrayCurrency:(NSArray *)currency;
+- (void)addCurrencyToCheck:(ABCCurrency *)currency;
+{
+    if ([self.currenciesToCheck indexOfObject:currency] == NSNotFound)
+    {
+        [self.currenciesToCheck addObject:currency];
+    }
+}
+
+- (void)requestExchangeUpdateBlocking;
 {
     tABC_Error error;
-    for (ABCCurrency *c in currency)
+    for (ABCCurrency *c in self.currenciesToCheck)
     {
         int num = c.currencyNum;
         // We pass no callback so this call is blocking

@@ -1135,29 +1135,23 @@ static const int notifySyncDelay          = 1;
 {
     dispatch_async(dispatch_get_main_queue(),^
                    {
-                       NSMutableArray *arrayCurrency = [[NSMutableArray alloc] init];
-                       
                        for (ABCWallet *w in self.arrayWallets)
                        {
                            if (w.loaded) {
-                               [arrayCurrency addObject:w.currency];
+                               [self.exchangeCache addCurrencyToCheck:w.currency];
                            }
                        }
                        for (ABCWallet *w in self.arrayArchivedWallets)
                        {
                            if (w.loaded) {
-                               [arrayCurrency addObject:w.currency];
+                               [self.exchangeCache addCurrencyToCheck:w.currency];
                            }
                        }
-                       [arrayCurrency addObject:self.settings.defaultCurrency];
+                       [self.exchangeCache addCurrencyToCheck:self.settings.defaultCurrency];
                        
                        [exchangeQueue addOperationWithBlock:^{
                            [[NSThread currentThread] setName:@"Exchange Rate Update"];
-                           NSMutableArray *exchanges = [NSMutableArray arrayWithObject:self.settings.exchangeRateSource];
-                           [exchanges addObjectsFromArray:ABCArrayExchanges];
-                           NSArray *arrayExchanges = [exchanges copy];
-                           [self.exchangeCache requestExchangeUpdateBlocking:arrayExchanges
-                                                               arrayCurrency:arrayCurrency];
+                           [self.exchangeCache requestExchangeUpdateBlocking];
                        }];
                    });
 }
@@ -1537,6 +1531,10 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
             tx = [wallet getTransaction:txid];
         [wallet handleSweepCallback:tx amount:amount error:error];
         
+    } else if (ABC_AsyncEventType_TransactionUpdate == pInfo->eventType) {
+        [user refreshWallets:^{
+            [user postNotificationWalletsChanged];
+        }];
     } else if (ABC_AsyncEventType_AddressCheckDone == pInfo->eventType) {
         [user refreshWallets:^{
             ABCWallet *wallet = nil;
