@@ -13,6 +13,10 @@
 static ABCDenomination *BTC = nil;
 static ABCDenomination *mBTC = nil;
 static ABCDenomination *uBTC = nil;
+static NSString *decimalSymbol = nil;
+static NSNumberFormatter *numberFormatter = nil;
+static NSLocale *locale = nil;
+static NSLocale *usLocale = nil;
 
 @implementation ABCDenomination
 
@@ -36,6 +40,9 @@ static ABCDenomination *uBTC = nil;
     uBTC.label = @"bits";
     uBTC.multiplier = ABCDenominationMultiplierUBTC;
     uBTC.index = 2;
+    
+    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+    decimalSymbol = [formatter decimalSeparator];
 }
 
 + (ABCDenomination *) getDenominationForMultiplier:(ABCDenominationMultiplier)multiplier;
@@ -92,10 +99,26 @@ static ABCDenomination *uBTC = nil;
 
 - (int64_t) btcStringToSatoshi:(NSString *) amount;
 {
-    uint64_t parsedAmount;
+    uint64_t parsedAmount = 0;
     int decimalPlaces = [self maxBitcoinDecimalPlaces];
-    NSString *cleanAmount = [amount stringByReplacingOccurrencesOfString:@"," withString:@""];
-    if (ABC_ParseAmount([cleanAmount UTF8String], &parsedAmount, decimalPlaces) != ABC_CC_Ok) {
+    
+    NSNumberFormatter *nf = [ABCDenomination generateNumberFormatter];
+    [nf setLocale:locale];
+    [nf setMinimumFractionDigits:0];
+    [nf setMaximumFractionDigits:decimalPlaces];
+    
+    [nf setNumberStyle:NSNumberFormatterDecimalStyle];
+    
+    NSNumber *num = [nf numberFromString:amount];
+    
+    if (num)
+    {
+        NSString *cleanAmount = [num stringValue];
+        if (cleanAmount)
+        {
+            if (ABC_ParseAmount([cleanAmount UTF8String], &parsedAmount, decimalPlaces) != ABC_CC_Ok) {
+            }            
+        }
     }
     return (int64_t) parsedAmount;
 }
@@ -146,30 +169,41 @@ static ABCDenomination *uBTC = nil;
             [formatted appendString: self.symbol];
             [formatted appendString: @" "];
         }
-        const char *p = pFormatted;
-        const char *decimal = strstr(pFormatted, ".");
-        const char *start = (decimal == NULL) ? p + strlen(p) : decimal;
-        int offset = (start - pFormatted) % 3;
-        NSNumberFormatter *f = [ABCCurrency generateNumberFormatter];
+
+        NSNumberFormatter *f = [ABCDenomination generateNumberFormatter];
+        [f setMinimumFractionDigits:0];
+        [f setMaximumFractionDigits:prettyDecimalPlaces];
+
+        // Use NSNumberFormatter in US locale to convert ABC formatted string
+        // to NSNumber
+        [f setLocale:usLocale];
+        NSString *str1 = [NSString stringWithUTF8String:pFormatted];
+        NSNumber *nsnum = [f numberFromString:str1];
+
+        // Use NSNumberFormatter to output an NSString in localized number format
+        [f setLocale:locale];
+        NSString *str2 = [f stringFromNumber:nsnum];
         
-        for (int i = 0; i < strlen(pFormatted) && p - start <= prettyDecimalPlaces; ++i, ++p)
-        {
-            if (p < start)
-            {
-                if (i != 0 && (i - offset) % 3 == 0)
-                    [formatted appendString:[f groupingSeparator]];
-                [formatted appendFormat: @"%c", *p];
-            }
-            else if (p == decimal)
-                [formatted appendString:[f currencyDecimalSeparator]];
-            else
-                [formatted appendFormat: @"%c", *p];
-        }
+        [formatted appendString:str2];
+
         free(pFormatted);
         return formatted;
     }
 }
 
++ (NSNumberFormatter *)generateNumberFormatter;
+{
+    if (!numberFormatter)
+    {
+        locale = [NSLocale autoupdatingCurrentLocale];
+        usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+        
+        [numberFormatter setLocale:locale];
+        numberFormatter = [[NSNumberFormatter alloc] init];
+        [numberFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
+    }
+    return numberFormatter;
+}
 
 
 
