@@ -678,35 +678,42 @@ static const int notifySyncDelay          = 1;
     NSError *error = nil;
     double fCurrency;
     ABCDenomination *denomination = self.settings.denomination;
+    NSNumberFormatter *nf = [ABCCurrency generateNumberFormatter];
+    [nf setCurrencySymbol:currency.symbol];
     
     fCurrency = [self.exchangeCache satoshiToCurrency:denomination.multiplier
                                          currencyCode:currency.code
                                                 error:&error];
-    
+    NSString *formatString;
+    NSNumber *formatNumber;
     if (!error)
     {
         if (denomination.multiplier == ABCDenominationMultiplierUBTC)
         {
+            formatNumber = [NSNumber numberWithDouble:fCurrency*1000];
+            formatString = [nf stringFromNumber:formatNumber];
             if(includeCurrencyCode) {
-                return [NSString stringWithFormat:@"1000 %@ = %@ %.3f %@",
-                        denomination.symbol, currency.symbol, fCurrency*1000, currency.code];
+                return [NSString stringWithFormat:@"1000 %@ = %@ %@",
+                        denomination.symbol, formatString, currency.code];
             }
             else
             {
-                return [NSString stringWithFormat:@"1000 %@ = %@ %.3f",
-                        denomination.symbol, currency.symbol, fCurrency*1000];
+                return [NSString stringWithFormat:@"1000 %@ = %@",
+                        denomination.symbol, formatString];
             }
         }
         else
         {
+            formatNumber = [NSNumber numberWithDouble:fCurrency];
+            formatString = [nf stringFromNumber:formatNumber];
             if(includeCurrencyCode) {
-                return [NSString stringWithFormat:@"1 %@ = %@ %.3f %@",
-                        denomination.symbol, currency.symbol, fCurrency, currency.code];
+                return [NSString stringWithFormat:@"1 %@ = %@ %@",
+                        denomination.symbol, formatString, currency.code];
             }
             else
             {
-                return [NSString stringWithFormat:@"1 %@ = %@ %.3f",
-                        denomination.symbol, currency.symbol, fCurrency];
+                return [NSString stringWithFormat:@"1 %@ = %@",
+                        denomination.symbol, formatString];
             }
         }
     }
