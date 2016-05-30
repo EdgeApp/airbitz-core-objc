@@ -164,7 +164,7 @@ static NSLocale *usLocale = nil;
         NSMutableString *formatted = [[NSMutableString alloc] init];
         if (negative)
             [formatted appendString: @"-"];
-        if (symbol)
+        if (symbol && self.symbol)
         {
             [formatted appendString: self.symbol];
             [formatted appendString: @" "];
@@ -183,8 +183,8 @@ static NSLocale *usLocale = nil;
         // Use NSNumberFormatter to output an NSString in localized number format
         [f setLocale:locale];
         NSString *str2 = [f stringFromNumber:nsnum];
-        
-        [formatted appendString:str2];
+        if (str2)
+            [formatted appendString:str2];
 
         free(pFormatted);
         return formatted;
