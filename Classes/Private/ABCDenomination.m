@@ -191,6 +191,11 @@ static NSLocale *usLocale = nil;
     }
 }
 
++ (NSString *) getDecimalSymbol;
+{
+    return decimalSymbol;
+}
+
 + (NSNumberFormatter *)generateNumberFormatter;
 {
     if (!numberFormatter)
