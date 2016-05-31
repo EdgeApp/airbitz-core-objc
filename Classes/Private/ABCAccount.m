@@ -7,6 +7,7 @@ static const int   fileSyncFrequencySeconds   = 30;
 static const int64_t recoveryReminderAmount   = 10000000;
 static const int recoveryReminderCount        = 2;
 static const int notifySyncDelay          = 1;
+static NSNumberFormatter        *numberFormatter = nil;
 
 @interface ABCAccount ()
 {
@@ -671,8 +672,9 @@ static const int notifySyncDelay          = 1;
     NSError *error = nil;
     double fCurrency;
     ABCDenomination *denomination = self.settings.denomination;
-    NSNumberFormatter *nf = [ABCCurrency generateNumberFormatter];
+    NSNumberFormatter *nf = [ABCAccount generateNumberFormatter];
     [nf setCurrencySymbol:currency.symbol];
+    [nf setNumberStyle:NSNumberFormatterCurrencyStyle];
     
     fCurrency = [self.exchangeCache satoshiToCurrency:denomination.multiplier
                                          currencyCode:currency.code
@@ -681,8 +683,21 @@ static const int notifySyncDelay          = 1;
     NSNumber *formatNumber;
     if (!error)
     {
+        if (denomination.multiplier == ABCDenominationMultiplierUBTC ||
+            denomination.multiplier == ABCDenominationMultiplierMBTC)
+        {
+            [numberFormatter setMinimumFractionDigits:3];
+            [numberFormatter setMaximumFractionDigits:3];
+        }
+        else
+        {
+            [numberFormatter setMinimumFractionDigits:0];
+            [numberFormatter setMaximumFractionDigits:0];
+        }
+        
         if (denomination.multiplier == ABCDenominationMultiplierUBTC)
         {
+
             formatNumber = [NSNumber numberWithDouble:fCurrency*1000];
             formatString = [nf stringFromNumber:formatNumber];
             if(includeCurrencyCode) {
@@ -1952,6 +1967,18 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
         }
     }
 }
+
++ (NSNumberFormatter *)generateNumberFormatter;
+{
+    if (!numberFormatter)
+    {
+        NSLocale *locale = [NSLocale autoupdatingCurrentLocale];
+        numberFormatter = [[NSNumberFormatter alloc] init];
+        [numberFormatter setLocale:locale];
+    }
+    return numberFormatter;
+}
+
 
 @end
 
