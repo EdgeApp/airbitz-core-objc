@@ -421,76 +421,78 @@ static NSNumberFormatter        *numberFormatter = nil;
 
 - (void)refreshWallets:(void(^)(void))cb
 {
-    [self postToWalletsQueue:^(void) {
-        ABCLog(2,@"ENTER refreshWallets WalletQueue: %@", [NSThread currentThread].name);
-        NSMutableArray *arrayWallets = [[NSMutableArray alloc] init];
-        NSMutableArray *arrayArchivedWallets = [[NSMutableArray alloc] init];
-        NSMutableArray *arrayWalletNames = [[NSMutableArray alloc] init];
-        
-        [self loadWallets:arrayWallets archived:arrayArchivedWallets];
-        
-        //
-        // Update wallet names for various dropdowns
-        //
-        int loadingCount = 0;
-        for (int i = 0; i < [arrayWallets count]; i++)
-        {
-            ABCWallet *wallet = [arrayWallets objectAtIndex:i];
-            [arrayWalletNames addObject:[NSString stringWithFormat:@"%@ (%@)", wallet.name,
-                                         [self.settings.denomination satoshiToBTCString:wallet.balance]]];
-            if (!wallet.loaded) {
-                loadingCount++;
-            }
-        }
-        
-        for (int i = 0; i < [arrayArchivedWallets count]; i++)
-        {
-            ABCWallet *wallet = [arrayArchivedWallets objectAtIndex:i];
-            if (!wallet.loaded) {
-                loadingCount++;
-            }
-        }
-        
-        dispatch_async(dispatch_get_main_queue(),^{
-            ABCLog(2,@"ENTER refreshWallets MainQueue: %@", [NSThread currentThread].name);
-            self.arrayWallets = arrayWallets;
-            self.arrayArchivedWallets = arrayArchivedWallets;
-            self.arrayWalletNames = arrayWalletNames;
-            self.numTotalWallets = (int) ([arrayWallets count] + [arrayArchivedWallets count]);
-            self.numWalletsLoaded = self.numTotalWallets  - loadingCount;
+    [self postToWatcherQueue:^{
+        [self postToWalletsQueue:^(void) {
+            ABCLog(2,@"ENTER refreshWallets WalletQueue: %@", [NSThread currentThread].name);
+            NSMutableArray *arrayWallets = [[NSMutableArray alloc] init];
+            NSMutableArray *arrayArchivedWallets = [[NSMutableArray alloc] init];
+            NSMutableArray *arrayWalletNames = [[NSMutableArray alloc] init];
             
-            if (loadingCount == 0)
-            {
-                self.bAllWalletsLoaded = YES;
-            }
-            else
-            {
-                self.bAllWalletsLoaded = NO;
-            }
+            [self loadWallets:arrayWallets archived:arrayArchivedWallets];
             
-            if (nil == self.currentWallet)
+            //
+            // Update wallet names for various dropdowns
+            //
+            int loadingCount = 0;
+            for (int i = 0; i < [arrayWallets count]; i++)
             {
-                if ([self.arrayWallets count] > 0)
-                {
-                    self.currentWallet = [arrayWallets objectAtIndex:0];
+                ABCWallet *wallet = [arrayWallets objectAtIndex:i];
+                [arrayWalletNames addObject:[NSString stringWithFormat:@"%@ (%@)", wallet.name,
+                                             [self.settings.denomination satoshiToBTCString:wallet.balance]]];
+                if (!wallet.loaded) {
+                    loadingCount++;
                 }
-                self.currentWalletIndex = 0;
             }
-            else
+            
+            for (int i = 0; i < [arrayArchivedWallets count]; i++)
             {
-                NSString *lastCurrentWalletUUID = self.currentWallet.uuid;
-                self.currentWallet = [self selectWalletWithUUID:lastCurrentWalletUUID];
-                self.currentWalletIndex = (int) [self.arrayWallets indexOfObject:self.currentWallet];
+                ABCWallet *wallet = [arrayArchivedWallets objectAtIndex:i];
+                if (!wallet.loaded) {
+                    loadingCount++;
+                }
             }
-            [self checkWalletsLoadingNotification];
-            [self postNotificationWalletsChanged];
             
-            ABCLog(2,@"EXIT refreshWallets MainQueue: %@", [NSThread currentThread].name);
-            
-            if (cb) cb();
-            
-        });
-        ABCLog(2,@"EXIT refreshWallets WalletQueue: %@", [NSThread currentThread].name);
+            dispatch_async(dispatch_get_main_queue(),^{
+                ABCLog(2,@"ENTER refreshWallets MainQueue: %@", [NSThread currentThread].name);
+                self.arrayWallets = arrayWallets;
+                self.arrayArchivedWallets = arrayArchivedWallets;
+                self.arrayWalletNames = arrayWalletNames;
+                self.numTotalWallets = (int) ([arrayWallets count] + [arrayArchivedWallets count]);
+                self.numWalletsLoaded = self.numTotalWallets  - loadingCount;
+                
+                if (loadingCount == 0)
+                {
+                    self.bAllWalletsLoaded = YES;
+                }
+                else
+                {
+                    self.bAllWalletsLoaded = NO;
+                }
+                
+                if (nil == self.currentWallet)
+                {
+                    if ([self.arrayWallets count] > 0)
+                    {
+                        self.currentWallet = [arrayWallets objectAtIndex:0];
+                    }
+                    self.currentWalletIndex = 0;
+                }
+                else
+                {
+                    NSString *lastCurrentWalletUUID = self.currentWallet.uuid;
+                    self.currentWallet = [self selectWalletWithUUID:lastCurrentWalletUUID];
+                    self.currentWalletIndex = (int) [self.arrayWallets indexOfObject:self.currentWallet];
+                }
+                [self checkWalletsLoadingNotification];
+                [self postNotificationWalletsChanged];
+                
+                ABCLog(2,@"EXIT refreshWallets MainQueue: %@", [NSThread currentThread].name);
+                
+                if (cb) cb();
+                
+            });
+            ABCLog(2,@"EXIT refreshWallets WalletQueue: %@", [NSThread currentThread].name);
+        }];
     }];
 }
 
