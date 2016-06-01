@@ -1157,7 +1157,9 @@ static NSNumberFormatter        *numberFormatter = nil;
             [currencies addObject:w.currency];
         }
     }
-    [currencies addObject:self.settings.defaultCurrency];
+    
+    if (self.settings && self.settings.defaultCurrency)
+        [currencies addObject:self.settings.defaultCurrency];
     
     [self.exchangeCache addCurrenciesToCheck:currencies];
     [self.exchangeCache updateExchangeCache];
