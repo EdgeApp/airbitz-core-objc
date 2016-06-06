@@ -407,6 +407,28 @@ static const int importTimeout                  = 30;
     return nserror;
 }
 
+- (NSError *)exportWalletXPub:(NSMutableString *) seed
+{
+    tABC_Error error;
+    char *szSeed = NULL;
+    if (!seed)
+    {
+        error.code = ABC_CC_NULLPtr;
+        return [ABCError makeNSError:error];
+    }
+    ABC_ExportWalletXPub([self.account.name UTF8String],
+                         [self.account.password UTF8String],
+                         [self.uuid UTF8String],
+                         &szSeed, &error);
+    NSError *nserror = [ABCError makeNSError:error];
+    if (!nserror)
+    {
+        [seed setString:[NSString stringWithUTF8String:szSeed]];
+    }
+    if (szSeed) free(szSeed);
+    return nserror;
+}
+
 - (void)deprioritizeAllAddresses;
 {
     [self.account postToWatcherQueue:^{
