@@ -917,6 +917,9 @@ static NSNumberFormatter        *numberFormatter = nil;
         [self postToWatcherQueue:^{
             tABC_Error error;
             ABC_WalletLoad([self.name UTF8String], [uuid UTF8String], &error);
+            NSError *nserror = [ABCError makeNSError:error];
+            if (nserror)
+                ABCLog(1, @"ABC_WalletLoad ERROR Loading Wallet %@ %@", nserror.userInfo[NSLocalizedDescriptionKey], nserror.userInfo[NSLocalizedFailureReasonErrorKey]);
         }];
         [self startWatcher:uuid];
         [self refreshWallets]; // Also goes to watcher queue.
