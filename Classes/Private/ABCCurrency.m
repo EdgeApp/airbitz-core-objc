@@ -19,6 +19,7 @@ static NSArray                  *arrayCurrency = nil;
 static NSArray                  *arrayCurrencyNums = nil;
 static NSArray                  *arrayCurrencyCodes = nil;
 static NSArray                  *arrayCurrencyStrings = nil;
+static NSNumberFormatter        *numberFormatter = nil;
 
 @implementation ABCCurrency
 
@@ -168,12 +169,15 @@ const NSString *syncToken = @"ABCCurrencySyncToken";
 
 + (NSNumberFormatter *)generateNumberFormatter;
 {
-    NSLocale *locale = [NSLocale autoupdatingCurrentLocale];
-    NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
-    [f setMinimumFractionDigits:2];
-    [f setMaximumFractionDigits:2];
-    [f setLocale:locale];
-    return f;
+    if (!numberFormatter)
+    {
+        NSLocale *locale = [NSLocale autoupdatingCurrentLocale];
+        numberFormatter = [[NSNumberFormatter alloc] init];
+        [numberFormatter setMinimumFractionDigits:2];
+        [numberFormatter setMaximumFractionDigits:2];
+        [numberFormatter setLocale:locale];
+    }
+    return numberFormatter;
 }
 
 

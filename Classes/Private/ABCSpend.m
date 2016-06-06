@@ -12,7 +12,9 @@
 
 @interface ABCSpend ()
 {
-    ABCMetaData *_metaData;
+    ABCMetaData             *_metaData;
+    ABCSpendFeeLevel        _feeLevel;
+    uint64_t                _customFeeSatoshis;
 }
 
 @property (nonatomic)               void                    *pSpend;
@@ -229,6 +231,18 @@
     
 }
 
+- (void) setFeeLevel:(ABCSpendFeeLevel)feeLevel;
+{
+    tABC_Error error;
+
+    _feeLevel = feeLevel;
+    ABC_SpendSetFee(self.pSpend, (tABC_SpendFeeLevel) feeLevel, self.customFeeSatoshis, &error);
+}
+
+- (ABCSpendFeeLevel) feeLevel;
+{
+    return _feeLevel;
+}
 
 - (ABCUnsentTx *)signTx:(NSError **)nserror;
 {

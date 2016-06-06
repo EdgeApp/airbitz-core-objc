@@ -86,6 +86,14 @@ typedef NS_ENUM(NSUInteger, ABCDenominationMultiplier) {
  */
 + (ABCDenomination *) getDenominationForIndex:(int)index;
 
+/**
+ * Returns the current decimal symbol for the device locale settings
+ * @param void
+ * @return NSString decimal symbol
+ */
++ (NSString *) getDecimalSymbol;
+
+
 
 
 @end

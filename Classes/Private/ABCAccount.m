@@ -7,6 +7,7 @@ static const int   fileSyncFrequencySeconds   = 30;
 static const int64_t recoveryReminderAmount   = 10000000;
 static const int recoveryReminderCount        = 2;
 static const int notifySyncDelay          = 1;
+static NSNumberFormatter        *numberFormatter = nil;
 
 @interface ABCAccount ()
 {
@@ -16,7 +17,6 @@ static const int notifySyncDelay          = 1;
     BOOL                                            bInitialized;
     BOOL                                            bHasSentWalletsLoaded;
     long                                            iLoginTimeSeconds;
-    NSOperationQueue                                *exchangeQueue;
     NSOperationQueue                                *dataQueue;
     NSOperationQueue                                *walletsQueue;
     NSOperationQueue                                *genQRQueue;
@@ -35,6 +35,7 @@ static const int notifySyncDelay          = 1;
 @property (nonatomic, strong)   NSTimer             *walletLoadingTimer;
 @property                       BOOL                bNewDeviceLogin;
 @property (atomic, copy)        NSString            *password;
+@property                       NSMutableArray      *walletUUIDsLoaded;
 
 @end
 
@@ -55,8 +56,6 @@ static const int notifySyncDelay          = 1;
         
         abcError = [[ABCError alloc] init];
         
-        exchangeQueue = [[NSOperationQueue alloc] init];
-        [exchangeQueue setMaxConcurrentOperationCount:1];
         dataQueue = [[NSOperationQueue alloc] init];
         [dataQueue setMaxConcurrentOperationCount:1];
         walletsQueue = [[NSOperationQueue alloc] init];
@@ -70,6 +69,7 @@ static const int notifySyncDelay          = 1;
         
         watchers = [[NSMutableDictionary alloc] init];
         watcherLock = [[NSLock alloc] init];
+        _walletUUIDsLoaded = [[NSMutableArray alloc] init];
         
         bInitialized = YES;
         bHasSentWalletsLoaded = NO;
@@ -126,7 +126,6 @@ static const int notifySyncDelay          = 1;
             wait++;
         }
         
-        exchangeQueue = nil;
         dataQueue = nil;
         walletsQueue = nil;
         genQRQueue = nil;
@@ -192,8 +191,6 @@ static const int notifySyncDelay          = 1;
         [walletsQueue cancelAllOperations];
     if (genQRQueue)
         [genQRQueue cancelAllOperations];
-    if (exchangeQueue)
-        [exchangeQueue cancelAllOperations];
     if (miscQueue)
         [miscQueue cancelAllOperations];
     
@@ -228,7 +225,6 @@ static const int notifySyncDelay          = 1;
 {
     int total = 0;
     total += dataQueue == nil     ? 0 : [dataQueue operationCount];
-    total += exchangeQueue == nil ? 0 : [exchangeQueue operationCount];
     total += walletsQueue == nil  ? 0 : [walletsQueue operationCount];
     total += genQRQueue == nil  ? 0 : [genQRQueue operationCount];
     total += watcherQueue == nil  ? 0 : [watcherQueue operationCount];
@@ -328,7 +324,7 @@ static const int notifySyncDelay          = 1;
     return [NSArray arrayWithArray:arrayUUIDs];
 }
 
-- (void)loadWallets:(NSMutableArray *)arrayWallets withTxs:(BOOL)bWithTx
+- (void)loadWallets:(NSMutableArray *)arrayWallets
 {
     ABCLog(2,@"ENTER loadWallets: %@", [NSThread currentThread].name);
     
@@ -340,7 +336,7 @@ static const int notifySyncDelay          = 1;
             wallet = [[ABCWallet alloc] initWithUser:self];
         }
         [wallet loadWalletFromCore:uuid];
-        if (bWithTx && wallet.loaded) {
+        if (wallet.loaded) {
             [wallet loadTransactions];
         }
         [arrayWallets addObject:wallet];
@@ -425,14 +421,14 @@ static const int notifySyncDelay          = 1;
 
 - (void)refreshWallets:(void(^)(void))cb
 {
-    [self postToWatcherQueue:^(void) {
+    [self postToWatcherQueue:^{
         [self postToWalletsQueue:^(void) {
             ABCLog(2,@"ENTER refreshWallets WalletQueue: %@", [NSThread currentThread].name);
             NSMutableArray *arrayWallets = [[NSMutableArray alloc] init];
             NSMutableArray *arrayArchivedWallets = [[NSMutableArray alloc] init];
             NSMutableArray *arrayWalletNames = [[NSMutableArray alloc] init];
             
-            [self loadWallets:arrayWallets archived:arrayArchivedWallets withTxs:true];
+            [self loadWallets:arrayWallets archived:arrayArchivedWallets];
             
             //
             // Update wallet names for various dropdowns
@@ -441,7 +437,6 @@ static const int notifySyncDelay          = 1;
             for (int i = 0; i < [arrayWallets count]; i++)
             {
                 ABCWallet *wallet = [arrayWallets objectAtIndex:i];
-//                [arrayWalletNames addObject:[NSString stringWithFormat:@"%@ (%@)", wallet.name, [self formatSatoshi:wallet.balance]]];
                 [arrayWalletNames addObject:[NSString stringWithFormat:@"%@ (%@)", wallet.name,
                                              [self.settings.denomination satoshiToBTCString:wallet.balance]]];
                 if (!wallet.loaded) {
@@ -524,13 +519,10 @@ static const int notifySyncDelay          = 1;
 
 - (void)postWalletsLoadedNotification:(ABCWallet *)wallet
 {
-    self.bNewDeviceLogin = NO;
     if (self.delegate && !wallet.bAddressesLoaded) {
         wallet.bAddressesLoaded = YES;
         if ([self.delegate respondsToSelector:@selector(abcAccountWalletLoaded:)]) {
-            dispatch_async(dispatch_get_main_queue(),^{
-                [self.delegate abcAccountWalletLoaded:wallet];
-            });
+            [self.delegate abcAccountWalletLoaded:wallet];
         }
     }
 }
@@ -539,17 +531,15 @@ static const int notifySyncDelay          = 1;
 {
     if (self.delegate) {
         if ([self.delegate respondsToSelector:@selector(abcAccountWalletsChanged)]) {
-            dispatch_async(dispatch_get_main_queue(),^{
-                [self.delegate abcAccountWalletsChanged];
-            });
+            [self.delegate abcAccountWalletsChanged];
         }
     }
 }
 
 
-- (void)loadWallets:(NSMutableArray *)arrayWallets archived:(NSMutableArray *)arrayArchivedWallets withTxs:(BOOL)bWithTx
+- (void)loadWallets:(NSMutableArray *)arrayWallets archived:(NSMutableArray *)arrayArchivedWallets;
 {
-    [self loadWallets:arrayWallets withTxs:bWithTx];
+    [self loadWallets:arrayWallets];
     
     // go through all the wallets and seperate out the archived ones
     for (int i = (int) [arrayWallets count] - 1; i >= 0; i--)
@@ -679,35 +669,56 @@ static const int notifySyncDelay          = 1;
     NSError *error = nil;
     double fCurrency;
     ABCDenomination *denomination = self.settings.denomination;
+    NSNumberFormatter *nf = [ABCAccount generateNumberFormatter];
+    [nf setCurrencySymbol:currency.symbol];
+    [nf setNumberStyle:NSNumberFormatterCurrencyStyle];
     
     fCurrency = [self.exchangeCache satoshiToCurrency:denomination.multiplier
                                          currencyCode:currency.code
                                                 error:&error];
-    
+    NSString *formatString;
+    NSNumber *formatNumber;
     if (!error)
     {
+        if (denomination.multiplier == ABCDenominationMultiplierUBTC ||
+            denomination.multiplier == ABCDenominationMultiplierMBTC)
+        {
+            [numberFormatter setMinimumFractionDigits:3];
+            [numberFormatter setMaximumFractionDigits:3];
+        }
+        else
+        {
+            [numberFormatter setMinimumFractionDigits:0];
+            [numberFormatter setMaximumFractionDigits:0];
+        }
+        
         if (denomination.multiplier == ABCDenominationMultiplierUBTC)
         {
+
+            formatNumber = [NSNumber numberWithDouble:fCurrency*1000];
+            formatString = [nf stringFromNumber:formatNumber];
             if(includeCurrencyCode) {
-                return [NSString stringWithFormat:@"1000 %@ = %@ %.3f %@",
-                        denomination.symbol, currency.symbol, fCurrency*1000, currency.code];
+                return [NSString stringWithFormat:@"1000 %@ = %@ %@",
+                        denomination.symbol, formatString, currency.code];
             }
             else
             {
-                return [NSString stringWithFormat:@"1000 %@ = %@ %.3f",
-                        denomination.symbol, currency.symbol, fCurrency*1000];
+                return [NSString stringWithFormat:@"1000 %@ = %@",
+                        denomination.symbol, formatString];
             }
         }
         else
         {
+            formatNumber = [NSNumber numberWithDouble:fCurrency];
+            formatString = [nf stringFromNumber:formatNumber];
             if(includeCurrencyCode) {
-                return [NSString stringWithFormat:@"1 %@ = %@ %.3f %@",
-                        denomination.symbol, currency.symbol, fCurrency, currency.code];
+                return [NSString stringWithFormat:@"1 %@ = %@ %@",
+                        denomination.symbol, formatString, currency.code];
             }
             else
             {
-                return [NSString stringWithFormat:@"1 %@ = %@ %.3f",
-                        denomination.symbol, currency.symbol, fCurrency];
+                return [NSString stringWithFormat:@"1 %@ = %@",
+                        denomination.symbol, formatString];
             }
         }
     }
@@ -906,6 +917,9 @@ static const int notifySyncDelay          = 1;
         [self postToWatcherQueue:^{
             tABC_Error error;
             ABC_WalletLoad([self.name UTF8String], [uuid UTF8String], &error);
+            NSError *nserror = [ABCError makeNSError:error];
+            if (nserror)
+                ABCLog(1, @"ABC_WalletLoad ERROR Loading Wallet %@ %@", nserror.userInfo[NSLocalizedDescriptionKey], nserror.userInfo[NSLocalizedFailureReasonErrorKey]);
         }];
         [self startWatcher:uuid];
         [self refreshWallets]; // Also goes to watcher queue.
@@ -924,16 +938,15 @@ static const int notifySyncDelay          = 1;
         wq = (unsigned long)[walletsQueue operationCount];
         dq = (unsigned long)[dataQueue operationCount];
         gq = (unsigned long)[genQRQueue operationCount];
-        eq = (unsigned long)[exchangeQueue operationCount];
         mq = (unsigned long)[miscQueue operationCount];
         
         //        if (0 == (wq + dq + gq + txq + eq + mq + lq))
-        if (0 == (wq + gq  + eq + mq))
+        if (0 == (wq + gq + mq))
             break;
         
         ABCLog(0,
-               @"Waiting for queues to complete wq=%lu dq=%lu gq=%lu eq=%lu mq=%lu",
-               wq, dq, gq, eq, mq);
+               @"Waiting for queues to complete wq=%lu dq=%lu gq=%lu mq=%lu",
+               wq, dq, gq, mq);
         [NSThread sleepForTimeInterval:.2];
     }
     
@@ -1134,33 +1147,25 @@ static const int notifySyncDelay          = 1;
 
 - (void)requestExchangeRateUpdate
 {
-    dispatch_async(dispatch_get_main_queue(),^
-                   {
-                       NSMutableArray *arrayCurrency = [[NSMutableArray alloc] init];
-                       
-                       for (ABCWallet *w in self.arrayWallets)
-                       {
-                           if (w.loaded) {
-                               [arrayCurrency addObject:w.currency];
-                           }
-                       }
-                       for (ABCWallet *w in self.arrayArchivedWallets)
-                       {
-                           if (w.loaded) {
-                               [arrayCurrency addObject:w.currency];
-                           }
-                       }
-                       [arrayCurrency addObject:self.settings.defaultCurrency];
-                       
-                       [exchangeQueue addOperationWithBlock:^{
-                           [[NSThread currentThread] setName:@"Exchange Rate Update"];
-                           NSMutableArray *exchanges = [NSMutableArray arrayWithObject:self.settings.exchangeRateSource];
-                           [exchanges addObjectsFromArray:ABCArrayExchanges];
-                           NSArray *arrayExchanges = [exchanges copy];
-                           [self.exchangeCache requestExchangeUpdateBlocking:arrayExchanges
-                                                               arrayCurrency:arrayCurrency];
-                       }];
-                   });
+    NSMutableArray *currencies = [[NSMutableArray alloc] init];
+    for (ABCWallet *w in self.arrayWallets)
+    {
+        if (w.loaded) {
+            [currencies addObject:w.currency];
+        }
+    }
+    for (ABCWallet *w in self.arrayArchivedWallets)
+    {
+        if (w.loaded) {
+            [currencies addObject:w.currency];
+        }
+    }
+    
+    if (self.settings && self.settings.defaultCurrency)
+        [currencies addObject:self.settings.defaultCurrency];
+    
+    [self.exchangeCache addCurrenciesToCheck:currencies];
+    [self.exchangeCache updateExchangeCache];
 }
 
 - (void)requestWalletDataSync:(ABCWallet *)wallet;
@@ -1365,9 +1370,7 @@ static const int notifySyncDelay          = 1;
          {
              if ([self.delegate respondsToSelector:@selector(abcAccountAccountChanged)])
              {
-                 dispatch_async(dispatch_get_main_queue(), ^{
-                     [self.delegate abcAccountAccountChanged];
-                 });
+                 [self.delegate abcAccountAccountChanged];
              }
          }
          // if there are new wallets, we need to start their watchers
@@ -1479,7 +1482,6 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     NSString *walletUUID;
     NSString *txid;
     
-
     if (pInfo)
     {
         if (pInfo->szWalletUUID)
@@ -1494,19 +1496,26 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     }
     
     if (ABC_AsyncEventType_IncomingBitCoin == pInfo->eventType) {
-        [user refreshWallets:^ {
-             if (user.delegate) {
-                 if ([user.delegate respondsToSelector:@selector(abcAccountIncomingBitcoin:transaction:)]) {
-                     ABCWallet *wallet = nil;
-                     ABCTransaction *tx = nil;
-                     if (walletUUID)
-                         wallet = [user getWallet:walletUUID];
-                     if (txid)
-                         tx = [wallet getTransaction:txid];
-                     [user.delegate abcAccountIncomingBitcoin:wallet transaction:tx];
-                 }
-             }
-         }];
+        BOOL doRefresh = !user.bNewDeviceLogin;
+        if ([user.walletUUIDsLoaded containsObject:walletUUID])
+            doRefresh = YES;
+        
+        if (doRefresh)
+        {
+            [user refreshWallets:^ {
+                if (user.delegate) {
+                    if ([user.delegate respondsToSelector:@selector(abcAccountIncomingBitcoin:transaction:)]) {
+                        ABCWallet *wallet = nil;
+                        ABCTransaction *tx = nil;
+                        if (walletUUID)
+                            wallet = [user getWallet:walletUUID];
+                        if (txid)
+                            tx = [wallet getTransaction:txid];
+                        [user.delegate abcAccountIncomingBitcoin:wallet transaction:tx];
+                    }
+                }
+            }];
+        }
     } else if (ABC_AsyncEventType_BlockHeightChange == pInfo->eventType) {
         ABCWallet *wallet = nil;
         if (walletUUID)
@@ -1526,20 +1535,26 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
         }
         
     } else if (ABC_AsyncEventType_BalanceUpdate == pInfo->eventType) {
-        [user refreshWallets:^
-         {
-             if (user.delegate) {
-                 if ([user.delegate respondsToSelector:@selector(abcAccountBalanceUpdate:transaction:)]) {
-                     ABCWallet *wallet = nil;
-                     ABCTransaction *tx = nil;
-                     if (walletUUID)
-                         wallet = [user getWallet:walletUUID];
-                     if (txid)
-                         tx = [wallet getTransaction:txid];
-                     [user.delegate abcAccountBalanceUpdate:wallet transaction:tx];
-                 }
-             }
-         }];
+        BOOL doRefresh = !user.bNewDeviceLogin;
+        if ([user.walletUUIDsLoaded containsObject:walletUUID])
+            doRefresh = YES;
+
+        if (doRefresh)
+        {
+            [user refreshWallets:^ {
+                if (user.delegate) {
+                    if ([user.delegate respondsToSelector:@selector(abcAccountBalanceUpdate:transaction:)]) {
+                        ABCWallet *wallet = nil;
+                        ABCTransaction *tx = nil;
+                        if (walletUUID)
+                            wallet = [user getWallet:walletUUID];
+                        if (txid)
+                            tx = [wallet getTransaction:txid];
+                        [user.delegate abcAccountBalanceUpdate:wallet transaction:tx];
+                    }
+                }
+            }];
+        }
     } else if (ABC_AsyncEventType_IncomingSweep == pInfo->eventType) {
         ABCWallet *wallet = nil;
         ABCTransaction *tx = nil;
@@ -1550,7 +1565,10 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
         [wallet handleSweepCallback:tx amount:amount error:error];
         
     } else if (ABC_AsyncEventType_AddressCheckDone == pInfo->eventType) {
-        [user refreshWallets:^{
+        if (walletUUID)
+            [user.walletUUIDsLoaded addObject:walletUUID];
+        
+        [user refreshWallets:^ {
             ABCWallet *wallet = nil;
             if (walletUUID)
                 wallet = [user getWallet:walletUUID];
@@ -1975,6 +1993,18 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
         }
     }
 }
+
++ (NSNumberFormatter *)generateNumberFormatter;
+{
+    if (!numberFormatter)
+    {
+        NSLocale *locale = [NSLocale autoupdatingCurrentLocale];
+        numberFormatter = [[NSNumberFormatter alloc] init];
+        [numberFormatter setLocale:locale];
+    }
+    return numberFormatter;
+}
+
 
 @end
 

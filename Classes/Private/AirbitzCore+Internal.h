@@ -31,6 +31,7 @@
 @property (atomic, strong) ABCKeychain              *keyChain;
 @property (atomic, strong) NSMutableArray           *loggedInUsers;
 @property (atomic, strong) ABCExchangeCache         *exchangeCache;
+@property (atomic, strong) NSOperationQueue         *exchangeQueue;
 
 - (NSDate *)dateFromTimestamp:(int64_t) intDate;
 - (NSError *)setOTPKey:(NSString *)username
