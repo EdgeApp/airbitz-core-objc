@@ -126,6 +126,7 @@
         txDetails.szCategory        = (char *) [destMeta.category UTF8String];
         txDetails.szNotes           = (char *) [destMeta.notes UTF8String];
         txDetails.amountCurrency    = destMeta.amountFiat;
+        txDetails.bizId             = destMeta.bizId;
     }
     ABC_SpendAddTransfer(self.pSpend, [destWallet.uuid UTF8String], amountSatoshi, &txDetails, &error);
     return  [ABCError makeNSError:error];
