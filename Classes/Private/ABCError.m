@@ -67,6 +67,8 @@
 
 + (NSString *)conditionCodeMap:(ABCConditionCode) cc;
 {
+    NSString *str;
+
     switch (cc)
     {
         case ABCConditionCodeAccountAlreadyExists:
@@ -129,7 +131,8 @@
         case ABCConditionCodeNoAvailableAddress:
         case ABCConditionCodeError:
         default:
-            return NSLocalizedString(@"An error has occurred.", nil);
+            str = [NSString stringWithFormat:@"%@ %d", NSLocalizedString(@"An error has occurred:", nil), cc];
+            return str;
     }
 }
 

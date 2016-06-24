@@ -40,7 +40,14 @@
 {
     tABC_Error error;
     ABC_SpendBroadcastTx(self.spend.pSpend, (char *)[self.base16 UTF8String], &error);
-    return [ABCError makeNSError:error];
+
+    NSError *lnserror = [ABCError makeNSError:error];
+    if (lnserror)
+    {
+        ABCLog(1, @"*** ERROR broadcastTx: %@ // %@", lnserror.userInfo[NSLocalizedDescriptionKey], lnserror.userInfo[NSLocalizedFailureReasonErrorKey]);
+    }
+
+    return lnserror;
 }
 
 - (ABCTransaction *)saveTx:(NSError **)nserror;
@@ -55,6 +62,10 @@
     if (!lnserror)
     {
         transaction = [self.spend.wallet getTransaction:[NSString stringWithUTF8String:szTxId]];
+    }
+    else
+    {
+        ABCLog(1, @"*** ERROR saveTx: %@ // %@", lnserror.userInfo[NSLocalizedDescriptionKey], lnserror.userInfo[NSLocalizedFailureReasonErrorKey]);
     }
     if (nserror) *nserror = lnserror;
     return transaction;
