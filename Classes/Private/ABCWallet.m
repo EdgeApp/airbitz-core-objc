@@ -509,15 +509,14 @@ static const int importTimeout                  = 30;
             [self setTransaction:transaction coreTx:pTrans];
             [arrayTransactions addObject:transaction];
         }
-        SInt64 bal = 0;
-        for (int j = (int) arrayTransactions.count - 1; j >= 0; --j)
+        SInt64 bal = self.balance;
+        for (int j = 0; j < arrayTransactions.count; j++)
         {
             ABCTransaction *t = arrayTransactions[j];
-            bal += t.amountSatoshi;
             t.balance = bal;
+            bal -= t.amountSatoshi;
         }
         self.arrayTransactions = arrayTransactions;
-        self.balance = bal;
     }
     else
     {
