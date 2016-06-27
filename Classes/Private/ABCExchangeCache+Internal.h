@@ -17,7 +17,8 @@
 - (int) getCurrencyNumFromCode:(NSString *)code;
 - (NSString *) getCurrencyCodeFromNum:(int) num;
 - (ABCCurrency *) getCurrencyFromNum:(int) num;
-- (void)requestExchangeUpdateBlocking:(NSArray *)exchangeList arrayCurrency:(NSArray *)currency;
-
+- (void)updateExchangeCache;
+- (void)addCurrencyToCheck:(ABCCurrency *)currency;
+- (void)addCurrenciesToCheck:(NSMutableArray *)currencies;
 
 @end

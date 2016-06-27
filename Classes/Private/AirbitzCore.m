@@ -36,7 +36,7 @@
 @property (atomic, strong) ABCLocalSettings         *localSettings;
 @property (atomic, strong) ABCKeychain              *keyChain;
 @property (atomic, strong) NSMutableArray           *loggedInUsers;
-//@property (atomic, strong) ABCExchangeCache         *exchangeCache;
+@property (atomic, strong) NSOperationQueue         *exchangeQueue;
 
 @end
 
@@ -54,6 +54,8 @@
     {
         abcError = [[ABCError alloc] init];
 
+        self.exchangeQueue = [[NSOperationQueue alloc] init];
+        [self.exchangeQueue setMaxConcurrentOperationCount:1];
         
         self.loggedInUsers = [[NSMutableArray alloc] init];
 
@@ -112,6 +114,16 @@
 {
     if (YES == bInitialized)
     {
+        if (self.exchangeQueue)
+            [self.exchangeQueue cancelAllOperations];
+        int wait = 0;
+        int maxWait = 200; // ~10 seconds
+        while ([self.exchangeQueue operationCount] > 0 && wait < maxWait) {
+            [NSThread sleepForTimeInterval:.2];
+            wait++;
+        }
+        self.exchangeQueue = nil;
+
         for (ABCAccount *user in self.loggedInUsers)
         {
             [user logout];
@@ -529,7 +541,10 @@
             // set the lastLoggedInAccount to the top most account in the list.
             NSMutableArray *accounts = [[NSMutableArray alloc] init];
             nserror = [self listLocalAccounts:accounts];
-            [self setLastAccessedAccount:accounts[0]];
+            if (!nserror && accounts && accounts[0])
+            {
+                [self setLastAccessedAccount:accounts[0]];
+            }
         }
     }
 

@@ -16,10 +16,19 @@
  * blockchain. This spend may also be signed without broadcast by calling signTx.
  */
 
+typedef enum eABCSpendFeeLevel
+{
+    ABCSpendFeeLevelLow = 0,
+    ABCSpendFeeLevelStandard,
+    ABCSpendFeeLevelHigh,
+    ABCSpendFeeLevelCustom,
+} ABCSpendFeeLevel;
 
 @interface ABCSpend : NSObject
 
 @property                           ABCMetaData             *metaData;
+@property                           ABCSpendFeeLevel        feeLevel;
+@property                           uint64_t                customFeeSatoshis;
 
 /**
  * Adds an address and amount to this spend request

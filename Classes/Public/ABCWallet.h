@@ -234,6 +234,13 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  */
 - (NSError *)exportWalletPrivateSeed:(NSMutableString *) seed;
 
+/*
+ * Export a wallet's public seed (XPub)
+ * @param seed NSMutableString* allocated and initialized mutable string to receive public seed contents.
+ *  Must not be nil.
+ * @return NSError* error object. nil if success
+ */
+- (NSError *)exportWalletXPub:(NSMutableString *) xpub;
 
 - (void)deprioritizeAllAddresses;
 - (int64_t)getTotalSentToday;
