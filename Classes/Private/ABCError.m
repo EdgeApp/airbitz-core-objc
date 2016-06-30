@@ -35,6 +35,14 @@
                              [NSString stringWithUTF8String:error.szSourceFile],
                              error.nSourceLine];
         }
+        
+        if (!description)
+            description = @"";
+        if (!failureReason)
+            failureReason = @"";
+        if (!failureDetail)
+            failureDetail = @"";
+        
         return [NSError errorWithDomain:ABCErrorDomain
                                    code:error.code
                                userInfo:@{ NSLocalizedDescriptionKey:description,
