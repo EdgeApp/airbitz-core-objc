@@ -971,6 +971,10 @@ static NSNumberFormatter        *numberFormatter = nil;
 - (void)logout;
 {
     [self.abc.keyChain disableRelogin:self.name];
+}
+
+- (void)logoutAllowRelogin;
+{
     [self.abc.loggedInUsers removeObject:self];
 
     [self stopAsyncTasks];
