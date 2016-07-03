@@ -13,7 +13,7 @@
 @class ABCReceiveAddress;
 @class ABCTransaction;
 
-#define ABCArrayExchanges     @[@"Bitstamp", @"Bitfinex", @"BitcoinAverage", @"BraveNewCoin", @"Coinbase", @"CleverCoin"]
+#define ABCArrayExchanges     @[@"Bitstamp", @"Bitfinex", @"BitcoinAverage", @"BraveNewCoin", @"Coinbase"]
 
 /**
  * ABCExchangeCache provides conversion routines to convert from any fiat currency

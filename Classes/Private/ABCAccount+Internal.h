@@ -35,6 +35,8 @@
 - (long) saveLogoutDate;
 - (void)requestExchangeRateUpdate;
 - (void)dataSyncAccount;
+- (void)logoutAllowRelogin;
+
 
 
 

@@ -126,7 +126,7 @@
 
         for (ABCAccount *user in self.loggedInUsers)
         {
-            [user logout];
+            [user logoutAllowRelogin];
         }
 
         ABC_Terminate();
