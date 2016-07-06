@@ -541,9 +541,13 @@
             // set the lastLoggedInAccount to the top most account in the list.
             NSMutableArray *accounts = [[NSMutableArray alloc] init];
             nserror = [self listLocalAccounts:accounts];
-            if (!nserror && accounts && accounts[0])
+            if (!nserror && accounts && ([accounts count] > 0))
             {
                 [self setLastAccessedAccount:accounts[0]];
+            }
+            else
+            {
+                [self setLastAccessedAccount:nil];
             }
         }
     }
