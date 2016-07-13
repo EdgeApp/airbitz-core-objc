@@ -122,7 +122,7 @@ developers to secure arbitrary data which provides automatic client-side encrypt
   # s.frameworks = "SomeFramework", "AnotherFramework"
 
 #  s.library   = "AirbitzCore"
-#  s.libraries = "abc", "bitcoin", "boost_atomic", "boost_chrono", "boost_date_time", "boost_filesystem", "boost_program_options"
+  s.libraries = "iconv", "c++"
 
   s.osx.vendored_libraries =
     "LibrariesOSX/libabc.a",
