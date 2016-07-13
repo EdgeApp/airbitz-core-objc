@@ -12,11 +12,8 @@ run
     
     pod install
     
-In your target's 'General' settings, edit the 'Linked Frameworks and Libraries' and add the following
+If you are using React Native, you'll likely get a link error that you are missing some libraries. This is because React Native will overwrite linker flags set by Cocoapods. To fix, go to the project target Build Settings -> Other Linker Flags. Add "$(inherited)" to the linker flags.
 
-    libiconv.tbd
-    libc++.tbd
-    
 And you're done. You should be able to call into AirbitzCore. See documentation below for code samples.
 
 ## Documentation
