@@ -35,6 +35,14 @@
                              [NSString stringWithUTF8String:error.szSourceFile],
                              error.nSourceLine];
         }
+        
+        if (!description)
+            description = @"";
+        if (!failureReason)
+            failureReason = @"";
+        if (!failureDetail)
+            failureDetail = @"";
+        
         return [NSError errorWithDomain:ABCErrorDomain
                                    code:error.code
                                userInfo:@{ NSLocalizedDescriptionKey:description,
@@ -67,6 +75,8 @@
 
 + (NSString *)conditionCodeMap:(ABCConditionCode) cc;
 {
+    NSString *str;
+
     switch (cc)
     {
         case ABCConditionCodeAccountAlreadyExists:
@@ -129,7 +139,8 @@
         case ABCConditionCodeNoAvailableAddress:
         case ABCConditionCodeError:
         default:
-            return NSLocalizedString(@"An error has occurred.", nil);
+            str = [NSString stringWithFormat:@"%@ %d", NSLocalizedString(@"An error has occurred:", nil), cc];
+            return str;
     }
 }
 

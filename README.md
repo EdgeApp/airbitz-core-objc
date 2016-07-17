@@ -6,17 +6,22 @@ This repository contains the ObjC bindings to the [airbitz-core][core] library.
 
 In your xcode project, edit your Podfile and add
 
-    pod 'AirbitzCore', :http => "https://developer.airbitz.co/download/airbitz-core-objc-newest.tgz"
+    target "nameOfYourProjectHere" do
+        pod 'AirbitzCore', :http => "https://developer.airbitz.co/download/airbitz-core-objc-newest.tgz"
+    end
 
-run
-    
+Of course you'll need to replace "nameOfYourProjectHere" with your actual Xcode project name.
+
+Close the XCode project and then rerun
+
     pod install
-    
-In your target's 'General' settings, edit the 'Linked Frameworks and Libraries' and add the following
 
-    libiconv.tbd
-    libc++.tbd
-    
+from the directory with your Podfile.
+
+Reopen the nameOfYourProjectHere.xcworkspace file from Xcode (not the xcproject file).
+
+If you are using React Native, you'll likely get a link error that you are missing some libraries. This is because React Native will overwrite linker flags set by Cocoapods. To fix, go to the project target Build Settings -> Other Linker Flags. Add "$(inherited)" to the linker flags.
+
 And you're done. You should be able to call into AirbitzCore. See documentation below for code samples.
 
 ## Documentation

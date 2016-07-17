@@ -971,6 +971,11 @@ static NSNumberFormatter        *numberFormatter = nil;
 - (void)logout;
 {
     [self.abc.keyChain disableRelogin:self.name];
+    [self logoutAllowRelogin];
+}
+
+- (void)logoutAllowRelogin;
+{
     [self.abc.loggedInUsers removeObject:self];
 
     [self stopAsyncTasks];
@@ -1534,6 +1539,10 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
             }
         }
         
+    } else if (ABC_AsyncEventType_TransactionUpdate == pInfo->eventType) {
+        [user refreshWallets:^{
+            [user postNotificationWalletsChanged];
+        }];
     } else if (ABC_AsyncEventType_BalanceUpdate == pInfo->eventType) {
         BOOL doRefresh = !user.bNewDeviceLogin;
         if ([user.walletUUIDsLoaded containsObject:walletUUID])

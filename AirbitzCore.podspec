@@ -69,7 +69,7 @@ developers to secure arbitrary data which provides automatic client-side encrypt
 # s.platform     = :ios, "8.0"
 
   #  When using multiple platforms
-  s.ios.deployment_target = "8.0"
+  s.ios.deployment_target = "7.0"
   s.osx.deployment_target = "10.9"
   # s.watchos.deployment_target = "2.0"
   # s.tvos.deployment_target = "9.0"
@@ -122,7 +122,7 @@ developers to secure arbitrary data which provides automatic client-side encrypt
   # s.frameworks = "SomeFramework", "AnotherFramework"
 
 #  s.library   = "AirbitzCore"
-#  s.libraries = "abc", "bitcoin", "boost_atomic", "boost_chrono", "boost_date_time", "boost_filesystem", "boost_program_options"
+  s.libraries = "iconv", "c++"
 
   s.osx.vendored_libraries =
     "LibrariesOSX/libabc.a",
