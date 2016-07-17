@@ -9,6 +9,7 @@
 @interface AirbitzCoreRCT () <ABCAccountDelegate>
 {
     AirbitzCore *abc;
+    ABCAccount *abcAccount;
 }
 @end
 
@@ -78,6 +79,11 @@ RCT_EXPORT_METHOD(createAccount:(NSString *)username
         [array addObject:@"Error ABC Not initialized"];
         error(array);
     }
+    if (abcAccount)
+    {
+        [abcAccount logout];
+        abcAccount = nil;
+    }
     
     [abc createAccount:username
               password:password
@@ -85,7 +91,9 @@ RCT_EXPORT_METHOD(createAccount:(NSString *)username
               delegate:self
               complete:^(ABCAccount *account)
      {
+         abcAccount = account;
          [array addObject:[NSNull null]];
+         [array addObject:account.name];
          complete(array);
      }
                  error:^(NSError *nserror)
