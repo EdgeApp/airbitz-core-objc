@@ -15,10 +15,14 @@
 @property                           NSString            *privateKey;
 @property                           NSString            *bitIDURI;
 @property                           NSString            *bitIDDomain;
+@property                           NSString            *bitIDCallbackURI;
 @property                           NSString            *paymentRequestURL;
 @property                           uint64_t            amountSatoshi;
 @property                           ABCMetaData         *metadata;
 @property                           NSString            *returnURI;
+@property                           BOOL                bitidPaymentAddress;
+@property                           BOOL                bitidKYCProvider;
+@property                           BOOL                bitidKYCRequest;
 
 - (ABCPaymentRequest *) getPaymentRequest:(NSError **)error;
 

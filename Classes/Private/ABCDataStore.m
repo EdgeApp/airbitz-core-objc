@@ -56,6 +56,31 @@
     return nserror;
 }
 
+- (NSError *)dataListKeys:(NSString *)folder keys:(NSMutableArray *)keys;
+{
+    tABC_Error error;
+    char **szKeys = NULL;
+    unsigned int count;
+    ABC_PluginDataKeys([self.account.name UTF8String],
+                      [self.account.password UTF8String],
+                      [folder UTF8String],
+                      &szKeys, &count, &error);
+    NSError *nserror = [ABCError makeNSError:error];
+    if (!nserror)
+    {
+        for (unsigned int i = 0; i < count; i++)
+        {
+            [keys addObject:[NSString stringWithUTF8String:szKeys[i]]];
+        }
+    }
+    if (szKeys != NULL) {
+        free(szKeys);
+    }
+    return nserror;
+}
+
+
+
 - (NSError *)dataRemoveKey:(NSString *)folder withKey:(NSString *)key;
 {
     tABC_Error error;

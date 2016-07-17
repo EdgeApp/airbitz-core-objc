@@ -55,6 +55,14 @@
 - (NSError *)dataRemoveKey:(NSString *)folder withKey:(NSString *)key;
 
 /**
+ * Lists all the keys in a folder of the dataStore.
+ * @param folder NSString* folder name to read data
+ * @param keys NSMutableArray* Array of NSString keys
+ * @return NSError* Error object. Nil if success
+ */
+- (NSError *)dataListKeys:(NSString *)folder keys:(NSMutableArray *)keys;
+
+/**
  * Removes all key value pairs from the specified folder in the data store.
  * @param folder NSString* folder name to read data
  * @return NSError* Error object. Nil if success
