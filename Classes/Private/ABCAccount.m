@@ -1726,7 +1726,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     if (!nserror)
     {
         self.password = password;
-        [self setupLoginPIN];
+        [self changePIN:self.settings.strPIN];
         
         if ([self.abc.localSettings.touchIDUsersEnabled containsObject:self.name] ||
             !self.settings.bDisablePINLogin)
