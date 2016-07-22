@@ -105,7 +105,9 @@
 }
 
 // Authenticate w/touchID
-- (BOOL)authenticateTouchID:(NSString *)promptString fallbackString:(NSString *)fallbackString;
+- (BOOL)authenticateTouchID:(NSString *)promptString fallbackString:(NSString *)fallbackString
+                   complete:(void (^)(BOOL didAuthenticate)) completionHandler;
+
 {
     LAContext *context = [LAContext new];
     NSError *error = nil;
@@ -116,34 +118,89 @@
         context.localizedFallbackTitle = fallbackString;
 
         [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
-                localizedReason:(promptString.length > 0 ? promptString : @" ") reply:^(BOOL success, NSError *error)
-                {
-                    authcode = (success) ? 1 : error.code;
-                }];
-
-        while (authcode == 0) {
-            [[NSRunLoop mainRunLoop] limitDateForMode:NSDefaultRunLoopMode];
-        }
-
-        if (authcode == LAErrorAuthenticationFailed)
+                  localizedReason:promptString.length > 0 ? promptString : @" "
+                            reply:^(BOOL success, NSError *error)
         {
-            return NO;
-        }
-        else if (authcode == 1)
-        {
-            return YES;
-        }
-        else if (authcode == LAErrorUserCancel || authcode == LAErrorSystemCancel)
-        {
-            return NO;
-        }
+            if (success) {
+                // User authenticated successfully, take appropriate action
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    // write all your code here
+                    completionHandler(YES);
+                });
+            } else {
+                // User did not authenticate successfully, look at error and take appropriate action
+                
+                switch (error.code) {
+                    case LAErrorAuthenticationFailed:
+                        NSLog(@"Authentication Failed");
+                        NSLog(@"[LAContext canEvaluatePolicy:] %@", error.localizedDescription);
+                        break;
+                        
+                    case LAErrorUserCancel:
+                        NSLog(@"User pressed Cancel button");
+                        NSLog(@"[LAContext canEvaluatePolicy:] %@", error.localizedDescription);
+                        break;
+                        
+                    case LAErrorUserFallback:
+                        NSLog(@"User pressed \"Enter Password\"");
+                        NSLog(@"[LAContext canEvaluatePolicy:] %@", error.localizedDescription);
+                        break;
+                        
+                    default:
+                        NSLog(@"Touch ID is not configured");
+                        NSLog(@"[LAContext canEvaluatePolicy:] %@", error.localizedDescription);
+                        break;
+                }
+                
+                NSLog(@"Authentication Fails");
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    // write all your code here
+                    completionHandler(NO);
+                });
+            }
+        }];
     }
-    else if (error)
+    else
     {
-        NSLog(@"[LAContext canEvaluatePolicy:] %@", error.localizedDescription);
+        completionHandler(NO);
     }
-
-    return NO;
+    
+//        
+//        
+//        
+//        
+//        
+//        
+//        
+//        [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
+//                localizedReason:(promptString.length > 0 ? promptString : @" ") reply:^(BOOL success, NSError *error)
+//                {
+//                    authcode = (success) ? 1 : error.code;
+//                }];
+//
+//        while (authcode == 0) {
+//            [[NSRunLoop mainRunLoop] limitDateForMode:NSDefaultRunLoopMode];
+//        }
+//
+//        if (authcode == LAErrorAuthenticationFailed)
+//        {
+//            return NO;
+//        }
+//        else if (authcode == 1)
+//        {
+//            return YES;
+//        }
+//        else if (authcode == LAErrorUserCancel || authcode == LAErrorSystemCancel)
+//        {
+//            return NO;
+//        }
+//    }
+//    else if (error)
+//    {
+//        NSLog(@"[LAContext canEvaluatePolicy:] %@", error.localizedDescription);
+//    }
+//
+//    return NO;
 }
 
 #else
