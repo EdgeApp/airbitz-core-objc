@@ -262,8 +262,17 @@ RCT_EXPORT_METHOD(pinLoginSetup:(BOOL)enable
 
 #pragma mark ABCAccountDelegate
 
+@synthesize bridge = _bridge;
+
 - (void) abcAccountWalletLoaded:(ABCWallet *)wallet;
 {
+    
+    
+    ABCLog(0, @"abcAccountWalletLoaded");
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:@"abcAccountWalletLoaded"
+                                                 body:@{@"uuid": wallet.uuid}];
+    
 //    if (!wallet)
 //        ABCLog(1, @"abcAccountWalletLoaded:wallet == NULL");
 //    else
@@ -292,7 +301,11 @@ RCT_EXPORT_METHOD(pinLoginSetup:(BOOL)enable
 {
     if (abcAccount)
     {
+        ABCLog(0, @"abcAccountAccountChanged");
         
+        [self.bridge.eventDispatcher sendAppEventWithName:@"abcAccountAccountChanged"
+                                                     body:@{@"name": abcAccount.name}];
+
     }
 //    [self updateWidgetQRCode];
 //    [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_WALLETS_CHANGED object:self userInfo:nil];
