@@ -101,8 +101,6 @@ RCT_EXPORT_METHOD(createAccount:(NSString *)username
                   complete:(RCTResponseSenderBlock)complete
                   error:(RCTResponseErrorBlock)error)
 {
-    NSMutableArray *array = [[NSMutableArray alloc] init];
-    
     if (!abc)
     {
         error([self makeErrorABCNotInitialized]);
@@ -121,9 +119,7 @@ RCT_EXPORT_METHOD(createAccount:(NSString *)username
               complete:^(ABCAccount *account)
      {
          abcAccount = account;
-         [array addObject:[NSNull null]];
-         [array addObject:account.name];
-         complete(array);
+         complete(@[[NSNull null], account.name]);
      }
                  error:^(NSError *nserror)
      {
@@ -152,9 +148,7 @@ RCT_EXPORT_METHOD(passwordLogin:(NSString *)username
     NSMutableArray *array = [[NSMutableArray alloc] init];
     [abc passwordLogin:username password:password delegate:self otp:otp complete:^(ABCAccount *account) {
         abcAccount = account;
-        [array addObject:[NSNull null]];
-        [array addObject:account.name];
-        complete(array);
+        complete(@[[NSNull null], account.name]);
     } error:^(NSError *nserror, NSDate *otpResetDate, NSString *otpResetToken) {
         [array addObject:[NSNull null]];
         [array addObject:[NSString stringWithFormat:@"%d", (int) nserror.code]];
@@ -182,9 +176,7 @@ RCT_EXPORT_METHOD(pinLogin:(NSString *)username
     NSMutableArray *array = [[NSMutableArray alloc] init];
     [abc pinLogin:username pin:pin delegate:self complete:^(ABCAccount *account) {
         abcAccount = account;
-        [array addObject:[NSNull null]];
-        [array addObject:account.name];
-        complete(array);
+        complete(@[[NSNull null], account.name]);
     } error:^(NSError *nserror) {
         error(nserror);
     }];
@@ -230,18 +222,19 @@ RCT_EXPORT_METHOD(changePIN:(NSString *)pin
 
 
 
-RCT_EXPORT_METHOD(accountHasPassword:(RCTResponseSenderBlock)complete
+RCT_EXPORT_METHOD(accountHasPassword:(NSString *)accountName
+                  complete:(RCTResponseSenderBlock)complete
                   error:(RCTResponseErrorBlock)error)
 {
     ABC_CHECK_ACCOUNT();
 
     NSError *nserror;
-    [abcAccount accountHasPassword:&nserror];
+    BOOL hasPassword = [abc accountHasPassword:accountName error:&nserror];
     
     if (nserror)
         error(nserror);
     else
-        complete(@[[NSNull null], [NSNumber numberWithBool:YES]]);
+        complete(@[[NSNull null], [NSNumber numberWithBool:hasPassword]]);
 }
 
 RCT_EXPORT_METHOD(checkPassword:(NSString *)password
