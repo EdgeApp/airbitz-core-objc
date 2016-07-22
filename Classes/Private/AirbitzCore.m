@@ -193,25 +193,19 @@
     return nil;
 }
 
-- (BOOL)autoReloginOrTouchIDIfPossibleMain:(NSString *)username
-                                  password:(NSString **)password
-                               usedTouchID:(BOOL *)usedTouchID
+- (void)autoReloginOrTouchIDIfPossibleMain:(NSString *)username
+                                  complete:(void (^)(BOOL doRelogin, NSString *password, BOOL usedTouchID)) completionHandler;
+
 {
     ABCLog(1, @"ENTER autoReloginOrTouchIDIfPossibleMain");
-    *usedTouchID = NO;
+    BOOL usedTouchID = NO;
+    NSString *password = nil;
     
-//    if (HARD_CODED_LOGIN) {
-//        self.usernameSelector.textField.text = HARD_CODED_LOGIN_NAME;
-//        self.passwordTextField.text = HARD_CODED_LOGIN_PASSWORD;
-//        [self showSpinner:YES];
-//        [self SignIn];
-//        return;
-//    }
-//    
     if (! [self.keyChain bHasSecureEnclave] )
     {
         ABCLog(1, @"EXIT autoReloginOrTouchIDIfPossibleMain: No secure enclave");
-        return NO;
+        completionHandler(NO, password, usedTouchID);
+        return;
     }
     
     ABCLog(1, @"Checking username=%@", username);
@@ -243,7 +237,8 @@
     if (!bReloginKey && !bUseTouchID)
     {
         ABCLog(1, @"EXIT autoReloginOrTouchIDIfPossibleMain No relogin or touchid settings in keychain");
-        return NO;
+        completionHandler(NO, password, usedTouchID);
+        return;
     }
     
     if ([kcPassword length] >= 10)
@@ -258,15 +253,19 @@
             NSString *prompt = [NSString stringWithFormat:@"%@ [%@]",abcStringTouchIDPromptText, username];
             
             ABCLog(1, @"Launching TouchID prompt");
-            if ([self.keyChain authenticateTouchID:prompt fallbackString:abcStringUsePasswordText]) {
-                bReloginKey = YES;
-                *usedTouchID = YES;
-            }
-            else
-            {
-                ABCLog(1, @"EXIT autoReloginOrTouchIDIfPossibleMain TouchID authentication failed");
-                return NO;
-            }
+            [self.keyChain authenticateTouchID:prompt fallbackString:abcStringUsePasswordText complete:^(BOOL didAuthenticate) {
+                if (didAuthenticate) {
+                    ABCLog(1, @"EXIT autoReloginOrTouchIDIfPossibleMain TouchID authentication passed");
+                    completionHandler(YES, kcPassword, YES);
+                    return;
+                }
+                else
+                {
+                    ABCLog(1, @"EXIT autoReloginOrTouchIDIfPossibleMain TouchID authentication failed");
+                    completionHandler(NO, password, usedTouchID);
+                    return;
+                }
+            }];
         }
         else
         {
@@ -275,18 +274,16 @@
         
         if (bReloginKey)
         {
-            if (bReloginState)
-            {
-                *password = kcPassword;
-                return YES;
-            }
+            password = kcPassword;
+            completionHandler(YES, password, usedTouchID);
+            return;
         }
     }
     else
     {
         ABCLog(1, @"EXIT autoReloginOrTouchIDIfPossibleMain reloginState DISABLED");
     }
-    return NO;
+    completionHandler(NO, password, usedTouchID);
 }
 
 - (ABCAccount *) getLoggedInUser:(NSString *)username;
@@ -981,24 +978,22 @@
                                  error:(void (^)(NSError *error)) errorHandler;
 {
     dispatch_async(dispatch_get_main_queue(), ^(void) {
-        NSString *password;
-        BOOL      usedTouchID;
         
-        BOOL doRelogin = [self autoReloginOrTouchIDIfPossibleMain:username password:&password usedTouchID:&usedTouchID];
-        
-        if (doRelogin)
-        {
-            if (doBeforeLogin) doBeforeLogin();
-            [self passwordLogin:username password:password delegate:delegate otp:nil complete:^(ABCAccount *account){
-                if (completionWithLogin) completionWithLogin(account, usedTouchID);
-            } error:^(NSError *error, NSDate *resetDate, NSString *resetToken) {
-                if (errorHandler) errorHandler(error);
-            }];
-        }
-        else
-        {
-            if (completionNoLogin) completionNoLogin();
-        }
+        [self autoReloginOrTouchIDIfPossibleMain:username complete:^(BOOL doRelogin, NSString *password, BOOL usedTouchID) {
+            if (doRelogin)
+            {
+                if (doBeforeLogin) doBeforeLogin();
+                [self passwordLogin:username password:password delegate:delegate otp:nil complete:^(ABCAccount *account){
+                    if (completionWithLogin) completionWithLogin(account, usedTouchID);
+                } error:^(NSError *error, NSDate *resetDate, NSString *resetToken) {
+                    if (errorHandler) errorHandler(error);
+                }];
+            }
+            else
+            {
+                if (completionNoLogin) completionNoLogin();
+            }
+        }];
     });
 }
 
