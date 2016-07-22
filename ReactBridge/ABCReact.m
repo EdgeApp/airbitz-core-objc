@@ -44,7 +44,26 @@ ABCAccount *abcAccount = nil;
     }
 }
 
+- (NSError *)makeErrorABCNotInitialized;
+{
+    return [self makeNSError:ABCConditionCodeNotInitialized description:@"ABC Not Initialized"];
+}
 
+- (NSError *)makeErrorNotLoggedIn;
+{
+    return [self makeNSError:ABCConditionCodeError description:@"Not logged in"];
+}
+
+#define ABC_CHECK_ACCOUNT() \
+    if (!abc) \
+    { \
+        error([self makeErrorABCNotInitialized]); \
+        return; \
+    } \
+    if (!abcAccount) { \
+        error([self makeErrorNotLoggedIn]); \
+        return; \
+    }
 
 RCT_EXPORT_MODULE();
 
@@ -86,7 +105,7 @@ RCT_EXPORT_METHOD(createAccount:(NSString *)username
     
     if (!abc)
     {
-        error([self makeNSError:ABCConditionCodeNotInitialized description:@"ABC Not Initialized"]);
+        error([self makeErrorABCNotInitialized]);
         return;
     }
     if (abcAccount)
@@ -144,6 +163,33 @@ RCT_EXPORT_METHOD(passwordLogin:(NSString *)username
     }];
 }
 
+RCT_EXPORT_METHOD(pinLogin:(NSString *)username
+                  pin:(NSString *)pin
+                  complete:(RCTResponseSenderBlock)complete
+                  error:(RCTResponseErrorBlock)error)
+{
+    if (!abc)
+    {
+        error([self makeErrorABCNotInitialized]);
+        return;
+    }
+    if (abcAccount)
+    {
+        [abcAccount logout];
+        abcAccount = nil;
+    }
+    
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    [abc pinLogin:username pin:pin delegate:self complete:^(ABCAccount *account) {
+        abcAccount = account;
+        [array addObject:[NSNull null]];
+        [array addObject:account.name];
+        complete(array);
+    } error:^(NSError *nserror) {
+        error(nserror);
+    }];
+}
+
 RCT_EXPORT_METHOD(logout:(RCTResponseSenderBlock)complete)
 {
     if (abc)
@@ -154,6 +200,71 @@ RCT_EXPORT_METHOD(logout:(RCTResponseSenderBlock)complete)
         }
     }
     complete(@[[NSNull null]]);
+}
+
+RCT_EXPORT_METHOD(changePassword:(NSString *)password
+                  complete:(RCTResponseSenderBlock)complete
+                  error:(RCTResponseErrorBlock)error)
+{
+    ABC_CHECK_ACCOUNT();
+    
+    [abcAccount changePassword:password complete:^{
+        complete(@[[NSNull null]]);
+    } error:^(NSError *nserror) {
+        error(nserror);
+    }];
+}
+
+RCT_EXPORT_METHOD(changePIN:(NSString *)pin
+                  complete:(RCTResponseSenderBlock)complete
+                  error:(RCTResponseErrorBlock)error)
+{
+    ABC_CHECK_ACCOUNT();
+    
+    [abcAccount changePIN:pin complete:^{
+        complete(@[[NSNull null]]);
+    } error:^(NSError *nserror) {
+        error(nserror);
+    }];
+}
+
+
+
+RCT_EXPORT_METHOD(accountHasPassword:(RCTResponseSenderBlock)complete
+                  error:(RCTResponseErrorBlock)error)
+{
+    ABC_CHECK_ACCOUNT();
+
+    NSError *nserror;
+    [abcAccount accountHasPassword:&nserror];
+    
+    if (nserror)
+        error(nserror);
+    else
+        complete(@[[NSNull null], [NSNumber numberWithBool:YES]]);
+}
+
+RCT_EXPORT_METHOD(checkPassword:(NSString *)password
+                  complete:(RCTResponseSenderBlock)complete
+                  error:(RCTResponseErrorBlock)error)
+{
+    ABC_CHECK_ACCOUNT();
+    
+    BOOL pass = [abcAccount checkPassword:password];
+    complete(@[[NSNull null], [NSNumber numberWithBool:pass]]);
+}
+
+RCT_EXPORT_METHOD(pinLoginSetup:(BOOL)enable
+                  complete:(RCTResponseSenderBlock)complete
+                  error:(RCTResponseErrorBlock)error)
+{
+    ABC_CHECK_ACCOUNT();
+    
+    NSError *nserror = [abcAccount pinLoginSetup:enable];
+    if (nserror)
+        error(nserror);
+    else
+        complete(@[[NSNull null]]);
 }
 
 #pragma mark ABCAccountDelegate
