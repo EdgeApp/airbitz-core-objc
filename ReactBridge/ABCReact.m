@@ -5,6 +5,7 @@
 
 #import "RCTUtils.h"
 #import "RCTBridgeModule.h"
+#import "RCTEventDispatcher.h"
 #import "ABCReact.h"
 
 @interface AirbitzCoreRCT () <ABCAccountDelegate>
@@ -16,43 +17,6 @@ AirbitzCore *abc = nil;
 ABCAccount *abcAccount = nil;
 
 @implementation AirbitzCoreRCT
-
-- (NSArray *) makeErrorArray:(NSError *)error;
-{
-    NSMutableArray *array = [[NSMutableArray alloc] init];
-    [array addObject:[NSString stringWithFormat:@"%d", (int)error.code]];
-    [array addObject:error.userInfo[NSLocalizedDescriptionKey]];
-    [array addObject:error.userInfo[NSLocalizedFailureReasonErrorKey]];
-    [array addObject:error.userInfo[NSLocalizedRecoverySuggestionErrorKey]];
-    return array;
-}
-
-- (NSError *)makeNSError:(ABCConditionCode)code description:(NSString *)description;
-{
-    if (ABCConditionCodeOk == code)
-    {
-        return nil;
-    }
-    else
-    {
-        if (!description)
-            description = @"";
-        
-        return [NSError errorWithDomain:ABCErrorDomain
-                                   code:code
-                               userInfo:@{ NSLocalizedDescriptionKey:description }];
-    }
-}
-
-- (NSError *)makeErrorABCNotInitialized;
-{
-    return [self makeNSError:ABCConditionCodeNotInitialized description:@"ABC Not Initialized"];
-}
-
-- (NSError *)makeErrorNotLoggedIn;
-{
-    return [self makeNSError:ABCConditionCodeError description:@"Not logged in"];
-}
 
 #define ABC_CHECK_ACCOUNT() \
     if (!abc) \
@@ -69,14 +33,14 @@ RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(init:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey
                   complete:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseErrorBlock)error)
+                  error:(RCTResponseSenderBlock)error)
 {
     if (!abc)
     {
         abc = [[AirbitzCore alloc] init:abcAPIKey hbits:hbitsKey];
         if (!abc)
         {
-            error([self makeNSError:ABCConditionCodeError
+            error([self makeError:ABCConditionCodeError
                         description:@"Error initializing ABC"]);
             return;
         }
@@ -89,7 +53,7 @@ RCT_EXPORT_METHOD(init:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey
     else
     {
         // Already initialized
-        error([self makeNSError:ABCConditionCodeReinitialization
+        error([self makeError:ABCConditionCodeReinitialization
                     description:@"ABC Already Initialized"]);
         return;
     }
@@ -99,7 +63,7 @@ RCT_EXPORT_METHOD(createAccount:(NSString *)username
                   password:(NSString *)password
                   pin:(NSString *)pin
                   complete:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseErrorBlock)error)
+                  error:(RCTResponseSenderBlock)error)
 {
     if (!abc)
     {
@@ -123,7 +87,7 @@ RCT_EXPORT_METHOD(createAccount:(NSString *)username
      }
                  error:^(NSError *nserror)
      {
-         error(nserror);
+         error([self makeErrorFromNSError:nserror]);
      }];
 }
 
@@ -135,8 +99,7 @@ RCT_EXPORT_METHOD(passwordLogin:(NSString *)username
 {
     if (!abc)
     {
-        error([self makeErrorArray:[self makeNSError:ABCConditionCodeNotInitialized
-                                         description:@"ABC Not Initialized"]]);
+        error([self makeErrorABCNotInitialized]);
         return;
     }
     if (abcAccount)
@@ -160,7 +123,7 @@ RCT_EXPORT_METHOD(passwordLogin:(NSString *)username
 RCT_EXPORT_METHOD(pinLogin:(NSString *)username
                   pin:(NSString *)pin
                   complete:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseErrorBlock)error)
+                  error:(RCTResponseSenderBlock)error)
 {
     if (!abc)
     {
@@ -173,12 +136,11 @@ RCT_EXPORT_METHOD(pinLogin:(NSString *)username
         abcAccount = nil;
     }
     
-    NSMutableArray *array = [[NSMutableArray alloc] init];
     [abc pinLogin:username pin:pin delegate:self complete:^(ABCAccount *account) {
         abcAccount = account;
         complete(@[[NSNull null], account.name]);
     } error:^(NSError *nserror) {
-        error(nserror);
+        error([self makeErrorFromNSError:nserror]);
     }];
 }
 
@@ -196,27 +158,27 @@ RCT_EXPORT_METHOD(logout:(RCTResponseSenderBlock)complete)
 
 RCT_EXPORT_METHOD(changePassword:(NSString *)password
                   complete:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseErrorBlock)error)
+                  error:(RCTResponseSenderBlock)error)
 {
     ABC_CHECK_ACCOUNT();
     
     [abcAccount changePassword:password complete:^{
         complete(@[[NSNull null]]);
     } error:^(NSError *nserror) {
-        error(nserror);
+        error([self makeErrorFromNSError:nserror]);
     }];
 }
 
 RCT_EXPORT_METHOD(changePIN:(NSString *)pin
                   complete:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseErrorBlock)error)
+                  error:(RCTResponseSenderBlock)error)
 {
     ABC_CHECK_ACCOUNT();
     
     [abcAccount changePIN:pin complete:^{
         complete(@[[NSNull null]]);
     } error:^(NSError *nserror) {
-        error(nserror);
+        error([self makeErrorFromNSError:nserror]);
     }];
 }
 
@@ -224,7 +186,7 @@ RCT_EXPORT_METHOD(changePIN:(NSString *)pin
 
 RCT_EXPORT_METHOD(accountHasPassword:(NSString *)accountName
                   complete:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseErrorBlock)error)
+                  error:(RCTResponseSenderBlock)error)
 {
     ABC_CHECK_ACCOUNT();
 
@@ -232,14 +194,14 @@ RCT_EXPORT_METHOD(accountHasPassword:(NSString *)accountName
     BOOL hasPassword = [abc accountHasPassword:accountName error:&nserror];
     
     if (nserror)
-        error(nserror);
+        error([self makeErrorFromNSError:nserror]);
     else
         complete(@[[NSNull null], [NSNumber numberWithBool:hasPassword]]);
 }
 
 RCT_EXPORT_METHOD(checkPassword:(NSString *)password
                   complete:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseErrorBlock)error)
+                  error:(RCTResponseSenderBlock)error)
 {
     ABC_CHECK_ACCOUNT();
     
@@ -249,13 +211,13 @@ RCT_EXPORT_METHOD(checkPassword:(NSString *)password
 
 RCT_EXPORT_METHOD(pinLoginSetup:(BOOL)enable
                   complete:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseErrorBlock)error)
+                  error:(RCTResponseSenderBlock)error)
 {
     ABC_CHECK_ACCOUNT();
     
     NSError *nserror = [abcAccount pinLoginSetup:enable];
     if (nserror)
-        error(nserror);
+        error([self makeErrorFromNSError:nserror]);
     else
         complete(@[[NSNull null]]);
 }
@@ -427,6 +389,109 @@ RCT_EXPORT_METHOD(pinLoginSetup:(BOOL)enable
 //                         otherButtonTitles:nil, nil];
 //        [_otpSkewAlert show];
 //    }
+}
+
+#pragma mark Return Parameter utility methods
+
+//
+// To standardize between React Native on ObjC and Android, all methods use two callbacks of type RCTResponseSenderBlock.
+// One for success (complete) and one for failure (error). RCTResponseSenderBlock takes an NSArray but the first element
+// is only for errors. For ABC we always send NSNull for the first argument and return parameters in the 2nd argument.
+// Convention shall be that if there is only one return parameter, it is simply the 2nd array argument. If there is more than one,
+// It shall be encoded as a Json string. Error parameters are returned the same way as success parameters but are simply
+// differentiated by the callback
+//
+// Errors are always encoded as a string encoding of a Json array with the first parameter as the integer error cod
+// and 2nd, 3rd, and 4th parameters as descriptions.
+//
+
+- (NSString *) makeJsonFromObj:(id)obj;
+{
+    NSError *error;
+    
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:obj options:kNilOptions error:&error];
+    NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    return json;
+}
+
+- (NSArray *) makeErrorFromNSError:(NSError *)error;
+{
+    return [self makeError:(ABCConditionCode)error.code
+               description:error.userInfo[NSLocalizedDescriptionKey]
+              description2:error.userInfo[NSLocalizedFailureReasonErrorKey]
+              description3:error.userInfo[NSLocalizedRecoverySuggestionErrorKey]];
+}
+
+- (NSArray *)makeError:(ABCConditionCode)code
+           description:(NSString *)description;
+{ return [self makeError:code description:description description2:nil description3:nil]; }
+
+- (NSArray *)makeError:(ABCConditionCode)code
+           description:(NSString *)description
+          description2:(NSString *)description2;
+{ return [self makeError:code description:description description2:description2 description3:nil]; }
+
+- (NSArray *)makeError:(ABCConditionCode)code
+           description:(NSString *)description
+          description2:(NSString *)description2
+          description3:(NSString *)description3;
+{
+    if (ABCConditionCodeOk == code)
+    {
+        return @[[NSNull null]];
+    }
+    else
+    {
+        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+        
+        [dict setObject:[NSNumber numberWithInt:(int) code] forKey:@"code"];
+        if (description && [description length])
+            [dict setObject:description forKey:@"description"];
+        if (description2 && [description2 length])
+            [dict setObject:description2 forKey:@"description2"];
+        if (description3 && [description3 length])
+            [dict setObject:description2 forKey:@"description3"];
+        
+        return [self makeResponseFromObj:dict];
+    }
+}
+
+- (NSArray *)makeArrayResponse:(id)obj1 obj2:(id)obj2;
+{ return [self makeArrayResponse:obj1 obj2:obj2 obj3:nil obj4:nil]; }
+
+- (NSArray *)makeArrayResponse:(id)obj1 obj2:(id)obj2 obj3:(id)obj3;
+{ return [self makeArrayResponse:obj1 obj2:obj2 obj3:obj3 obj4:nil]; }
+
+- (NSArray *)makeArrayResponse:(id)obj1 obj2:(id)obj2 obj3:(id)obj3 obj4:(id)obj4;
+{
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    if (obj1)
+        [array addObject:obj1];
+    if (obj2)
+        [array addObject:obj2];
+    if (obj3)
+        [array addObject:obj3];
+    if (obj4)
+        [array addObject:obj4];
+    NSString *json = [self makeJsonFromObj:array];
+    return @[[NSNull null], json];
+}
+
+- (NSArray *)makeResponseFromObj:(id)obj1;
+{
+    NSString *json = [self makeJsonFromObj:obj1];
+    return @[[NSNull null], json];
+}
+
+
+- (NSArray *)makeErrorABCNotInitialized;
+{
+    return [self makeError:ABCConditionCodeNotInitialized description:@"ABC Not Initialized"];
+}
+
+- (NSArray *)makeErrorNotLoggedIn;
+{
+    return [self makeError:ABCConditionCodeError description:@"Not logged in"];
 }
 
 

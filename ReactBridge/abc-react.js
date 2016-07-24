@@ -49,18 +49,12 @@ function accountChanged (name) {
 var AirbitzCoreRCT = NativeModules.AirbitzCoreRCT;
 
 class ABCError {
-  constructor(code, message) {
-    this.code = code
-    this.message = message
-    console.log("ABCError:" + code + ": " + message)
-
+  constructor(message) {
+    var obj = JSON.parse(message);
+    for (var prop in obj)
+      this[prop] = obj[prop];
+    console.log("ABCError:" + this.code + ": " + this.description)
   }
-}
-
-function makeABCError(rcterror) {
-  var code = rcterror['code'].replace("EABCERRORDOMAIN","")
-  var err = new ABCError(code, rcterror['message'])
-  return err
 }
 
 /**
@@ -86,7 +80,7 @@ class ABCWallet {
   }
 
   getTransactions(complete, error) {
-    AirbitzCoreRCT.getTransactions((transactions) => {
+    AirbitzCoreRCT.getTransactions((rtcerror, transactions) => {
       var txs = JSON.parse(transactions);
 
       for (i = 0; i < txs.length; i++) {
@@ -94,8 +88,8 @@ class ABCWallet {
       }
 
       complete(txsReturn)
-    }, (rtcerror) => {
-      error(new ABCError(rtcerror['code'], rtcerror['message']))
+    }, (rtcerror, response) => {
+      error(new ABCError(response))
     })
   }
 }
@@ -137,10 +131,10 @@ class ABCAccount {
    * @param error
    */
   changePassword(password, complete, error) {
-    AirbitzCoreRCT.changePassword(password, (response) => {
+    AirbitzCoreRCT.changePassword(password, (rtcerror, response) => {
       complete()
-    }, (rtcerror) => {
-      error(new ABCError(rtcerror['code'], rtcerror['message']))
+    }, (rtcerror, response) => {
+      error(new ABCError(response))
     })
   }
 
@@ -151,10 +145,10 @@ class ABCAccount {
    * @param error
    */
   changePIN(pin, complete, error) {
-    AirbitzCoreRCT.changePIN(pin, (error, response) => {
+    AirbitzCoreRCT.changePIN(pin, (rtcerror, response) => {
       complete()
-    }, (rtcerror) => {
-      error(new ABCError(rtcerror['code'], rtcerror['message']))
+    }, (rtcerror, response) => {
+      error(new ABCError(response))
     })
   }
 
@@ -167,8 +161,8 @@ class ABCAccount {
   checkPassword(password, complete, error) {
     AirbitzCoreRCT.checkPassword(password, (error, response) => {
       complete(response)
-    }, (rtcerror) => {
-      error(new ABCError(rtcerror['code'], rtcerror['message']))
+    }, (rtcerror, response) => {
+      error(new ABCError(response))
     })
   }
 
@@ -179,10 +173,10 @@ class ABCAccount {
    * @param error
    */
   pinLoginSetup(enable, complete, error) {
-    AirbitzCoreRCT.pinLoginSetup(enable, (error, response) => {
+    AirbitzCoreRCT.pinLoginSetup(enable, (rtcerror, response) => {
       complete(response)
-    }, (rtcerror) => {
-      error(new ABCError(rtcerror['code'], rtcerror['message']))
+    }, (rtcerror, response) => {
+      error(new ABCError(response))
     })
   }
 
@@ -191,15 +185,15 @@ class ABCAccount {
   }
 
   getWallets(complete, error) {
-    AirbitzCoreRCT.getWallets((wallets) => {
-      var ws = JSON.parse(wallets)
+    AirbitzCoreRCT.getWallets((rtcerror, response) => {
+      var ws = JSON.parse(response)
 
       for (i = 0; i < ws.length; i++) {
         walletsReturn[i] = new ABCWallet(this, ws[i])
       }
       complete(walletsReturn)
-    }, (rtcerror) => {
-      error(new ABCError(rtcerror['code'], rtcerror['message']))
+    }, (rtcerror, response) => {
+      error(new ABCError(response))
     })
   }
 
@@ -223,8 +217,8 @@ class AirbitzCore {
       console.log("ABC Initialized")
       abc  = this
       complete()
-    }, (rcterror) => {
-      error(makeABCError(rcterror))
+    }, (rcterror, response) => {
+      error(new ABCError(response))
     })
   }
 
@@ -238,11 +232,11 @@ class AirbitzCore {
    * @param error
    */
   createAccount (username, password, pin, callbacks, complete, error) {
-    AirbitzCoreRCT.createAccount(username, password, pin, (error, response) => {
+    AirbitzCoreRCT.createAccount(username, password, pin, (rcterror, response) => {
       console.log("account created")
       complete(new ABCAccount(response, callbacks))
-    }, (rcterror) => {
-      error(makeABCError(rcterror))
+    }, (rcterror, response) => {
+      error(new ABCError(response))
     })
   }
 
@@ -256,10 +250,10 @@ class AirbitzCore {
    * @param error
    */
   passwordLogin(username, password, otp, callbacks, complete, error) {
-    AirbitzCoreRCT.passwordLogin(username, password, otp, (error, response) => {
+    AirbitzCoreRCT.passwordLogin(username, password, otp, (rcterror, response) => {
       complete(new ABCAccount(response, callbacks))
-    }, (rtcerror) => {
-      error(new ABCError(rtcerror['code'], rtcerror['message']))
+    }, (rtcerror, response) => {
+      error(new ABCError(response))
     })
   }
 
@@ -272,10 +266,10 @@ class AirbitzCore {
    * @param error
    */
   pinLogin(username, pin, callbacks, complete, error) {
-    AirbitzCoreRCT.pinLogin(username, pin, (error, response) => {
+    AirbitzCoreRCT.pinLogin(username, pin, (rcterror, response) => {
       complete(new ABCAccount(response, callbacks))
-    }, (rtcerror) => {
-      error(new ABCError(rtcerror['code'], rtcerror['message']))
+    }, (rtcerror, response) => {
+      error(new ABCError(response))
     })
   }
 
@@ -286,10 +280,10 @@ class AirbitzCore {
    * @param error
    */
   accountHasPassword(accountName, complete, error) {
-    AirbitzCoreRCT.accountHasPassword(accountName, (error, response) => {
+    AirbitzCoreRCT.accountHasPassword(accountName, (rtcerror, response) => {
       complete(response)
-    }, (rtcerror) => {
-      error(new ABCError(rtcerror['code'], rtcerror['message']))
+    }, (rtcerror, response) => {
+      error(new ABCError(response))
     })
   }
 
