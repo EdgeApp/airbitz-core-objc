@@ -222,6 +222,73 @@ RCT_EXPORT_METHOD(pinLoginSetup:(BOOL)enable
         complete(@[[NSNull null]]);
 }
 
+RCT_EXPORT_METHOD(getWallets:(RCTResponseSenderBlock)complete
+                  error:(RCTResponseSenderBlock)error)
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSMutableArray *array = [[NSMutableArray alloc] init];
+        
+        for (ABCWallet *w in abcAccount.arrayWallets)
+        {
+
+            NSDictionary *dictWallet = [[NSDictionary alloc] initWithObjectsAndKeys:
+                                        @"name", w.name,
+                                        @"uuid", w.uuid,
+                                        @"balance", [NSNumber numberWithLongLong:w.balance],
+                                        @"blockHeight", [NSNumber numberWithInt:w.blockHeight],
+                                        nil];
+            
+            [array addObject:dictWallet];
+        }
+        
+        complete([self makeResponseFromObj:array]);
+    });
+}
+
+RCT_EXPORT_METHOD(getTransactions:(NSString *)uuid
+                  complete:(RCTResponseSenderBlock)complete
+                  error:(RCTResponseSenderBlock)error)
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSMutableArray *array = [[NSMutableArray alloc] init];
+        
+        for (ABCWallet *w in abcAccount.arrayWallets)
+        {
+            if ([uuid isEqualToString:w.uuid])
+            {
+                for (ABCTransaction *tx in w.arrayTransactions)
+                {
+                    NSDictionary *metaData = [[NSDictionary alloc] initWithObjectsAndKeys:
+                                              @"payeeName", tx.metaData.payeeName,
+                                              @"category", tx.metaData.category,
+                                              @"notes", tx.metaData.notes,
+                                              @"bizId", [NSNumber numberWithInteger:tx.metaData.bizId],
+                                              @"amountFiat", [NSNumber numberWithDouble:tx.metaData.amountFiat],
+                                              nil];
+                    
+                    NSDictionary *dictTx = [[NSDictionary alloc]
+                                            initWithObjectsAndKeys:
+                                            @"txid", tx.txid,
+                                            @"amountSatoshi", [NSNumber numberWithLongLong:tx.amountSatoshi],
+                                            @"date", [NSNumber numberWithLong:floor([tx.date timeIntervalSince1970] * 1000)],
+                                            @"balance", [NSNumber numberWithLongLong:tx.balance],
+                                            @"height", [NSNumber numberWithUnsignedLongLong:tx.height],
+                                            @"isReplaceByFee", [NSNumber numberWithBool:tx.isReplaceByFee],
+                                            @"isDoubleSpend", [NSNumber numberWithBool:tx.isDoubleSpend],
+                                            @"metaData", metaData,
+                                            nil];
+                    
+                    [array addObject:dictTx];
+                }
+                break;
+            }
+        }
+        
+        complete([self makeResponseFromObj:array]);
+    });
+}
+
+
 #pragma mark ABCAccountDelegate
 
 @synthesize bridge = _bridge;
