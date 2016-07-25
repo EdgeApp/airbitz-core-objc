@@ -1,3 +1,4 @@
+"use strict"
 
 import React, { Component } from 'react';
 import {
@@ -7,22 +8,21 @@ import {
   View
 } from 'react-native';
 
-import { NativeModules } from 'react-native';
-import { NativeAppEventEmitter } from 'react-native';
+import { NativeModules, Platform, NativeAppEventEmitter, DeviceEventEmitter } from 'react-native';
 
 var abc = null
 var abcAccount = null
 
-var accountWalletLoadedSubscription = NativeAppEventEmitter.addListener(
-  'abcAccountWalletLoaded', (wallet) => {
-    walletLoaded(wallet.uuid)
+const accountWalletLoadedSubscription = Platform.OS == 'ios' ? NativeAppEventEmitter : DeviceEventEmitter;
+accountWalletLoadedSubscription.addListener("abcAccountAccountChanged", (e:Event) => {
+    walletLoaded(e.uuid)
   }
 );
 
 function walletLoaded(uuid) {
   if (abcAccount) {
     if (abcAccount.callbacks.abcAccountWalletLoaded) {
-      for (w in abcAccount.getWallets()) {
+      for (var w in abcAccount.getWallets()) {
         if (w.uuid == uuid) {
           abcAccount.callbacks.abcAccountWalletLoaded(w)
         }
@@ -31,11 +31,11 @@ function walletLoaded(uuid) {
   }
 }
 
-var accountAccountChangedSubscription = NativeAppEventEmitter.addListener(
-  'abcAccountAccountChanged', (response) => {
-    accountChanged(response.name)
-  }
-);
+const accountAccountChangedSubscription = Platform.OS == 'ios' ? NativeAppEventEmitter : DeviceEventEmitter;
+accountAccountChangedSubscription.addListener("abcAccountAccountChanged", (e:Event) => {
+  accountChanged(e.name)
+  console.log(e)
+})
 
 function accountChanged (name) {
   console.log(name)
