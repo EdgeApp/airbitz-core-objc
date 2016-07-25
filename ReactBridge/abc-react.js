@@ -22,11 +22,13 @@ accountWalletLoadedSubscription.addListener("abcAccountAccountChanged", (e:Event
 function walletLoaded(uuid) {
   if (abcAccount) {
     if (abcAccount.callbacks.abcAccountWalletLoaded) {
-      for (var w in abcAccount.getWallets()) {
-        if (w.uuid == uuid) {
-          abcAccount.callbacks.abcAccountWalletLoaded(w)
+      abcAccount.getWallets((response) => {
+        for (var w in response) {
+          if (w.uuid == uuid) {
+            abcAccount.callbacks.abcAccountWalletLoaded(w)
+          }
         }
-      }
+      }, (error) => {})
     }
   }
 }
@@ -82,8 +84,9 @@ class ABCWallet {
   getTransactions(complete, error) {
     AirbitzCoreRCT.getTransactions((rtcerror, transactions) => {
       var txs = JSON.parse(transactions);
+      var txsReturn
 
-      for (i = 0; i < txs.length; i++) {
+      for (var i = 0; i < txs.length; i++) {
         txsReturn[i] = new ABCTransaction(this, txs[i])
       }
 
@@ -187,8 +190,9 @@ class ABCAccount {
   getWallets(complete, error) {
     AirbitzCoreRCT.getWallets((rtcerror, response) => {
       var ws = JSON.parse(response)
+      var walletsReturn
 
-      for (i = 0; i < ws.length; i++) {
+      for (var i = 0; i < ws.length; i++) {
         walletsReturn[i] = new ABCWallet(this, ws[i])
       }
       complete(walletsReturn)
