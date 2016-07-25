@@ -188,7 +188,11 @@ RCT_EXPORT_METHOD(accountHasPassword:(NSString *)accountName
                   complete:(RCTResponseSenderBlock)complete
                   error:(RCTResponseSenderBlock)error)
 {
-    ABC_CHECK_ACCOUNT();
+    if (!abc)
+    {
+        error([self makeErrorABCNotInitialized]);
+        return;
+    }
 
     NSError *nserror;
     BOOL hasPassword = [abc accountHasPassword:accountName error:&nserror];
