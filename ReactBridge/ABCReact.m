@@ -21,53 +21,55 @@ ABCAccount *abcAccount = nil;
 #define ABC_CHECK_ACCOUNT() \
     if (!abc) \
     { \
-        error([self makeErrorABCNotInitialized]); \
+        callback([self makeErrorABCNotInitialized]); \
         return; \
     } \
     if (!abcAccount) { \
-        error([self makeErrorNotLoggedIn]); \
+        callback([self makeErrorNotLoggedIn]); \
         return; \
     }
 
 RCT_EXPORT_MODULE();
 
 RCT_EXPORT_METHOD(init:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey
-                  complete:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseSenderBlock)error)
+                  callback:(RCTResponseSenderBlock)callback)
 {
     if (!abc)
     {
         abc = [[AirbitzCore alloc] init:abcAPIKey hbits:hbitsKey];
         if (!abc)
         {
-            error([self makeError:ABCConditionCodeError
-                        description:@"Error initializing ABC"]);
+            callback([self makeError:ABCConditionCodeError
+                        message:@"Error initializing ABC"]);
             return;
         }
         else
         {
-            complete(@[[NSNull null]]);
+            callback(@[[NSNull null]]);
             return;
         }
     }
     else
     {
         // Already initialized
-        error([self makeError:ABCConditionCodeReinitialization
-                    description:@"ABC Already Initialized"]);
+        callback([self makeError:ABCConditionCodeReinitialization
+                    message:@"ABC Already Initialized"]);
         return;
     }
 }
 
-RCT_EXPORT_METHOD(createAccount:(NSString *)username
+// -------------------------------------------------------------------------------
+#pragma mark - AirbitzCore methods
+// -------------------------------------------------------------------------------
+
+RCT_EXPORT_METHOD(accountCreate:(NSString *)username
                   password:(NSString *)password
                   pin:(NSString *)pin
-                  complete:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseSenderBlock)error)
+                  callback:(RCTResponseSenderBlock)callback)
 {
     if (!abc)
     {
-        error([self makeErrorABCNotInitialized]);
+        callback([self makeErrorABCNotInitialized]);
         return;
     }
     if (abcAccount)
@@ -83,23 +85,22 @@ RCT_EXPORT_METHOD(createAccount:(NSString *)username
               complete:^(ABCAccount *account)
      {
          abcAccount = account;
-         complete(@[[NSNull null], account.name]);
+         callback(@[[NSNull null], account.name]);
      }
                  error:^(NSError *nserror)
      {
-         error([self makeErrorFromNSError:nserror]);
+         callback([self makeErrorFromNSError:nserror]);
      }];
 }
 
 RCT_EXPORT_METHOD(passwordLogin:(NSString *)username
                   password:(NSString *)password
                   otpToken:(NSString *)otp
-                  complete:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseSenderBlock)error)
+                  callback:(RCTResponseSenderBlock)callback)
 {
     if (!abc)
     {
-        error([self makeErrorABCNotInitialized]);
+        callback([self makeErrorABCNotInitialized]);
         return;
     }
     if (abcAccount)
@@ -108,26 +109,24 @@ RCT_EXPORT_METHOD(passwordLogin:(NSString *)username
         abcAccount = nil;
     }
     
-    NSMutableArray *array = [[NSMutableArray alloc] init];
     [abc passwordLogin:username password:password delegate:self otp:otp complete:^(ABCAccount *account) {
         abcAccount = account;
-        complete(@[[NSNull null], account.name]);
+        callback(@[[NSNull null], account.name]);
     } error:^(NSError *nserror, NSDate *otpResetDate, NSString *otpResetToken) {
-        [array addObject:[NSNull null]];
-        [array addObject:[NSString stringWithFormat:@"%d", (int) nserror.code]];
-        [array addObject:[NSString stringWithFormat:@"%lu", (unsigned long) [otpResetDate timeIntervalSince1970]]];
-        [array addObject:otpResetToken];
+        callback([self makeError:ABCConditionCodeInvalidOTP
+                         message:@"Invalid OTP"
+                      dictionary:@{@"otpResetDate" : [NSNumber numberWithInt:(int)[otpResetDate timeIntervalSince1970]],
+                                   @"otpResetToken" : otpResetToken}]);
     }];
 }
 
 RCT_EXPORT_METHOD(pinLogin:(NSString *)username
                   pin:(NSString *)pin
-                  complete:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseSenderBlock)error)
+                  callback:(RCTResponseSenderBlock)callback)
 {
     if (!abc)
     {
-        error([self makeErrorABCNotInitialized]);
+        callback([self makeErrorABCNotInitialized]);
         return;
     }
     if (abcAccount)
@@ -138,13 +137,53 @@ RCT_EXPORT_METHOD(pinLogin:(NSString *)username
     
     [abc pinLogin:username pin:pin delegate:self complete:^(ABCAccount *account) {
         abcAccount = account;
-        complete(@[[NSNull null], account.name]);
+        callback(@[[NSNull null], account.name]);
     } error:^(NSError *nserror) {
-        error([self makeErrorFromNSError:nserror]);
+        callback([self makeErrorFromNSError:nserror]);
     }];
 }
 
-RCT_EXPORT_METHOD(logout:(RCTResponseSenderBlock)complete)
+RCT_EXPORT_METHOD(accountHasPassword:(NSString *)accountName
+                  callback:(RCTResponseSenderBlock)callback)
+{
+    if (!abc)
+    {
+        callback([self makeErrorABCNotInitialized]);
+        return;
+    }
+    
+    NSError *nserror;
+    BOOL hasPassword = [abc accountHasPassword:accountName error:&nserror];
+    
+    if (nserror)
+        callback([self makeErrorFromNSError:nserror]);
+    else
+        callback(@[[NSNull null], [NSNumber numberWithBool:hasPassword]]);
+}
+
+RCT_EXPORT_METHOD(deleteLocalAccount:(NSString *)username
+                  callback:(RCTResponseSenderBlock)callback)
+{
+    if (!abc)
+    {
+        callback([self makeErrorABCNotInitialized]);
+        return;
+    }
+    
+    NSError *nserror = [abc deleteLocalAccount:username];
+    
+    if (nserror)
+        callback([self makeErrorFromNSError:nserror]);
+    else
+        callback(@[[NSNull null]]);
+}
+
+
+// -------------------------------------------------------------------------------
+#pragma mark - ABCAccount methods
+// -------------------------------------------------------------------------------
+
+RCT_EXPORT_METHOD(logout:(RCTResponseSenderBlock)callback)
 {
     if (abc)
     {
@@ -153,105 +192,158 @@ RCT_EXPORT_METHOD(logout:(RCTResponseSenderBlock)complete)
             [abcAccount logout];
         }
     }
-    complete(@[[NSNull null]]);
+    callback(@[[NSNull null]]);
 }
 
-RCT_EXPORT_METHOD(changePassword:(NSString *)password
-                  complete:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseSenderBlock)error)
+RCT_EXPORT_METHOD(passwordSet:(NSString *)password
+                  callback:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
     
     [abcAccount changePassword:password complete:^{
-        complete(@[[NSNull null]]);
+        callback(@[[NSNull null]]);
     } error:^(NSError *nserror) {
-        error([self makeErrorFromNSError:nserror]);
+        callback([self makeErrorFromNSError:nserror]);
     }];
 }
 
-RCT_EXPORT_METHOD(changePIN:(NSString *)pin
-                  complete:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseSenderBlock)error)
+RCT_EXPORT_METHOD(pinSet:(NSString *)pin
+                  complete:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
     
     [abcAccount changePIN:pin complete:^{
-        complete(@[[NSNull null]]);
+        callback(@[[NSNull null]]);
     } error:^(NSError *nserror) {
-        error([self makeErrorFromNSError:nserror]);
+        callback([self makeErrorFromNSError:nserror]);
     }];
 }
 
-
-
-RCT_EXPORT_METHOD(accountHasPassword:(NSString *)accountName
-                  complete:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseSenderBlock)error)
-{
-    if (!abc)
-    {
-        error([self makeErrorABCNotInitialized]);
-        return;
-    }
-
-    NSError *nserror;
-    BOOL hasPassword = [abc accountHasPassword:accountName error:&nserror];
-    
-    if (nserror)
-        error([self makeErrorFromNSError:nserror]);
-    else
-        complete(@[[NSNull null], [NSNumber numberWithBool:hasPassword]]);
-}
-
-RCT_EXPORT_METHOD(checkPassword:(NSString *)password
-                  complete:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseSenderBlock)error)
+RCT_EXPORT_METHOD(passwordOk:(NSString *)password
+                  complete:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
     
     BOOL pass = [abcAccount checkPassword:password];
-    complete(@[[NSNull null], [NSNumber numberWithBool:pass]]);
+    callback(@[[NSNull null], [NSNumber numberWithBool:pass]]);
 }
 
-RCT_EXPORT_METHOD(pinLoginSetup:(BOOL)enable
-                  complete:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseSenderBlock)error)
+RCT_EXPORT_METHOD(pinLoginEnable:(BOOL)enable
+                  complete:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
     
     NSError *nserror = [abcAccount pinLoginSetup:enable];
     if (nserror)
-        error([self makeErrorFromNSError:nserror]);
+        callback([self makeErrorFromNSError:nserror]);
     else
-        complete(@[[NSNull null]]);
+        callback(@[[NSNull null]]);
 }
 
-RCT_EXPORT_METHOD(getWallets:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseSenderBlock)error)
+RCT_EXPORT_METHOD(otpKeySet:(NSString *)key
+                  complete:(RCTResponseSenderBlock)callback)
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSMutableArray *array = [[NSMutableArray alloc] init];
-        
-        for (ABCWallet *w in abcAccount.arrayWallets)
-        {
-
-            NSDictionary *dictWallet = [[NSDictionary alloc] initWithObjectsAndKeys:
-                                        @"name", w.name,
-                                        @"uuid", w.uuid,
-                                        @"balance", [NSNumber numberWithLongLong:w.balance],
-                                        @"blockHeight", [NSNumber numberWithInt:w.blockHeight],
-                                        nil];
-            
-            [array addObject:dictWallet];
-        }
-        
-        complete([self makeResponseFromObj:array]);
-    });
+    ABC_CHECK_ACCOUNT();
+    
+    NSError *nserror = [abcAccount setOTPKey:key];
+    if (nserror)
+        callback([self makeErrorFromNSError:nserror]);
+    else
+        callback(@[[NSNull null]]);
 }
+
+RCT_EXPORT_METHOD(otpLocalKeyGet:(RCTResponseSenderBlock)callback)
+{
+    ABC_CHECK_ACCOUNT();
+    
+    NSError *nserror;
+    NSString *otpkey = [abcAccount getOTPLocalKey:&nserror];
+    if (nserror)
+        callback([self makeErrorFromNSError:nserror]);
+    else
+        callback(@[[NSNull null], otpkey]);
+}
+
+RCT_EXPORT_METHOD(otpDetailsGet:(RCTResponseSenderBlock)callback)
+{
+    ABC_CHECK_ACCOUNT();
+    
+    bool enabled;
+    long timeout;
+    
+    NSError *nserror = [abcAccount getOTPDetails:&enabled
+                                         timeout:&timeout];
+    if (nserror)
+        callback([self makeErrorFromNSError:nserror]);
+    else
+        callback([self makeArrayResponse:[NSNumber numberWithBool:enabled]
+                                    obj2:[NSNumber numberWithLong:timeout]]);
+}
+
+RCT_EXPORT_METHOD(enableOTP:(long)timeout
+                  complete:(RCTResponseSenderBlock)callback)
+{
+    ABC_CHECK_ACCOUNT();
+    
+    NSError *nserror = [abcAccount enableOTP:timeout];
+    if (nserror)
+        callback([self makeErrorFromNSError:nserror]);
+    else
+        callback(@[[NSNull null]]);
+}
+
+RCT_EXPORT_METHOD(disableOTP:(RCTResponseSenderBlock)callback)
+{
+    ABC_CHECK_ACCOUNT();
+    
+    NSError *nserror = [abcAccount disableOTP];
+    if (nserror)
+        callback([self makeErrorFromNSError:nserror]);
+    else
+        callback(@[[NSNull null]]);
+}
+
+RCT_EXPORT_METHOD(cancelOTPResetRequest:(RCTResponseSenderBlock)callback)
+{
+    ABC_CHECK_ACCOUNT();
+    
+    NSError *nserror = [abcAccount cancelOTPResetRequest];
+    if (nserror)
+        callback([self makeErrorFromNSError:nserror]);
+    else
+        callback(@[[NSNull null]]);
+}
+
+
+//RCT_EXPORT_METHOD(getWallets:(RCTResponseSenderBlock)callback
+//                  error:(RCTResponseSenderBlock)error)
+//{
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        NSMutableArray *array = [[NSMutableArray alloc] init];
+//        
+//        for (ABCWallet *w in abcAccount.arrayWallets)
+//        {
+//
+//            NSDictionary *dictWallet = [[NSDictionary alloc] initWithObjectsAndKeys:
+//                                        @"name", w.name,
+//                                        @"uuid", w.uuid,
+//                                        @"balance", [NSNumber numberWithLongLong:w.balance],
+//                                        @"blockHeight", [NSNumber numberWithInt:w.blockHeight],
+//                                        nil];
+//            
+//            [array addObject:dictWallet];
+//        }
+//        
+//        callback([self makeResponseFromObj:array]);
+//    });
+//}
+
+// -------------------------------------------------------------------------------
+#pragma mark - ABCWallet methods
+// -------------------------------------------------------------------------------
 
 RCT_EXPORT_METHOD(getTransactions:(NSString *)uuid
-                  complete:(RCTResponseSenderBlock)complete
-                  error:(RCTResponseSenderBlock)error)
+                  complete:(RCTResponseSenderBlock)callback)
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         NSMutableArray *array = [[NSMutableArray alloc] init];
@@ -288,24 +380,24 @@ RCT_EXPORT_METHOD(getTransactions:(NSString *)uuid
             }
         }
         
-        complete([self makeResponseFromObj:array]);
+        callback([self makeResponseFromObj:array]);
     });
 }
 
 
-#pragma mark ABCAccountDelegate
+#pragma mark ABCAccountDelegate callbacks
 
 @synthesize bridge = _bridge;
 
 - (void) abcAccountWalletLoaded:(ABCWallet *)wallet;
 {
-    
-    
-    ABCLog(0, @"abcAccountWalletLoaded");
-    
-    [self.bridge.eventDispatcher sendAppEventWithName:@"abcAccountWalletLoaded"
-                                                 body:@{@"uuid": wallet.uuid}];
-    
+//
+//    
+//    ABCLog(0, @"abcAccountWalletLoaded");
+//    
+//    [self.bridge.eventDispatcher sendAppEventWithName:@"abcAccountWalletLoaded"
+//                                                 body:@{@"uuid": wallet.uuid}];
+//    
 //    if (!wallet)
 //        ABCLog(1, @"abcAccountWalletLoaded:wallet == NULL");
 //    else
@@ -328,18 +420,18 @@ RCT_EXPORT_METHOD(getTransactions:(NSString *)uuid
 //        }
 //    }
 //    [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_WALLETS_CHANGED object:self userInfo:nil];
-}
-
-- (void) abcAccountAccountChanged;
-{
-    if (abcAccount)
-    {
-        ABCLog(0, @"abcAccountAccountChanged");
-        
-        [self.bridge.eventDispatcher sendAppEventWithName:@"abcAccountAccountChanged"
-                                                     body:@{@"name": abcAccount.name}];
-
-    }
+//}
+//
+//- (void) abcAccountAccountChanged;
+//{
+//    if (abcAccount)
+//    {
+//        ABCLog(0, @"abcAccountAccountChanged");
+//        
+//        [self.bridge.eventDispatcher sendAppEventWithName:@"abcAccountAccountChanged"
+//                                                     body:@{@"name": abcAccount.name}];
+//
+//    }
 //    [self updateWidgetQRCode];
 //    [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_WALLETS_CHANGED object:self userInfo:nil];
 //    [[NSNotificationCenter defaultCenter] postNotificationName:NOTIFICATION_DATA_SYNC_UPDATE object:self];
@@ -462,7 +554,7 @@ RCT_EXPORT_METHOD(getTransactions:(NSString *)uuid
 //    }
 }
 
-#pragma mark Return Parameter utility methods
+#pragma mark - Return Parameter utility methods
 
 //
 // To standardize between React Native on ObjC and Android, all methods use two callbacks of type RCTResponseSenderBlock.
@@ -488,24 +580,18 @@ RCT_EXPORT_METHOD(getTransactions:(NSString *)uuid
 - (NSArray *) makeErrorFromNSError:(NSError *)error;
 {
     return [self makeError:(ABCConditionCode)error.code
-               description:error.userInfo[NSLocalizedDescriptionKey]
-              description2:error.userInfo[NSLocalizedFailureReasonErrorKey]
-              description3:error.userInfo[NSLocalizedRecoverySuggestionErrorKey]];
+                   message:error.userInfo[NSLocalizedDescriptionKey]
+                dictionary:@{@"message2": error.userInfo[NSLocalizedFailureReasonErrorKey],
+                             @"message3": error.userInfo[NSLocalizedRecoverySuggestionErrorKey]}];
 }
 
 - (NSArray *)makeError:(ABCConditionCode)code
-           description:(NSString *)description;
-{ return [self makeError:code description:description description2:nil description3:nil]; }
+               message:(NSString *)message
+{ return [self makeError:code message:message dictionary:nil];}
 
 - (NSArray *)makeError:(ABCConditionCode)code
-           description:(NSString *)description
-          description2:(NSString *)description2;
-{ return [self makeError:code description:description description2:description2 description3:nil]; }
-
-- (NSArray *)makeError:(ABCConditionCode)code
-           description:(NSString *)description
-          description2:(NSString *)description2
-          description3:(NSString *)description3;
+               message:(NSString *)message
+               dictionary:(NSDictionary *)addDict
 {
     if (ABCConditionCodeOk == code)
     {
@@ -514,16 +600,15 @@ RCT_EXPORT_METHOD(getTransactions:(NSString *)uuid
     else
     {
         NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-        
         [dict setObject:[NSNumber numberWithInt:(int) code] forKey:@"code"];
-        if (description && [description length])
-            [dict setObject:description forKey:@"description"];
-        if (description2 && [description2 length])
-            [dict setObject:description2 forKey:@"description2"];
-        if (description3 && [description3 length])
-            [dict setObject:description2 forKey:@"description3"];
+        if (message && [message length])
+            [dict setObject:message forKey:@"message"];
         
-        return [self makeResponseFromObj:dict];
+        if (addDict)
+            [dict addEntriesFromDictionary:addDict];
+        
+        NSString *json = [self makeJsonFromObj:dict];
+        return @[json];
     }
 }
 
@@ -536,6 +621,7 @@ RCT_EXPORT_METHOD(getTransactions:(NSString *)uuid
 - (NSArray *)makeArrayResponse:(id)obj1 obj2:(id)obj2 obj3:(id)obj3 obj4:(id)obj4;
 {
     NSMutableArray *array = [[NSMutableArray alloc] init];
+    [array addObject:[NSNull null]];
     if (obj1)
         [array addObject:obj1];
     if (obj2)
@@ -544,8 +630,7 @@ RCT_EXPORT_METHOD(getTransactions:(NSString *)uuid
         [array addObject:obj3];
     if (obj4)
         [array addObject:obj4];
-    NSString *json = [self makeJsonFromObj:array];
-    return @[[NSNull null], json];
+    return [array copy];
 }
 
 - (NSArray *)makeResponseFromObj:(id)obj1;
@@ -557,12 +642,12 @@ RCT_EXPORT_METHOD(getTransactions:(NSString *)uuid
 
 - (NSArray *)makeErrorABCNotInitialized;
 {
-    return [self makeError:ABCConditionCodeNotInitialized description:@"ABC Not Initialized"];
+    return [self makeError:ABCConditionCodeNotInitialized message:@"ABC Not Initialized"];
 }
 
 - (NSArray *)makeErrorNotLoggedIn;
 {
-    return [self makeError:ABCConditionCodeError description:@"Not logged in"];
+    return [self makeError:ABCConditionCodeError message:@"Not logged in"];
 }
 
 
