@@ -71,9 +71,9 @@ class ABCAccount {
     abcAccount = this
   }
 
-  static makeABCAccount(name, callbacks) {
-    if (name === null) return null
-    return new ABCAccount(name, callbacks)
+  static makeABCAccount(username, callbacks) {
+    if (username === null) return null
+    return new ABCAccount(username, callbacks)
   }
 
   /**
