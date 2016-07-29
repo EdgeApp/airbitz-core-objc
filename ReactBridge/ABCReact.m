@@ -234,10 +234,7 @@ RCT_EXPORT_METHOD(pinLoginEnable:(BOOL)enable
     ABC_CHECK_ACCOUNT();
     
     NSError *nserror = [abcAccount pinLoginSetup:enable];
-    if (nserror)
-        callback([self makeErrorFromNSError:nserror]);
-    else
-        callback(@[[NSNull null]]);
+    callback([self makeErrorFromNSError:nserror]);
 }
 
 RCT_EXPORT_METHOD(otpKeySet:(NSString *)key
@@ -246,10 +243,7 @@ RCT_EXPORT_METHOD(otpKeySet:(NSString *)key
     ABC_CHECK_ACCOUNT();
     
     NSError *nserror = [abcAccount setOTPKey:key];
-    if (nserror)
-        callback([self makeErrorFromNSError:nserror]);
-    else
-        callback(@[[NSNull null]]);
+    callback([self makeErrorFromNSError:nserror]);
 }
 
 RCT_EXPORT_METHOD(otpLocalKeyGet:(RCTResponseSenderBlock)callback)
@@ -286,10 +280,7 @@ RCT_EXPORT_METHOD(otpEnable:(NSInteger)timeout
     ABC_CHECK_ACCOUNT();
     
     NSError *nserror = [abcAccount enableOTP:timeout];
-    if (nserror)
-        callback([self makeErrorFromNSError:nserror]);
-    else
-        callback(@[[NSNull null]]);
+    callback([self makeErrorFromNSError:nserror]);
 }
 
 RCT_EXPORT_METHOD(otpDisable:(RCTResponseSenderBlock)callback)
@@ -297,10 +288,7 @@ RCT_EXPORT_METHOD(otpDisable:(RCTResponseSenderBlock)callback)
     ABC_CHECK_ACCOUNT();
     
     NSError *nserror = [abcAccount disableOTP];
-    if (nserror)
-        callback([self makeErrorFromNSError:nserror]);
-    else
-        callback(@[[NSNull null]]);
+    callback([self makeErrorFromNSError:nserror]);
 }
 
 RCT_EXPORT_METHOD(otpResetRequestCancel:(RCTResponseSenderBlock)callback)
@@ -308,10 +296,7 @@ RCT_EXPORT_METHOD(otpResetRequestCancel:(RCTResponseSenderBlock)callback)
     ABC_CHECK_ACCOUNT();
     
     NSError *nserror = [abcAccount cancelOTPResetRequest];
-    if (nserror)
-        callback([self makeErrorFromNSError:nserror]);
-    else
-        callback(@[[NSNull null]]);
+    callback([self makeErrorFromNSError:nserror]);
 }
 
 RCT_EXPORT_METHOD(bitidSign:(NSString *)uri
@@ -355,6 +340,7 @@ RCT_EXPORT_METHOD(bitidSign:(NSString *)uri
 #pragma mark - ABCWallet methods
 // -------------------------------------------------------------------------------
 
+
 RCT_EXPORT_METHOD(getTransactions:(NSString *)uuid
                   complete:(RCTResponseSenderBlock)callback)
 {
@@ -397,6 +383,63 @@ RCT_EXPORT_METHOD(getTransactions:(NSString *)uuid
     });
 }
 
+// -------------------------------------------------------------------------------
+#pragma mark - ABCDataStore methods
+// -------------------------------------------------------------------------------
+RCT_EXPORT_METHOD(dataWrite:(NSString *)folder
+                  key:(NSString *)key
+                  value:(NSString *)value
+                  callback:(RCTResponseSenderBlock)callback)
+{
+    ABC_CHECK_ACCOUNT();
+    
+    NSError *nserror = [abcAccount.dataStore dataWrite:folder withKey:key withValue:value];
+    callback([self makeErrorFromNSError:nserror]);
+}
+
+RCT_EXPORT_METHOD(dataRead:(NSString *)folder
+                  key:(NSString *)key
+                  callback:(RCTResponseSenderBlock)callback)
+{
+    ABC_CHECK_ACCOUNT();
+    NSMutableString *data = [[NSMutableString alloc] init];
+    NSError *nserror = [abcAccount.dataStore dataRead:folder withKey:key data:data];
+    if (nserror)
+        callback([self makeErrorFromNSError:nserror]);
+    else
+        callback([self makeResponseFromObj:data]);
+}
+
+RCT_EXPORT_METHOD(dataRemoveKey:(NSString *)folder
+                  key:(NSString *)key
+                  callback:(RCTResponseSenderBlock)callback)
+{
+    ABC_CHECK_ACCOUNT();
+    
+    NSError *nserror = [abcAccount.dataStore dataRemoveKey:folder withKey:key];
+    callback([self makeErrorFromNSError:nserror]);
+}
+
+RCT_EXPORT_METHOD(dataListKeys:(NSString *)folder
+                  callback:(RCTResponseSenderBlock)callback)
+{
+    ABC_CHECK_ACCOUNT();
+    NSMutableArray *keys = [[NSMutableArray alloc] init];
+    NSError *nserror = [abcAccount.dataStore dataListKeys:folder keys:keys];
+    if (nserror)
+        callback([self makeErrorFromNSError:nserror]);
+    else
+        callback([self makeResponseFromObj:keys]);
+}
+
+RCT_EXPORT_METHOD(dataRemoveFolder:(NSString *)folder
+                  callback:(RCTResponseSenderBlock)callback)
+{
+    ABC_CHECK_ACCOUNT();
+    
+    NSError *nserror = [abcAccount.dataStore dataRemoveFolder:folder];
+    callback([self makeErrorFromNSError:nserror]);
+}
 
 #pragma mark ABCAccountDelegate callbacks
 
@@ -592,6 +635,9 @@ RCT_EXPORT_METHOD(getTransactions:(NSString *)uuid
 
 - (NSArray *) makeErrorFromNSError:(NSError *)error;
 {
+    if (!error)
+        return @[[NSNull null]];
+
     return [self makeError:(ABCConditionCode)error.code
                    message:error.userInfo[NSLocalizedDescriptionKey]
                 dictionary:@{@"message2": error.userInfo[NSLocalizedFailureReasonErrorKey],
@@ -648,8 +694,7 @@ RCT_EXPORT_METHOD(getTransactions:(NSString *)uuid
 
 - (NSArray *)makeResponseFromObj:(id)obj1;
 {
-    NSString *json = [self makeJsonFromObj:obj1];
-    return @[[NSNull null], json];
+    return @[[NSNull null], obj1];
 }
 
 

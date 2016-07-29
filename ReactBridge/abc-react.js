@@ -15,6 +15,15 @@ var abcAccount = null
 
 var AirbitzCoreRCT = NativeModules.AirbitzCoreRCT;
 
+/**
+ * ABCError
+ *
+ * Error structure returned in all ABC callbacks
+ *   code: ABCConditionCode
+ *   message: Error message
+ *   message2 (optional):
+ *   message3 (optional):
+ */
 class ABCError {
   constructor (message) {
     this.code = 0
@@ -35,7 +44,7 @@ class ABCError {
 }
 
 /**
- * ABCTransaction Class
+ * ABCTransaction Class (do not use)
  */
 class ABCTransaction {
   constructor(wallet, obj) {
@@ -47,7 +56,7 @@ class ABCTransaction {
 }
 
 /**
- * ABCCallbacks
+ * ABCCallbacks (do not use)
  */
 class ABCCallbacks {
   constructor() {
@@ -68,6 +77,7 @@ class ABCAccount {
     console.log("ABCAccount created: " + username)
     this.username = username
     this.callbacks = callbacks
+    this.dataStore = new ABCDataStore()
     abcAccount = this
   }
 
@@ -77,7 +87,8 @@ class ABCAccount {
   }
 
   /**
-   * logout
+   * Logout current user
+   *
    * @param callback: Callback with argument ABCError object
    */
   logout (callback) {
@@ -87,8 +98,6 @@ class ABCAccount {
   }
 
   /**
-   * passwordSet
-   *
    * Set password for current ABCAccount
    *
    * @param password
@@ -101,8 +110,6 @@ class ABCAccount {
   }
 
   /**
-   * pinSet
-   *
    * Set PIN for current ABCAccount
    *
    * @param pin
@@ -115,8 +122,6 @@ class ABCAccount {
   }
 
   /**
-   * passwordOk
-   *
    * Checks if the given password is correct for the current ABCAccount
    *
    * @param password
@@ -131,8 +136,6 @@ class ABCAccount {
   }
 
   /**
-   * pinLoginEnable
-   *
    * Enable or disable PIN login on this account. Set enable = true to allow
    * PIN login. Enabling PIN login creates a local account decryption key that
    * is split with one half in local device storage and the other half on Airbitz
@@ -181,8 +184,6 @@ class ABCAccount {
   }
 
   /**
-   * otpDetailsGet
-   *
    * @param callback: Callback with arguments
    *     ABCError: Error object
    *     bool otpEnabled: TRUE if OTP is enabled on this account
@@ -196,8 +197,6 @@ class ABCAccount {
   }
 
   /**
-   * otpEnable
-   *
    * Sets up OTP authentication on the server for currently logged in user
    * This will generate a new token if the username doesn't already have one.
    *
@@ -212,7 +211,6 @@ class ABCAccount {
   }
 
   /**
-   * otpDisable
    * Removes the OTP authentication requirement from the server for the
    * currently logged in user. Also removes local key from device
    * @param callback
@@ -224,8 +222,6 @@ class ABCAccount {
   }
 
   /**
-   * otpResetRequestCancel
-   *
    * Removes the OTP reset request from the server for the
    * currently logged in user
    *
@@ -238,8 +234,6 @@ class ABCAccount {
   }
 
   /**
-   * bitidSign
-   *
    * Sign an arbitrary message with a BitID URI. The URI determines the key derivation
    * used to sign the message.
    *
@@ -252,7 +246,6 @@ class ABCAccount {
    *                       to public address returned above. Private key is derived from
    *                       master private key and 'uri'
    */
-
   bitidSign(uri, message, callback) {
     AirbitzCoreRCT.bitidSign(uri, message, (rcterror, address, signature) => {
       callback(ABCError.makeABCError(rcterror), address, signature)
@@ -265,8 +258,6 @@ class ABCAccount {
 }
 
 /**
- * makeABCContext
- *
  * Initialize an create an ABCContext object. Required for functionality of ABC SDK.
  *
  * @param apikey: get an API Key from https://developer.airbitz.co
@@ -285,12 +276,13 @@ function makeABCContext (apikey, hbits, callback) {
 
 /**
  * ABCContext class
+ *
+ * Starting point of Airbitz Core SDK. Used for operations that do not require a logged in
+ * ABCAccount
  */
 class ABCContext {
 
   /**
-   * accountCreate
-   *
    * Create an Airbitz account with specified username, password, and PIN
    *
    * @param username
@@ -307,8 +299,6 @@ class ABCContext {
   }
 
   /**
-   * passwordLogin
-   *
    * Login to an Airbitz account using username and password
    *
    * @param username
@@ -325,8 +315,6 @@ class ABCContext {
   }
 
   /**
-   * pinLogin
-   *
    * Sign In to an Airbitz account with PIN. Used to sign into devices that have previously
    * been logged into using a full username & password
    *
@@ -343,8 +331,6 @@ class ABCContext {
   }
 
   /**
-   * accountHasPassword
-   *
    * Check if the given username has a password on the account or if it is
    * a PIN-only account.
    *
@@ -357,12 +343,91 @@ class ABCContext {
     })
   }
 
+  /**
+   * Deletes named account from local device. Account is recoverable if it contains a password.
+   * Use ABCContext.accountHasPassword to determine if account has a password. Recommend warning
+   * user before executing localAccountDelete if accountHasPassword returns FALSE.
+   *
+   * @param username
+   * @param callback: Callback with arguments (ABCError)
+   */
   localAccountDelete(username, callback) {
     AirbitzCoreRCT.deleteLocalAccount(username, (rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })
   }
 
+}
+
+class ABCDataStore {
+  constructor() {
+
+  }
+
+  /**
+   * Writes a key value pair into the data store.
+   * 
+   * @param folder String folder name to write data
+   * @param key String key of data
+   * @param value String value of data to write
+   * @param callback: Callback with arguments (ABCError)
+   */
+  dataWrite(folder, key, value, callback) {
+    AirbitzCoreRCT.dataWrite(folder, key, value, (rcterror) => {
+      callback(ABCError.makeABCError(rcterror))
+    })
+  }
+
+  /**
+   * Reads a key value pair from the data store
+   *
+   * @param folder String folder name to read data
+   * @param key String key of data
+   * @param callback: Callback with arguments
+   *     ABCError: Error object
+   *     String data: Data value from corresponding key
+   */
+  dataRead(folder, key, callback) {
+    AirbitzCoreRCT.dataRead(folder, key, (rcterror, data) => {
+      callback(ABCError.makeABCError(rcterror), data)
+    })
+  }
+
+  /**
+   * Removes key value pair from the data store.
+   * @param folder String folder name to read data
+   * @param key String key of data
+   * @param callback: Callback with arguments (ABCError)
+   */
+  dataRemoveKey(folder, key, callback) {
+    AirbitzCoreRCT.dataRemoveKey(folder, key, (rcterror) => {
+      callback(ABCError.makeABCError(rcterror))
+    })
+  }
+
+  /**
+   * Lists all the keys in a folder of the dataStore.
+   * @param folder String folder name to read data
+   * @param callback: Callback with arguments
+   *     ABCError: Error object
+   *     Array keys: Array of String with key names
+   */
+  dataListKeys(folder, callback) {
+    AirbitzCoreRCT.dataListKeys(folder, (rcterror, keys) => {
+      callback(ABCError.makeABCError(rcterror), keys)
+    })
+  }
+
+  /**
+   * Removes all key value pairs from the specified folder in the data store.
+   * @param folder String folder name to read data
+   * @param callback: Callback with arguments (ABCError)
+   */
+  dataRemoveFolder(folder, callback) {
+    AirbitzCoreRCT.dataRemoveFolder(folder, (rcterror) => {
+      callback(ABCError.makeABCError(rcterror))
+    })
+  }
 }
 
 /**
