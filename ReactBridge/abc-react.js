@@ -87,9 +87,9 @@ class ABCCallbacks {
  * ABCAccount Class
  */
 class ABCAccount {
-  constructor(name, callbacks) {
-    console.log("ABCAccount created: " + name)
-    this.name = name
+  constructor(username, callbacks) {
+    console.log("ABCAccount created: " + username)
+    this.username = username
     this.callbacks = callbacks
     abcAccount = this
   }
@@ -196,19 +196,19 @@ class ABCAccount {
    * @param callback: Callback with arguments ABCError
    */
   otpEnable(timeout, callback) {
-    AirbitzCoreRCT.enableOTP((rcterror) => {
+    AirbitzCoreRCT.otpEnable(timeout, (rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })
   }
 
   otpDisable(callback) {
-    AirbitzCoreRCT.disableOTP((rcterror) => {
+    AirbitzCoreRCT.otpDisable((rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })
   }
 
   otpResetRequestCancel(callback) {
-    AirbitzCoreRCT.cancelOTPResetRequest((rcterror) => {
+    AirbitzCoreRCT.otpResetRequestCancel((rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })
   }

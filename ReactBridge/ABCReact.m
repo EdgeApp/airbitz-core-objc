@@ -280,7 +280,7 @@ RCT_EXPORT_METHOD(otpDetailsGet:(RCTResponseSenderBlock)callback)
                                     obj2:[NSNumber numberWithLong:timeout]]);
 }
 
-RCT_EXPORT_METHOD(enableOTP:(long)timeout
+RCT_EXPORT_METHOD(otpEnable:(NSInteger)timeout
                   complete:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
@@ -292,7 +292,7 @@ RCT_EXPORT_METHOD(enableOTP:(long)timeout
         callback(@[[NSNull null]]);
 }
 
-RCT_EXPORT_METHOD(disableOTP:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(otpDisable:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
     
@@ -303,7 +303,7 @@ RCT_EXPORT_METHOD(disableOTP:(RCTResponseSenderBlock)callback)
         callback(@[[NSNull null]]);
 }
 
-RCT_EXPORT_METHOD(cancelOTPResetRequest:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(otpResetRequestCancel:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
     
