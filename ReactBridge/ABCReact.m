@@ -314,6 +314,19 @@ RCT_EXPORT_METHOD(otpResetRequestCancel:(RCTResponseSenderBlock)callback)
         callback(@[[NSNull null]]);
 }
 
+RCT_EXPORT_METHOD(bitidSign:(NSString *)uri
+                  message:(NSString *)message
+                  callback:(RCTResponseSenderBlock)callback)
+{
+    ABC_CHECK_ACCOUNT();
+    
+    ABCBitIDSignature *bitidSig = [abcAccount bitidSign:uri message:message];
+    if (bitidSig)
+        callback([self makeArrayResponse:bitidSig.address obj2:bitidSig.signature]);
+    else
+        callback([self makeError:ABCConditionCodeError message:@"Error signing bitid" dictionary:nil]);
+}
+
 
 //RCT_EXPORT_METHOD(getWallets:(RCTResponseSenderBlock)callback
 //                  error:(RCTResponseSenderBlock)error)
@@ -650,6 +663,105 @@ RCT_EXPORT_METHOD(getTransactions:(NSString *)uuid
     return [self makeError:ABCConditionCodeError message:@"Not logged in"];
 }
 
-
-
+//- (NSDictionary *)constantsToExport
+//{
+//    return @{
+//             @"ABCConditionCodeOk"                          : @(ABCConditionCodeOk                  ),
+//             @"ABCConditionCodeError"                       : @(ABCConditionCodeError               ),
+//             @"ABCConditionCodeNULLPtr"                     : @(ABCConditionCodeNULLPtr             ),
+//             @"ABCConditionCodeNoAvailAccountSpace"         : @(ABCConditionCodeNoAvailAccountSpace ),
+//             @"ABCConditionCodeDirReadError"                : @(ABCConditionCodeDirReadError        ),
+//             @"ABCConditionCodeFileOpenError"               : @(ABCConditionCodeFileOpenError       ),
+//             @"ABCConditionCodeFileReadError"               : @(ABCConditionCodeFileReadError       ),
+//             @"ABCConditionCodeFileWriteError"              : @(ABCConditionCodeFileWriteError      ),
+//             @"ABCConditionCodeFileDoesNotExist"            : @(ABCConditionCodeFileDoesNotExist    ),
+//             @"ABCConditionCodeUnknownCryptoType"           : @(ABCConditionCodeUnknownCryptoType   ),
+//             @"ABCConditionCodeInvalidCryptoType"           : @(ABCConditionCodeInvalidCryptoType   ),
+//             @"ABCConditionCodeDecryptError"                : @(ABCConditionCodeDecryptError        ),
+//             @"ABCConditionCodeDecryptFailure"              : @(ABCConditionCodeDecryptFailure      ),
+//             @"ABCConditionCodeEncryptError"                : @(ABCConditionCodeEncryptError        ),
+//             @"ABCConditionCodeScryptError"                 : @(ABCConditionCodeScryptError         ),
+//             @"ABCConditionCodeAccountAlreadyExists"        : @(ABCConditionCodeAccountAlreadyExists),
+//             @"ABCConditionCodeAccountDoesNotExist"         : @(ABCConditionCodeAccountDoesNotExist ),
+//             @"ABCConditionCodeJSONError"                   : @(ABCConditionCodeJSONError           ),
+//             @"ABCConditionCodeBadPassword"                 : @(ABCConditionCodeBadPassword         ),
+//             @"ABCConditionCodeWalletAlreadyExists"         : @(ABCConditionCodeWalletAlreadyExists ),
+//             @"ABCConditionCodeURLError"                    : @(ABCConditionCodeURLError            ),
+//             @"ABCConditionCodeSysError"                    : @(ABCConditionCodeSysError            ),
+//             @"ABCConditionCodeNotInitialized"              : @(ABCConditionCodeNotInitialized      ),
+//             @"ABCConditionCodeReinitialization"            : @(ABCConditionCodeReinitialization    ),
+//             @"ABCConditionCodeServerError"                 : @(ABCConditionCodeServerError         ),
+//             @"ABCConditionCodeNoRecoveryQuestions"         : @(ABCConditionCodeNoRecoveryQuestions ),
+//             @"ABCConditionCodeNotSupported"                : @(ABCConditionCodeNotSupported        ),
+//             @"ABCConditionCodeMutexError"                  : @(ABCConditionCodeMutexError          ),
+//             @"ABCConditionCodeNoTransaction"               : @(ABCConditionCodeNoTransaction       ),
+//             @"ABCConditionCodeEmpty_Wallet"                : @(ABCConditionCodeEmpty_Wallet        ),
+//             @"ABCConditionCodeParseError"                  : @(ABCConditionCodeParseError          ),
+//             @"ABCConditionCodeInvalidWalletID"             : @(ABCConditionCodeInvalidWalletID     ),
+//             @"ABCConditionCodeNoRequest"                   : @(ABCConditionCodeNoRequest           ),
+//             @"ABCConditionCodeInsufficientFunds"           : @(ABCConditionCodeInsufficientFunds   ),
+//             @"ABCConditionCodeSynchronizing"               : @(ABCConditionCodeSynchronizing       ),
+//             @"ABCConditionCodeNonNumericPin"               : @(ABCConditionCodeNonNumericPin       ),
+//             @"ABCConditionCodeNoAvailableAddress"          : @(ABCConditionCodeNoAvailableAddress  ),
+//             @"ABCConditionCodeInvalidPinWait"              : @(ABCConditionCodeInvalidPinWait      ),
+//             @"ABCConditionCodePinExpired"                  : @(ABCConditionCodePinExpired          ),
+//             @"ABCConditionCodeInvalidOTP"                  : @(ABCConditionCodeInvalidOTP          ),
+//             @"ABCConditionCodeSpendDust"                   : @(ABCConditionCodeSpendDust           ),
+//             @"ABCConditionCodeObsolete"                    : @(ABCConditionCodeObsolete            )
+//             };
+//};
+//
 @end
+
+#pragma mark - ABCConditionCode
+//
+//
+//@implementation RCTConvert (ConditionCode)
+//RCT_ENUM_CONVERTER(ABCConditionCode, (@{
+//    @"ABCConditionCodeOk"                          : @(ABCConditionCodeOk                  ),
+//            @"ABCConditionCodeError"                       : @(ABCConditionCodeError               ),
+//            @"ABCConditionCodeNULLPtr"                     : @(ABCConditionCodeNULLPtr             ),
+//            @"ABCConditionCodeNoAvailAccountSpace"         : @(ABCConditionCodeNoAvailAccountSpace ),
+//            @"ABCConditionCodeDirReadError"                : @(ABCConditionCodeDirReadError        ),
+//            @"ABCConditionCodeFileOpenError"               : @(ABCConditionCodeFileOpenError       ),
+//            @"ABCConditionCodeFileReadError"               : @(ABCConditionCodeFileReadError       ),
+//            @"ABCConditionCodeFileWriteError"              : @(ABCConditionCodeFileWriteError      ),
+//            @"ABCConditionCodeFileDoesNotExist"            : @(ABCConditionCodeFileDoesNotExist    ),
+//            @"ABCConditionCodeUnknownCryptoType"           : @(ABCConditionCodeUnknownCryptoType   ),
+//            @"ABCConditionCodeInvalidCryptoType"           : @(ABCConditionCodeInvalidCryptoType   ),
+//            @"ABCConditionCodeDecryptError"                : @(ABCConditionCodeDecryptError        ),
+//            @"ABCConditionCodeDecryptFailure"              : @(ABCConditionCodeDecryptFailure      ),
+//            @"ABCConditionCodeEncryptError"                : @(ABCConditionCodeEncryptError        ),
+//            @"ABCConditionCodeScryptError"                 : @(ABCConditionCodeScryptError         ),
+//            @"ABCConditionCodeAccountAlreadyExists"        : @(ABCConditionCodeAccountAlreadyExists),
+//            @"ABCConditionCodeAccountDoesNotExist"         : @(ABCConditionCodeAccountDoesNotExist ),
+//            @"ABCConditionCodeJSONError"                   : @(ABCConditionCodeJSONError           ),
+//            @"ABCConditionCodeBadPassword"                 : @(ABCConditionCodeBadPassword         ),
+//            @"ABCConditionCodeWalletAlreadyExists"         : @(ABCConditionCodeWalletAlreadyExists ),
+//            @"ABCConditionCodeURLError"                    : @(ABCConditionCodeURLError            ),
+//            @"ABCConditionCodeSysError"                    : @(ABCConditionCodeSysError            ),
+//            @"ABCConditionCodeNotInitialized"              : @(ABCConditionCodeNotInitialized      ),
+//            @"ABCConditionCodeReinitialization"            : @(ABCConditionCodeReinitialization    ),
+//            @"ABCConditionCodeServerError"                 : @(ABCConditionCodeServerError         ),
+//            @"ABCConditionCodeNoRecoveryQuestions"         : @(ABCConditionCodeNoRecoveryQuestions ),
+//            @"ABCConditionCodeNotSupported"                : @(ABCConditionCodeNotSupported        ),
+//            @"ABCConditionCodeMutexError"                  : @(ABCConditionCodeMutexError          ),
+//            @"ABCConditionCodeNoTransaction"               : @(ABCConditionCodeNoTransaction       ),
+//            @"ABCConditionCodeEmpty_Wallet"                : @(ABCConditionCodeEmpty_Wallet        ),
+//            @"ABCConditionCodeParseError"                  : @(ABCConditionCodeParseError          ),
+//            @"ABCConditionCodeInvalidWalletID"             : @(ABCConditionCodeInvalidWalletID     ),
+//            @"ABCConditionCodeNoRequest"                   : @(ABCConditionCodeNoRequest           ),
+//            @"ABCConditionCodeInsufficientFunds"           : @(ABCConditionCodeInsufficientFunds   ),
+//            @"ABCConditionCodeSynchronizing"               : @(ABCConditionCodeSynchronizing       ),
+//            @"ABCConditionCodeNonNumericPin"               : @(ABCConditionCodeNonNumericPin       ),
+//            @"ABCConditionCodeNoAvailableAddress"          : @(ABCConditionCodeNoAvailableAddress  ),
+//            @"ABCConditionCodeInvalidPinWait"              : @(ABCConditionCodeInvalidPinWait      ),
+//            @"ABCConditionCodePinExpired"                  : @(ABCConditionCodePinExpired          ),
+//            @"ABCConditionCodeInvalidOTP"                  : @(ABCConditionCodeInvalidOTP          ),
+//            @"ABCConditionCodeSpendDust"                   : @(ABCConditionCodeSpendDust           ),
+//            @"ABCConditionCodeObsolete"                    : @(ABCConditionCodeObsolete            ),
+//}), ABCConditionCodeOk, integerValue)
+//
+
+
+

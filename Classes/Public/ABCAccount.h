@@ -117,7 +117,7 @@
 /// -----------------------------------------------------------------------------
 
 /**
- * @param password NSString new password for currently logged in user
+ * @param password NSString Set password for current ABCAccount
  * (Optional. If used, method returns immediately with void)
  * @param completionHandler (Optional) completion handler code block
  * @param errorHandler (Optional) Code block called on error with parameters<br>
@@ -131,7 +131,7 @@
 - (NSError *)changePassword:(NSString *)password;
 
 /**
- * @param pin NSString New pin for currently logged in user
+ * @param pin NSString Set PIN for current ABCAccount
  * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
  * @param completionHandler Completion handler code block
  * @param errorHandler Error handler code block which is called with the following args<br>
