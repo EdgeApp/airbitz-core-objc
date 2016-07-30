@@ -113,10 +113,17 @@ RCT_EXPORT_METHOD(passwordLogin:(NSString *)username
         abcAccount = account;
         callback(@[[NSNull null], account.name]);
     } error:^(NSError *nserror, NSDate *otpResetDate, NSString *otpResetToken) {
-        callback([self makeError:ABCConditionCodeInvalidOTP
-                         message:@"Invalid OTP"
-                      dictionary:@{@"otpResetDate" : [NSNumber numberWithInt:(int)[otpResetDate timeIntervalSince1970]],
-                                   @"otpResetToken" : otpResetToken}]);
+        if (nserror && nserror.code == ABCConditionCodeInvalidOTP)
+        {
+            callback([self makeError:ABCConditionCodeInvalidOTP
+                             message:@"Invalid OTP"
+                          dictionary:@{@"otpResetDate" : [NSNumber numberWithInt:(int)[otpResetDate timeIntervalSince1970]],
+                                       @"otpResetToken" : otpResetToken}]);
+        }
+        else
+        {
+            callback([self makeErrorFromNSError:nserror]);            
+        }
     }];
 }
 
@@ -155,10 +162,7 @@ RCT_EXPORT_METHOD(accountHasPassword:(NSString *)accountName
     NSError *nserror;
     BOOL hasPassword = [abc accountHasPassword:accountName error:&nserror];
     
-    if (nserror)
-        callback([self makeErrorFromNSError:nserror]);
-    else
-        callback(@[[NSNull null], [NSNumber numberWithBool:hasPassword]]);
+    callback([self makeErrorOrResponseFromNSError:nserror obj:[NSNumber numberWithBool:hasPassword] ]);
 }
 
 RCT_EXPORT_METHOD(deleteLocalAccount:(NSString *)username
@@ -171,13 +175,55 @@ RCT_EXPORT_METHOD(deleteLocalAccount:(NSString *)username
     }
     
     NSError *nserror = [abc deleteLocalAccount:username];
-    
-    if (nserror)
-        callback([self makeErrorFromNSError:nserror]);
-    else
-        callback(@[[NSNull null]]);
+    callback([self makeErrorFromNSError:nserror]);
 }
 
+RCT_EXPORT_METHOD(usernameList:(RCTResponseSenderBlock)callback)
+{
+    if (!abc)
+    {
+        callback([self makeErrorABCNotInitialized]);
+        return;
+    }
+    NSMutableArray *usernames = [[NSMutableArray alloc] init];
+    
+    NSError *nserror = [abc listLocalAccounts:usernames];
+    callback([self makeErrorOrResponseFromNSError:nserror obj:usernames]);
+}
+
+RCT_EXPORT_METHOD(usernameAvailable:(NSString *)username
+                  callback:(RCTResponseSenderBlock)callback)
+{
+    if (!abc)
+    {
+        callback([self makeErrorABCNotInitialized]);
+        return;
+    }
+    BOOL available = false;
+    NSError *nserror = [abc isUsernameAvailable:username];
+    if (!nserror) available = true;
+    if (nserror && (nserror.code == ABCConditionCodeAccountAlreadyExists))
+    {
+        nserror = nil;
+        available = false;
+    }
+        
+    callback([self makeErrorOrResponseFromNSError:nserror obj:[NSNumber numberWithBool:available]]);
+}
+
+RCT_EXPORT_METHOD(pinLoginEnabled:(NSString *)username
+                  callback:(RCTResponseSenderBlock)callback)
+{
+    if (!abc)
+    {
+        callback([self makeErrorABCNotInitialized]);
+        return;
+    }
+    NSError *nserror;
+    
+    BOOL enabled = [abc accountHasPINLogin:username error:&nserror];
+    callback([self makeErrorOrResponseFromNSError:nserror obj:[NSNumber numberWithBool:enabled]]);
+}
 
 // -------------------------------------------------------------------------------
 #pragma mark - ABCAccount methods
@@ -635,8 +681,18 @@ RCT_EXPORT_METHOD(dataRemoveFolder:(NSString *)folder
 
 - (NSArray *) makeErrorFromNSError:(NSError *)error;
 {
+    return [self makeErrorOrResponseFromNSError:error obj:nil];
+}
+
+- (NSArray *) makeErrorOrResponseFromNSError:(NSError *)error obj:(id)obj;
+{
     if (!error)
-        return @[[NSNull null]];
+    {
+        if (obj)
+            return @[[NSNull null], obj];
+        else
+            return @[[NSNull null]];
+    }
 
     return [self makeError:(ABCConditionCode)error.code
                    message:error.userInfo[NSLocalizedDescriptionKey]

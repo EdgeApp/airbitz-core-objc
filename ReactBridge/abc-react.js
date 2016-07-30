@@ -10,7 +10,7 @@ import {
 
 import { NativeModules, Platform, NativeAppEventEmitter, DeviceEventEmitter } from 'react-native';
 
-var abc = null
+var abcContext = null
 var abcAccount = null
 
 var AirbitzCoreRCT = NativeModules.AirbitzCoreRCT;
@@ -265,13 +265,19 @@ class ABCAccount {
  * @param callback
  */
 function makeABCContext (apikey, hbits, callback) {
-  AirbitzCoreRCT.init(apikey, hbits, (rcterror) => {
-    if (rcterror) {
-      callback(ABCError.makeABCError(rcterror), null)
-    } else {
-      callback(null, new ABCContext())
-    }
-  })
+  if (abcContext)
+    callback(null, abcContext)
+  else {
+    AirbitzCoreRCT.init(apikey, hbits, (rcterror) => {
+      var abcError = ABCError.makeABCError(rcterror)
+      if (abcError && (abcError.code != abcc.ABCConditionCodeReinitialization)) {
+        callback(abcError, null)
+      } else {
+        abcContext = new ABCContext()
+        callback(null, abcContext)
+      }
+    })
+  }
 }
 
 /**
@@ -357,6 +363,46 @@ class ABCContext {
     })
   }
 
+  /**
+   * Get a list of previously logged in usernames on this device
+   * @param callback: Callback with arguments
+   *     ABCError: Error object
+   *     Array usernames: usernames logged into this device
+   */
+  usernameList(callback) {
+    AirbitzCoreRCT.usernameList((rcterror, usernames) => {
+      callback(ABCError.makeABCError(rcterror), usernames)
+    })
+  }
+
+  /**
+   * Checks if username is available on the global Airbitz username space. This requires
+   * network connectivity to function.
+   * @param username String username to check
+   * @param callback: Callback with arguments
+   *     ABCError: Error object
+   *     Boolean available: TRUE if username is available
+   */
+  usernameAvailable(username, callback) {
+    AirbitzCoreRCT.usernameAvailable(username, (rcterror, available) => {
+      callback(ABCError.makeABCError(rcterror), available)
+    })
+  }
+
+  /**
+   * Checks if PIN login is possible for the given username. This checks if
+   * there is a local PIN package on the device from a prior login. Will always return false
+   * if user never logged into this device
+   * @param username String username to check
+   * @param callback: Callback with arguments
+   *     ABCError: Error object
+   *     Boolean enabled: TRUE if username allows PIN login
+   */
+  pinLoginEnabled(username, callback) {
+    AirbitzCoreRCT.pinLoginEnabled(username, (rcterror, enabled) => {
+      callback(ABCError.makeABCError(rcterror), enabled)
+    })
+  }
 }
 
 class ABCDataStore {
