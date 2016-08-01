@@ -62,7 +62,7 @@ RCT_EXPORT_METHOD(init:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey
 #pragma mark - AirbitzCore methods
 // -------------------------------------------------------------------------------
 
-RCT_EXPORT_METHOD(accountCreate:(NSString *)username
+RCT_EXPORT_METHOD(createAccount:(NSString *)username
                   password:(NSString *)password
                   pin:(NSString *)pin
                   callback:(RCTResponseSenderBlock)callback)
@@ -93,7 +93,7 @@ RCT_EXPORT_METHOD(accountCreate:(NSString *)username
      }];
 }
 
-RCT_EXPORT_METHOD(passwordLogin:(NSString *)username
+RCT_EXPORT_METHOD(loginWithPassword:(NSString *)username
                   password:(NSString *)password
                   otpToken:(NSString *)otp
                   callback:(RCTResponseSenderBlock)callback)
@@ -127,7 +127,7 @@ RCT_EXPORT_METHOD(passwordLogin:(NSString *)username
     }];
 }
 
-RCT_EXPORT_METHOD(pinLogin:(NSString *)username
+RCT_EXPORT_METHOD(loginWithPIN:(NSString *)username
                   pin:(NSString *)pin
                   callback:(RCTResponseSenderBlock)callback)
 {
@@ -178,7 +178,7 @@ RCT_EXPORT_METHOD(deleteLocalAccount:(NSString *)username
     callback([self makeErrorFromNSError:nserror]);
 }
 
-RCT_EXPORT_METHOD(usernameList:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(listUsernames:(RCTResponseSenderBlock)callback)
 {
     if (!abc)
     {
@@ -241,7 +241,7 @@ RCT_EXPORT_METHOD(logout:(RCTResponseSenderBlock)callback)
     callback(@[[NSNull null]]);
 }
 
-RCT_EXPORT_METHOD(passwordSet:(NSString *)password
+RCT_EXPORT_METHOD(setPassword:(NSString *)password
                   callback:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
@@ -253,7 +253,7 @@ RCT_EXPORT_METHOD(passwordSet:(NSString *)password
     }];
 }
 
-RCT_EXPORT_METHOD(pinSet:(NSString *)pin
+RCT_EXPORT_METHOD(setPIN:(NSString *)pin
                   complete:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
@@ -265,7 +265,7 @@ RCT_EXPORT_METHOD(pinSet:(NSString *)pin
     }];
 }
 
-RCT_EXPORT_METHOD(passwordOk:(NSString *)password
+RCT_EXPORT_METHOD(checkPassword:(NSString *)password
                   complete:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
@@ -274,7 +274,7 @@ RCT_EXPORT_METHOD(passwordOk:(NSString *)password
     callback(@[[NSNull null], [NSNumber numberWithBool:pass]]);
 }
 
-RCT_EXPORT_METHOD(pinLoginEnable:(BOOL)enable
+RCT_EXPORT_METHOD(enablePINLogin:(BOOL)enable
                   complete:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
@@ -283,7 +283,7 @@ RCT_EXPORT_METHOD(pinLoginEnable:(BOOL)enable
     callback([self makeErrorFromNSError:nserror]);
 }
 
-RCT_EXPORT_METHOD(otpKeySet:(NSString *)key
+RCT_EXPORT_METHOD(setOTPKey:(NSString *)key
                   complete:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
@@ -292,7 +292,7 @@ RCT_EXPORT_METHOD(otpKeySet:(NSString *)key
     callback([self makeErrorFromNSError:nserror]);
 }
 
-RCT_EXPORT_METHOD(otpLocalKeyGet:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(getOTPLocalKey:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
     
@@ -304,7 +304,7 @@ RCT_EXPORT_METHOD(otpLocalKeyGet:(RCTResponseSenderBlock)callback)
         callback(@[[NSNull null], otpkey]);
 }
 
-RCT_EXPORT_METHOD(otpDetailsGet:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(getOTPDetails:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
     
@@ -320,7 +320,7 @@ RCT_EXPORT_METHOD(otpDetailsGet:(RCTResponseSenderBlock)callback)
                                     obj2:[NSNumber numberWithLong:timeout]]);
 }
 
-RCT_EXPORT_METHOD(otpEnable:(NSInteger)timeout
+RCT_EXPORT_METHOD(enableOTP:(NSInteger)timeout
                   complete:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
@@ -329,7 +329,7 @@ RCT_EXPORT_METHOD(otpEnable:(NSInteger)timeout
     callback([self makeErrorFromNSError:nserror]);
 }
 
-RCT_EXPORT_METHOD(otpDisable:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(disableOTP:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
     
@@ -337,7 +337,7 @@ RCT_EXPORT_METHOD(otpDisable:(RCTResponseSenderBlock)callback)
     callback([self makeErrorFromNSError:nserror]);
 }
 
-RCT_EXPORT_METHOD(otpResetRequestCancel:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(cancelOTPResetRequest:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
     
@@ -345,7 +345,7 @@ RCT_EXPORT_METHOD(otpResetRequestCancel:(RCTResponseSenderBlock)callback)
     callback([self makeErrorFromNSError:nserror]);
 }
 
-RCT_EXPORT_METHOD(bitidSign:(NSString *)uri
+RCT_EXPORT_METHOD(signBitIDRequest:(NSString *)uri
                   message:(NSString *)message
                   callback:(RCTResponseSenderBlock)callback)
 {
@@ -432,7 +432,7 @@ RCT_EXPORT_METHOD(getTransactions:(NSString *)uuid
 // -------------------------------------------------------------------------------
 #pragma mark - ABCDataStore methods
 // -------------------------------------------------------------------------------
-RCT_EXPORT_METHOD(dataWrite:(NSString *)folder
+RCT_EXPORT_METHOD(writeData:(NSString *)folder
                   key:(NSString *)key
                   value:(NSString *)value
                   callback:(RCTResponseSenderBlock)callback)
@@ -443,7 +443,7 @@ RCT_EXPORT_METHOD(dataWrite:(NSString *)folder
     callback([self makeErrorFromNSError:nserror]);
 }
 
-RCT_EXPORT_METHOD(dataRead:(NSString *)folder
+RCT_EXPORT_METHOD(readData:(NSString *)folder
                   key:(NSString *)key
                   callback:(RCTResponseSenderBlock)callback)
 {
@@ -456,7 +456,7 @@ RCT_EXPORT_METHOD(dataRead:(NSString *)folder
         callback([self makeResponseFromObj:data]);
 }
 
-RCT_EXPORT_METHOD(dataRemoveKey:(NSString *)folder
+RCT_EXPORT_METHOD(removeDataKey:(NSString *)folder
                   key:(NSString *)key
                   callback:(RCTResponseSenderBlock)callback)
 {
@@ -466,7 +466,7 @@ RCT_EXPORT_METHOD(dataRemoveKey:(NSString *)folder
     callback([self makeErrorFromNSError:nserror]);
 }
 
-RCT_EXPORT_METHOD(dataListKeys:(NSString *)folder
+RCT_EXPORT_METHOD(listDataKeys:(NSString *)folder
                   callback:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
@@ -478,7 +478,7 @@ RCT_EXPORT_METHOD(dataListKeys:(NSString *)folder
         callback([self makeResponseFromObj:keys]);
 }
 
-RCT_EXPORT_METHOD(dataRemoveFolder:(NSString *)folder
+RCT_EXPORT_METHOD(removeDataFolder:(NSString *)folder
                   callback:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();

@@ -103,8 +103,8 @@ class ABCAccount {
    * @param password
    * @param callback: Callback with argument ABCError object
    */
-  passwordSet(password, callback) {
-    AirbitzCoreRCT.passwordSet(password, (rcterror) => {
+  setPassword(password, callback) {
+    AirbitzCoreRCT.setPassword(password, (rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })
   }
@@ -115,8 +115,8 @@ class ABCAccount {
    * @param pin
    * @param callback: Callback with argument ABCError object
    */
-  pinSet(pin, callback) {
-    AirbitzCoreRCT.pinSet(pin, (rcterror) => {
+  setPIN(pin, callback) {
+    AirbitzCoreRCT.setPIN(pin, (rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })
   }
@@ -129,8 +129,8 @@ class ABCAccount {
    *     ABCError: Error object
    *     bool passwordCorrect: TRUE if supplied password is correct
    */
-  passwordOk(password, callback) {
-    AirbitzCoreRCT.passwordOk(password, (rcterror, passwordCorrect) => {
+  checkPassword(password, callback) {
+    AirbitzCoreRCT.checkPassword(password, (rcterror, passwordCorrect) => {
       callback(ABCError.makeABCError(rcterror), passwordCorrect)
     })
   }
@@ -148,8 +148,8 @@ class ABCAccount {
    * @param callback: Callback with argument ABCError object
    *     ABCError: Error object
    */
-  pinLoginEnable(enable, callback) {
-    AirbitzCoreRCT.pinLoginEnable(enable, (rcterror) => {
+  enablePINLogin(enable, callback) {
+    AirbitzCoreRCT.enablePINLogin(enable, (rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })
   }
@@ -165,7 +165,7 @@ class ABCAccount {
    * @param callback: Callback with argument ABCError object
    *     ABCError: Error object
    */
-  otpKeySet(key, callback) {
+  setOTPKey(key, callback) {
     AirbitzCoreRCT.otpKeySet(key, (rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })
@@ -177,8 +177,8 @@ class ABCAccount {
    *     ABCError: Error object
    *     otpKey: String
    */
-  otpLocalKeyGet(callback) {
-    AirbitzCoreRCT.otpLocalKeyGet((rcterror, otpKey) => {
+  getOTPLocalKey(callback) {
+    AirbitzCoreRCT.getOTPLocalKey((rcterror, otpKey) => {
       callback(ABCError.makeABCError(rcterror), otpKey)
     })
   }
@@ -190,8 +190,8 @@ class ABCAccount {
    *     long timeout: Number of seconds required after a reset is requested before OTP is disabled
    * @param error
    */
-  otpDetailsGet(callback) {
-    AirbitzCoreRCT.otpDetailsGet((rcterror, otpEnabled, timeout) => {
+  getOTPDetails(callback) {
+    AirbitzCoreRCT.getOTPDetails((rcterror, otpEnabled, timeout) => {
       callback(ABCError.makeABCError(rcterror), otpEnabled, timeout);
     })
   }
@@ -204,8 +204,8 @@ class ABCAccount {
    *     OTP is disabled
    * @param callback: Callback with arguments ABCError
    */
-  otpEnable(timeout, callback) {
-    AirbitzCoreRCT.otpEnable(timeout, (rcterror) => {
+  enableOTP(timeout, callback) {
+    AirbitzCoreRCT.enableOTP(timeout, (rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })
   }
@@ -215,8 +215,8 @@ class ABCAccount {
    * currently logged in user. Also removes local key from device
    * @param callback
    */
-  otpDisable(callback) {
-    AirbitzCoreRCT.otpDisable((rcterror) => {
+  disableOTP(callback) {
+    AirbitzCoreRCT.disableOTP((rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })
   }
@@ -227,8 +227,8 @@ class ABCAccount {
    *
    * @param callback
    */
-  otpResetRequestCancel(callback) {
-    AirbitzCoreRCT.otpResetRequestCancel((rcterror) => {
+  cancelOTPResetRequest(callback) {
+    AirbitzCoreRCT.cancelOTPResetRequest((rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })
   }
@@ -246,37 +246,14 @@ class ABCAccount {
    *                       to public address returned above. Private key is derived from
    *                       master private key and 'uri'
    */
-  bitidSign(uri, message, callback) {
-    AirbitzCoreRCT.bitidSign(uri, message, (rcterror, address, signature) => {
+  signBitIDRequest(uri, message, callback) {
+    AirbitzCoreRCT.signBitIDRequest(uri, message, (rcterror, address, signature) => {
       callback(ABCError.makeABCError(rcterror), address, signature)
     })
   }
 
   callbacksSet(callbacks) {
     this.callbacks = callbacks
-  }
-}
-
-/**
- * Initialize an create an ABCContext object. Required for functionality of ABC SDK.
- *
- * @param apikey: get an API Key from https://developer.airbitz.co
- * @param hbits: Set to "" for now
- * @param callback
- */
-function makeABCContext (apikey, hbits, callback) {
-  if (abcContext)
-    callback(null, abcContext)
-  else {
-    AirbitzCoreRCT.init(apikey, hbits, (rcterror) => {
-      var abcError = ABCError.makeABCError(rcterror)
-      if (abcError && (abcError.code != abcc.ABCConditionCodeReinitialization)) {
-        callback(abcError, null)
-      } else {
-        abcContext = new ABCContext()
-        callback(null, abcContext)
-      }
-    })
   }
 }
 
@@ -289,6 +266,29 @@ function makeABCContext (apikey, hbits, callback) {
 class ABCContext {
 
   /**
+   * Initialize and create an ABCContext object. Required for functionality of ABC SDK.
+   *
+   * @param {string} apikey Get an API Key from https://developer.airbitz.co
+   * @param {string} hbits Set to null for now
+   */
+  static makeABCContext (apikey, hbits, callback) {
+    if (abcContext)
+      callback(null, abcContext)
+    else {
+      AirbitzCoreRCT.init(apikey, hbits, (rcterror) => {
+        var abcError = ABCError.makeABCError(rcterror)
+        if (abcError && (abcError.code != abcc.ABCConditionCodeReinitialization)) {
+          callback(abcError, null)
+        } else {
+          abcContext = new ABCContext()
+          callback(null, abcContext)
+        }
+      })
+    }
+  }
+
+
+  /**
    * Create an Airbitz account with specified username, password, and PIN
    *
    * @param username
@@ -297,8 +297,8 @@ class ABCContext {
    * @param callbacks: (Set to NULL for now)
    * @param callback: Callback with arguments (ABCError, ABCAccount)
    */
-  accountCreate (username, password, pin, callbacks, callback) {
-    AirbitzCoreRCT.accountCreate(username, password, pin, (rcterror, response) => {
+  createAccount (username, password, pin, callbacks, callback) {
+    AirbitzCoreRCT.createAccount(username, password, pin, (rcterror, response) => {
       callback(ABCError.makeABCError(rcterror),
         ABCAccount.makeABCAccount(response, callbacks))
     })
@@ -313,8 +313,8 @@ class ABCContext {
    * @param callbacks: (Set to NULL for now)
    * @param callback: Callback with arguments (ABCError, ABCAccount)
    */
-  passwordLogin(username, password, otp, callbacks, callback) {
-    AirbitzCoreRCT.passwordLogin(username, password, otp, (rcterror, response) => {
+  loginWithPassword(username, password, otp, callbacks, callback) {
+    AirbitzCoreRCT.loginWithPassword(username, password, otp, (rcterror, response) => {
       callback(ABCError.makeABCError(rcterror),
         ABCAccount.makeABCAccount(response, callbacks))
     })
@@ -329,8 +329,8 @@ class ABCContext {
    * @param callbacks: (Set to NULL for now)
    * @param callback: Callback with arguments (ABCError, ABCAccount)
    */
-  pinLogin(username, pin, callbacks, callback) {
-    AirbitzCoreRCT.pinLogin(username, pin, (rcterror, response) => {
+  loginWithPIN(username, pin, callbacks, callback) {
+    AirbitzCoreRCT.loginWithPIN(username, pin, (rcterror, response) => {
       callback(ABCError.makeABCError(rcterror),
         ABCAccount.makeABCAccount(response, callbacks))
     })
@@ -352,12 +352,12 @@ class ABCContext {
   /**
    * Deletes named account from local device. Account is recoverable if it contains a password.
    * Use ABCContext.accountHasPassword to determine if account has a password. Recommend warning
-   * user before executing localAccountDelete if accountHasPassword returns FALSE.
+   * user before executing deleteLocalAccount if accountHasPassword returns FALSE.
    *
    * @param username
    * @param callback: Callback with arguments (ABCError)
    */
-  localAccountDelete(username, callback) {
+  deleteLocalAccount(username, callback) {
     AirbitzCoreRCT.deleteLocalAccount(username, (rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })
@@ -369,8 +369,8 @@ class ABCContext {
    *     ABCError: Error object
    *     Array usernames: usernames logged into this device
    */
-  usernameList(callback) {
-    AirbitzCoreRCT.usernameList((rcterror, usernames) => {
+  listUsernames(callback) {
+    AirbitzCoreRCT.listUsernames((rcterror, usernames) => {
       callback(ABCError.makeABCError(rcterror), usernames)
     })
   }
@@ -418,8 +418,8 @@ class ABCDataStore {
    * @param value String value of data to write
    * @param callback: Callback with arguments (ABCError)
    */
-  dataWrite(folder, key, value, callback) {
-    AirbitzCoreRCT.dataWrite(folder, key, value, (rcterror) => {
+  writeData(folder, key, value, callback) {
+    AirbitzCoreRCT.writeData(folder, key, value, (rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })
   }
@@ -433,8 +433,8 @@ class ABCDataStore {
    *     ABCError: Error object
    *     String data: Data value from corresponding key
    */
-  dataRead(folder, key, callback) {
-    AirbitzCoreRCT.dataRead(folder, key, (rcterror, data) => {
+  readData(folder, key, callback) {
+    AirbitzCoreRCT.readData(folder, key, (rcterror, data) => {
       callback(ABCError.makeABCError(rcterror), data)
     })
   }
@@ -445,8 +445,8 @@ class ABCDataStore {
    * @param key String key of data
    * @param callback: Callback with arguments (ABCError)
    */
-  dataRemoveKey(folder, key, callback) {
-    AirbitzCoreRCT.dataRemoveKey(folder, key, (rcterror) => {
+  removeDataKey(folder, key, callback) {
+    AirbitzCoreRCT.removeDataKey(folder, key, (rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })
   }
@@ -458,8 +458,8 @@ class ABCDataStore {
    *     ABCError: Error object
    *     Array keys: Array of String with key names
    */
-  dataListKeys(folder, callback) {
-    AirbitzCoreRCT.dataListKeys(folder, (rcterror, keys) => {
+  listDataKeys(folder, callback) {
+    AirbitzCoreRCT.listDataKeys(folder, (rcterror, keys) => {
       callback(ABCError.makeABCError(rcterror), keys)
     })
   }
@@ -469,8 +469,8 @@ class ABCDataStore {
    * @param folder String folder name to read data
    * @param callback: Callback with arguments (ABCError)
    */
-  dataRemoveFolder(folder, callback) {
-    AirbitzCoreRCT.dataRemoveFolder(folder, (rcterror) => {
+  removeDataFolder(folder, callback) {
+    AirbitzCoreRCT.removeDataFolder(folder, (rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })
   }
@@ -528,7 +528,6 @@ class ABCConditionCode {
 }
 var abcc = new ABCConditionCode()
 
-module.exports.makeABCContext = makeABCContext
 module.exports.ABCContext = ABCContext
 module.exports.ABCAccount = ABCAccount
 module.exports.ABCCallbacks = ABCCallbacks
