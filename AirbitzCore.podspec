@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "AirbitzCore"
-  s.version      = "0.11.0"
+  s.version      = "1.0.0"
   s.summary      = "Bitcoin and Edge Security Library"
 
   # This description is used to generate tags and improve search results.
