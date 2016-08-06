@@ -1440,7 +1440,7 @@ static NSNumberFormatter        *numberFormatter = nil;
     return [ABCError makeNSError:error];
 }
 
-- (ABCBitIDSignature *)bitidSign:(NSString *)uri message:(NSString *)message
+- (ABCBitIDSignature *)signBitIDRequest:(NSString *)uri message:(NSString *)message
 {
     tABC_Error error;
     char *szAddress = NULL;

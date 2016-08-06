@@ -410,7 +410,7 @@
  * @param message NSString message to sign.
  * @return ABCBitIDSignature BitID signature object
  */
-- (ABCBitIDSignature *)bitidSign:(NSString *)uri message:(NSString *)message;
+- (ABCBitIDSignature *)signBitIDRequest:(NSString *)uri message:(NSString *)message;
 
 
 @end

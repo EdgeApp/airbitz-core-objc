@@ -241,14 +241,11 @@ class ABCAccount {
    * @param message:
    * @param callback: Callback with arguments
    *     ABCError: Error object
-   *     String address: public address used to sign message. Derived from 'uri'
-   *     String signature: Signature of 'message' signed with private key corresponding
-   *                       to public address returned above. Private key is derived from
-   *                       master private key and 'uri'
+   *     ABCBitIDSignature: Object with address and signature
    */
   signBitIDRequest(uri, message, callback) {
-    AirbitzCoreRCT.signBitIDRequest(uri, message, (rcterror, address, signature) => {
-      callback(ABCError.makeABCError(rcterror), address, signature)
+    AirbitzCoreRCT.signBitIDRequest(uri, message, (rcterror, abcSignature) => {
+      callback(ABCError.makeABCError(rcterror), abcSignature)
     })
   }
 
@@ -257,6 +254,17 @@ class ABCAccount {
   }
 }
 
+/**
+ * ABCBitIDSignature class
+ *
+ */
+
+class ABCBitIDSignature {
+  constructor() {
+    this.signature = ""
+    this.address = ""
+  }
+}
 /**
  * ABCContext class
  *

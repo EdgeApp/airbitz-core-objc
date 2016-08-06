@@ -352,9 +352,10 @@ RCT_EXPORT_METHOD(signBitIDRequest:(NSString *)uri
 {
     ABC_CHECK_ACCOUNT();
     
-    ABCBitIDSignature *bitidSig = [abcAccount bitidSign:uri message:message];
+    ABCBitIDSignature *bitidSig = [abcAccount signBitIDRequest:uri message:message];
     if (bitidSig)
-        callback([self makeArrayResponse:bitidSig.address obj2:bitidSig.signature]);
+        callback([self makeErrorOrResponseFromNSError:nil obj:@{@"signature":bitidSig.signature,
+                                                                @"address":bitidSig.address}]);
     else
         callback([self makeError:ABCConditionCodeError message:@"Error signing bitid" dictionary:nil]);
 }
