@@ -26,7 +26,12 @@ And you're done. You should be able to call into AirbitzCore. See documentation 
 
 ## Using with React Native
 
-Follow the above for installing the CocoaPod into the iOS project of your React Native app.
+Follow the above for installing the CocoaPod into the iOS project of your React Native app but use this line in your `Podfile`. Currently only the `develop` branch has React Native support
+
+    target "nameOfYourProjectHere" do
+        pod 'AirbitzCore', :http => "https://developer.airbitz.co/download/airbitz-core-objc-develop-newest.tgz"
+    end
+
 
 Clone this repo locally to your computer at the same level as your app repo.
 
