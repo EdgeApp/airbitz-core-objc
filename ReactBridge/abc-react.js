@@ -166,7 +166,7 @@ class ABCAccount {
    *     ABCError: Error object
    */
   setupOTPKey(key, callback) {
-    AirbitzCoreRCT.otpKeySet(key, (rcterror) => {
+    AirbitzCoreRCT.setupOTPKey(key, (rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })
   }

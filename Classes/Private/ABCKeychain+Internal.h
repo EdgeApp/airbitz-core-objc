@@ -23,11 +23,11 @@
 
 - (id) init:(AirbitzCore *)abc;
 - (BOOL) setKeychainData:(NSData *)data key:(NSString *)key authenticated:(BOOL) authenticated;
-- (NSData *) getKeychainData:(NSString *)key error:(NSError **)error;
+- (NSData *) getKeychainData:(NSString *)key error:(ABCError **)error;
 - (BOOL) setKeychainString:(NSString *)s key:(NSString *)key authenticated:(BOOL) authenticated;
 - (BOOL) setKeychainInt:(int64_t) i key:(NSString *)key authenticated:(BOOL) authenticated;
-- (int64_t) getKeychainInt:(NSString *)key error:(NSError **)error;
-- (NSString *) getKeychainString:(NSString *)key error:(NSError **)error;
+- (int64_t) getKeychainInt:(NSString *)key error:(ABCError **)error;
+- (NSString *) getKeychainString:(NSString *)key error:(ABCError **)error;
 - (NSString *) createKeyWithUsername:(NSString *)username key:(NSString *)key;
 - (BOOL) bHasSecureEnclave;
 - (BOOL)authenticateTouchID:(NSString *)promptString fallbackString:(NSString *)fallbackString

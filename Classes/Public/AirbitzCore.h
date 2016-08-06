@@ -117,7 +117,7 @@ typedef enum eABCDeviceCaps
                      password:(NSString *)password
                           pin:(NSString *)pin
                      delegate:(id)delegate
-                        error:(NSError **)error;
+                        error:(ABCError **)error;
 
 /**
  * Login to an Airbitz account using completion handlers.
@@ -147,7 +147,7 @@ typedef enum eABCDeviceCaps
  * @param username NSString
  * @param password NSString
  * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
- * @param error NSError May be set to nil. Only used when not using completion handler
+ * @param error ABCError May be set to nil. Only used when not using completion handler
  * @return ABCAccount Account object or nil if failure.
  */
 - (ABCAccount *)loginWithPassword:(NSString *)username
@@ -170,7 +170,7 @@ typedef enum eABCDeviceCaps
  * @param otpResetToken NSMutableString A reset token to be used to request disabling of OTP for
  *  this account.
  * @param otpResetDate NSDate Date which the account reset will occur
- * @param error NSError May be set to nil. Only used when not using completion handler
+ * @param error ABCError May be set to nil. Only used when not using completion handler
  * @return ABCAccount Account object or nil if failure.
  */
 - (ABCAccount *)loginWithPassword:(NSString *)username
@@ -196,7 +196,7 @@ typedef enum eABCDeviceCaps
                   pin:(NSString *)pin
              delegate:(id)delegate
              complete:(void (^)(ABCAccount *user)) completionHandler
-                error:(void (^)(NSError *)) errorHandler;
+                error:(void (^)(ABCError *)) errorHandler;
 
 
 /**
@@ -211,7 +211,7 @@ typedef enum eABCDeviceCaps
 - (ABCAccount *)pinLogin:(NSString *)username
                           pin:(NSString *)pin
                      delegate:(id)delegate
-                        error:(NSError **)error;
+                        error:(ABCError **)error;
 
 /**
  * Log in a user using recovery answers. Will only succeed if user has recovery questions and answers
@@ -234,7 +234,7 @@ typedef enum eABCDeviceCaps
                          delegate:(id)delegate
                               otp:(NSString *)otp
                          complete:(void (^)(ABCAccount *account)) completionHandler
-                            error:(void (^)(NSError *, NSDate *resetDate, NSString *resetToken)) errorHandler;
+                            error:(void (^)(ABCError *, NSDate *resetDate, NSString *resetToken)) errorHandler;
 
 /**
  * Get ABCAccount object for username if logged in.
@@ -250,7 +250,7 @@ typedef enum eABCDeviceCaps
  * @param error NSError**
  * @return BOOL true if user has a password
  */
-- (BOOL)accountHasPassword:(NSString *)username error:(NSError **)error;
+- (BOOL)accountHasPassword:(NSString *)username error:(ABCError **)error;
 
 /** 
  * Checks a password for valid entropy looking for correct minimum
@@ -284,7 +284,7 @@ typedef enum eABCDeviceCaps
  * @param username NSString* username to check
  * @return nil if username is available
  */
-- (NSError *)isUsernameAvailable:(NSString *)username;
+- (ABCError *)usernameAvailable:(NSString *)username;
 
 /*
  * Attempts to auto-relogin the specified user if they are within their auto-logout
@@ -308,7 +308,7 @@ typedef enum eABCDeviceCaps
                          doBeforeLogin:(void (^)(void)) doBeforeLogin
                    completionWithLogin:(void (^)(ABCAccount *account, BOOL usedTouchID)) completionWithLogin
                      completionNoLogin:(void (^)(void)) completionNoLogin
-                                 error:(void (^)(NSError *error)) errorHandler;
+                                 error:(void (^)(ABCError *error)) errorHandler;
 
 /**
  * Checks if PIN login is possible for the given username. This checks if
@@ -317,7 +317,7 @@ typedef enum eABCDeviceCaps
  * @param error NSError** (optional) May be set to nil.
  * @return BOOL YES PIN login is possible
  */
-- (BOOL)pinLoginEnabled:(NSString *)username error:(NSError **)error;
+- (BOOL)pinLoginEnabled:(NSString *)username error:(ABCError **)error;
 - (BOOL)pinLoginEnabled:(NSString *)username;
 
 /**
@@ -327,7 +327,7 @@ typedef enum eABCDeviceCaps
  * @param username NSString*  username of account to delete
  * @return NSError* nil if method succeeds
  */
-- (NSError *)deleteLocalAccount:(NSString *)username;
+- (ABCError *)deleteLocalAccount:(NSString *)username;
 
 /**
  * Returns the NSString* of the last account that was logged into. If that account was deleted,
@@ -358,7 +358,7 @@ typedef enum eABCDeviceCaps
  * have been set.
  */
 - (NSArray *)getRecoveryQuestionsForUserName:(NSString *)username
-                                       error:(NSError **)error;
+                                       error:(ABCError **)error;
 /**
  * Gets a list of recovery questions to ask user. These are suggested questions from the Airbitz
  * servers, but app is free to choose its own to present the user.
@@ -375,7 +375,7 @@ typedef enum eABCDeviceCaps
                                                NSMutableArray *arrayCategoryString,
                                                NSMutableArray *arrayCategoryNumeric,
                                                NSMutableArray *arrayCategoryMust)) completionHandler
-                              error:(void (^)(NSError *error)) errorHandler;
+                              error:(void (^)(ABCError *error)) errorHandler;
 
 #pragma mark - OTP Management
 /// -----------------------------------------------------------------------------
@@ -385,19 +385,19 @@ typedef enum eABCDeviceCaps
 /**
  * Returns an array of usernames of accounts local to device that
  * have a pending OTP reset on the server. 
- * @param error NSError object
+ * @param error ABCError object
  * @return NSArray* of NSString* of usernames
  */
-- (NSArray *)listPendingOTPResetUsernames:(NSError **)error;
+- (NSArray *)listPendingOTPResetUsernames:(ABCError **)error;
 
 /**
  * Checks if the current account has a pending request to reset (disable)
  * OTP.
  * @param username NSString username to check
- * @param error NSError error object or nil if success
+ * @param error ABCError error object or nil if success
  * @return BOOL YES if account has pending reset
  */
-- (BOOL) hasOTPResetPending:(NSString *)username error:(NSError **)error;
+- (BOOL) hasOTPResetPending:(NSString *)username error:(ABCError **)error;
 
 /**
  * Launches an OTP reset timer on the server,
@@ -409,13 +409,13 @@ typedef enum eABCDeviceCaps
  * @param completionHandler Completion handler code block
  * @param errorHandler Error handler code block which is called with the following args<br>
  * - *param* NSError* error
- * @return NSError object or nil if success. Return void if using completion
+ * @return ABCError object or nil if success. Return void if using completion
  *  handler
  */
 - (void)requestOTPReset:(NSString *)username token:(NSString *)token
                complete:(void (^)(void)) completionHandler
-                  error:(void (^)(NSError *error)) errorHandler;
-- (NSError *)requestOTPReset:(NSString *)username token:(NSString *)token;
+                  error:(void (^)(ABCError *error)) errorHandler;
+- (ABCError *)requestOTPReset:(NSString *)username token:(NSString *)token;
 
 #pragma mark - System Calls and Queries
 /// ------------------------------------------------------------------
@@ -467,13 +467,13 @@ typedef enum eABCDeviceCaps
  * @param completionHandler Completion handler code block which is called with void
  * @param errorHandler Error handler code block which is called with the following args<br>
  * - *param* NSError* error
- * @return NSError object or nil if success. Return void if using completion
+ * @return ABCError object or nil if success. Return void if using completion
  *  handler
  */
 - (void)uploadLogs:(NSString *)userText
           complete:(void(^)(void))completionHandler
-             error:(void (^)(NSError *error)) errorHandler;
-- (NSError *)uploadLogs:(NSString *)userText;
+             error:(void (^)(ABCError *error)) errorHandler;
+- (ABCError *)uploadLogs:(NSString *)userText;
 
 
 #pragma mark - Utility Methods
@@ -490,7 +490,7 @@ typedef enum eABCDeviceCaps
  * @return NSString* Fixed username with text lowercased, leading and
  * trailing white space removed, and all whitespace condensed to one space.
  */
-+ (NSString *)fixUsername:(NSString *)username error:(NSError **)error;
++ (NSString *)fixUsername:(NSString *)username error:(ABCError **)error;
 
 /// ------------------------------------------------------------------
 /// @name Class methods to retrieve constant parameters from ABC

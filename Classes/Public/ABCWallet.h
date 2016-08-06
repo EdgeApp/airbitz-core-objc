@@ -72,7 +72,7 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  * @param newName NSString* new name of wallet
  * NSError* error code
  */
-- (NSError *) renameWallet:(NSString *)newName;
+- (ABCError *) renameWallet:(NSString *)newName;
 
 /**
  * Deletes wallet from user's account. This will render wallet completely inaccessible including any
@@ -85,8 +85,8 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  * @return NSError* or nil if no error. Returns void if completion handlers are used.
  */
 - (void)removeWallet:(void(^)(void))completionHandler
-               error:(void (^)(NSError *error)) errorHandler;
-- (NSError *)removeWallet;
+               error:(void (^)(ABCError *error)) errorHandler;
+- (ABCError *)removeWallet;
 
 ///----------------------------------------------------------
 /// @name Transaction Management
@@ -105,9 +105,9 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  * matching term and returns the matching transactions in arrayTransactions
  * @param term NSString Search term
  * @param arrayTransactions Allocated NSMutableArray for the resulting matching transactions
- * @return NSError Error object
+ * @return ABCError Error object
  */
-- (NSError *)searchTransactionsIn:(NSString *)term addTo:(NSMutableArray *) arrayTransactions;
+- (ABCError *)searchTransactionsIn:(NSString *)term addTo:(NSMutableArray *) arrayTransactions;
 
 
 ///----------------------------------------------------------
@@ -138,7 +138,7 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  * @return void
  */
 - (void)createNewReceiveAddress:(void (^)(ABCReceiveAddress *))completionHandler
-                          error:(void (^)(NSError *error)) errorHandler;
+                          error:(void (^)(ABCError *error)) errorHandler;
 
 /**
  * Create a receive request from the current wallet.
@@ -159,7 +159,7 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  * @param error NSError** (optional)
  * @return ABCReceiveAddress* or nil if failure
  */
-- (ABCReceiveAddress *)createNewReceiveAddress:(NSError **)error;
+- (ABCReceiveAddress *)createNewReceiveAddress:(ABCError **)error;
 - (ABCReceiveAddress *)createNewReceiveAddress;
 
 /**
@@ -171,7 +171,7 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  * @param error NSError** Pointer to error object (optional)
  * @return ABCReceiveAddress* ABCReceiveAddress object
  */
-- (ABCReceiveAddress *)getReceiveAddress:(NSString *)address error:(NSError **)error;
+- (ABCReceiveAddress *)getReceiveAddress:(NSString *)address error:(ABCError **)error;
 - (ABCReceiveAddress *)getReceiveAddress:(NSString *)address;
 
 ///----------------------------------------------------------
@@ -179,10 +179,10 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 ///----------------------------------------------------------
 /**
  * Create a new ABCSpend object. Can be explicitly deallocated using ABCSpend free.
- * @param error Return pointer to NSError object
+ * @param error Return pointer to ABCError object
  * @return ABCSpend object
  */
-- (ABCSpend *)createNewSpend:(NSError **)error;
+- (ABCSpend *)createNewSpend:(ABCError **)error;
 
 ///----------------------------------------------------------
 /// @name Import and Export Routines
@@ -206,7 +206,7 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 - (void)importPrivateKey:(NSString *)privateKey
                importing:(void (^)(NSString *address)) importingHandler
                 complete:(void (^)(ABCImportDataModel dataModel, NSString *address, ABCTransaction *transaction, uint64_t amount)) completionHandler
-                   error:(void (^)(NSError *)) errorHandler;
+                   error:(void (^)(ABCError *)) errorHandler;
 
 /**
  * Export a wallet's transactions to CSV format
@@ -214,8 +214,8 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  *  Must not be nil.
  * @return NSError* error object. nil if success
  */
-- (NSError *)exportTransactionsToCSV:(NSMutableString *) csv;
-- (NSError *)exportTransactionsToCSV:(NSMutableString *) csv start:(NSDate *)start end:(NSDate* )end;
+- (ABCError *)exportTransactionsToCSV:(NSMutableString *) csv;
+- (ABCError *)exportTransactionsToCSV:(NSMutableString *) csv start:(NSDate *)start end:(NSDate* )end;
 
 /**
  * Export a wallet's transactions to Quickbooks QBO format
@@ -223,8 +223,8 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  *  Must not be nil.
  * @return NSError* error object. nil if success
  */
-- (NSError *)exportTransactionsToQBO:(NSMutableString *) qbo;
-- (NSError *)exportTransactionsToQBO:(NSMutableString *) qbo start:(NSDate *)start end:(NSDate* )end;
+- (ABCError *)exportTransactionsToQBO:(NSMutableString *) qbo;
+- (ABCError *)exportTransactionsToQBO:(NSMutableString *) qbo start:(NSDate *)start end:(NSDate* )end;
 
 /*
  * Export a wallet's private seed in raw entropy format
@@ -232,7 +232,7 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  *  Must not be nil.
  * @return NSError* error object. nil if success
  */
-- (NSError *)exportWalletPrivateSeed:(NSMutableString *) seed;
+- (ABCError *)exportWalletPrivateSeed:(NSMutableString *) seed;
 
 /*
  * Export a wallet's public seed (XPub)
@@ -240,7 +240,7 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
  *  Must not be nil.
  * @return NSError* error object. nil if success
  */
-- (NSError *)exportWalletXPub:(NSMutableString *) xpub;
+- (ABCError *)exportWalletXPub:(NSMutableString *) xpub;
 
 - (void)deprioritizeAllAddresses;
 - (int64_t)getTotalSentToday;

@@ -29,24 +29,24 @@
  * @param satoshi uint_64t amount to convert in satoshis
  * @param currencyCode NSSTring* ISO currency code of fiat currency to convert to.
  * ie "USD, CAD, EUR"
- * @param error NSError** pointer to NSError object
+ * @param error NSError** pointer to ABCError object
  * @return double resulting fiat currency value
  */
 - (double) satoshiToCurrency:(uint64_t) satoshi
                 currencyCode:(NSString *)currencyCode
-                       error:(NSError **)error;
+                       error:(ABCError **)error;
 
 /**
  * Convert fiat currency amount to a bitcoin amount in satoshis
  * @param currency (double) Amount in fiat value to convert
  * @param currencyCode NSString* ISO currency code of fiat currency to convert to.
  * ie "USD, CAD, EUR"
- * @param error NSError** pointer to NSError object
+ * @param error NSError** pointer to ABCError object
  * @return uint_64t Resulting value in satoshis
  */
 - (uint64_t) currencyToSatoshi:(double)currency
                   currencyCode:(NSString *)currencyCode
-                         error:(NSError **)error;
+                         error:(ABCError **)error;
 
 
 @end

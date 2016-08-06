@@ -16,10 +16,10 @@
 @property                           BOOL                bBlockHeightChanged;
 
 - (id)initWithUser:(ABCAccount *) user;
-- (void)handleSweepCallback:(ABCTransaction *)transaction amount:(uint64_t)amount error:(NSError *)error;
+- (void)handleSweepCallback:(ABCTransaction *)transaction amount:(uint64_t)amount error:(ABCError *)error;
 - (void)loadTransactions;
 - (void)loadWalletFromCore:(NSString *)uuid;
-- (int)getBlockHeight:(NSError **)nserror;
+- (int)getBlockHeight:(ABCError **)nserror;
 - (int)getTxHeight:(NSString *)txid;
 
 

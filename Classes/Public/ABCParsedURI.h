@@ -24,6 +24,6 @@
 @property                           BOOL                bitidKYCProvider;
 @property                           BOOL                bitidKYCRequest;
 
-- (ABCPaymentRequest *) getPaymentRequest:(NSError **)error;
+- (ABCPaymentRequest *) getPaymentRequest:(ABCError **)error;
 
 @end

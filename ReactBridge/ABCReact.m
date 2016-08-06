@@ -149,7 +149,7 @@ RCT_EXPORT_METHOD(loginWithPIN:(NSString *)username
     [abc pinLogin:username pin:pin delegate:self complete:^(ABCAccount *account) {
         abcAccount = account;
         callback(@[[NSNull null], account.name]);
-    } error:^(NSError *nserror) {
+    } error:^(ABCError *nserror) {
         callback([self makeErrorFromNSError:nserror]);
     }];
 }
@@ -163,7 +163,7 @@ RCT_EXPORT_METHOD(accountHasPassword:(NSString *)accountName
         return;
     }
     
-    NSError *nserror;
+    ABCError *nserror;
     BOOL hasPassword = [abc accountHasPassword:accountName error:&nserror];
     
     callback([self makeErrorOrResponseFromNSError:nserror obj:[NSNumber numberWithBool:hasPassword] ]);
@@ -178,7 +178,7 @@ RCT_EXPORT_METHOD(deleteLocalAccount:(NSString *)username
         return;
     }
     
-    NSError *nserror = [abc deleteLocalAccount:username];
+    ABCError *nserror = [abc deleteLocalAccount:username];
     callback([self makeErrorFromNSError:nserror]);
 }
 
@@ -205,7 +205,7 @@ RCT_EXPORT_METHOD(usernameAvailable:(NSString *)username
         return;
     }
     BOOL available = false;
-    NSError *nserror = [abc isUsernameAvailable:username];
+    ABCError *nserror = [abc usernameAvailable:username];
     if (!nserror) available = true;
     if (nserror && (nserror.code == ABCConditionCodeAccountAlreadyExists))
     {
@@ -224,7 +224,7 @@ RCT_EXPORT_METHOD(pinLoginEnabled:(NSString *)username
         callback([self makeErrorABCNotInitialized]);
         return;
     }
-    NSError *nserror;
+    ABCError *nserror;
     
     BOOL enabled = [abc pinLoginEnabled:username error:&nserror];
     callback([self makeErrorOrResponseFromNSError:nserror obj:[NSNumber numberWithBool:enabled]]);
@@ -280,16 +280,16 @@ RCT_EXPORT_METHOD(enablePINLogin:(BOOL)enable
 {
     ABC_CHECK_ACCOUNT();
     
-    NSError *nserror = [abcAccount enablePINLogin:enable];
+    ABCError *nserror = [abcAccount enablePINLogin:enable];
     callback([self makeErrorFromNSError:nserror]);
 }
 
-RCT_EXPORT_METHOD(setOTPKey:(NSString *)key
+RCT_EXPORT_METHOD(setupOTPKey:(NSString *)key
                   complete:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
     
-    NSError *nserror = [abcAccount setOTPKey:key];
+    ABCError *nserror = [abcAccount setupOTPKey:key];
     callback([self makeErrorFromNSError:nserror]);
 }
 
@@ -297,7 +297,7 @@ RCT_EXPORT_METHOD(getOTPLocalKey:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
     
-    NSError *nserror;
+    ABCError *nserror;
     NSString *otpkey = [abcAccount getOTPLocalKey:&nserror];
     if (nserror)
         callback([self makeErrorFromNSError:nserror]);
@@ -312,7 +312,7 @@ RCT_EXPORT_METHOD(getOTPDetails:(RCTResponseSenderBlock)callback)
     bool enabled;
     long timeout;
     
-    NSError *nserror = [abcAccount getOTPDetails:&enabled
+    ABCError *nserror = [abcAccount getOTPDetails:&enabled
                                          timeout:&timeout];
     if (nserror)
         callback([self makeErrorFromNSError:nserror]);
@@ -326,7 +326,7 @@ RCT_EXPORT_METHOD(enableOTP:(NSInteger)timeout
 {
     ABC_CHECK_ACCOUNT();
     
-    NSError *nserror = [abcAccount enableOTP:timeout];
+    ABCError *nserror = [abcAccount enableOTP:timeout];
     callback([self makeErrorFromNSError:nserror]);
 }
 
@@ -334,7 +334,7 @@ RCT_EXPORT_METHOD(disableOTP:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
     
-    NSError *nserror = [abcAccount disableOTP];
+    ABCError *nserror = [abcAccount disableOTP];
     callback([self makeErrorFromNSError:nserror]);
 }
 
@@ -342,7 +342,7 @@ RCT_EXPORT_METHOD(cancelOTPResetRequest:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
     
-    NSError *nserror = [abcAccount cancelOTPResetRequest];
+    ABCError *nserror = [abcAccount cancelOTPResetRequest];
     callback([self makeErrorFromNSError:nserror]);
 }
 
@@ -440,7 +440,7 @@ RCT_EXPORT_METHOD(writeData:(NSString *)folder
 {
     ABC_CHECK_ACCOUNT();
     
-    NSError *nserror = [abcAccount.dataStore dataWrite:folder withKey:key withValue:value];
+    ABCError *nserror = [abcAccount.dataStore dataWrite:folder withKey:key withValue:value];
     callback([self makeErrorFromNSError:nserror]);
 }
 
@@ -450,7 +450,7 @@ RCT_EXPORT_METHOD(readData:(NSString *)folder
 {
     ABC_CHECK_ACCOUNT();
     NSMutableString *data = [[NSMutableString alloc] init];
-    NSError *nserror = [abcAccount.dataStore dataRead:folder withKey:key data:data];
+    ABCError *nserror = [abcAccount.dataStore dataRead:folder withKey:key data:data];
     if (nserror)
         callback([self makeErrorFromNSError:nserror]);
     else
@@ -463,7 +463,7 @@ RCT_EXPORT_METHOD(removeDataKey:(NSString *)folder
 {
     ABC_CHECK_ACCOUNT();
     
-    NSError *nserror = [abcAccount.dataStore dataRemoveKey:folder withKey:key];
+    ABCError *nserror = [abcAccount.dataStore dataRemoveKey:folder withKey:key];
     callback([self makeErrorFromNSError:nserror]);
 }
 
@@ -472,7 +472,7 @@ RCT_EXPORT_METHOD(listDataKeys:(NSString *)folder
 {
     ABC_CHECK_ACCOUNT();
     NSMutableArray *keys = [[NSMutableArray alloc] init];
-    NSError *nserror = [abcAccount.dataStore dataListKeys:folder keys:keys];
+    ABCError *nserror = [abcAccount.dataStore dataListKeys:folder keys:keys];
     if (nserror)
         callback([self makeErrorFromNSError:nserror]);
     else
@@ -484,7 +484,7 @@ RCT_EXPORT_METHOD(removeDataFolder:(NSString *)folder
 {
     ABC_CHECK_ACCOUNT();
     
-    NSError *nserror = [abcAccount.dataStore dataRemoveFolder:folder];
+    ABCError *nserror = [abcAccount.dataStore dataRemoveFolder:folder];
     callback([self makeErrorFromNSError:nserror]);
 }
 
@@ -673,19 +673,19 @@ RCT_EXPORT_METHOD(removeDataFolder:(NSString *)folder
 
 - (NSString *) makeJsonFromObj:(id)obj;
 {
-    NSError *error;
+    ABCError *error;
     
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:obj options:kNilOptions error:&error];
     NSString *json = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     return json;
 }
 
-- (NSArray *) makeErrorFromNSError:(NSError *)error;
+- (NSArray *) makeErrorFromNSError:(ABCError *)error;
 {
     return [self makeErrorOrResponseFromNSError:error obj:nil];
 }
 
-- (NSArray *) makeErrorOrResponseFromNSError:(NSError *)error obj:(id)obj;
+- (NSArray *) makeErrorOrResponseFromNSError:(ABCError *)error obj:(id)obj;
 {
     if (!error)
     {

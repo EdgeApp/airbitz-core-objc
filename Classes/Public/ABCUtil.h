@@ -33,16 +33,16 @@
  * @param error NSError** May be set to nil
  * @return UIImage* returned image
  */
-+ (UIImage *)encodeStringToQRImage:(NSString *)string error:(NSError **)error;
++ (UIImage *)encodeStringToQRImage:(NSString *)string error:(ABCError **)error;
 
 
 /**
  * Parses a bitcoin BIP21 URI, Wif private key, or Airbitz hbits private key
  * @param uri NSString to parse
- * @param error NSError Pointer to NSError object. (Optional. May be set to nil)
+ * @param error ABCError Pointer to ABCError object. (Optional. May be set to nil)
  * @return ABCParsedURI ABCParsedURI Object with various parameters parsed out
  */
-+ (ABCParsedURI *)parseURI:(NSString *)uri error:(NSError **)error;
++ (ABCParsedURI *)parseURI:(NSString *)uri error:(ABCError **)error;
 
 /**
  * Encodes a BIP21 compatible payment request URI using various paramters

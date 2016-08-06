@@ -67,7 +67,7 @@
  * rotation so the next request gets a different address
  * @return NSError
  */
-- (NSError *)finalizeRequest;
+- (ABCError *)finalizeRequest;
 
 /**
  * Modify a request based on the values in the ABCReceiveAddress structure. Normally the
@@ -75,7 +75,7 @@
  * before the metaData is saved with the address in ABC.
  * @return NSError
  */
-- (NSError *)modifyRequestWithDetails;
+- (ABCError *)modifyRequestWithDetails;
 
 
 /**

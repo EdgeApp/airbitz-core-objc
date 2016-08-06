@@ -12,7 +12,7 @@
 
 @property (atomic, strong) ABCWallet         *wallet;
 
-- (NSError *)createAddress;
+- (ABCError *)createAddress;
 - (id)initWithWallet:(ABCWallet *)wallet;
 
 @end

@@ -26,10 +26,10 @@
     return self;
 }
 
-- (NSError *)createAddress;
+- (ABCError *)createAddress;
 {
     tABC_Error error;
-    NSError *lnserror = nil;
+    ABCError *lnserror = nil;
 
     char *pRequestID = nil;
 
@@ -91,7 +91,7 @@
 {
     tABC_Error error;
     tABC_TxDetails details;
-    NSError *lnserror = nil;
+    ABCError *lnserror = nil;
     unsigned char *pData = NULL;
     char *pszURI = NULL;
     unsigned int width = 0;
@@ -151,7 +151,7 @@
 }
 
 
-- (NSError *)finalizeRequest
+- (ABCError *)finalizeRequest
 {
     tABC_Error error;
     
@@ -184,14 +184,14 @@
     }];
 }
 
-- (NSError *)modifyRequestWithDetails;
+- (ABCError *)modifyRequestWithDetails;
 {
     tABC_Error error;
     tABC_TxDetails details;
     unsigned char *pData = NULL;
     char *szRequestAddress = NULL;
     char *pszURI = NULL;
-    NSError *nserror = nil;
+    ABCError *nserror = nil;
     char *label = NULL;
     
     //first need to create a transaction details struct

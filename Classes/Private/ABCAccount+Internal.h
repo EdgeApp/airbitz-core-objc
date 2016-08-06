@@ -20,7 +20,7 @@
 - (void)postToMiscQueue:(void(^)(void))cb;
 - (void)postToWatcherQueue:(void(^)(void))cb;
 - (void)postToDataQueue:(void(^)(void))cb;
-- (NSError *)setDefaultCurrency:(NSString *)currencyCode;
+- (ABCError *)setDefaultCurrency:(NSString *)currencyCode;
 - (void)setConnectivity:(BOOL)hasConnectivity;
 - (void)setupLoginPIN;
 - (void)refreshWallets;

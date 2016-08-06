@@ -55,13 +55,13 @@ And you're done. You should be able to call into AirbitzCore. See below for code
         [gAccount logout];
         
         // Log back in with PIN using completion handler codeblock
-        [abc pinLogin:@"myusername" pin:@"4283" delegate:self complete:^(ABCAccount *account)
-         {
-             gAccount = account;
-             
-         } error:^(NSError *error) {
-             NSLog(@"Argh! Error code: %d. Error string:%@", (int)error.code, error.userInfo[NSLocalizedDescriptionKey]);
-         }];
+        [abc pinLogin:@"myusername" pin:@"4283" delegate:self callback:^(ABCError *error, ABCAccount *account)
+        {
+            if (!error)
+                gAccount = account;
+            else
+                NSLog(@"Argh! Error code: %d. Error string:%@", (int)error.code, error.userInfo[NSLocalizedDescriptionKey]);
+        }];
         
     }
 

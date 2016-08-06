@@ -20,14 +20,14 @@
 
 }
 
-+ (ABCParsedURI *)parseURI:(NSString *)uri error:(NSError **)nserror;
++ (ABCParsedURI *)parseURI:(NSString *)uri error:(ABCError **)nserror;
 {
     tABC_ParsedUri *parsedUri = NULL;
     char *szBitidDomain = NULL;
     char *szBitidCallbackURI = NULL;
     ABCParsedURI *abcParsedURI = nil;
     tABC_Error error;
-    NSError *lnserror = nil;
+    ABCError *lnserror = nil;
     
     if (!uri)
     {
@@ -101,13 +101,13 @@
     return uri;
 }
 
-+ (UIImage *)encodeStringToQRImage:(NSString *)string error:(NSError **)nserror;
++ (UIImage *)encodeStringToQRImage:(NSString *)string error:(ABCError **)nserror;
 {
     unsigned char *pData = NULL;
     unsigned int width;
     tABC_Error error;
     UIImage *image = nil;
-    NSError *nserror2 = nil;
+    ABCError *nserror2 = nil;
     
     ABC_QrEncode([string UTF8String], &pData, &width, &error);
     nserror2 = [ABCError makeNSError:error];

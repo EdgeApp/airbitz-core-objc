@@ -153,7 +153,7 @@
 // gets the recover questions for a given account
 // nil is returned if there were no questions for this account
 - (NSArray *)getRecoveryQuestionsForUserName:(NSString *)username
-                                       error:(NSError **)nserror
+                                       error:(ABCError **)nserror
 {
     NSMutableArray *arrayQuestions = nil;
     char *szQuestions = NULL;
@@ -162,7 +162,7 @@
     ABC_GetRecoveryQuestions([username UTF8String],
                                               &szQuestions,
                                               &error);
-    NSError *nserror2 = [ABCError makeNSError:error];
+    ABCError *nserror2 = [ABCError makeNSError:error];
     if (!nserror2)
     {
         if (szQuestions && strlen(szQuestions))
@@ -393,7 +393,7 @@
 }
 
 + (NSString *)fixUsername:(NSString *)username
-                    error:(NSError **)nserror
+                    error:(ABCError **)nserror
 {
     NSString *fixedUsername = nil;
     char *szFixedUsername = NULL;
@@ -402,7 +402,7 @@
     ABC_FixUsername(&szFixedUsername,
                     [username UTF8String],
                     &error);
-    NSError *nserror2 = [ABCError makeNSError:error];
+    ABCError *nserror2 = [ABCError makeNSError:error];
     if (!nserror2)
     {
         fixedUsername = [NSString stringWithUTF8String:szFixedUsername];
@@ -424,7 +424,7 @@
 {
     char * pszUserNames;
     NSArray *arrayAccounts = nil;
-    NSError *nserror = nil;
+    ABCError *nserror = nil;
     tABC_Error error;
     ABC_ListAccounts(&pszUserNames, &error);
     nserror = [ABCError makeNSError:error];
@@ -449,9 +449,9 @@
 }
 
 - (BOOL)pinLoginEnabled:(NSString *)username; { return [self pinLoginEnabled:username error:nil]; }
-- (BOOL)pinLoginEnabled:(NSString *)username error:(NSError **)nserror;
+- (BOOL)pinLoginEnabled:(NSString *)username error:(ABCError **)nserror;
 {
-    NSError *lnserror;
+    ABCError *lnserror;
     tABC_Error error;
     
     bool exists = NO;
@@ -486,7 +486,7 @@
 }
 
 
-- (NSError *)uploadLogs:(NSString *)userText;
+- (ABCError *)uploadLogs:(NSString *)userText;
 {
     NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
     NSString *build = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
@@ -507,11 +507,11 @@
 
 - (void)uploadLogs:(NSString *)userText
           complete:(void(^)(void))completionHandler
-             error:(void (^)(NSError *error)) errorHandler;
+             error:(void (^)(ABCError *error)) errorHandler;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
 
-        NSError *error = [self uploadLogs:userText];
+        ABCError *error = [self uploadLogs:userText];
         
         dispatch_async(dispatch_get_main_queue(),^{
             if (!error) {
@@ -523,10 +523,10 @@
     });
 }
 
-- (NSError *)deleteLocalAccount:(NSString *)account;
+- (ABCError *)deleteLocalAccount:(NSString *)account;
 {
     tABC_Error error;
-    NSError *nserror = nil;
+    ABCError *nserror = nil;
     ABC_AccountDelete((const char*)[account UTF8String], &error);
     nserror = [ABCError makeNSError:error];
     if (!nserror)
@@ -556,10 +556,10 @@
 
 #pragma mark - Account Management
 
-- (ABCAccount *)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate error:(NSError **)nserror;
+- (ABCAccount *)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate error:(ABCError **)nserror;
 {
     tABC_Error error;
-    NSError *lnserror = nil;
+    ABCError *lnserror = nil;
     ABCAccount *account = nil;
     
     const char *szPassword = [password length] == 0 ? NULL : [password UTF8String];
@@ -595,7 +595,7 @@
              callback:(void (^)(ABCError *, ABCAccount *account)) callback;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-        NSError *error = nil;
+        ABCError *error = nil;
         ABCAccount *account = [self createAccount:username password:password pin:pin delegate:delegate error:&error];
 
         dispatch_async(dispatch_get_main_queue(), ^(void) {
@@ -644,7 +644,7 @@
         
         if (otp)
         {
-            lnserror = [self setOTPKey:username key:otp];
+            lnserror = [self setupOTPKey:username key:otp];
         }
         
         if (!lnserror)
@@ -694,7 +694,7 @@
       callback:(void (^)(ABCError *, ABCAccount *account))callback
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-        NSError *nserror = nil;
+        ABCError *nserror = nil;
         ABCAccount *account = [self loginWithPassword:username
                                   password:password
                                   delegate:delegate
@@ -710,10 +710,10 @@
 - (ABCAccount *)pinLogin:(NSString *)username
                           pin:(NSString *)pin
                      delegate:(id)delegate
-                        error:(NSError **)nserror;
+                        error:(ABCError **)nserror;
 {
     tABC_Error error;
-    NSError *lnserror;
+    ABCError *lnserror;
     ABCAccount *account = nil;
     int pinLoginWaitSeconds = 0;
     
@@ -757,10 +757,10 @@
 
 - (void)pinLogin:(NSString *)username pin:(NSString *)pin delegate:(id)delegate
              complete:(void (^)(ABCAccount *user)) completionHandler
-                error:(void (^)(NSError *)) errorHandler;
+                error:(void (^)(ABCError *)) errorHandler;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-        NSError *error;
+        ABCError *error;
         ABCAccount *account = [self pinLogin:username pin:pin delegate:delegate error:&error];
         
         dispatch_async(dispatch_get_main_queue(), ^(void) {
@@ -781,12 +781,12 @@
                          delegate:(id)delegate
                               otp:(NSString *)otp
                          complete:(void (^)(ABCAccount *account)) completionHandler
-                            error:(void (^)(NSError *, NSDate *resetDate, NSString *resetToken)) errorHandler;
+                            error:(void (^)(ABCError *, NSDate *resetDate, NSString *resetToken)) errorHandler;
 {
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
         tABC_Error error;
-        NSError *nserror;
+        ABCError *nserror;
         NSDate *resetDate;
         NSString *resetToken;
         ABCAccount *account = nil;
@@ -806,7 +806,7 @@
             
             if (otp)
             {
-                nserror = [self setOTPKey:username key:otp];
+                nserror = [self setupOTPKey:username key:otp];
             }
             
             if (![self accountExistsLocal:username])
@@ -890,7 +890,7 @@
                       &aRules,
                       &count,
                       &error);
-    NSError *nserror = [ABCError makeNSError:error];
+    ABCError *nserror = [ABCError makeNSError:error];
 
     if (!nserror)
     {
@@ -935,7 +935,7 @@
     return result;
 }
 
-- (NSError *)isUsernameAvailable:(NSString *)username;
+- (ABCError *)usernameAvailable:(NSString *)username;
 {
     tABC_Error error;
     ABC_AccountAvailable([username UTF8String], &error);
@@ -947,7 +947,7 @@
                          doBeforeLogin:(void (^)(void)) doBeforeLogin
                    completionWithLogin:(void (^)(ABCAccount *account, BOOL usedTouchID)) completionWithLogin
                      completionNoLogin:(void (^)(void)) completionNoLogin
-                                 error:(void (^)(NSError *error)) errorHandler;
+                                 error:(void (^)(ABCError *error)) errorHandler;
 {
     dispatch_async(dispatch_get_main_queue(), ^(void) {
         
@@ -991,13 +991,13 @@
 
 /* === OTP authentication: === */
 
-- (BOOL) hasOTPResetPending:(NSString *)username error:(NSError **)nserror;
+- (BOOL) hasOTPResetPending:(NSString *)username error:(ABCError **)nserror;
 {
     char *szUsernames = NULL;
     NSString *usernames = nil;
     BOOL needsReset = NO;
     tABC_Error error;
-    NSError *nserror2 = nil;
+    ABCError *nserror2 = nil;
 
     ABC_OtpResetGet(&szUsernames, &error);
     nserror2 = [ABCError makeNSError:error];
@@ -1020,13 +1020,13 @@
 
 
 
-- (NSArray *)listPendingOTPResetUsernames:(NSError **)nserror;
+- (NSArray *)listPendingOTPResetUsernames:(ABCError **)nserror;
 {
     char *szUsernames = NULL;
     NSString *usernames = nil;
     NSArray *usernameArray = nil;
     tABC_Error error;
-    NSError *nserror2 = nil;
+    ABCError *nserror2 = nil;
     ABC_OtpResetGet(&szUsernames, &error);
     nserror2 = [ABCError makeNSError:error];
     if (!nserror2)
@@ -1043,15 +1043,15 @@
     return usernameArray;
 }
 
-- (NSError *)setOTPKey:(NSString *)username
-                   key:(NSString *)key;
+- (ABCError *)setupOTPKey:(NSString *)username
+                      key:(NSString *)key;
 {
     tABC_Error error;
     ABC_OtpKeySet([username UTF8String], (char *)[key UTF8String], &error);
     return [ABCError makeNSError:error];
 }
 
-- (NSError *)requestOTPReset:(NSString *)username token:(NSString *)token;
+- (ABCError *)requestOTPReset:(NSString *)username token:(NSString *)token;
 {
     tABC_Error error;
     ABC_OtpResetSet([username UTF8String], [token UTF8String], &error);
@@ -1061,10 +1061,10 @@
 - (void)requestOTPReset:(NSString *)username
                   token:(NSString *)token
                complete:(void (^)(void)) completionHandler
-                  error:(void (^)(NSError *error)) errorHandler
+                  error:(void (^)(ABCError *error)) errorHandler
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-        NSError *error = [self requestOTPReset:username token:token];
+        ABCError *error = [self requestOTPReset:username token:token];
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             if (!error)
             {
@@ -1082,12 +1082,12 @@
                                                NSMutableArray *arrayCategoryString,
                                                NSMutableArray *arrayCategoryNumeric,
                                                NSMutableArray *arrayCategoryMust)) completionHandler
-                              error:(void (^)(NSError *error)) errorHandler;
+                              error:(void (^)(ABCError *error)) errorHandler;
 {
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
         tABC_Error error;
-        NSError *nserror = nil;
+        ABCError *nserror = nil;
         tABC_QuestionChoices *pQuestionChoices = NULL;
         ABC_GetQuestionChoices(&pQuestionChoices, &error);
 
@@ -1119,10 +1119,10 @@
     });
 }
 
-- (BOOL)accountHasPassword:(NSString *)username error:(NSError **)nserror;
+- (BOOL)accountHasPassword:(NSString *)username error:(ABCError **)nserror;
 {
     tABC_Error error;
-    NSError *nserror2 = nil;
+    ABCError *nserror2 = nil;
     bool exists = false;
     ABC_PasswordExists([username UTF8String], &exists, &error);
     nserror2 = [ABCError makeNSError:error];

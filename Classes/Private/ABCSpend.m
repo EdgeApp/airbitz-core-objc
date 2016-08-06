@@ -36,12 +36,12 @@
 
 @implementation ABCUnsentTx
 
-- (NSError *)broadcastTx;
+- (ABCError *)broadcastTx;
 {
     tABC_Error error;
     ABC_SpendBroadcastTx(self.spend.pSpend, (char *)[self.base16 UTF8String], &error);
 
-    NSError *lnserror = [ABCError makeNSError:error];
+    ABCError *lnserror = [ABCError makeNSError:error];
     if (lnserror)
     {
         ABCLog(1, @"*** ERROR broadcastTx: %@ // %@", lnserror.userInfo[NSLocalizedDescriptionKey], lnserror.userInfo[NSLocalizedFailureReasonErrorKey]);
@@ -50,11 +50,11 @@
     return lnserror;
 }
 
-- (ABCTransaction *)saveTx:(NSError **)nserror;
+- (ABCTransaction *)saveTx:(ABCError **)nserror;
 {
     tABC_Error error;
     char *szTxId = NULL;
-    NSError *lnserror = nil;
+    ABCError *lnserror = nil;
     ABCTransaction *transaction = nil;
     
     ABC_SpendSaveTx(self.spend.pSpend, (char *)[self.base16 UTF8String], &szTxId, &error);
@@ -96,7 +96,7 @@
     }
 }
 
-- (NSError *)addPaymentRequest:(ABCPaymentRequest *)paymentRequest;
+- (ABCError *)addPaymentRequest:(ABCPaymentRequest *)paymentRequest;
 {
     tABC_Error error;
     
@@ -109,7 +109,7 @@
     return [ABCError makeNSError:error];
 }
 
-- (NSError *)addTransfer:(ABCWallet *)destWallet amount:(uint64_t)amountSatoshi destMeta:(ABCMetaData *)destMeta;
+- (ABCError *)addTransfer:(ABCWallet *)destWallet amount:(uint64_t)amountSatoshi destMeta:(ABCMetaData *)destMeta;
 {
     tABC_Error error;
     tABC_TxDetails txDetails;
@@ -132,7 +132,7 @@
     return  [ABCError makeNSError:error];
 }
 
-- (NSError *)addAddress:(NSString *)address amount:(uint64_t)amount;
+- (ABCError *)addAddress:(NSString *)address amount:(uint64_t)amount;
 {
     tABC_Error error;
     if (!address)
@@ -172,10 +172,10 @@
     return [self getFees:nil];
 }
 
-- (uint64_t)getFees:(NSError **)nserror;
+- (uint64_t)getFees:(ABCError **)nserror;
 {
     tABC_Error error;
-    NSError *lnserror = nil;
+    ABCError *lnserror = nil;
     
     uint64_t fee = 0;
     ABC_SpendGetFee(self.pSpend, &fee, &error);
@@ -186,11 +186,11 @@
 }
 
 - (void)getFees:(void(^)(uint64_t fees))completionHandler
-          error:(void(^)(NSError *error)) errorHandler;
+          error:(void(^)(ABCError *error)) errorHandler;
 {
     [self.wallet.account postToMiscQueue:^{
         uint64_t fees;
-        NSError *error;
+        ABCError *error;
         
         fees = [self getFees:&error];
         
@@ -205,10 +205,10 @@
     
 }
 
-- (uint64_t)getMaxSpendable:(NSError **)nserror;
+- (uint64_t)getMaxSpendable:(ABCError **)nserror;
 {
     tABC_Error error;
-    NSError *lnserror = nil;
+    ABCError *lnserror = nil;
     uint64_t max = 0;
     
     ABC_SpendGetMax(self.pSpend, &max, &error);
@@ -224,11 +224,11 @@
 }
 
 - (void)getMaxSpendable:(void(^)(uint64_t amountSpendable))completionHandler
-                  error:(void(^)(NSError *error)) errorHandler;
+                  error:(void(^)(ABCError *error)) errorHandler;
 {
     [self.wallet.account postToMiscQueue:^{
         uint64_t max;
-        NSError *error;
+        ABCError *error;
         
         max = [self getMaxSpendable:&error];
         
@@ -256,10 +256,10 @@
     return _feeLevel;
 }
 
-- (ABCUnsentTx *)signTx:(NSError **)nserror;
+- (ABCUnsentTx *)signTx:(ABCError **)nserror;
 {
     tABC_Error error;
-    NSError *lnserror = nil;
+    ABCError *lnserror = nil;
     char *pszRawTx = NULL;
     ABCUnsentTx *unsentTx = nil;
     
@@ -277,10 +277,10 @@
 }
 
 - (void)signTx:(void(^)(ABCUnsentTx *unsentTx))completionHandler
-         error:(void(^)(NSError *error)) errorHandler;
+         error:(void(^)(ABCError *error)) errorHandler;
 {
     [self.wallet.account postToMiscQueue:^{
-        NSError *error;
+        ABCError *error;
 
         ABCUnsentTx *unsentTx = [self signTx:&error];
         
@@ -298,11 +298,11 @@
 
 
 - (void)signBroadcastAndSave:(void(^)(ABCTransaction *transaction))completionHandler
-                       error:(void(^)(NSError *error)) errorHandler;
+                       error:(void(^)(ABCError *error)) errorHandler;
 {
     [self.wallet.account postToMiscQueue:^{
         ABCTransaction *transaction;
-        NSError *error;
+        ABCError *error;
         
         transaction = [self signBroadcastAndSave:&error];
         
@@ -316,9 +316,9 @@
     }];
 }
 
-- (ABCTransaction *)signBroadcastAndSave:(NSError **)nserror;
+- (ABCTransaction *)signBroadcastAndSave:(ABCError **)nserror;
 {
-    NSError *lnserror = nil;
+    ABCError *lnserror = nil;
     ABCTransaction *transaction = nil;
     
     ABCUnsentTx *unsentTx = [self signTx:&lnserror];

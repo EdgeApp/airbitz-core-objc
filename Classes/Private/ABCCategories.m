@@ -68,9 +68,9 @@
     return _categoryList;
 }
 
-- (NSError *)addCategory:(NSString *)category;
+- (ABCError *)addCategory:(NSString *)category;
 {
-    NSError *nserror = nil;
+    ABCError *nserror = nil;
     // check and see that it doesn't already exist
     if ([_categoryList indexOfObject:category] == NSNotFound)
     {
@@ -85,10 +85,10 @@
     return nserror;
 }
 
-- (NSError *)removeCategory:(NSString *)category;
+- (ABCError *)removeCategory:(NSString *)category;
 {
     tABC_Error error;
-    NSError *nserror = nil;
+    ABCError *nserror = nil;
     ABC_RemoveCategory([_account.name UTF8String],
                        [_account.password UTF8String],
                        (char *)[category UTF8String], &error);
@@ -98,10 +98,10 @@
 }
 
 // saves the categories to the core
-- (NSError *)saveCategories:(NSArray *)arrayCategories;
+- (ABCError *)saveCategories:(NSArray *)arrayCategories;
 {
-    NSError *nserror = nil;
-    NSError *nserrorRet = nil;
+    ABCError *nserror = nil;
+    ABCError *nserrorRet = nil;
     NSMutableArray *saveArrayCategories = [NSMutableArray arrayWithArray:arrayCategories];
     
     // got through the existing categories

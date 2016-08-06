@@ -34,7 +34,7 @@
 @property (atomic, strong) NSOperationQueue         *exchangeQueue;
 
 - (NSDate *)dateFromTimestamp:(int64_t) intDate;
-- (NSError *)setOTPKey:(NSString *)username
+- (ABCError *)setupOTPKey:(NSString *)username
                    key:(NSString *)key;
 
 @end
