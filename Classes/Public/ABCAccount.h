@@ -3,11 +3,11 @@
 //  Airbitz
 //
 
-#import "AirbitzCore.h"
+#import "ABCContext.h"
 
 /**
  * The ABCAccount object represents a fully logged in account. This is returned by various signIn
- * routines from AirbitzCore. It contains an ABCSettings object which are account settings that
+ * routines from ABCContext. It contains an ABCSettings object which are account settings that
  * carry over from device to device. ABCAccount also contains an array of ABCWallet object wallets and archived
  * wallets which should be checked for the parameter loaded=YES before being accessed.
  *
@@ -16,7 +16,7 @@
  * into using an app running on the Airbitz SDK.
  */
 
-@class AirbitzCore;
+@class ABCContext;
 @class ABCAccount;
 @class ABCCategories;
 @class ABCCurrency;
@@ -46,7 +46,7 @@
 
 /// ABCExchangeCache object. Used to convert bitcoin values to/from fiat in various formats
 /// The exchange cache is internally implemented as a global object shared across all users of
-/// AirbitzCore in the same application.
+/// ABCContext in the same application.
 @property (atomic, strong) ABCExchangeCache             *exchangeCache;
 
 ///----------------------------------------------------------
@@ -160,7 +160,7 @@
 
 /**
  * Checks a PIN for correctness. This checks against the PIN used
- * during account creation in [AirbitzCore createAccount] or the PIN changed
+ * during account creation in [ABCContext createAccount] or the PIN changed
  * with [ABCAccount changePIN]<br>
  * This is used to guard access to certain actions in the GUI.
  * @param pin NSString* Pin to check
@@ -181,7 +181,7 @@
  * Enable or disable PIN login on this account. Set enable = YES to allow
  * PIN login. Enabling PIN login creates a local account decryption key that
  * is split with one have in local device storage and the other half on Airbitz
- * servers. When using [AirbitzCore pinLogin:username:pin:delegate:error] the PIN is sent to Airbitz servers
+ * servers. When using [ABCContext pinLogin:username:pin:delegate:error] the PIN is sent to Airbitz servers
  * to authenticate the user. If the PIN is correct, the second half of the decryption
  * key is sent back to the device. Combined with the locally saved key, the two
  * are then used to decrypt the local account thereby loggin in the user.
@@ -291,7 +291,7 @@
  * Reads the OTP configuration from the server. Gets information on whether OTP
  * is enabled for the current account, and how long a reset request will take.
  * An OTP reset is a request to disable OTP made through the method
- * [AirbitzCore requestOTPReset]
+ * [ABCContext requestOTPReset]
  * @param enabled bool* enabled flag if OTP is enabled for this user
  * @param timeout long* number seconds required after a reset is requested
  * @return NSError* or nil if no error

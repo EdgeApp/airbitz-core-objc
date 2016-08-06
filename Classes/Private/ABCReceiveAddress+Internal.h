@@ -6,7 +6,7 @@
 //
 
 #import "ABCReceiveAddress.h"
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 @interface ABCReceiveAddress (Internal)
 

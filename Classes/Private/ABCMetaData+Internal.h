@@ -6,7 +6,7 @@
 //
 
 #import "ABCMetaData.h"
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 ///----------------------------------------------------------
 /// @name ABCAccount Delegate callbacks

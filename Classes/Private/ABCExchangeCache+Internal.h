@@ -5,14 +5,14 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 #import "ABCExchangeCache.h"
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 @interface ABCExchangeCache (Internal)
 
-@property (atomic, strong)      AirbitzCore             *abc;
+@property (atomic, strong)      ABCContext *abc;
 @property (atomic, strong)      ABCAccount              *account;
 
-- (id)init:(AirbitzCore *)abc;
+- (id)init:(ABCContext *)abc;
 - (ABCCurrency *) getCurrencyFromCode:(NSString *)code;
 - (int) getCurrencyNumFromCode:(NSString *)code;
 - (NSString *) getCurrencyCodeFromNum:(int) num;

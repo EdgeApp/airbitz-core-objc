@@ -11,7 +11,7 @@
 #endif
 #import <sys/sysctl.h>
 #import "ABCUtil.h"
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 
 

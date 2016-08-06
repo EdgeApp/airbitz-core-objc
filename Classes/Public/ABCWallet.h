@@ -5,7 +5,7 @@
 //  Created by Paul Puey.
 //  Copyright (c) 2016 Airbitz. All rights reserved.
 //
-#import "AirbitzCore.h"
+#import "ABCContext.h"
 
 #define WALLET_ATTRIBUTE_ARCHIVE_BIT 0x1 // BIT0 is the archive bit
 
@@ -16,7 +16,7 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 
 @class ABCAccount;
 @class ABCReceiveAddress;
-@class AirbitzCore;
+@class ABCContext;
 @class ABCSpend;
 @class ABCTransaction;
 

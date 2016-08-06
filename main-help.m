@@ -21,7 +21,7 @@ If you are using React Native, you'll likely get a link error that you are missi
 
 And you're done. You should be able to call into AirbitzCore. See below for code samples.
 
-    #import "AirbitzCore.h"
+    #import "ABCContext.h"
 
     // Global account object
     ABCAccount *gAccount;

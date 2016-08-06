@@ -5,7 +5,7 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import "AirbitzCore.h"
+#import "ABCContext.h"
 
 /**
  * The ABCDataStore object implements the Airbitz auto-encrypted, auto-backed up, and auto 

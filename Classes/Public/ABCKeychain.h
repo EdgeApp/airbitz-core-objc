@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Airbitz. All rights reserved.
 //
 
-#import "AirbitzCore.h"
+#import "ABCContext.h"
 
 @interface ABCKeychain : NSObject
 

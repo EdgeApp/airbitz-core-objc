@@ -6,9 +6,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "AirbitzCore.h"
+#import "ABCContext.h"
 
-@class AirbitzCore;
+@class ABCContext;
 
 @interface ABCLocalSettings : NSObject
 
@@ -16,7 +16,7 @@
 @property (retain)   NSMutableArray  *touchIDUsersEnabled;
 @property (retain)   NSMutableArray  *touchIDUsersDisabled;
 
-- (id)init:(AirbitzCore *)abc;
+- (id)init:(ABCContext *)abc;
 - (void)loadAll;
 - (void)saveAll;
 

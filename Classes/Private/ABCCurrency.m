@@ -3,7 +3,7 @@
 //  Airbitz
 //
 
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 @interface ABCCurrency ()
 {

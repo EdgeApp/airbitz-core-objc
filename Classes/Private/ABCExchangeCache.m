@@ -13,7 +13,7 @@
     
 }
 
-@property (atomic, strong)      AirbitzCore             *abc;
+@property (atomic, strong)      ABCContext *abc;
 @property (atomic, strong)      ABCAccount              *account;
 @property (atomic, strong)      NSMutableArray          *currenciesToCheck;
 
@@ -21,7 +21,7 @@
 
 @implementation ABCExchangeCache
 
-- (id)init:(AirbitzCore *)abc;
+- (id)init:(ABCContext *)abc;
 {
     // get the currencies
     self.abc = abc;

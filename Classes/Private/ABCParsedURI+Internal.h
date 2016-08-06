@@ -6,7 +6,7 @@
 //
 
 #import "ABCParsedURI.h"
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 @interface ABCParsedURI(Internal)
 

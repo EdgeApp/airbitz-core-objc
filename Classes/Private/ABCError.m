@@ -4,7 +4,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 @interface ABCError ()
 

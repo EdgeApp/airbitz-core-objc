@@ -4,11 +4,11 @@
 //
 
 #import "ABCAccount.h"
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 @interface ABCAccount (Internal)
 
-@property (atomic, strong)   AirbitzCore             *abc;
+@property (atomic, strong)   ABCContext *abc;
 @property                       BOOL                bNewDeviceLogin;
 @property (atomic, copy)     NSString                *password;
 
@@ -27,7 +27,7 @@
 - (void)connectWatcher:(NSString *)uuid;
 - (void)clearDataQueue;
 - (BOOL)watcherExists:(NSString *)uuid;
-- (id)initWithCore:(AirbitzCore *)airbitzCore;
+- (id)initWithCore:(ABCContext *)airbitzCore;
 - (void)free;
 - (void)startQueues;
 - (void)stopQueues;

@@ -13,7 +13,7 @@
 }
 @end
 
-AirbitzCore *abc = nil;
+ABCContext *abc = nil;
 ABCAccount *abcAccount = nil;
 
 @implementation AirbitzCoreRCT
@@ -36,7 +36,7 @@ RCT_EXPORT_METHOD(init:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey
 {
     if (!abc)
     {
-        abc = [AirbitzCore makeABCContext:abcAPIKey hbits:hbitsKey];
+        abc = [ABCContext makeABCContext:abcAPIKey hbits:hbitsKey];
         if (!abc)
         {
             callback([self makeError:ABCConditionCodeError
@@ -59,7 +59,7 @@ RCT_EXPORT_METHOD(init:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey
 }
 
 // -------------------------------------------------------------------------------
-#pragma mark - AirbitzCore methods
+#pragma mark - ABCContext methods
 // -------------------------------------------------------------------------------
 
 RCT_EXPORT_METHOD(createAccount:(NSString *)username

@@ -6,9 +6,9 @@
 #if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
 #endif
-#import "AirbitzCore.h"
+#import "ABCContext.h"
 
-@class AirbitzCore;
+@class ABCContext;
 @class ABCAccount;
 @class ABCMetaData;
 @class ABCWallet;

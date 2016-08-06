@@ -1,5 +1,5 @@
 //
-// AirbitzCore.h
+// ABCContext.h
 //
 // Created by Paul P on 2016/02/09.
 // Copyright (c) 2016 Airbitz. All rights reserved.
@@ -25,7 +25,7 @@
 #import "ABCWallet.h"
 
 /**
- * The AirbitzCore object is the starting point in accessing the entire Airbitz SDK. AirbitzCore should
+ * The ABCContext object is the starting point in accessing the entire Airbitz SDK. ABCContext should
  * first be initialized using init. From here, developers can create and login to accounts which will
  * return an ABCAccount object representing a logged in account. Within each account, you can create
  * ABCWallet objects using createWallet. Each ABCWallet represents a single BIP32 HD chain of addresses which don't cross
@@ -57,24 +57,24 @@ typedef enum eABCDeviceCaps
 @class ABCAccount;
 @class ABCPasswordRuleResult;
 
-@interface AirbitzCore : NSObject
+@interface ABCContext : NSObject
 
 /// -----------------------------------------------------------------------------
-/// @name AirbitzCore initialization / free routines
+/// @name ABCContext initialization / free routines
 /// -----------------------------------------------------------------------------
 
 /**
- * Initialize the AirbitzCore object. Required for functionality of ABC SDK.
+ * Initialize the ABCContext object. Required for functionality of ABC SDK.
  * @param abcAPIKey NSString* API key obtained from Airbitz Inc.
  * @param hbitsKey (Optional) unique key used to encrypt private keys for use as implementation
  * specific "gift cards" that are only redeemable by applications using this implementation.
- * @return AirbitzCore Instance of AirbitzCore object
+ * @return ABCContext Instance of ABCContext object
  */
-+ (AirbitzCore *)makeABCContext:(NSString *)abcAPIKey;
-+ (AirbitzCore *)makeABCContext:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey;
++ (ABCContext *)makeABCContext:(NSString *)abcAPIKey;
++ (ABCContext *)makeABCContext:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey;
 
 /**
- * Free the AirbitzCore object.
+ * Free the ABCContext object.
  */
 - (void)free;
 
@@ -157,7 +157,7 @@ typedef enum eABCDeviceCaps
 
 /**
  * Login to an Airbitz account. This routine allows caller to receive back an otpResetToken
- * which is used with [AirbitzCore requestOTPReset] to remove OTP from the specified account.
+ * which is used with [ABCContext requestOTPReset] to remove OTP from the specified account.
  * The otpResetToken is only returned if the caller has provided the correct username and password
  * but the account had OTP enabled. In such case, signIn will also provide an otpResetDate which is
  * the date when the account OTP will be disabled if a prior OTP reset was successfully requested.
@@ -322,7 +322,7 @@ typedef enum eABCDeviceCaps
 
 /**
  * Deletes named account from local device. Account is recoverable if it contains a password.
- * Use [AirbitzCore accountHasPassword] to determine if account has a password. Recommend warning
+ * Use [ABCContext accountHasPassword] to determine if account has a password. Recommend warning
  * user before executing deleteLocalAccount if accountHasPassword returns FALSE.
  * @param username NSString*  username of account to delete
  * @return NSError* nil if method succeeds
@@ -332,13 +332,13 @@ typedef enum eABCDeviceCaps
 /**
  * Returns the NSString* of the last account that was logged into. If that account was deleted,
  * returns the username of another local account. This can be overridden by calling
- * [AirbitzCore setLastAccessedAccount]
+ * [ABCContext setLastAccessedAccount]
  * @return NSString* username of last account
  */
 - (NSString *) getLastAccessedAccount;
 
 /**
- * Overrides the cached account name returned by [AirbitzCore getLastAccessedAccount]
+ * Overrides the cached account name returned by [ABCContext getLastAccessedAccount]
  * @param username NSString* username
  */
 - (void) setLastAccessedAccount:(NSString *) username;
@@ -421,7 +421,7 @@ typedef enum eABCDeviceCaps
 /// ------------------------------------------------------------------
 
 /**
- * Gets the version of AirbitzCore compiled into this implementation
+ * Gets the version of ABCContext compiled into this implementation
  * @return NSString* Version number if string format. ie. "1.8.5"
  */
 - (NSString *)getVersion;
@@ -434,7 +434,7 @@ typedef enum eABCDeviceCaps
 - (BOOL) hasDeviceCapability:(ABCDeviceCaps) caps;
 
 /**
- * Returns TRUE if AirbitzCore is compiled for testnet
+ * Returns TRUE if ABCContext is compiled for testnet
  * @return BOOL
  */
 - (bool) isTestNet;
@@ -459,7 +459,7 @@ typedef enum eABCDeviceCaps
 - (void)setConnectivity:(BOOL)hasConnectivity;
 
 /*
- * Uploads AirbitzCore debug log with optional message from user.
+ * Uploads ABCContext debug log with optional message from user.
  * @param userText NSString* text to send to support staff
  * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
  * @param completionHandler Completion handler code block which is called with void

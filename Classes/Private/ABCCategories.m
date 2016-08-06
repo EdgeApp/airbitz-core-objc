@@ -4,7 +4,7 @@
 //
 
 #import "ABCCategories+Internal.h"
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 @interface ABCCategories ()
 {

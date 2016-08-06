@@ -5,7 +5,7 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 @interface ABCDataStore ()
 {

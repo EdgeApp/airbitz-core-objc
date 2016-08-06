@@ -5,9 +5,9 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import "AirbitzCore.h"
+#import "ABCContext.h"
 
-@class AirbitzCore;
+@class ABCContext;
 @class ABCSpend;
 @class ABCSettings;
 @class ABCReceiveAddress;

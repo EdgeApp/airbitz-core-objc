@@ -1,5 +1,5 @@
 
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 #import "ABCAccount.h"
 #import <pthread.h>
 
@@ -31,7 +31,7 @@ static NSNumberFormatter        *numberFormatter = nil;
     
 }
 
-@property (atomic, strong)      AirbitzCore         *abc;
+@property (atomic, strong)      ABCContext *abc;
 @property (nonatomic, strong)   NSTimer             *walletLoadingTimer;
 @property                       BOOL                bNewDeviceLogin;
 @property (atomic, copy)        NSString            *password;
@@ -41,7 +41,7 @@ static NSNumberFormatter        *numberFormatter = nil;
 
 @implementation ABCAccount
 
-- (id)initWithCore:(AirbitzCore *)airbitzCore;
+- (id)initWithCore:(ABCContext *)airbitzCore;
 {
     
     if (NO == bInitialized)
@@ -631,7 +631,7 @@ static NSNumberFormatter        *numberFormatter = nil;
     nserror = [ABCError makeNSError:error];
     if (nserror)
     {
-        ABCLog(2,@("Error: AirbitzCore.reorderWallets:  %@\n"), nserror.userInfo[NSLocalizedDescriptionKey]);
+        ABCLog(2,@("Error: ABCContext.reorderWallets:  %@\n"), nserror.userInfo[NSLocalizedDescriptionKey]);
     }
     
     [self refreshWallets];
@@ -653,7 +653,7 @@ static NSNumberFormatter        *numberFormatter = nil;
     }
     else
     {
-        ABCLog(2,@("Error: AirbitzCore.setWalletAttributes:  %s\n"), Error.szDescription);
+        ABCLog(2,@("Error: ABCContext.setWalletAttributes:  %s\n"), Error.szDescription);
         return false;
     }
 }

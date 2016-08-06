@@ -3,9 +3,9 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import "AirbitzCore.h"
+#import "ABCContext.h"
 
-@class AirbitzCore;
+@class ABCContext;
 @class ABCKeychain;
 @class ABCAccount;
 @class ABCDenomination;

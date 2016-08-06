@@ -3,7 +3,7 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import "AirbitzCore.h"
+#import "ABCContext.h"
 
 typedef NS_ENUM(NSUInteger, ABCDenominationMultiplier) {
     ABCDenominationMultiplierBTC = 100000000,

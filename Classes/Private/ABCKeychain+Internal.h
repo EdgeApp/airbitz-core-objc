@@ -6,7 +6,7 @@
 //
 
 #import "ABCKeychain.h"
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 #define PASSWORD_KEY            @"key_password"
 #define RELOGIN_KEY             @"key_relogin"
@@ -21,7 +21,7 @@
 
 @property (nonatomic) ABCLocalSettings *localSettings;
 
-- (id) init:(AirbitzCore *)abc;
+- (id) init:(ABCContext *)abc;
 - (BOOL) setKeychainData:(NSData *)data key:(NSString *)key authenticated:(BOOL) authenticated;
 - (NSData *) getKeychainData:(NSString *)key error:(ABCError **)error;
 - (BOOL) setKeychainString:(NSString *)s key:(NSString *)key authenticated:(BOOL) authenticated;

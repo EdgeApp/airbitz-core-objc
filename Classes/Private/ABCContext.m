@@ -1,5 +1,5 @@
 
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 #import <pthread.h>
 
 #define ABC_VERSION_STRING @"0.9.1"
@@ -26,7 +26,7 @@
 }
 @end
 
-@interface AirbitzCore ()
+@interface ABCContext ()
 {
     ABCExchangeCache                                *_exchangeCache;
 }
@@ -40,16 +40,16 @@
 
 @end
 
-@implementation AirbitzCore
+@implementation ABCContext
 
-+ (AirbitzCore *)makeABCContext:(NSString *)abcAPIKey;
++ (ABCContext *)makeABCContext:(NSString *)abcAPIKey;
 {
-    return [AirbitzCore makeABCContext:abcAPIKey hbits:@""];
+    return [ABCContext makeABCContext:abcAPIKey hbits:@""];
 }
 
-+ (AirbitzCore *)makeABCContext:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey;
++ (ABCContext *)makeABCContext:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey;
 {
-    AirbitzCore *abcContext  = [AirbitzCore alloc];
+    ABCContext *abcContext  = [ABCContext alloc];
 
     {
         abcContext.abcError = [[ABCError alloc] init];
@@ -476,7 +476,7 @@
     if (username == nil) {
         return NO;
     }
-    NSString *fixedUsername = [AirbitzCore fixUsername:username error:nil];
+    NSString *fixedUsername = [ABCContext fixUsername:username error:nil];
     tABC_Error error;
     bool result;
     ABC_AccountSyncExists([fixedUsername UTF8String],
@@ -551,7 +551,7 @@
 }
 
 /////////////////////////////////////////////////////////////////
-//////////////////// New AirbitzCore methods ////////////////////
+//////////////////// New ABCContext methods ////////////////////
 /////////////////////////////////////////////////////////////////
 
 #pragma mark - Account Management

@@ -3,7 +3,7 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 #define KEY_LOCAL_SETTINGS_TOUCHID_USERS_ENABLED    @"touchIDUsersEnabled"
 #define KEY_LOCAL_SETTINGS_TOUCHID_USERS_DISABLED   @"touchIDUsersDisabled"
@@ -16,7 +16,7 @@ __strong static ABCLocalSettings *singleton = nil; // this will be the one and o
 
 @interface ABCLocalSettings ()
 
-@property (nonatomic) AirbitzCore *abc;
+@property (nonatomic) ABCContext *abc;
 
 @end
 
@@ -26,7 +26,7 @@ __strong static ABCLocalSettings *singleton = nil; // this will be the one and o
 }
 
 
-- (id)init:(AirbitzCore *)abc
+- (id)init:(ABCContext *)abc
 {
     self = [super init];
     if (self)

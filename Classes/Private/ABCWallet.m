@@ -7,7 +7,7 @@
 //
 
 #import "ABCWallet+Internal.h"
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 
 #define HIDDEN_BITZ_URI_SCHEME                          @"hbits"
@@ -458,7 +458,7 @@ static const int importTimeout                  = 30;
     }
     else
     {
-        ABCLog(2,@("Error: AirbitzCore.loadTransactions:  %s\n"), Error.szDescription);
+        ABCLog(2,@("Error: ABCContext.loadTransactions:  %s\n"), Error.szDescription);
     }
     ABC_FreeTransaction(pTrans);
     return transaction;
@@ -520,7 +520,7 @@ static const int importTimeout                  = 30;
     }
     else
     {
-        ABCLog(2,@("Error: AirbitzCore.loadTransactions:  %s\n"), Error.szDescription);
+        ABCLog(2,@("Error: ABCContext.loadTransactions:  %s\n"), Error.szDescription);
     }
     ABC_FreeTransactions(aTransactions, tCount);
 }
@@ -616,7 +616,7 @@ static const int importTimeout                  = 30;
     }
     else
     {
-        ABCLog(2,@("Error: AirbitzCore.searchTransactionsIn:  %s\n"), Error.szDescription);
+        ABCLog(2,@("Error: ABCContext.searchTransactionsIn:  %s\n"), Error.szDescription);
     }
     ABC_FreeTransactions(aTransactions, tCount);
     return nserror;

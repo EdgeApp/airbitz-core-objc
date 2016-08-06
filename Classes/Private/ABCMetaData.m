@@ -7,7 +7,7 @@
 //
 
 #import "ABCMetaData+Internal.h"
-#import "AirbitzCore.h"
+#import "ABCContext.h"
 
 @interface ABCMetaData ()
 

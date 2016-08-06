@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 AirBitz. All rights reserved.
 //
 
-#import "AirbitzCore.h"
+#import "ABCContext.h"
 
 @class ABCWallet;
 @class ABCMetaData;

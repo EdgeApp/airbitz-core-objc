@@ -6,7 +6,7 @@
 //
 
 #import "ABCWallet.h"
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 @class ABCAccount;
 

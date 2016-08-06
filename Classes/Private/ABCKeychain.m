@@ -9,11 +9,11 @@
 #import "NSMutableData+Secure.h"
 #import <LocalAuthentication/LocalAuthentication.h>
 #import "ABCKeychain+Internal.h"
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 @interface ABCKeychain ()
 
-@property (nonatomic) AirbitzCore *abc;
+@property (nonatomic) ABCContext *abc;
 @property (nonatomic) ABCLocalSettings *localSettings;
 
 @end
@@ -23,7 +23,7 @@
     
 }
 
-- (id) init:(AirbitzCore *)abc;
+- (id) init:(ABCContext *)abc;
 {
     self = [super init];
     self.abc = abc;
