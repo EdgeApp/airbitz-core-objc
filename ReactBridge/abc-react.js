@@ -103,8 +103,8 @@ class ABCAccount {
    * @param password
    * @param callback: Callback with argument ABCError object
    */
-  setPassword(password, callback) {
-    AirbitzCoreRCT.setPassword(password, (rcterror) => {
+  changePassword(password, callback) {
+    AirbitzCoreRCT.changePassword(password, (rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })
   }
@@ -115,8 +115,8 @@ class ABCAccount {
    * @param pin
    * @param callback: Callback with argument ABCError object
    */
-  setPIN(pin, callback) {
-    AirbitzCoreRCT.setPIN(pin, (rcterror) => {
+  changePIN(pin, callback) {
+    AirbitzCoreRCT.changePIN(pin, (rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })
   }

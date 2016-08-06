@@ -22,6 +22,7 @@
 @class ABCCurrency;
 @class ABCDataStore;
 @class ABCDenomination;
+@class ABCError;
 @class ABCExchangeCache;
 @class ABCSpend;
 @class ABCSettings;
@@ -126,7 +127,7 @@
  *  handler
  */
 - (void)changePassword:(NSString *)password
-           callback:(void (^)(NSError *error)) callback;
+           callback:(void (^)(ABCError *error)) callback;
 - (NSError *)changePassword:(NSString *)password;
 
 /**
@@ -137,7 +138,7 @@
  * @return NSError Error object. Nil if success. Returns void if completion handlers used
  */
 - (void)changePIN:(NSString *)pin
-      callback:(void (^)(NSError *error)) callback;
+      callback:(void (^)(ABCError *error)) callback;
 - (NSError *)changePIN:(NSString *)pin;
 
 /**

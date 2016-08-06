@@ -266,7 +266,7 @@ typedef enum eABCDeviceCaps
  * @param accounts NSMutableArray* array of strings of account names
  * @return NSError* error code
  */
-- (NSError *) listUsernames:(NSMutableArray *) accounts;
+- (NSArray *) listUsernames:(ABCError **) error;
 
 /**
  * Checks if an account with the specified username exists locally on the current device.

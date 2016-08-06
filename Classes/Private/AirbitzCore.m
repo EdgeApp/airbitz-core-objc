@@ -420,7 +420,7 @@
 }
 
 
-- (NSError *) listUsernames:(NSMutableArray *) accounts;
+- (NSArray *) listUsernames:(ABCError **) abcerror;
 {
     char * pszUserNames;
     NSArray *arrayAccounts = nil;
@@ -428,21 +428,24 @@
     tABC_Error error;
     ABC_ListAccounts(&pszUserNames, &error);
     nserror = [ABCError makeNSError:error];
-    
+    NSMutableArray *usernames = [[NSMutableArray alloc] init];
+
     if (!nserror)
     {
-        [accounts removeAllObjects];
+        [usernames removeAllObjects];
         NSString *str = [NSString stringWithCString:pszUserNames encoding:NSUTF8StringEncoding];
         arrayAccounts = [str componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
         for(NSString *str in arrayAccounts)
         {
             if(str && str.length!=0)
             {
-                [accounts addObject:str];
+                [usernames addObject:str];
             }
         }
     }
-    return nserror;
+    if (abcerror)
+        *abcerror = nserror;
+    return [usernames copy];
 }
 
 - (BOOL)pinLoginEnabled:(NSString *)username; { return [self pinLoginEnabled:username error:nil]; }
@@ -532,11 +535,10 @@
         {
             // If we deleted the account we most recently logged into,
             // set the lastLoggedInAccount to the top most account in the list.
-            NSMutableArray *accounts = [[NSMutableArray alloc] init];
-            nserror = [self listUsernames:accounts];
-            if (!nserror && accounts && ([accounts count] > 0))
+            NSArray *usernames = [self listUsernames:&nserror];
+            if (!nserror && usernames && ([usernames count] > 0))
             {
-                [self setLastAccessedAccount:accounts[0]];
+                [self setLastAccessedAccount:usernames[0]];
             }
             else
             {
@@ -693,15 +695,11 @@
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
         NSError *nserror = nil;
-        NSDate *resetDate;
-        NSString *resetToken;
-        NSMutableString *mResetToken = [[NSMutableString alloc] init];
         ABCAccount *account = [self loginWithPassword:username
                                   password:password
                                   delegate:delegate
                                        otp:otp
                                      error:&nserror];
-        resetToken = [NSString stringWithString:mResetToken];
 
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             if (callback) callback(nserror, account);

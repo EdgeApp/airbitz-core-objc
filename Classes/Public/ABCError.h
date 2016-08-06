@@ -8,7 +8,11 @@
 
 @interface ABCError : NSError
 
+@property                        NSInteger code;
+@property (nonatomic, strong)    NSDictionary *userInfo;
 @property (nonatomic, strong)    NSDate *otpResetDate;
 @property (nonatomic, strong)    NSString *otpResetToken;
 
++(ABCError *) errorWithDomain:(NSInteger) code
+                     userInfo:(NSDictionary *)userInfo;
 @end

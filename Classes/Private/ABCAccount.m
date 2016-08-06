@@ -1611,7 +1611,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 }
 
 - (void)changePIN:(NSString *)pin
-      callback:(void (^)(NSError *error)) callback
+      callback:(void (^)(ABCError *error)) callback
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
         NSError *error = [self changePIN:pin];
@@ -1736,7 +1736,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 }
 
 - (void)changePassword:(NSString *)password
-           callback:(void (^)(NSError *error)) callback;
+           callback:(void (^)(ABCError *error)) callback;
 {
     [self postToDataQueue:^(void)
      {

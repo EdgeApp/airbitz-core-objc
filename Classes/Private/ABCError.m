@@ -43,15 +43,24 @@
         if (!failureDetail)
             failureDetail = @"";
         
-        ABCError *abcError = (ABCError *)[NSError errorWithDomain:ABCErrorDomain
-                                                             code:error.code
-                                                         userInfo:@{ NSLocalizedDescriptionKey:description,
-                                                                     NSLocalizedFailureReasonErrorKey:failureReason,
-                                                                     NSLocalizedRecoverySuggestionErrorKey:failureDetail }];
+        ABCError *abcError = [ABCError errorWithDomain:ABCErrorDomain
+                                                  code:error.code
+                                              userInfo:@{ NSLocalizedDescriptionKey:description,
+                                                          NSLocalizedFailureReasonErrorKey:failureReason,
+                                                          NSLocalizedRecoverySuggestionErrorKey:failureDetail }];
         return abcError;
     }
 }
 
++(ABCError *) errorWithDomain:(NSInteger) code
+                     userInfo:(NSDictionary *)userInfo;
+{
+    ABCError *error = [ABCError alloc];
+    error.code = code;
+    error.userInfo = userInfo;
+    
+    return error;
+}
 
 
 + (NSString *)errorMap:(tABC_Error)error;

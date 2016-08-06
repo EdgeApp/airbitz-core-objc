@@ -36,7 +36,7 @@ RCT_EXPORT_METHOD(init:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey
 {
     if (!abc)
     {
-        abc = [[AirbitzCore alloc] init:abcAPIKey hbits:hbitsKey];
+        abc = [AirbitzCore makeABCContext:abcAPIKey hbits:hbitsKey];
         if (!abc)
         {
             callback([self makeError:ABCConditionCodeError
@@ -82,14 +82,10 @@ RCT_EXPORT_METHOD(createAccount:(NSString *)username
               password:password
                    pin:pin
               delegate:self
-              complete:^(ABCAccount *account)
+              callback:^(ABCError *error, ABCAccount *account)
      {
          abcAccount = account;
-         callback(@[[NSNull null], account.name]);
-     }
-                 error:^(NSError *nserror)
-     {
-         callback([self makeErrorFromNSError:nserror]);
+         callback([self makeErrorOrResponseFromNSError:error obj:account.name]);
      }];
 }
 
@@ -109,20 +105,28 @@ RCT_EXPORT_METHOD(loginWithPassword:(NSString *)username
         abcAccount = nil;
     }
     
-    [abc loginWithPassword:username password:password delegate:self otp:otp complete:^(ABCAccount *account) {
-        abcAccount = account;
-        callback(@[[NSNull null], account.name]);
-    } error:^(NSError *nserror, NSDate *otpResetDate, NSString *otpResetToken) {
-        if (nserror && nserror.code == ABCConditionCodeInvalidOTP)
+    [abc loginWithPassword:username password:password delegate:self otp:otp
+                  callback:^(ABCError *error, ABCAccount *account)
+    {
+        if (!error)
         {
-            callback([self makeError:ABCConditionCodeInvalidOTP
-                             message:@"Invalid OTP"
-                          dictionary:@{@"otpResetDate" : [NSNumber numberWithInt:(int)[otpResetDate timeIntervalSince1970]],
-                                       @"otpResetToken" : otpResetToken}]);
+            abcAccount = account;
+            callback([self makeErrorOrResponseFromNSError:error obj:account.name]);
         }
         else
         {
-            callback([self makeErrorFromNSError:nserror]);            
+            if (error && error.code == ABCConditionCodeInvalidOTP)
+            {
+                callback([self makeError:ABCConditionCodeInvalidOTP
+                                 message:@"Invalid OTP"
+                              dictionary:@{@"otpResetDate" : [NSNumber numberWithInt:(int)[error.otpResetDate timeIntervalSince1970]],
+                                           @"otpResetToken" : error.otpResetToken}]);
+            }
+            else
+            {
+                callback([self makeErrorFromNSError:error]);
+            }
+            
         }
     }];
 }
@@ -185,9 +189,10 @@ RCT_EXPORT_METHOD(listUsernames:(RCTResponseSenderBlock)callback)
         callback([self makeErrorABCNotInitialized]);
         return;
     }
-    NSMutableArray *usernames = [[NSMutableArray alloc] init];
-    
-    NSError *nserror = [abc listUsernames:usernames];
+
+    ABCError *nserror;
+    NSArray *usernames = [abc listUsernames:&nserror];
+
     callback([self makeErrorOrResponseFromNSError:nserror obj:usernames]);
 }
 
@@ -246,10 +251,8 @@ RCT_EXPORT_METHOD(changePassword:(NSString *)password
 {
     ABC_CHECK_ACCOUNT();
     
-    [abcAccount changePassword:password complete:^{
-        callback(@[[NSNull null]]);
-    } error:^(NSError *nserror) {
-        callback([self makeErrorFromNSError:nserror]);
+    [abcAccount changePassword:password callback:^(ABCError *error) {
+        callback([self makeErrorFromNSError:error]);
     }];
 }
 
@@ -258,10 +261,8 @@ RCT_EXPORT_METHOD(changePIN:(NSString *)pin
 {
     ABC_CHECK_ACCOUNT();
     
-    [abcAccount changePIN:pin complete:^{
-        callback(@[[NSNull null]]);
-    } error:^(NSError *nserror) {
-        callback([self makeErrorFromNSError:nserror]);
+    [abcAccount changePIN:pin callback:^(ABCError *error) {
+        callback([self makeErrorFromNSError:error]);
     }];
 }
 
@@ -706,11 +707,18 @@ RCT_EXPORT_METHOD(removeDataFolder:(NSString *)folder
 
 - (NSArray *)makeError:(ABCConditionCode)code
                message:(NSString *)message
-               dictionary:(NSDictionary *)addDict
+            dictionary:(NSDictionary *)addDict;
+{
+    return @[[self makeErrorJson:code message:message dictionary:addDict]];
+}
+
+- (NSString *)makeErrorJson:(ABCConditionCode)code
+                   message:(NSString *)message
+                dictionary:(NSDictionary *)addDict
 {
     if (ABCConditionCodeOk == code)
     {
-        return @[[NSNull null]];
+        return nil;
     }
     else
     {
@@ -723,7 +731,7 @@ RCT_EXPORT_METHOD(removeDataFolder:(NSString *)folder
             [dict addEntriesFromDictionary:addDict];
         
         NSString *json = [self makeJsonFromObj:dict];
-        return @[json];
+        return json;
     }
 }
 
