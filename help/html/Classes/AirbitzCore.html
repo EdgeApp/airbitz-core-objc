@@ -78,7 +78,7 @@
 		
 		<option value="//api/name/accountExistsLocal:">- accountExistsLocal:</option>
 		
-		<option value="//api/name/accountHasPINLogin:error:">- accountHasPINLogin:error:</option>
+		<option value="//api/name/pinLoginEnabled:error:">- pinLoginEnabled:error:</option>
 		
 		<option value="//api/name/accountHasPassword:error:">- accountHasPassword:error:</option>
 		
@@ -112,15 +112,15 @@
 		
 		<option value="//api/name/isUsernameAvailable:">- isUsernameAvailable:</option>
 		
-		<option value="//api/name/listLocalAccounts:">- listLocalAccounts:</option>
+		<option value="//api/name/listUsernames:">- listUsernames:</option>
 		
 		<option value="//api/name/listPendingOTPResetUsernames:">- listPendingOTPResetUsernames:</option>
 		
-		<option value="//api/name/passwordLogin:password:delegate:error:">- passwordLogin:password:delegate:error:</option>
+		<option value="//api/name/loginWithPassword:password:delegate:error:">- loginWithPassword:password:delegate:error:</option>
 		
-		<option value="//api/name/passwordLogin:password:delegate:otp:complete:error:">- passwordLogin:password:delegate:otp:complete:error:</option>
+		<option value="//api/name/loginWithPassword:password:delegate:otp:complete:error:">- loginWithPassword:password:delegate:otp:complete:error:</option>
 		
-		<option value="//api/name/passwordLogin:password:delegate:otp:otpResetToken:otpResetDate:error:">- passwordLogin:password:delegate:otp:otpResetToken:otpResetDate:error:</option>
+		<option value="//api/name/loginWithPassword:password:delegate:otp:otpResetToken:otpResetDate:error:">- loginWithPassword:password:delegate:otp:otpResetToken:otpResetDate:error:</option>
 		
 		<option value="//api/name/pinLogin:pin:delegate:complete:error:">- pinLogin:pin:delegate:complete:error:</option>
 		
@@ -487,8 +487,8 @@ callback handler</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/passwordLogin:password:delegate:otp:complete:error:" title="passwordLogin:password:delegate:otp:complete:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/passwordLogin:password:delegate:otp:complete:error:">&ndash;&nbsp;passwordLogin:password:delegate:otp:complete:error:</a></code>
+	<a name="//api/name/loginWithPassword:password:delegate:otp:complete:error:" title="loginWithPassword:password:delegate:otp:complete:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/loginWithPassword:password:delegate:otp:complete:error:">&ndash;&nbsp;loginWithPassword:password:delegate:otp:complete:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -503,7 +503,7 @@ callback handler</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (void)passwordLogin:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> complete:(void ( ^ ) ( ABCAccount *account ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *, NSDate *otpResetDate , NSString *otpResetToken ))<em>errorHandler</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (void)loginWithPassword:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> complete:(void ( ^ ) ( ABCAccount *account ))<em>completionHandler</em> error:(void ( ^ ) ( NSError *, NSDate *otpResetDate , NSString *otpResetToken ))<em>errorHandler</em></code></div>
 
 		    
 			
@@ -582,8 +582,8 @@ in requestOTPReset to request a reset of OTP. The reset will take 7 days</p></td
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/passwordLogin:password:delegate:error:" title="passwordLogin:password:delegate:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/passwordLogin:password:delegate:error:">&ndash;&nbsp;passwordLogin:password:delegate:error:</a></code>
+	<a name="//api/name/loginWithPassword:password:delegate:error:" title="loginWithPassword:password:delegate:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/loginWithPassword:password:delegate:error:">&ndash;&nbsp;loginWithPassword:password:delegate:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -598,7 +598,7 @@ in requestOTPReset to request a reset of OTP. The reset will take 7 days</p></td
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (ABCAccount *)passwordLogin:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> error:(NSError **)<em>error</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (ABCAccount *)loginWithPassword:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> error:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -660,8 +660,8 @@ in requestOTPReset to request a reset of OTP. The reset will take 7 days</p></td
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/passwordLogin:password:delegate:otp:otpResetToken:otpResetDate:error:" title="passwordLogin:password:delegate:otp:otpResetToken:otpResetDate:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/passwordLogin:password:delegate:otp:otpResetToken:otpResetDate:error:">&ndash;&nbsp;passwordLogin:password:delegate:otp:otpResetToken:otpResetDate:error:</a></code>
+	<a name="//api/name/loginWithPassword:password:delegate:otp:otpResetToken:otpResetDate:error:" title="loginWithPassword:password:delegate:otp:otpResetToken:otpResetDate:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/loginWithPassword:password:delegate:otp:otpResetToken:otpResetDate:error:">&ndash;&nbsp;loginWithPassword:password:delegate:otp:otpResetToken:otpResetDate:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -681,7 +681,7 @@ The reset date is set to 7 days from when a reset was initially requested.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (ABCAccount *)passwordLogin:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> otpResetToken:(NSMutableString *)<em>otpResetToken</em> otpResetDate:(NSDate **)<em>otpResetDate</em> error:(NSError **)<em>error</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (ABCAccount *)loginWithPassword:(NSString *)<em>username</em> password:(NSString *)<em>password</em> delegate:(id)<em>delegate</em> otp:(NSString *)<em>otp</em> otpResetToken:(NSMutableString *)<em>otpResetToken</em> otpResetDate:(NSDate **)<em>otpResetDate</em> error:(NSError **)<em>error</em></code></div>
 
 		    
 			
@@ -1228,8 +1228,8 @@ by app to give feedback to user before creating a new account.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/listLocalAccounts:" title="listLocalAccounts:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/listLocalAccounts:">&ndash;&nbsp;listLocalAccounts:</a></code>
+	<a name="//api/name/listUsernames:" title="listUsernames:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/listUsernames:">&ndash;&nbsp;listUsernames:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1244,7 +1244,7 @@ by app to give feedback to user before creating a new account.</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (NSError *)listLocalAccounts:(NSMutableArray *)<em>accounts</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (NSError *)listUsernames:(NSMutableArray *)<em>accounts</em></code></div>
 
 		    
 			
@@ -1425,8 +1425,8 @@ network connectivity to function.</p>
 		</div>
 	</div>
 </div><div class="section-method">
-	<a name="//api/name/accountHasPINLogin:error:" title="accountHasPINLogin:error:"></a>
-	<h3 class="method-title"><code><a href="#//api/name/accountHasPINLogin:error:">&ndash;&nbsp;accountHasPINLogin:error:</a></code>
+	<a name="//api/name/pinLoginEnabled:error:" title="pinLoginEnabled:error:"></a>
+	<h3 class="method-title"><code><a href="#//api/name/pinLoginEnabled:error:">&ndash;&nbsp;pinLoginEnabled:error:</a></code>
 </h3>
 
 	<div class="method-info">
@@ -1442,7 +1442,7 @@ there is a local PIN package on the device from a prior login</p>
 			
 		    
 
-			<div class="method-subsection method-declaration"><code>- (BOOL)accountHasPINLogin:(NSString *)<em>username</em> error:(NSError **)<em>error</em></code></div>
+			<div class="method-subsection method-declaration"><code>- (BOOL)pinLoginEnabled:(NSString *)<em>username</em> error:(NSError **)<em>error</em></code></div>
 
 		    
 			

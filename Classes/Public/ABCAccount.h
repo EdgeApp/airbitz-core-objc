@@ -126,21 +126,18 @@
  *  handler
  */
 - (void)changePassword:(NSString *)password
-              complete:(void (^)(void)) completionHandler
-                 error:(void (^)(NSError *)) errorHandler;
+           callback:(void (^)(NSError *error)) callback;
 - (NSError *)changePassword:(NSString *)password;
 
 /**
  * @param pin NSString Set PIN for current ABCAccount
  * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler Completion handler code block
- * @param errorHandler Error handler code block which is called with the following args<br>
+ * @param callback Callback code block
  * - *param* NSError
  * @return NSError Error object. Nil if success. Returns void if completion handlers used
  */
 - (void)changePIN:(NSString *)pin
-         complete:(void (^)(void)) completionHandler
-            error:(void (^)(NSError *)) errorHandler;
+      callback:(void (^)(NSError *error)) callback;
 - (NSError *)changePIN:(NSString *)pin;
 
 /**
@@ -190,7 +187,7 @@
  * @param enable BOOL set to YES to enable PIN login
  * @return NSError* Nil if success
  */
-- (NSError *) pinLoginSetup:(BOOL)enable;
+- (NSError *) enablePINLogin:(BOOL)enable;
 
 /**
  * Check if this account is allowed to login via PIN

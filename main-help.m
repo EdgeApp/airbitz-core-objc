@@ -29,7 +29,7 @@ And you're done. You should be able to call into AirbitzCore. See below for code
     - (void) exampleMethod
     {
         // Create an account
-        AirbitzCore *abc  = [[AirbitzCore alloc] init:@"YourAPIKeyHere"];
+        AirbitzCore *abc  = [AirbitzCore makeABCContext:@"YourAPIKeyHere"];
         gAccount = [abc createAccount:@"myusername" password:@"MyPa55w0rd!&" pin:@"4283" delegate:self error:nil];
         // New account is auto logged in after creation
         
@@ -49,7 +49,7 @@ And you're done. You should be able to call into AirbitzCore. See below for code
         [gAccount logout];
         
         // Log back in with full credentials
-        gAccount = [abc passwordLogin:@"myusername" password:@"MyPa55w0rd!&" delegate:self error:nil];
+        gAccount = [abc loginWithPassword:@"myusername" password:@"MyPa55w0rd!&" delegate:self error:nil];
         
         // Logout
         [gAccount logout];

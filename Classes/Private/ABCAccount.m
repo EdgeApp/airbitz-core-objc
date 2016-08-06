@@ -1611,21 +1611,13 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 }
 
 - (void)changePIN:(NSString *)pin
-         complete:(void (^)(void)) completionHandler
-            error:(void (^)(NSError *error)) errorHandler
+      callback:(void (^)(NSError *error)) callback
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
         NSError *error = [self changePIN:pin];
         
         dispatch_async(dispatch_get_main_queue(), ^(void) {
-            if (!error)
-            {
-                if (completionHandler) completionHandler();
-            }
-            else
-            {
-                if (errorHandler) errorHandler(error);
-            }
+            if (callback) callback(error);
         });
     });
 }
@@ -1709,6 +1701,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     });
 }
 
+
 - (NSError *)changePassword:(NSString *)password;
 {
     NSError *nserror = nil;
@@ -1743,24 +1736,14 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 }
 
 - (void)changePassword:(NSString *)password
-                   complete:(void (^)(void)) completionHandler
-                      error:(void (^)(NSError *)) errorHandler;
+           callback:(void (^)(NSError *error)) callback;
 {
     [self postToDataQueue:^(void)
      {
          NSError *error = [self changePassword:password];
-         dispatch_async(dispatch_get_main_queue(), ^(void)
-                        {
-                            if (!error)
-                            {
-                                if (completionHandler) completionHandler();
-                            }
-                            else
-                            {
-                                if (errorHandler) errorHandler(error);
-                            }
-                        });
-         
+         dispatch_async(dispatch_get_main_queue(), ^(void) {
+             if (callback) callback(error);
+         });
      }];
 }
 
@@ -1769,7 +1752,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return !self.settings.bDisablePINLogin;
 }
 
-- (NSError *) pinLoginSetup:(BOOL)enable;
+- (NSError *) enablePINLogin:(BOOL)enable;
 {
     self.settings.bDisablePINLogin = !enable;
     return [self.settings saveSettings];

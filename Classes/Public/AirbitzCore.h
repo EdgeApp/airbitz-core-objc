@@ -11,6 +11,7 @@
 #import "ABCCurrency.h"
 #import "ABCDataStore.h"
 #import "ABCDenomination.h"
+#import "ABCError.h"
 #import "ABCExchangeCache.h"
 #import "ABCKeychain.h"
 #import "ABCMetaData.h"
@@ -69,8 +70,8 @@ typedef enum eABCDeviceCaps
  * specific "gift cards" that are only redeemable by applications using this implementation.
  * @return AirbitzCore Instance of AirbitzCore object
  */
-- (id)init:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey;
-- (id)init:(NSString *)abcAPIKey;
++ (AirbitzCore *)makeABCContext:(NSString *)abcAPIKey;
++ (AirbitzCore *)makeABCContext:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey;
 
 /**
  * Free the AirbitzCore object.
@@ -101,8 +102,7 @@ typedef enum eABCDeviceCaps
              password:(NSString *)password
                   pin:(NSString *)pin
              delegate:(id)delegate
-             complete:(void (^)(ABCAccount *account)) completionHandler
-                error:(void (^)(NSError *)) errorHandler;
+             callback:(void (^)(NSError *, ABCAccount *account)) callback;
 
 
 /** Create an Airbitz account with specified username, password, and PIN.
@@ -136,12 +136,11 @@ typedef enum eABCDeviceCaps
  *  in requestOTPReset to request a reset of OTP. The reset will take 7 days
  * @return void
  */
-- (void)passwordLogin:(NSString *)username
+- (void)loginWithPassword:(NSString *)username
              password:(NSString *)password
              delegate:(id)delegate
                   otp:(NSString *)otp
-             complete:(void (^)(ABCAccount *account)) completionHandler
-                error:(void (^)(NSError *, NSDate *otpResetDate, NSString *otpResetToken)) errorHandler;
+             callback:(void (^)(ABCError *error, ABCAccount *account)) callback;
 
 /**
  * Login to an Airbitz account.
@@ -151,10 +150,10 @@ typedef enum eABCDeviceCaps
  * @param error NSError May be set to nil. Only used when not using completion handler
  * @return ABCAccount Account object or nil if failure.
  */
-- (ABCAccount *)passwordLogin:(NSString *)username
+- (ABCAccount *)loginWithPassword:(NSString *)username
                      password:(NSString *)password
                      delegate:(id)delegate
-                        error:(NSError **)error;
+                        error:(ABCError **)error;
 
 /**
  * Login to an Airbitz account. This routine allows caller to receive back an otpResetToken
@@ -174,12 +173,10 @@ typedef enum eABCDeviceCaps
  * @param error NSError May be set to nil. Only used when not using completion handler
  * @return ABCAccount Account object or nil if failure.
  */
-- (ABCAccount *)passwordLogin:(NSString *)username
+- (ABCAccount *)loginWithPassword:(NSString *)username
                      password:(NSString *)password
                      delegate:(id)delegate
                           otp:(NSString *)otp
-                otpResetToken:(NSMutableString *)otpResetToken
-                 otpResetDate:(NSDate **)otpResetDate
                         error:(NSError **)error;
 
 /**
@@ -269,7 +266,7 @@ typedef enum eABCDeviceCaps
  * @param accounts NSMutableArray* array of strings of account names
  * @return NSError* error code
  */
-- (NSError *) listLocalAccounts:(NSMutableArray *) accounts;
+- (NSError *) listUsernames:(NSMutableArray *) accounts;
 
 /**
  * Checks if an account with the specified username exists locally on the current device.
@@ -320,8 +317,8 @@ typedef enum eABCDeviceCaps
  * @param error NSError** (optional) May be set to nil.
  * @return BOOL YES PIN login is possible
  */
-- (BOOL)accountHasPINLogin:(NSString *)username error:(NSError **)error;
-- (BOOL)accountHasPINLogin:(NSString *)username;
+- (BOOL)pinLoginEnabled:(NSString *)username error:(NSError **)error;
+- (BOOL)pinLoginEnabled:(NSString *)username;
 
 /**
  * Deletes named account from local device. Account is recoverable if it contains a password.

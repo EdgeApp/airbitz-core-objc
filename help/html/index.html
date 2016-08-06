@@ -95,7 +95,7 @@ ABCAccount *gAccount;
     [gAccount logout];
 
     // Log back in with full credentials
-    gAccount = [abc passwordLogin:@"myusername" password:@"MyPa55w0rd!&amp;" delegate:self error:nil];
+    gAccount = [abc loginWithPassword:@"myusername" password:@"MyPa55w0rd!&amp;" delegate:self error:nil];
 
     // Logout
     [gAccount logout];

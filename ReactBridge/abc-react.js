@@ -165,7 +165,7 @@ class ABCAccount {
    * @param callback: Callback with argument ABCError object
    *     ABCError: Error object
    */
-  setOTPKey(key, callback) {
+  setupOTPKey(key, callback) {
     AirbitzCoreRCT.otpKeySet(key, (rcterror) => {
       callback(ABCError.makeABCError(rcterror))
     })

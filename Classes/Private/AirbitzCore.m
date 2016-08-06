@@ -28,11 +28,11 @@
 
 @interface AirbitzCore ()
 {
-    BOOL                                            bInitialized;
-    ABCError                                        *abcError;
     ABCExchangeCache                                *_exchangeCache;
 }
 
+
+@property (atomic, strong) ABCError                 *abcError;
 @property (atomic, strong) ABCLocalSettings         *localSettings;
 @property (atomic, strong) ABCKeychain              *keyChain;
 @property (atomic, strong) NSMutableArray           *loggedInUsers;
@@ -42,31 +42,29 @@
 
 @implementation AirbitzCore
 
-- (id)init:(NSString *)abcAPIKey;
++ (AirbitzCore *)makeABCContext:(NSString *)abcAPIKey;
 {
-    return [self init:abcAPIKey hbits:@""];
+    return [AirbitzCore makeABCContext:abcAPIKey hbits:@""];
 }
 
-- (id)init:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey
++ (AirbitzCore *)makeABCContext:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey;
 {
-    
-    if (NO == bInitialized)
+    AirbitzCore *abcContext  = [AirbitzCore alloc];
+
     {
-        abcError = [[ABCError alloc] init];
+        abcContext.abcError = [[ABCError alloc] init];
 
-        self.exchangeQueue = [[NSOperationQueue alloc] init];
-        [self.exchangeQueue setMaxConcurrentOperationCount:1];
-        
-        self.loggedInUsers = [[NSMutableArray alloc] init];
+        abcContext.exchangeQueue = [[NSOperationQueue alloc] init];
+        [abcContext.exchangeQueue setMaxConcurrentOperationCount:1];
 
-        bInitialized = YES;
+        abcContext.loggedInUsers = [[NSMutableArray alloc] init];
 
         tABC_Error Error;
 
         Error.code = ABC_CC_Ok;
 
         NSMutableData *seedData = [[NSMutableData alloc] init];
-        [self fillSeedData:seedData];
+        [abcContext fillSeedData:seedData];
 
         NSString *ca_path = [[NSBundle mainBundle] pathForResource:@"ca-certificates" ofType:@"crt"];
 
@@ -101,18 +99,17 @@
         });
 
         Error.code = ABC_CC_Ok;
-        
-        self.localSettings = [[ABCLocalSettings alloc] init:self];
-        self.keyChain = [[ABCKeychain alloc] init:self];
 
-        self.keyChain.localSettings = self.localSettings;
+        abcContext.localSettings = [[ABCLocalSettings alloc] init:self];
+        abcContext.keyChain = [[ABCKeychain alloc] init:self];
+
+        abcContext.keyChain.localSettings = abcContext.localSettings;
     }
-    return self;
+    return abcContext;
 }
 
 - (void)free
 {
-    if (YES == bInitialized)
     {
         if (self.exchangeQueue)
             [self.exchangeQueue cancelAllOperations];
@@ -130,7 +127,6 @@
         }
 
         ABC_Terminate();
-        bInitialized = NO;
     }
 }
 
@@ -424,7 +420,7 @@
 }
 
 
-- (NSError *) listLocalAccounts:(NSMutableArray *) accounts;
+- (NSError *) listUsernames:(NSMutableArray *) accounts;
 {
     char * pszUserNames;
     NSArray *arrayAccounts = nil;
@@ -449,8 +445,8 @@
     return nserror;
 }
 
-- (BOOL)accountHasPINLogin:(NSString *)username; { return [self accountHasPINLogin:username error:nil]; }
-- (BOOL)accountHasPINLogin:(NSString *)username error:(NSError **)nserror;
+- (BOOL)pinLoginEnabled:(NSString *)username; { return [self pinLoginEnabled:username error:nil]; }
+- (BOOL)pinLoginEnabled:(NSString *)username error:(NSError **)nserror;
 {
     NSError *lnserror;
     tABC_Error error;
@@ -537,7 +533,7 @@
             // If we deleted the account we most recently logged into,
             // set the lastLoggedInAccount to the top most account in the list.
             NSMutableArray *accounts = [[NSMutableArray alloc] init];
-            nserror = [self listLocalAccounts:accounts];
+            nserror = [self listUsernames:accounts];
             if (!nserror && accounts && ([accounts count] > 0))
             {
                 [self setLastAccessedAccount:accounts[0]];
@@ -614,30 +610,26 @@
     });
 }
 
-- (ABCAccount *)passwordLogin:(NSString *)username
+- (ABCAccount *)loginWithPassword:(NSString *)username
               password:(NSString *)password
               delegate:(id)delegate
                  error:(NSError **)nserror;
 {
-    return [self passwordLogin:username
+    return [self loginWithPassword:username
                password:password
                delegate:delegate
                     otp:nil
-          otpResetToken:nil
-           otpResetDate:nil
                   error:nil];
 }
 
-- (ABCAccount *)passwordLogin:(NSString *)username
+- (ABCAccount *)loginWithPassword:(NSString *)username
               password:(NSString *)password
               delegate:(id)delegate
                    otp:(NSString *)otp
-         otpResetToken:(NSMutableString *)otpResetToken
-          otpResetDate:(NSDate **)otpResetDate
-                 error:(NSError **)nserror;
+                 error:(ABCError **)nserror;
 {
     
-    NSError *lnserror = nil;
+    ABCError *lnserror = nil;
     ABCAccount *account = nil;
 
     tABC_Error error;
@@ -667,11 +659,11 @@
             
             lnserror = [ABCError makeNSError:error];
             
-            if (szResetToken && otpResetToken)
+            if (szResetToken)
             {
-                [otpResetToken setString:[NSString stringWithUTF8String:szResetToken]];
+                lnserror.otpResetToken = [NSString stringWithUTF8String:szResetToken];
             }
-            if (szResetDate && otpResetDate)
+            if (szResetDate)
             {
                 NSString *dateStr = [NSString stringWithUTF8String:szResetDate];
                 
@@ -679,7 +671,7 @@
                 [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
                 
                 NSDate *dateTemp = [dateFormatter dateFromString:dateStr];
-                *otpResetDate = dateTemp;
+                lnserror.otpResetDate = dateTemp;
             }
             
             if (!lnserror)
@@ -703,34 +695,24 @@
     return account;
 }
 
-- (void)passwordLogin:(NSString *)username password:(NSString *)password
+- (void)loginWithPassword:(NSString *)username password:(NSString *)password
       delegate:(id)delegate otp:(NSString *)otp
-      complete:(void (^)(ABCAccount *account)) completionHandler
-         error:(void (^)(NSError *, NSDate *resetDate, NSString *resetToken)) errorHandler;
+      callback:(void (^)(ABCError *, ABCAccount *account))callback
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
         NSError *nserror = nil;
         NSDate *resetDate;
         NSString *resetToken;
         NSMutableString *mResetToken = [[NSMutableString alloc] init];
-        ABCAccount *account = [self passwordLogin:username
+        ABCAccount *account = [self loginWithPassword:username
                                   password:password
                                   delegate:delegate
                                        otp:otp
-                             otpResetToken:mResetToken
-                              otpResetDate:&resetDate
                                      error:&nserror];
         resetToken = [NSString stringWithString:mResetToken];
 
         dispatch_async(dispatch_get_main_queue(), ^(void) {
-            if (account)
-            {
-                if (completionHandler) completionHandler(account);
-            }
-            else
-            {
-                if (errorHandler) errorHandler(nserror, resetDate, resetToken);
-            }
+            if (callback) callback(nserror, account);
         });
     });
 }
@@ -752,7 +734,7 @@
     }
     else
     {
-        if ([self accountHasPINLogin:username error:nil])
+        if ([self pinLoginEnabled:username error:nil])
         {
             ABC_PinLogin([username UTF8String],
                          [pin UTF8String],
@@ -983,10 +965,15 @@
             if (doRelogin)
             {
                 if (doBeforeLogin) doBeforeLogin();
-                [self passwordLogin:username password:password delegate:delegate otp:nil complete:^(ABCAccount *account){
-                    if (completionWithLogin) completionWithLogin(account, usedTouchID);
-                } error:^(NSError *error, NSDate *resetDate, NSString *resetToken) {
-                    if (errorHandler) errorHandler(error);
+                [self loginWithPassword:username password:password delegate:delegate otp:nil callback:^(ABCError *error, ABCAccount *account) {
+                    if (error)
+                    {
+                        if (errorHandler) errorHandler(error);
+                    }
+                    else
+                    {
+                        if (completionWithLogin) completionWithLogin(account, usedTouchID);
+                    }
                 }];
             }
             else

@@ -109,7 +109,7 @@ RCT_EXPORT_METHOD(loginWithPassword:(NSString *)username
         abcAccount = nil;
     }
     
-    [abc passwordLogin:username password:password delegate:self otp:otp complete:^(ABCAccount *account) {
+    [abc loginWithPassword:username password:password delegate:self otp:otp complete:^(ABCAccount *account) {
         abcAccount = account;
         callback(@[[NSNull null], account.name]);
     } error:^(NSError *nserror, NSDate *otpResetDate, NSString *otpResetToken) {
@@ -187,7 +187,7 @@ RCT_EXPORT_METHOD(listUsernames:(RCTResponseSenderBlock)callback)
     }
     NSMutableArray *usernames = [[NSMutableArray alloc] init];
     
-    NSError *nserror = [abc listLocalAccounts:usernames];
+    NSError *nserror = [abc listUsernames:usernames];
     callback([self makeErrorOrResponseFromNSError:nserror obj:usernames]);
 }
 
@@ -221,7 +221,7 @@ RCT_EXPORT_METHOD(pinLoginEnabled:(NSString *)username
     }
     NSError *nserror;
     
-    BOOL enabled = [abc accountHasPINLogin:username error:&nserror];
+    BOOL enabled = [abc pinLoginEnabled:username error:&nserror];
     callback([self makeErrorOrResponseFromNSError:nserror obj:[NSNumber numberWithBool:enabled]]);
 }
 
@@ -241,7 +241,7 @@ RCT_EXPORT_METHOD(logout:(RCTResponseSenderBlock)callback)
     callback(@[[NSNull null]]);
 }
 
-RCT_EXPORT_METHOD(setPassword:(NSString *)password
+RCT_EXPORT_METHOD(changePassword:(NSString *)password
                   callback:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
@@ -253,7 +253,7 @@ RCT_EXPORT_METHOD(setPassword:(NSString *)password
     }];
 }
 
-RCT_EXPORT_METHOD(setPIN:(NSString *)pin
+RCT_EXPORT_METHOD(changePIN:(NSString *)pin
                   complete:(RCTResponseSenderBlock)callback)
 {
     ABC_CHECK_ACCOUNT();
@@ -279,7 +279,7 @@ RCT_EXPORT_METHOD(enablePINLogin:(BOOL)enable
 {
     ABC_CHECK_ACCOUNT();
     
-    NSError *nserror = [abcAccount pinLoginSetup:enable];
+    NSError *nserror = [abcAccount enablePINLogin:enable];
     callback([self makeErrorFromNSError:nserror]);
 }
 

@@ -11,7 +11,7 @@
 #import "ABCCategories+Internal.h"
 #import "ABCCurrency+Internal.h"
 #import "ABCDataStore+Internal.h"
-#import "ABCError.h"
+#import "ABCError+Internal.h"
 #import "ABCExchangeCache+Internal.h"
 #import "ABCKeychain+Internal.h"
 #import "ABCLocalSettings.h"

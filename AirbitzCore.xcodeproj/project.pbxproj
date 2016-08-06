@@ -78,7 +78,6 @@
 		DA51EA3A1CCA0EB200C7C95F /* ABCStrings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ABCStrings.h; path = Classes/Public/ABCStrings.h; sourceTree = SOURCE_ROOT; };
 		DA51EA3C1CCA0F5600C7C95F /* ABCStrings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCStrings.m; path = Classes/Public/ABCStrings.m; sourceTree = SOURCE_ROOT; };
 		DA5E8D8D1C633950005E3093 /* ABC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = ABC.h; path = Classes/Private/ABC.h; sourceTree = SOURCE_ROOT; };
-		DA5E8D8E1C633950005E3093 /* ABCError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCError.h; path = Classes/Private/ABCError.h; sourceTree = SOURCE_ROOT; };
 		DA5E8D8F1C633950005E3093 /* ABCError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCError.m; path = Classes/Private/ABCError.m; sourceTree = SOURCE_ROOT; };
 		DA5E8D911C633950005E3093 /* ABCKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCKeychain.m; path = Classes/Private/ABCKeychain.m; sourceTree = SOURCE_ROOT; };
 		DA5E8D931C633950005E3093 /* ABCLocalSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCLocalSettings.m; path = Classes/Private/ABCLocalSettings.m; sourceTree = SOURCE_ROOT; };
@@ -145,6 +144,8 @@
 		DAC0C70D1C6B0BEB006013A7 /* ABCWallet+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ABCWallet+Internal.h"; path = "Classes/Private/ABCWallet+Internal.h"; sourceTree = SOURCE_ROOT; };
 		DACC23831C86C71800883540 /* ABCMetaData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCMetaData.m; path = Classes/Private/ABCMetaData.m; sourceTree = SOURCE_ROOT; };
 		DAD186471C62FAC60082CB21 /* libAirbitzCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAirbitzCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		DADE41231D540A3700C049CD /* ABCError+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ABCError+Internal.h"; path = "Classes/Private/ABCError+Internal.h"; sourceTree = SOURCE_ROOT; };
+		DADE41241D540A7400C049CD /* ABCError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCError.h; path = Classes/Public/ABCError.h; sourceTree = SOURCE_ROOT; };
 		DAF16DCE1C82B8F0004642B9 /* ABCDenomination.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ABCDenomination.h; path = Classes/Public/ABCDenomination.h; sourceTree = SOURCE_ROOT; };
 		DAF16DD01C844106004642B9 /* ABCDataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ABCDataStore.m; path = Classes/Private/ABCDataStore.m; sourceTree = SOURCE_ROOT; };
 		DAF16DD21C844112004642B9 /* ABCDataStore+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "ABCDataStore+Internal.h"; path = "Classes/Private/ABCDataStore+Internal.h"; sourceTree = SOURCE_ROOT; };
@@ -194,6 +195,7 @@
 				DA78DC3E1C8283A000F17F13 /* ABCCurrency.h */,
 				DAF16DD31C84411A004642B9 /* ABCDataStore.h */,
 				DAF16DCE1C82B8F0004642B9 /* ABCDenomination.h */,
+				DADE41241D540A7400C049CD /* ABCError.h */,
 				DA252AC71C8269E6008F046A /* ABCExchangeCache.h */,
 				DA1D271A1C6874ED00B76EB0 /* ABCKeychain.h */,
 				DAF16DD51C845239004642B9 /* ABCMetadata.h */,
@@ -221,7 +223,7 @@
 				DA7236FC1C916BE800E9966B /* ABCCategories+Internal.h */,
 				DA78DC411C82A1E600F17F13 /* ABCCurrency+Internal.h */,
 				DAF16DD21C844112004642B9 /* ABCDataStore+Internal.h */,
-				DA5E8D8E1C633950005E3093 /* ABCError.h */,
+				DADE41231D540A3700C049CD /* ABCError+Internal.h */,
 				DA252AC51C8269D0008F046A /* ABCExchangeCache+Internal.h */,
 				DAC0C7081C6B0A21006013A7 /* ABCKeychain+Internal.h */,
 				DAC0C7091C6B0A21006013A7 /* ABCLocalSettings.h */,

@@ -12,12 +12,12 @@
 
 @implementation ABCError
 
-+ (NSError *)makeNSError:(tABC_Error)error;
++ (ABCError *)makeNSError:(tABC_Error)error;
 {
     return [ABCError makeNSError:error description:[ABCError errorMap:error]];
 }
 
-+ (NSError *)makeNSError:(tABC_Error)error description:(NSString *)description;
++ (ABCError *)makeNSError:(tABC_Error)error description:(NSString *)description;
 {
     if (ABCConditionCodeOk == error.code)
     {
@@ -43,11 +43,11 @@
         if (!failureDetail)
             failureDetail = @"";
         
-        return [NSError errorWithDomain:ABCErrorDomain
-                                   code:error.code
-                               userInfo:@{ NSLocalizedDescriptionKey:description,
-                                           NSLocalizedFailureReasonErrorKey:failureReason,
-                                           NSLocalizedRecoverySuggestionErrorKey:failureDetail }];
+        ABCError *abcError = (ABCError *)[NSError errorWithDomain:ABCErrorDomain
+                                                             code:error.code
+                                                         userInfo:@{ NSLocalizedDescriptionKey:description,
+                                                                     NSLocalizedFailureReasonErrorKey:failureReason,
+                                                                     NSLocalizedRecoverySuggestionErrorKey:failureDetail }];
     }
 }
 

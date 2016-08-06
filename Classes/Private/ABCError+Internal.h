@@ -1,12 +1,14 @@
 //
+// ABCError+Internal.h
+//
 // Created by Paul P on 1/30/16.
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "ABCError.h"
 #import "AirbitzCore+Internal.h"
 
-@interface ABCError : NSObject
+@interface ABCError (Internal)
 
 /*
  * errorMap
