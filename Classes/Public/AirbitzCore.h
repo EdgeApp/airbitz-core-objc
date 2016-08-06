@@ -102,7 +102,7 @@ typedef enum eABCDeviceCaps
              password:(NSString *)password
                   pin:(NSString *)pin
              delegate:(id)delegate
-             callback:(void (^)(NSError *, ABCAccount *account)) callback;
+             callback:(void (^)(ABCError *, ABCAccount *account)) callback;
 
 
 /** Create an Airbitz account with specified username, password, and PIN.
@@ -177,7 +177,7 @@ typedef enum eABCDeviceCaps
                      password:(NSString *)password
                      delegate:(id)delegate
                           otp:(NSString *)otp
-                        error:(NSError **)error;
+                        error:(ABCError **)error;
 
 /**
  * Login to an Airbitz account with PIN using completion handlers. Used to sign into

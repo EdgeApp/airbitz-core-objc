@@ -590,22 +590,14 @@
 }
 
 - (void)createAccount:(NSString *)username password:(NSString *)password pin:(NSString *)pin delegate:(id)delegate
-                  complete:(void (^)(ABCAccount *)) completionHandler
-                     error:(void (^)(NSError *)) errorHandler;
+             callback:(void (^)(ABCError *, ABCAccount *account)) callback;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
         NSError *error = nil;
         ABCAccount *account = [self createAccount:username password:password pin:pin delegate:delegate error:&error];
 
         dispatch_async(dispatch_get_main_queue(), ^(void) {
-            if (nil == error)
-            {
-                if (completionHandler) completionHandler(account);
-            }
-            else
-            {
-                if (errorHandler) errorHandler(error);
-            }
+            if (callback) callback(error, account);
         });
     });
 }
@@ -613,7 +605,7 @@
 - (ABCAccount *)loginWithPassword:(NSString *)username
               password:(NSString *)password
               delegate:(id)delegate
-                 error:(NSError **)nserror;
+                 error:(ABCError **)nserror;
 {
     return [self loginWithPassword:username
                password:password
