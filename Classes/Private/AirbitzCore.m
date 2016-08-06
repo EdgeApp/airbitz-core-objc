@@ -1060,20 +1060,12 @@
 
 - (void)requestOTPReset:(NSString *)username
                   token:(NSString *)token
-               complete:(void (^)(void)) completionHandler
-                  error:(void (^)(ABCError *error)) errorHandler
+               callback:(void (^)(ABCError *error)) callback;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
         ABCError *error = [self requestOTPReset:username token:token];
         dispatch_async(dispatch_get_main_queue(), ^(void) {
-            if (!error)
-            {
-                if (completionHandler) completionHandler();
-            }
-            else
-            {
-                if (errorHandler) errorHandler(error);
-            }
+            if (callback) callback(error);
         });
     });
 }

@@ -403,18 +403,16 @@ typedef enum eABCDeviceCaps
  * Launches an OTP reset timer on the server,
  * which will disable the OTP authentication requirement when it expires.
  * @param username NSString*
- * @param token NSString* Reset token returned by the signIn... routines
+ * @param otpResetToken NSString* Reset token returned by the signIn... routines
  * if sign in failes due to missing or incorrect OTP.
  * (Optional. If used, method returns immediately with void)
- * @param completionHandler Completion handler code block
- * @param errorHandler Error handler code block which is called with the following args<br>
+ * @param callback Code block which is called with the following args<br>
  * - *param* NSError* error
- * @return ABCError object or nil if success. Return void if using completion
- *  handler
+ * @return ABCError object or nil if success. Return void if using callback
  */
-- (void)requestOTPReset:(NSString *)username token:(NSString *)token
-               complete:(void (^)(void)) completionHandler
-                  error:(void (^)(ABCError *error)) errorHandler;
+- (void)requestOTPReset:(NSString *)username
+                  token:(NSString *)otpResetToken
+               callback:(void (^)(ABCError *error)) callback;
 - (ABCError *)requestOTPReset:(NSString *)username token:(NSString *)token;
 
 #pragma mark - System Calls and Queries
