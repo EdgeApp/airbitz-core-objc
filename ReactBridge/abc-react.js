@@ -187,12 +187,11 @@ class ABCAccount {
    * @param callback: Callback with arguments
    *     ABCError: Error object
    *     bool otpEnabled: TRUE if OTP is enabled on this account
-   *     long timeout: Number of seconds required after a reset is requested before OTP is disabled
    * @param error
    */
   getOTPDetails(callback) {
     AirbitzCoreRCT.getOTPDetails((rcterror, otpEnabled, timeout) => {
-      callback(ABCError.makeABCError(rcterror), otpEnabled, timeout);
+      callback(ABCError.makeABCError(rcterror), otpEnabled);
     })
   }
 
