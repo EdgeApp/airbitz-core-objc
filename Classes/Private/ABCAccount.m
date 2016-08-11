@@ -1874,9 +1874,13 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 //                                    &error);
 //    return [ABCError makeNSError:error];
     
+    // Save the token in the iOS Keychain
+    [self.abc.keyChain setKeychainString:DummyRecoveryToken
+                                     key:[self.abc.keyChain createKeyWithUsername:self.name key:RECOVERY2_KEY]
+                           authenticated:YES];
     if (error)
         *error = nil;
-    return @"iamarecoverytokenreallyiam1234";
+    return DummyRecoveryToken;
 }
 
 - (void)setupRecoveryQuestions2:(NSString *)questions

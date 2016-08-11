@@ -167,7 +167,9 @@
 
 - (NSString *)getLocalRecoveryToken:(NSString *)username error:(ABCError **)error;
 {
-    return DummyRecoveryToken;
+    NSString *recoveryToken = [self.keyChain getKeychainString:[self.keyChain createKeyWithUsername:username key:RECOVERY2_KEY]
+                                                         error:error];
+    return recoveryToken;
 }
 
 - (void)getRecoveryQuestionsWithRecoveryToken:(NSString *)username

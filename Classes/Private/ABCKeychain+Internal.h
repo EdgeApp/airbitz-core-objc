@@ -11,7 +11,8 @@
 #define PASSWORD_KEY            @"key_password"
 #define RELOGIN_KEY             @"key_relogin"
 #define USE_TOUCHID_KEY         @"key_use_touchid"
-#define LOGOUT_TIME_KEY          @"key_logout_time"
+#define LOGOUT_TIME_KEY         @"key_logout_time"
+#define RECOVERY2_KEY           @"key_recovery2"
 #define SEC_ATTR_SERVICE        @"co.airbitz.airbitz"
 
 @class ABCSettings;
