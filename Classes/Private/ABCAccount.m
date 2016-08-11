@@ -1862,6 +1862,40 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return nCount;
 }
 
+- (NSString *)setupRecoveryQuestions2:(NSString *)questions
+                              answers:(NSString *)answers
+                                error:(ABCError **)error
+{
+//    tABC_Error error;
+//    ABC_SetAccountRecoveryQuestions([self.name UTF8String],
+//                                    [self.password UTF8String],
+//                                    [questions UTF8String],
+//                                    [answers UTF8String],
+//                                    &error);
+//    return [ABCError makeNSError:error];
+    
+    if (error)
+        *error = nil;
+    return @"iamarecoverytokenreallyiam1234";
+}
+
+- (void)setupRecoveryQuestions2:(NSString *)questions
+                        answers:(NSString *)answers
+                       callback:(void (^)(ABCError *error, NSString *recoveryToken)) callback;
+{
+    [self postToMiscQueue:^{
+        ABCError *error = nil;
+        NSString *recoveryToken = [self setupRecoveryQuestions2:questions
+                                                        answers:answers
+                                                          error:&error];
+        
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            if (callback) callback(error, recoveryToken);
+        });
+    }];
+}
+
+
 - (ABCError *)setupRecoveryQuestions:(NSString *)questions
                             answers:(NSString *)answers;
 {

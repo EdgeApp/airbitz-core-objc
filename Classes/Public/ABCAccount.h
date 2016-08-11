@@ -344,6 +344,13 @@
 - (ABCError *)setupRecoveryQuestions:(NSString *)questions
                             answers:(NSString *)answers;
 
+- (NSString *)setupRecoveryQuestions2:(NSString *)questions
+                              answers:(NSString *)answers
+                                error:(ABCError **)error;
+- (void)setupRecoveryQuestions2:(NSString *)questions
+                        answers:(NSString *)answers
+                       callback:(void (^)(ABCError *error, NSString *recoveryToken)) callback;
+
 /**
  * GUI utility function to help determine if the user should be asked to setup
  * recovery questions and answers. This routine factors the amount of funds the account

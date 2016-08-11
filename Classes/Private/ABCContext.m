@@ -150,6 +150,42 @@
     return [NSDate dateWithTimeIntervalSince1970: intDate];
 }
 
+- (NSArray *)getRecoveryQuestionsWithRecoveryToken:(NSString *)username
+                                     recoveryToken:(NSString *)recoveryToken
+                                             error:(ABCError **)error;
+{
+    //XXX Stub
+    if ([username isEqualToString:DummyRecoveryUser])
+    {
+        if ([recoveryToken isEqualToString:DummyRecoveryToken])
+        {
+            return @[@"How old are you now?", @"Who's your daddy?"];
+        }
+    }
+    return nil;
+}
+
+- (NSString *)getLocalRecoveryToken:(NSString *)username error:(ABCError **)error;
+{
+    return DummyRecoveryToken;
+}
+
+- (void)getRecoveryQuestionsWithRecoveryToken:(NSString *)username
+                                recoveryToken:(NSString *)recoveryToken
+                                     callback:(void (^)(ABCError *, NSArray *questions))callback
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+        ABCError *error;
+        NSArray *array = [self getRecoveryQuestionsWithRecoveryToken:username
+                                                       recoveryToken:recoveryToken
+                                                               error:&error];
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            if (callback) callback(error, array);
+        });
+    });
+}
+
+
 // gets the recover questions for a given account
 // nil is returned if there were no questions for this account
 - (NSArray *)getRecoveryQuestionsForUserName:(NSString *)username
@@ -774,6 +810,25 @@
             }
         });
     });
+}
+
+- (void)loginWithRecoveryToken:(NSString *)username
+                       answers:(NSString *)answers
+                 recoveryToken:(NSString *)recoveryToken
+                      delegate:(id)delegate
+                           otp:(NSString *)otp
+                      callback:(void (^)(ABCError *error, ABCAccount *account)) callback;
+{
+    if ([username isEqualToString:DummyRecoveryUser])
+    {
+        if ([recoveryToken isEqualToString:DummyRecoveryToken])
+        {
+            ABCError *error;
+            // XXX faky fake mode. just use a password
+            ABCAccount *account = [self loginWithPassword:username password:DummyRecoveryPassword delegate:delegate error:&error];
+            if (callback) callback(error, account);
+        }
+    }
 }
 
 - (void)recoveryLogin:(NSString *)username
