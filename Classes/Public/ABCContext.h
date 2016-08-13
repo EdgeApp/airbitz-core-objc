@@ -382,20 +382,9 @@ typedef enum eABCDeviceCaps
 /**
  * Gets a list of recovery questions to ask user. These are suggested questions from the Airbitz
  * servers, but app is free to choose its own to present the user.
- * @param completionHandler Completion handler code block which is called with the following args<br>
- * - *param* arrayCategoryString NSMutableString* array of string based questions<br>
- * - *param* arrayCategoryNumeric NSMutableString* array of numeric based questions<br>
- * - *param* arrayCategoryMust NSMutableString* array of questions which cannot be answered via 
- *  information from public records
- * @param errorHandler Error handler code block which is called with the following args<br>
- * - *param* NSError* error
  * @return void
  */
-+ (void)listRecoveryQuestionChoices: (void (^)(
-                                               NSMutableArray *arrayCategoryString,
-                                               NSMutableArray *arrayCategoryNumeric,
-                                               NSMutableArray *arrayCategoryMust)) completionHandler
-                              error:(void (^)(ABCError *error)) errorHandler;
++ (void)listRecoveryQuestionChoices: (void (^)(ABCError *error, NSArray *arrayQuestions)) callback;
 
 #pragma mark - OTP Management
 /// -----------------------------------------------------------------------------

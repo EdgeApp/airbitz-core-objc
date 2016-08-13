@@ -1127,11 +1127,7 @@
     });
 }
 
-+ (void)listRecoveryQuestionChoices: (void (^)(
-                                               NSMutableArray *arrayCategoryString,
-                                               NSMutableArray *arrayCategoryNumeric,
-                                               NSMutableArray *arrayCategoryMust)) completionHandler
-                              error:(void (^)(ABCError *error)) errorHandler;
++ (void)listRecoveryQuestionChoices: (void (^)(ABCError *error, NSArray *arrayQuestions)) callback;
 {
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
@@ -1141,29 +1137,20 @@
         ABC_GetQuestionChoices(&pQuestionChoices, &error);
 
         nserror = [ABCError makeNSError:error];
+        NSArray *array = nil;
+        NSMutableArray        *questions  = [[NSMutableArray alloc] init];
         
         if (!nserror)
         {
-            NSMutableArray        *arrayCategoryString  = [[NSMutableArray alloc] init];
-            NSMutableArray        *arrayCategoryNumeric = [[NSMutableArray alloc] init];
-            NSMutableArray        *arrayCategoryMust    = [[NSMutableArray alloc] init];
-
             [self categorizeQuestionChoices:pQuestionChoices
-                             categoryString:&arrayCategoryString
-                            categoryNumeric:&arrayCategoryNumeric
-                               categoryMust:&arrayCategoryMust];
-
-
-            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                completionHandler(arrayCategoryString, arrayCategoryNumeric, arrayCategoryMust);
-            });
+                             arrayQuestions:questions];
+            
+            array = [questions copy];
         }
-        else
-        {
-            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                errorHandler(nserror);
-            });
-        }
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            callback(nserror, array);
+        });
+        
         ABC_FreeQuestionChoices(pQuestionChoices);
     });
 }
@@ -1232,9 +1219,7 @@ void abcDebugLog(int level, NSString *statement)
 }
 
 + (void)categorizeQuestionChoices:(tABC_QuestionChoices *)pChoices
-                   categoryString:(NSMutableArray **)arrayCategoryString
-                  categoryNumeric:(NSMutableArray **)arrayCategoryNumeric
-                     categoryMust:(NSMutableArray **)arrayCategoryMust
+                   arrayQuestions:(NSMutableArray *)arrayQuestions
 {
     //splits wad of questions into three categories:  string, numeric and must
     if (pChoices)
@@ -1252,17 +1237,9 @@ void abcDebugLog(int level, NSString *statement)
                 //printf("question: %s, category: %s, min: %d\n", pChoice->szQuestion, pChoice->szCategory, pChoice->minAnswerLength);
 
                 NSString *category = [NSString stringWithFormat:@"%s", pChoice->szCategory];
-                if([category isEqualToString:@"string"])
+                if([category isEqualToString:@"recovery2"])
                 {
-                    [*arrayCategoryString addObject:dict];
-                }
-                else if([category isEqualToString:@"numeric"])
-                {
-                    [*arrayCategoryNumeric addObject:dict];
-                }
-                else if([category isEqualToString:@"must"])
-                {
-                    [*arrayCategoryMust addObject:dict];
+                    [arrayQuestions addObject:dict];
                 }
             }
         }
