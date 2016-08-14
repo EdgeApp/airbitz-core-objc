@@ -627,7 +627,6 @@
     ABCAccount *account = nil;
 
     tABC_Error error;
-    BOOL bNewDeviceLogin = NO;
     
     char *szResetToken = NULL;
     char *szResetDate = NULL;
@@ -639,9 +638,6 @@
     }
     else
     {
-        if (![self accountExistsLocal:username])
-            bNewDeviceLogin = YES;
-        
         if (otp)
         {
             lnserror = [self setupOTPKey:username key:otp];
@@ -671,7 +667,6 @@
             if (!lnserror)
             {
                 account = [[ABCAccount alloc] initWithCore:self];
-                account.bNewDeviceLogin = bNewDeviceLogin;
                 account.delegate = delegate;
                 [self.loggedInUsers addObject:account];
                 account.name = username;
@@ -790,7 +785,6 @@
         NSDate *resetDate;
         NSString *resetToken;
         ABCAccount *account = nil;
-        BOOL bNewDeviceLogin = NO;
         char *szResetToken = NULL;
         char *szResetDate = NULL;
         
@@ -801,16 +795,10 @@
         }
         else
         {
-            if (![self accountExistsLocal:username])
-                bNewDeviceLogin = YES;
-            
             if (otp)
             {
                 nserror = [self setupOTPKey:username key:otp];
             }
-            
-            if (![self accountExistsLocal:username])
-                bNewDeviceLogin = YES;
             
             // This actually logs in the user
             ABC_RecoveryLogin([username UTF8String], [answers UTF8String], &szResetToken, &szResetDate, &error);
@@ -820,7 +808,6 @@
             if (!nserror)
             {
                 account = [[ABCAccount alloc] initWithCore:self];
-                account.bNewDeviceLogin = bNewDeviceLogin;
                 account.delegate = delegate;
                 [self.loggedInUsers addObject:account];
                 account.name = username;

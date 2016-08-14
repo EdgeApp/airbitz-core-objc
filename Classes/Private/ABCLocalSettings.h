@@ -15,6 +15,7 @@
 @property (retain)   NSString        *lastLoggedInAccount;
 @property (retain)   NSMutableArray  *touchIDUsersEnabled;
 @property (retain)   NSMutableArray  *touchIDUsersDisabled;
+@property (retain)   NSMutableArray  *usersInitialLoginComplete;
 
 - (id)init:(ABCContext *)abc;
 - (void)loadAll;

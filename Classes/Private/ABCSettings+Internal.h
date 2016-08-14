@@ -12,6 +12,7 @@
 
 @property (nonatomic, copy)     NSString                *strPIN;
 @property (nonatomic)           bool                    bDisablePINLogin;
+@property (nonatomic, strong)   ABCLocalSettings        *local;
 
 
 - (id)init:(ABCAccount *)user localSettings:(id)local keyChain:(id)keyChain;
