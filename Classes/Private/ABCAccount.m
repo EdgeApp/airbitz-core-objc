@@ -1279,11 +1279,15 @@ static NSNumberFormatter        *numberFormatter = nil;
         return;
     }
 
-    NSArray *arrayWallets;
     
     // Sync Wallets First
-    arrayWallets = [NSArray arrayWithArray:self.arrayWallets];
+    NSArray *arrayWallets = [NSArray arrayWithArray:self.arrayWallets];
+    NSArray *arrayArchivedWallets = [NSArray arrayWithArray:self.arrayArchivedWallets];
     for (ABCWallet *wallet in arrayWallets)
+    {
+        [self requestWalletDataSync:wallet];
+    }
+    for (ABCWallet *wallet in arrayArchivedWallets)
     {
         [self requestWalletDataSync:wallet];
     }
