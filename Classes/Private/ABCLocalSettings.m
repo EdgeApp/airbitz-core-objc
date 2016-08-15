@@ -5,10 +5,9 @@
 
 #import "ABCContext+Internal.h"
 
-#define KEY_LOCAL_SETTINGS_TOUCHID_USERS_ENABLED        @"touchIDUsersEnabled"
-#define KEY_LOCAL_SETTINGS_TOUCHID_USERS_DISABLED       @"touchIDUsersDisabled"
-#define KEY_LOCAL_SETTINGS_CACHED_USERNAME              @"cachedUsername"
-#define KEY_LOCAL_SETTINGS_NEW_DEVICE_LOGIN_COMPLETE    @"usersInitialLoginComplete"
+#define KEY_LOCAL_SETTINGS_TOUCHID_USERS_ENABLED    @"touchIDUsersEnabled"
+#define KEY_LOCAL_SETTINGS_TOUCHID_USERS_DISABLED   @"touchIDUsersDisabled"
+#define KEY_LOCAL_SETTINGS_CACHED_USERNAME          @"cachedUsername"
 
 static BOOL bInitialized = NO;
 
@@ -36,7 +35,6 @@ __strong static ABCLocalSettings *singleton = nil; // this will be the one and o
         {
             self.touchIDUsersDisabled = nil;
             self.touchIDUsersEnabled  = nil;
-            self.usersInitialLoginComplete = nil;
             self.abc = abc;
             
             // load the settings
@@ -66,13 +64,6 @@ __strong static ABCLocalSettings *singleton = nil; // this will be the one and o
     
     self.lastLoggedInAccount = [defaults stringForKey:KEY_LOCAL_SETTINGS_CACHED_USERNAME];
 
-    NSDate *usersInitialLoginCompleteData = [defaults objectForKey:KEY_LOCAL_SETTINGS_NEW_DEVICE_LOGIN_COMPLETE];
-    if (usersInitialLoginCompleteData) {
-        self.usersInitialLoginComplete = [NSKeyedUnarchiver unarchiveObjectWithData:usersInitialLoginCompleteData];
-    } else {
-        self.usersInitialLoginComplete = [[NSMutableArray alloc] init];
-    }
-
     NSData *touchIDUsersEnabledData = [defaults objectForKey:KEY_LOCAL_SETTINGS_TOUCHID_USERS_ENABLED];
     if (touchIDUsersEnabledData) {
         self.touchIDUsersEnabled = [NSKeyedUnarchiver unarchiveObjectWithData:touchIDUsersEnabledData];
@@ -94,9 +85,6 @@ __strong static ABCLocalSettings *singleton = nil; // this will be the one and o
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
     [defaults setValue:self.lastLoggedInAccount forKey:KEY_LOCAL_SETTINGS_CACHED_USERNAME];
-
-    NSData *usersInitialLoginCompleteData = [NSKeyedArchiver archivedDataWithRootObject:self.usersInitialLoginComplete];
-    [defaults setObject:usersInitialLoginCompleteData forKey:KEY_LOCAL_SETTINGS_NEW_DEVICE_LOGIN_COMPLETE];
 
     NSData *touchIDUsersEnabledData = [NSKeyedArchiver archivedDataWithRootObject:self.touchIDUsersEnabled];
     [defaults setObject:touchIDUsersEnabledData forKey:KEY_LOCAL_SETTINGS_TOUCHID_USERS_ENABLED];

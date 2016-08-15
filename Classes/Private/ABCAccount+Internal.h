@@ -9,6 +9,7 @@
 @interface ABCAccount (Internal)
 
 @property (atomic, strong)   ABCContext *abc;
+@property                       BOOL                bNewDeviceLogin;
 @property (atomic, copy)     NSString                *password;
 
 - (void)login;

@@ -15,6 +15,7 @@ static NSNumberFormatter        *numberFormatter = nil;
     long long                                       logoutTimeStamp;
     
     BOOL                                            bInitialized;
+    BOOL                                            bHasSentWalletsLoaded;
     long                                            iLoginTimeSeconds;
     NSOperationQueue                                *dataQueue;
     NSOperationQueue                                *walletsQueue;
@@ -32,6 +33,7 @@ static NSNumberFormatter        *numberFormatter = nil;
 
 @property (atomic, strong)      ABCContext *abc;
 @property (nonatomic, strong)   NSTimer             *walletLoadingTimer;
+@property                       BOOL                bNewDeviceLogin;
 @property (atomic, copy)        NSString            *password;
 @property                       NSMutableArray      *walletUUIDsLoaded;
 
@@ -70,6 +72,7 @@ static NSNumberFormatter        *numberFormatter = nil;
         _walletUUIDsLoaded = [[NSMutableArray alloc] init];
         
         bInitialized = YES;
+        bHasSentWalletsLoaded = NO;
         
         [self cleanWallets];
         
@@ -495,8 +498,7 @@ static NSNumberFormatter        *numberFormatter = nil;
 
 - (void)checkWalletsLoadingNotification
 {
-    BOOL initialLogin = ([self.settings.local.usersInitialLoginComplete indexOfObject:self.name] == NSNotFound);
-    if (!initialLogin)
+    if (!self.bNewDeviceLogin)
     {
         ABCLog(1, @"************ numWalletsLoaded=%d", self.numWalletsLoaded);
         if (self.arrayWallets && self.numWalletsLoaded > 0)
@@ -517,34 +519,10 @@ static NSNumberFormatter        *numberFormatter = nil;
 
 - (void)postWalletsLoadedNotification:(ABCWallet *)wallet
 {
-    
-    if (!wallet.bAddressesLoaded) {
+    if (self.delegate && !wallet.bAddressesLoaded) {
         wallet.bAddressesLoaded = YES;
-        
-        if (self.delegate) {
-            if ([self.delegate respondsToSelector:@selector(abcAccountWalletLoaded:)]) {
-                [self.delegate abcAccountWalletLoaded:wallet];
-            }
-        }
-    }
-    // Check if all wallets have been marked loaded. If so, set usersInitialLoginComplete
-    int numLoaded = 0;
-    for (ABCWallet *w in self.arrayWallets)
-    {
-        if (w.bAddressesLoaded)
-            numLoaded++;
-    }
-    for (ABCWallet *w in self.arrayArchivedWallets)
-    {
-        if (w.bAddressesLoaded)
-            numLoaded++;
-    }
-    if (numLoaded == ([self.arrayArchivedWallets count] + [self.arrayWallets count]))
-    {
-        if ([self.settings.local.usersInitialLoginComplete indexOfObject:self.name] == NSNotFound)
-        {
-            [self.settings.local.usersInitialLoginComplete addObject:self.name];
-            [self.settings.local saveAll];
+        if ([self.delegate respondsToSelector:@selector(abcAccountWalletLoaded:)]) {
+            [self.delegate abcAccountWalletLoaded:wallet];
         }
     }
 }
@@ -1058,23 +1036,7 @@ static NSNumberFormatter        *numberFormatter = nil;
         NSArray *arrayIDs = [self listWalletIDs];
         for (NSString *uuid in arrayIDs)
         {
-            BOOL archived = NO;
-            BOOL initialLogin = ([self.settings.local.usersInitialLoginComplete indexOfObject:self.name] == NSNotFound);
-            
-            // Do not start watchers for archived wallets after the first login on this device.
-            if (!initialLogin)
-            {
-                for (ABCWallet *w in self.arrayArchivedWallets)
-                {
-                    if ([w.uuid isEqualToString:uuid])
-                    {
-                        archived = YES;
-                        break;
-                    }
-                }
-            }
-            if (!archived)
-                [self connectWatcher:uuid];
+            [self connectWatcher:uuid];
         }
     }
 }
@@ -1326,16 +1288,6 @@ static NSNumberFormatter        *numberFormatter = nil;
         [self requestWalletDataSync:wallet];
     }
     
-    BOOL initialLogin = ([self.settings.local.usersInitialLoginComplete indexOfObject:self.name] == NSNotFound);
-    if (initialLogin)
-    {
-        arrayWallets = [NSArray arrayWithArray:self.arrayArchivedWallets];
-        for (ABCWallet *wallet in arrayWallets)
-        {
-            [self requestWalletDataSync:wallet];
-        }
-    }
-
     // Sync Account second
     [self dataSyncAccount];
     
@@ -1549,8 +1501,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     }
     
     if (ABC_AsyncEventType_IncomingBitCoin == pInfo->eventType) {
-        BOOL initialLogin = ([user.settings.local.usersInitialLoginComplete indexOfObject:user.name] == NSNotFound);
-        BOOL doRefresh = !initialLogin;
+        BOOL doRefresh = !user.bNewDeviceLogin;
         if ([user.walletUUIDsLoaded containsObject:walletUUID])
             doRefresh = YES;
         
@@ -1593,8 +1544,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
             [user postNotificationWalletsChanged];
         }];
     } else if (ABC_AsyncEventType_BalanceUpdate == pInfo->eventType) {
-        BOOL initialLogin = ([user.settings.local.usersInitialLoginComplete indexOfObject:user.name] == NSNotFound);
-        BOOL doRefresh = !initialLogin;
+        BOOL doRefresh = !user.bNewDeviceLogin;
         if ([user.walletUUIDsLoaded containsObject:walletUUID])
             doRefresh = YES;
 
@@ -1631,8 +1581,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
             ABCWallet *wallet = nil;
             if (walletUUID)
                 wallet = [user getWallet:walletUUID];
-            if (wallet)
-                [user postWalletsLoadedNotification:wallet];
+            [user postWalletsLoadedNotification:wallet];
         }];
         
     }
