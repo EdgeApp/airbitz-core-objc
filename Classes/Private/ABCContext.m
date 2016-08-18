@@ -150,6 +150,74 @@
     return [NSDate dateWithTimeIntervalSince1970: intDate];
 }
 
+- (NSArray *)getRecovery2Questions:(NSString *)username
+                     recoveryToken:(NSString *)recoveryToken
+                             error:(ABCError **)error;
+{
+    ABCError *abcError = nil;
+    tABC_Error tError;
+    
+    char            **aszQuestions = NULL;
+    unsigned int    numQuestions = 0;
+    NSMutableArray *mutableArrayQuestions = [[NSMutableArray alloc] init];
+    
+    ABC_Recovery2Questions([username UTF8String],
+                           [recoveryToken UTF8String],
+                           &aszQuestions,
+                           &numQuestions,
+                           &tError);
+    abcError = [ABCError makeNSError:tError];
+
+    if (!abcError)
+    {
+        // store them in our own array
+        
+        if (aszQuestions && numQuestions > 0)
+        {
+            for (int i = 0; i < numQuestions; i++)
+            {
+                [mutableArrayQuestions addObject:[NSString stringWithUTF8String:aszQuestions[i]]];
+            }
+        }
+        
+    }
+    
+    // free the core categories
+    if (aszQuestions != NULL)
+    {
+        [ABCUtil freeStringArray:aszQuestions count:numQuestions];
+    }
+    
+    if (error)
+        *error = abcError;
+    
+    return [mutableArrayQuestions copy];
+}
+
+- (void)getRecovery2Questions:(NSString *)username
+                recoveryToken:(NSString *)recoveryToken
+                     callback:(void (^)(ABCError *, NSArray *questions))callback
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+        ABCError *error;
+        NSArray *array = [self getRecovery2Questions:username
+                                       recoveryToken:recoveryToken
+                                               error:&error];
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            if (callback) callback(error, array);
+        });
+    });
+}
+
+- (NSString *)getLocalRecoveryToken:(NSString *)username error:(ABCError **)error;
+{
+    NSString *key = [self.keyChain createKeyWithUsername:username key:RECOVERY2_KEY];
+    NSString *recoveryToken = [self.keyChain getKeychainString:key
+                                                         error:error];
+    return recoveryToken;
+}
+
+
 // gets the recover questions for a given account
 // nil is returned if there were no questions for this account
 - (NSArray *)getRecoveryQuestionsForUserName:(NSString *)username
@@ -776,6 +844,129 @@
     });
 }
 
+
+- (void)loginWithRecovery2:(NSString *)username
+                   answers:(NSArray *)answers
+             recoveryToken:(NSString *)recoveryToken
+                  delegate:(id)delegate
+                       otp:(NSString *)otp
+                  callback:(void (^)(ABCError *error, ABCAccount *account)) callback;
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
+        ABCError *error;
+        ABCAccount *account = [self loginWithRecovery2:username
+                                               answers:answers
+                                         recoveryToken:recoveryToken
+                                              delegate:delegate
+                                                   otp:otp
+                                                 error:&error];
+        
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            if (callback)
+                callback(error, account);
+        });
+        
+    });
+}
+
+
+
+- (ABCAccount *)loginWithRecovery2:(NSString *)username
+                           answers:(NSArray *)answers
+                     recoveryToken:(NSString *)recoveryToken
+                          delegate:(id)delegate
+                               otp:(NSString *)otp
+                             error:(ABCError **)pABCrror;
+{
+    tABC_Error error;
+    ABCError *abcError = nil;
+    ABCAccount *account = nil;
+    BOOL bNewDeviceLogin = NO;
+    char *szResetToken = NULL;
+    char *szResetDate = NULL;
+    char **ppszAnswers = NULL;
+    
+    if (!username || !answers)
+    {
+        error.code = (tABC_CC) ABCConditionCodeNULLPtr;
+        abcError = [ABCError makeNSError:error];
+    }
+    else
+    {
+        if (![self accountExistsLocal:username])
+            bNewDeviceLogin = YES;
+        
+        if (otp)
+        {
+            abcError = [self setupOTPKey:username key:otp];
+        }
+        
+        if (![self accountExistsLocal:username])
+            bNewDeviceLogin = YES;
+        
+        
+        // Copy NSArray to char **
+        
+        int numberOfA = [answers count];
+        
+        ppszAnswers = malloc(numberOfA * sizeof(char *));
+        for (int i = 0; i < numberOfA; i++)
+        {
+            NSString *a = (NSString *)answers[i];
+            int length = [a length];
+            ppszAnswers[i] = [answers[i] UTF8String];
+        }
+        
+        // This actually logs in the user
+        ABC_Recovery2Login([username UTF8String],
+                           [recoveryToken UTF8String],
+                           ppszAnswers,
+                           numberOfA,
+                           &szResetToken, &szResetDate, &error);
+        
+        abcError = [ABCError makeNSError:error];
+        
+        if (!abcError)
+        {
+            account = [[ABCAccount alloc] initWithCore:self];
+            account.bNewDeviceLogin = bNewDeviceLogin;
+            account.delegate = delegate;
+            [self.loggedInUsers addObject:account];
+            account.name = username;
+            account.password = nil;
+            [account login];
+            [account setupLoginPIN];
+        }
+        else if (abcError.code == ABCConditionCodeInvalidOTP)
+        {
+            if (szResetToken)
+            {
+                abcError.otpResetToken = [NSString stringWithUTF8String:szResetToken];
+            }
+            if (szResetDate)
+            {
+                NSString *dateStr = [NSString stringWithUTF8String:szResetDate];
+                
+                NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
+                
+                NSDate *dateTemp = [dateFormatter dateFromString:dateStr];
+                abcError.otpResetDate = dateTemp;
+            }
+        }
+    }
+    
+    if (szResetDate) free(szResetDate);
+    if (szResetToken) free(szResetToken);
+    if (ppszAnswers) free(ppszAnswers);
+    
+    if (pABCrror)
+        *pABCrror = abcError;
+    
+    return account;
+}
+
+
 - (void)recoveryLogin:(NSString *)username
                           answers:(NSString *)answers
                          delegate:(id)delegate
@@ -1070,11 +1261,7 @@
     });
 }
 
-+ (void)listRecoveryQuestionChoices: (void (^)(
-                                               NSMutableArray *arrayCategoryString,
-                                               NSMutableArray *arrayCategoryNumeric,
-                                               NSMutableArray *arrayCategoryMust)) completionHandler
-                              error:(void (^)(ABCError *error)) errorHandler;
++ (void)listRecoveryQuestionChoices: (void (^)(ABCError *error, NSArray *arrayQuestions)) callback;
 {
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
@@ -1084,29 +1271,20 @@
         ABC_GetQuestionChoices(&pQuestionChoices, &error);
 
         nserror = [ABCError makeNSError:error];
+        NSArray *array = nil;
+        NSMutableArray        *questions  = [[NSMutableArray alloc] init];
         
         if (!nserror)
         {
-            NSMutableArray        *arrayCategoryString  = [[NSMutableArray alloc] init];
-            NSMutableArray        *arrayCategoryNumeric = [[NSMutableArray alloc] init];
-            NSMutableArray        *arrayCategoryMust    = [[NSMutableArray alloc] init];
-
             [self categorizeQuestionChoices:pQuestionChoices
-                             categoryString:&arrayCategoryString
-                            categoryNumeric:&arrayCategoryNumeric
-                               categoryMust:&arrayCategoryMust];
-
-
-            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                completionHandler(arrayCategoryString, arrayCategoryNumeric, arrayCategoryMust);
-            });
+                             arrayQuestions:questions];
+            
+            array = [questions copy];
         }
-        else
-        {
-            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                errorHandler(nserror);
-            });
-        }
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            callback(nserror, array);
+        });
+        
         ABC_FreeQuestionChoices(pQuestionChoices);
     });
 }
@@ -1175,9 +1353,7 @@ void abcDebugLog(int level, NSString *statement)
 }
 
 + (void)categorizeQuestionChoices:(tABC_QuestionChoices *)pChoices
-                   categoryString:(NSMutableArray **)arrayCategoryString
-                  categoryNumeric:(NSMutableArray **)arrayCategoryNumeric
-                     categoryMust:(NSMutableArray **)arrayCategoryMust
+                   arrayQuestions:(NSMutableArray *)arrayQuestions
 {
     //splits wad of questions into three categories:  string, numeric and must
     if (pChoices)
@@ -1195,17 +1371,9 @@ void abcDebugLog(int level, NSString *statement)
                 //printf("question: %s, category: %s, min: %d\n", pChoice->szQuestion, pChoice->szCategory, pChoice->minAnswerLength);
 
                 NSString *category = [NSString stringWithFormat:@"%s", pChoice->szCategory];
-                if([category isEqualToString:@"string"])
+                if([category isEqualToString:@"recovery2"])
                 {
-                    [*arrayCategoryString addObject:dict];
-                }
-                else if([category isEqualToString:@"numeric"])
-                {
-                    [*arrayCategoryNumeric addObject:dict];
-                }
-                else if([category isEqualToString:@"must"])
-                {
-                    [*arrayCategoryMust addObject:dict];
+                    [arrayQuestions addObject:dict];
                 }
             }
         }

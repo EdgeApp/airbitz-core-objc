@@ -236,6 +236,24 @@ typedef enum eABCDeviceCaps
                          complete:(void (^)(ABCAccount *account)) completionHandler
                             error:(void (^)(ABCError *, NSDate *resetDate, NSString *resetToken)) errorHandler;
 
+- (void)loginWithRecovery2:(NSString *)username
+                   answers:(NSArray *)answers
+             recoveryToken:(NSString *)recoveryToken
+                  delegate:(id)delegate
+                       otp:(NSString *)otp
+                  callback:(void (^)(ABCError *error, ABCAccount *account)) callback;
+
+- (ABCAccount *)loginWithRecovery2:(NSString *)username
+                           answers:(NSArray *)answers
+                     recoveryToken:(NSString *)recoveryToken
+                          delegate:(id)delegate
+                               otp:(NSString *)otp
+                             error:(ABCError **)error;
+
+/**
+ *
+ */
+
 /**
  * Get ABCAccount object for username if logged in.
  * @param username NSString*
@@ -359,23 +377,18 @@ typedef enum eABCDeviceCaps
  */
 - (NSArray *)getRecoveryQuestionsForUserName:(NSString *)username
                                        error:(ABCError **)error;
+
+- (NSArray *)getRecovery2Questions:(NSString *)username
+                                     recoveryToken:(NSString *)recoveryToken
+                                             error:(ABCError **)error;
+- (NSString *)getLocalRecoveryToken:(NSString *)username error:(ABCError **)error;
+
 /**
  * Gets a list of recovery questions to ask user. These are suggested questions from the Airbitz
  * servers, but app is free to choose its own to present the user.
- * @param completionHandler Completion handler code block which is called with the following args<br>
- * - *param* arrayCategoryString NSMutableString* array of string based questions<br>
- * - *param* arrayCategoryNumeric NSMutableString* array of numeric based questions<br>
- * - *param* arrayCategoryMust NSMutableString* array of questions which cannot be answered via 
- *  information from public records
- * @param errorHandler Error handler code block which is called with the following args<br>
- * - *param* NSError* error
  * @return void
  */
-+ (void)listRecoveryQuestionChoices: (void (^)(
-                                               NSMutableArray *arrayCategoryString,
-                                               NSMutableArray *arrayCategoryNumeric,
-                                               NSMutableArray *arrayCategoryMust)) completionHandler
-                              error:(void (^)(ABCError *error)) errorHandler;
++ (void)listRecoveryQuestionChoices: (void (^)(ABCError *error, NSArray *arrayQuestions)) callback;
 
 #pragma mark - OTP Management
 /// -----------------------------------------------------------------------------

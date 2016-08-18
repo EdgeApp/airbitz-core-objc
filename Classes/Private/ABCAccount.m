@@ -1866,6 +1866,92 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return nCount;
 }
 
+- (NSString *)setupRecovery2Questions:(NSArray *)questions
+                              answers:(NSArray *)answers
+                                error:(ABCError **)error
+{
+    NSString *token = nil;
+    
+    char            **ppszQuestions = NULL;
+    char            **ppszAnswers = NULL;
+    
+    int numberOfQ = [questions count];
+    int numberOfA = [answers count];
+    
+    ppszQuestions = malloc(numberOfQ * sizeof(char *));
+    for (int i = 0; i < numberOfQ; i++)
+    {
+        NSString *q = (NSString *)questions[i];
+        int length = [q length];
+        ppszQuestions[i] = [questions[i] UTF8String];
+    }
+    
+    ppszAnswers = malloc(numberOfA * sizeof(char *));
+    for (int i = 0; i < numberOfA; i++)
+    {
+        NSString *a = (NSString *)answers[i];
+        int length = [a length];
+        ppszAnswers[i] = [answers[i] UTF8String];
+    }
+    
+    tABC_Error tABCerror;
+    char *pszKey = NULL;
+
+    ABC_Recovery2Setup([self.name UTF8String],
+                       [self.password UTF8String],
+                       ppszQuestions,
+                       numberOfQ,
+                       ppszAnswers,
+                       numberOfA,
+                       &pszKey,
+                       &tABCerror);
+    
+    if (ppszAnswers)
+        free(ppszAnswers);
+    if (ppszQuestions)
+        free(ppszQuestions);
+    
+    
+    ABCError *abcError = [ABCError makeNSError:tABCerror];
+
+    if (error)
+        *error = abcError;
+
+    if (!abcError)
+    {
+        if (pszKey)
+        {
+            token = [NSString stringWithUTF8String:pszKey];
+            // Save the token in the iOS Keychain
+            [self.abc.keyChain setKeychainString:token
+                                             key:[self.abc.keyChain createKeyWithUsername:self.name key:RECOVERY2_KEY]
+                                   authenticated:YES];
+        }
+    }
+    
+    if (pszKey)
+        free(pszKey);
+
+    return token;
+}
+
+- (void)setupRecovery2Questions:(NSArray *)questions
+                        answers:(NSArray *)answers
+                       callback:(void (^)(ABCError *error, NSString *recoveryToken)) callback;
+{
+    [self postToMiscQueue:^{
+        ABCError *error = nil;
+        NSString *recoveryToken = [self setupRecovery2Questions:questions
+                                                        answers:answers
+                                                          error:&error];
+        
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            if (callback) callback(error, recoveryToken);
+        });
+    }];
+}
+
+
 - (ABCError *)setupRecoveryQuestions:(NSString *)questions
                             answers:(NSString *)answers;
 {
