@@ -150,41 +150,71 @@
     return [NSDate dateWithTimeIntervalSince1970: intDate];
 }
 
-- (NSArray *)getRecoveryQuestionsWithRecoveryToken:(NSString *)username
-                                     recoveryToken:(NSString *)recoveryToken
-                                             error:(ABCError **)error;
+- (NSArray *)getRecovery2Questions:(NSString *)username
+                     recoveryToken:(NSString *)recoveryToken
+                             error:(ABCError **)error;
 {
-    //XXX Stub
-    if ([username isEqualToString:DummyRecoveryUser])
+    ABCError *abcError = nil;
+    tABC_Error tError;
+    
+    char            **aszQuestions = NULL;
+    unsigned int    numQuestions = 0;
+    NSMutableArray *mutableArrayQuestions = [[NSMutableArray alloc] init];
+    
+    ABC_Recovery2Questions([username UTF8String],
+                           [recoveryToken UTF8String],
+                           &aszQuestions,
+                           &numQuestions,
+                           &tError);
+    abcError = [ABCError makeNSError:tError];
+
+    if (!abcError)
     {
-        if ([recoveryToken isEqualToString:DummyRecoveryToken])
+        // store them in our own array
+        
+        if (aszQuestions && numQuestions > 0)
         {
-            return @[@"How old are you now?", @"Who's your daddy?"];
+            for (int i = 0; i < numQuestions; i++)
+            {
+                [mutableArrayQuestions addObject:[NSString stringWithUTF8String:aszQuestions[i]]];
+            }
         }
+        
     }
-    return nil;
+    
+    // free the core categories
+    if (aszQuestions != NULL)
+    {
+        [ABCUtil freeStringArray:aszQuestions count:numQuestions];
+    }
+    
+    if (error)
+        *error = abcError;
+    
+    return [mutableArrayQuestions copy];
 }
 
-- (NSString *)getLocalRecoveryToken:(NSString *)username error:(ABCError **)error;
-{
-    NSString *recoveryToken = [self.keyChain getKeychainString:[self.keyChain createKeyWithUsername:username key:RECOVERY2_KEY]
-                                                         error:error];
-    return recoveryToken;
-}
-
-- (void)getRecoveryQuestionsWithRecoveryToken:(NSString *)username
-                                recoveryToken:(NSString *)recoveryToken
-                                     callback:(void (^)(ABCError *, NSArray *questions))callback
+- (void)getRecovery2Questions:(NSString *)username
+                recoveryToken:(NSString *)recoveryToken
+                     callback:(void (^)(ABCError *, NSArray *questions))callback
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
         ABCError *error;
-        NSArray *array = [self getRecoveryQuestionsWithRecoveryToken:username
-                                                       recoveryToken:recoveryToken
-                                                               error:&error];
+        NSArray *array = [self getRecovery2Questions:username
+                                       recoveryToken:recoveryToken
+                                               error:&error];
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             if (callback) callback(error, array);
         });
     });
+}
+
+- (NSString *)getLocalRecoveryToken:(NSString *)username error:(ABCError **)error;
+{
+    NSString *key = [self.keyChain createKeyWithUsername:username key:RECOVERY2_KEY];
+    NSString *recoveryToken = [self.keyChain getKeychainString:key
+                                                         error:error];
+    return recoveryToken;
 }
 
 
@@ -814,24 +844,128 @@
     });
 }
 
-- (void)loginWithRecoveryToken:(NSString *)username
-                       answers:(NSString *)answers
-                 recoveryToken:(NSString *)recoveryToken
-                      delegate:(id)delegate
-                           otp:(NSString *)otp
-                      callback:(void (^)(ABCError *error, ABCAccount *account)) callback;
+
+- (void)loginWithRecovery2:(NSString *)username
+                   answers:(NSArray *)answers
+             recoveryToken:(NSString *)recoveryToken
+                  delegate:(id)delegate
+                       otp:(NSString *)otp
+                  callback:(void (^)(ABCError *error, ABCAccount *account)) callback;
 {
-    if ([username isEqualToString:DummyRecoveryUser])
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^ {
+        ABCError *error;
+        ABCAccount *account = [self loginWithRecovery2:username
+                                               answers:answers
+                                         recoveryToken:recoveryToken
+                                              delegate:delegate
+                                                   otp:otp
+                                                 error:&error];
+        
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            if (callback)
+                callback(error, account);
+        });
+        
+    });
+}
+
+
+
+- (ABCAccount *)loginWithRecovery2:(NSString *)username
+                           answers:(NSArray *)answers
+                     recoveryToken:(NSString *)recoveryToken
+                          delegate:(id)delegate
+                               otp:(NSString *)otp
+                             error:(ABCError **)pABCrror;
+{
+    tABC_Error error;
+    ABCError *abcError = nil;
+    ABCAccount *account = nil;
+    BOOL bNewDeviceLogin = NO;
+    char *szResetToken = NULL;
+    char *szResetDate = NULL;
+    char **ppszAnswers = NULL;
+    
+    if (!username || !answers)
     {
-        if ([recoveryToken isEqualToString:DummyRecoveryToken])
+        error.code = (tABC_CC) ABCConditionCodeNULLPtr;
+        abcError = [ABCError makeNSError:error];
+    }
+    else
+    {
+        if (![self accountExistsLocal:username])
+            bNewDeviceLogin = YES;
+        
+        if (otp)
         {
-            ABCError *error;
-            // XXX faky fake mode. just use a password
-            ABCAccount *account = [self loginWithPassword:username password:DummyRecoveryPassword delegate:delegate error:&error];
-            if (callback) callback(error, account);
+            abcError = [self setupOTPKey:username key:otp];
+        }
+        
+        if (![self accountExistsLocal:username])
+            bNewDeviceLogin = YES;
+        
+        
+        // Copy NSArray to char **
+        
+        int numberOfA = [answers count];
+        
+        ppszAnswers = malloc(numberOfA * sizeof(char *));
+        for (int i = 0; i < numberOfA; i++)
+        {
+            NSString *a = (NSString *)answers[i];
+            int length = [a length];
+            ppszAnswers[i] = [answers[i] UTF8String];
+        }
+        
+        // This actually logs in the user
+        ABC_Recovery2Login([username UTF8String],
+                           [recoveryToken UTF8String],
+                           ppszAnswers,
+                           numberOfA,
+                           &szResetToken, &szResetDate, &error);
+        
+        abcError = [ABCError makeNSError:error];
+        
+        if (!abcError)
+        {
+            account = [[ABCAccount alloc] initWithCore:self];
+            account.bNewDeviceLogin = bNewDeviceLogin;
+            account.delegate = delegate;
+            [self.loggedInUsers addObject:account];
+            account.name = username;
+            account.password = nil;
+            [account login];
+            [account setupLoginPIN];
+        }
+        else if (abcError.code == ABCConditionCodeInvalidOTP)
+        {
+            if (szResetToken)
+            {
+                abcError.otpResetToken = [NSString stringWithUTF8String:szResetToken];
+            }
+            if (szResetDate)
+            {
+                NSString *dateStr = [NSString stringWithUTF8String:szResetDate];
+                
+                NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+                [dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
+                
+                NSDate *dateTemp = [dateFormatter dateFromString:dateStr];
+                abcError.otpResetDate = dateTemp;
+            }
         }
     }
+    
+    if (szResetDate) free(szResetDate);
+    if (szResetToken) free(szResetToken);
+    if (ppszAnswers) free(ppszAnswers);
+    
+    if (pABCrror)
+        *pABCrror = abcError;
+    
+    return account;
 }
+
 
 - (void)recoveryLogin:(NSString *)username
                           answers:(NSString *)answers

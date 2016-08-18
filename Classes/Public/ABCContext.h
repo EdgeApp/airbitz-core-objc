@@ -42,9 +42,6 @@
 ((abcDebugLog(level, [NSString stringWithFormat:format_string,##__VA_ARGS__])))
 
 #define ABCErrorDomain @"ABCErrorDomain"
-#define DummyRecoveryToken @"iamarecoverytokenreallyiam1234"
-#define DummyRecoveryUser @"recoverytest2"
-#define DummyRecoveryPassword @"Recovery12"
 
 void abcDebugLog(int level, NSString *string);
 void abcSetDebugLevel(int level);
@@ -239,12 +236,19 @@ typedef enum eABCDeviceCaps
                          complete:(void (^)(ABCAccount *account)) completionHandler
                             error:(void (^)(ABCError *, NSDate *resetDate, NSString *resetToken)) errorHandler;
 
-- (void)loginWithRecoveryToken:(NSString *)username
-                       answers:(NSString *)answers
-                 recoveryToken:(NSString *)recoveryToken
-                      delegate:(id)delegate
-                           otp:(NSString *)otp
-                      callback:(void (^)(ABCError *error, ABCAccount *account)) callback;
+- (void)loginWithRecovery2:(NSString *)username
+                   answers:(NSArray *)answers
+             recoveryToken:(NSString *)recoveryToken
+                  delegate:(id)delegate
+                       otp:(NSString *)otp
+                  callback:(void (^)(ABCError *error, ABCAccount *account)) callback;
+
+- (ABCAccount *)loginWithRecovery2:(NSString *)username
+                           answers:(NSArray *)answers
+                     recoveryToken:(NSString *)recoveryToken
+                          delegate:(id)delegate
+                               otp:(NSString *)otp
+                             error:(ABCError **)error;
 
 /**
  *
@@ -374,7 +378,7 @@ typedef enum eABCDeviceCaps
 - (NSArray *)getRecoveryQuestionsForUserName:(NSString *)username
                                        error:(ABCError **)error;
 
-- (NSArray *)getRecoveryQuestionsWithRecoveryToken:(NSString *)username
+- (NSArray *)getRecovery2Questions:(NSString *)username
                                      recoveryToken:(NSString *)recoveryToken
                                              error:(ABCError **)error;
 - (NSString *)getLocalRecoveryToken:(NSString *)username error:(ABCError **)error;

@@ -344,11 +344,11 @@
 - (ABCError *)setupRecoveryQuestions:(NSString *)questions
                             answers:(NSString *)answers;
 
-- (NSString *)setupRecoveryQuestions2:(NSString *)questions
-                              answers:(NSString *)answers
+- (NSString *)setupRecovery2Questions:(NSArray *)questions
+                              answers:(NSArray *)answers
                                 error:(ABCError **)error;
-- (void)setupRecoveryQuestions2:(NSString *)questions
-                        answers:(NSString *)answers
+- (void)setupRecovery2Questions:(NSArray *)questions
+                        answers:(NSArray *)answers
                        callback:(void (^)(ABCError *error, NSString *recoveryToken)) callback;
 
 /**
