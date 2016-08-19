@@ -168,7 +168,7 @@
         [self.local.touchIDUsersEnabled addObject:self.account.name];
         [self.local saveAll];
         [self.keyChain updateLoginKeychainInfo:self.account.name
-                                      password:password
+                                      loginKey:self.account.loginKey
                                     useTouchID:YES];
         self.account.password = password;
         return YES;
@@ -188,8 +188,8 @@
         [self.local.touchIDUsersEnabled removeObject:self.account.name];
         [self.local saveAll];
         [self.keyChain updateLoginKeychainInfo:self.account.name
-                                 password:self.account.password
-                               useTouchID:NO];
+                                      loginKey:self.account.loginKey
+                                    useTouchID:NO];
     }
 }
 

@@ -9,6 +9,7 @@
 #import "ABCContext+Internal.h"
 
 #define PASSWORD_KEY            @"key_password"
+#define LOGINKEY_KEY            @"key_loginkey"
 #define RELOGIN_KEY             @"key_relogin"
 #define USE_TOUCHID_KEY         @"key_use_touchid"
 #define LOGOUT_TIME_KEY         @"key_logout_time"
@@ -38,6 +39,6 @@
 - (BOOL) disableKeychainBasedOnSettings:(NSString *)username;
 - (void) clearKeychainInfo:(NSString *)username;
 - (void) updateLoginKeychainInfo:(NSString *)username
-                        password:(NSString *)password
+                        loginKey:(NSString *)key
                       useTouchID:(BOOL) bUseTouchID;
 @end

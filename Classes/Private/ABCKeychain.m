@@ -311,7 +311,7 @@
 }
 
 - (void) updateLoginKeychainInfo:(NSString *)username
-                        password:(NSString *)password
+                        loginKey:(NSString *)loginKey
                       useTouchID:(BOOL) bUseTouchID;
 {
     dispatch_async(dispatch_get_main_queue(), ^(void) {
@@ -324,11 +324,11 @@
         [self setKeychainInt:bUseTouchID
                              key:[self createKeyWithUsername:username key:USE_TOUCHID_KEY]
                    authenticated:YES];
-        if (password != nil)
+        if (loginKey != nil)
         {
-            [self setKeychainString:password
-                                    key:[self createKeyWithUsername:username key:PASSWORD_KEY]
-                          authenticated:YES];
+            [self setKeychainString:loginKey
+                                key:[self createKeyWithUsername:username key:LOGINKEY_KEY]
+                      authenticated:YES];
         }
     });
 }

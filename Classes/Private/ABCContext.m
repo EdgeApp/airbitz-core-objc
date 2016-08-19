@@ -278,17 +278,16 @@
 }
 
 - (void)autoReloginOrTouchIDIfPossibleMain:(NSString *)username
-                                  complete:(void (^)(BOOL doRelogin, NSString *password, BOOL usedTouchID)) completionHandler;
+                                  complete:(void (^)(BOOL doRelogin, NSString *password, NSString *loginKey, BOOL usedTouchID)) completionHandler;
 
 {
     ABCLog(1, @"ENTER autoReloginOrTouchIDIfPossibleMain");
     BOOL usedTouchID = NO;
-    NSString *password = nil;
     
     if (! [self.keyChain bHasSecureEnclave] )
     {
         ABCLog(1, @"EXIT autoReloginOrTouchIDIfPossibleMain: No secure enclave");
-        completionHandler(NO, password, usedTouchID);
+        completionHandler(NO, nil, nil, usedTouchID);
         return;
     }
     
@@ -313,19 +312,22 @@
     NSString *strReloginKey  = [self.keyChain createKeyWithUsername:username key:RELOGIN_KEY];
     NSString *strUseTouchID  = [self.keyChain createKeyWithUsername:username key:USE_TOUCHID_KEY];
     NSString *strPasswordKey = [self.keyChain createKeyWithUsername:username key:PASSWORD_KEY];
+    NSString *strLoginKey = [self.keyChain createKeyWithUsername:username key:LOGINKEY_KEY];
     
     int64_t bReloginKey = [self.keyChain getKeychainInt:strReloginKey error:nil];
     int64_t bUseTouchID = [self.keyChain getKeychainInt:strUseTouchID error:nil];
     NSString *kcPassword = [self.keyChain getKeychainString:strPasswordKey error:nil];
+    NSString *kcLoginKey = [self.keyChain getKeychainString:strLoginKey error:nil];
     
     if (!bReloginKey && !bUseTouchID)
     {
         ABCLog(1, @"EXIT autoReloginOrTouchIDIfPossibleMain No relogin or touchid settings in keychain");
-        completionHandler(NO, password, usedTouchID);
+        completionHandler(NO, nil, nil, usedTouchID);
         return;
     }
     
-    if ([kcPassword length] >= 10)
+    if ([kcPassword length] >= 10 ||
+        [kcLoginKey length] >= 10)
     {
         bReloginState = YES;
     }
@@ -340,13 +342,13 @@
             [self.keyChain authenticateTouchID:prompt fallbackString:abcStringUsePasswordText complete:^(BOOL didAuthenticate) {
                 if (didAuthenticate) {
                     ABCLog(1, @"EXIT autoReloginOrTouchIDIfPossibleMain TouchID authentication passed");
-                    completionHandler(YES, kcPassword, YES);
+                    completionHandler(YES, kcPassword, kcLoginKey, YES);
                     return;
                 }
                 else
                 {
                     ABCLog(1, @"EXIT autoReloginOrTouchIDIfPossibleMain TouchID authentication failed");
-                    completionHandler(NO, password, usedTouchID);
+                    completionHandler(NO, nil, nil, usedTouchID);
                     return;
                 }
             }];
@@ -358,8 +360,7 @@
         
         if (bReloginKey)
         {
-            password = kcPassword;
-            completionHandler(YES, password, usedTouchID);
+            completionHandler(YES, kcPassword, kcLoginKey, usedTouchID);
             return;
         }
     }
@@ -367,7 +368,7 @@
     {
         ABCLog(1, @"EXIT autoReloginOrTouchIDIfPossibleMain reloginState DISABLED");
     }
-    completionHandler(NO, password, usedTouchID);
+    completionHandler(NO, nil, nil, usedTouchID);
 }
 
 - (ABCAccount *) getLoggedInUser:(NSString *)username;
@@ -795,6 +796,70 @@
     });
 }
 
+- (void)loginWithKey:(NSString *)username
+                 key:(NSString *)key
+            delegate:(id)delegate
+            callback:(void (^)(ABCError *, ABCAccount *account))callback
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+        ABCError *nserror = nil;
+        ABCAccount *account = [self loginWithKey:username
+                                             key:key
+                                        delegate:delegate
+                                           error:&nserror];
+        
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            if (callback) callback(nserror, account);
+        });
+    });
+}
+
+- (ABCAccount *)loginWithKey:(NSString *)username
+                         key:key
+                    delegate:(id)delegate
+                       error:(ABCError **)nserror;
+{
+    
+    ABCError *lnserror = nil;
+    ABCAccount *account = nil;
+    
+    tABC_Error error;
+    BOOL bNewDeviceLogin = NO;
+    
+    
+    if (!username || !key)
+    {
+        error.code = (tABC_CC) ABCConditionCodeNULLPtr;
+        lnserror = [ABCError makeNSError:error];
+    }
+    else
+    {
+        bNewDeviceLogin = NO;
+        
+        {
+            ABC_KeyLogin([username UTF8String], [key UTF8String], &error);
+            
+            lnserror = [ABCError makeNSError:error];
+            
+            if (!lnserror)
+            {
+                account = [[ABCAccount alloc] initWithCore:self];
+                account.bNewDeviceLogin = bNewDeviceLogin;
+                account.delegate = delegate;
+                [self.loggedInUsers addObject:account];
+                account.name = username;
+                [account login];
+                [account setupLoginPIN];
+            }
+        }
+    }
+    
+    if (nserror)
+        *nserror = lnserror;
+    return account;
+}
+
+
 - (ABCAccount *)pinLogin:(NSString *)username
                           pin:(NSString *)pin
                      delegate:(id)delegate
@@ -1162,20 +1227,42 @@
 {
     dispatch_async(dispatch_get_main_queue(), ^(void) {
         
-        [self autoReloginOrTouchIDIfPossibleMain:username complete:^(BOOL doRelogin, NSString *password, BOOL usedTouchID) {
+        [self autoReloginOrTouchIDIfPossibleMain:username complete:^(BOOL doRelogin,
+                                                                     NSString *password,
+                                                                     NSString *loginKey,
+                                                                     BOOL usedTouchID) {
             if (doRelogin)
             {
                 if (doBeforeLogin) doBeforeLogin();
-                [self loginWithPassword:username password:password delegate:delegate otp:nil callback:^(ABCError *error, ABCAccount *account) {
-                    if (error)
-                    {
-                        if (errorHandler) errorHandler(error);
-                    }
-                    else
-                    {
-                        if (completionWithLogin) completionWithLogin(account, usedTouchID);
-                    }
-                }];
+                if (loginKey)
+                {
+                    [self loginWithKey:username key:loginKey delegate:delegate callback:^(ABCError *error, ABCAccount *account) {
+                        if (error)
+                        {
+                            if (errorHandler) errorHandler(error);
+                        }
+                        else
+                        {
+                            if (completionWithLogin) completionWithLogin(account, usedTouchID);
+                        }
+
+                    }];
+                }
+                else
+                {
+                    [self loginWithPassword:username password:password delegate:delegate otp:nil callback:^(ABCError *error, ABCAccount *account) {
+                        if (error)
+                        {
+                            if (errorHandler) errorHandler(error);
+                        }
+                        else
+                        {
+                            // Save the loginKey for use next time
+                            [self.keyChain updateLoginKeychainInfo:account.name loginKey:account.loginKey useTouchID:usedTouchID];
+                            if (completionWithLogin) completionWithLogin(account, usedTouchID);
+                        }
+                    }];
+                }
             }
             else
             {

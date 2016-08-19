@@ -8,9 +8,10 @@
 
 @interface ABCAccount (Internal)
 
-@property (atomic, strong)   ABCContext *abc;
-@property                       BOOL                bNewDeviceLogin;
-@property (atomic, copy)     NSString                *password;
+@property (atomic, strong)  ABCContext              *abc;
+@property                   BOOL                    bNewDeviceLogin;
+@property (atomic, copy)    NSString                *password;
+@property (atomic, copy)    NSString                *loginKey;
 
 - (void)login;
 - (void)enterBackground;
@@ -36,8 +37,6 @@
 - (void)requestExchangeRateUpdate;
 - (void)dataSyncAccount;
 - (void)logoutAllowRelogin;
-
-
-
+- (NSString *)getLoginKey:(ABCError **)error;
 
 @end

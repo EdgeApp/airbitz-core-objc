@@ -250,6 +250,17 @@ typedef enum eABCDeviceCaps
                                otp:(NSString *)otp
                              error:(ABCError **)error;
 
+- (void)loginWithKey:(NSString *)username
+                 key:(NSString *)key
+            delegate:(id)delegate
+            callback:(void (^)(ABCError *, ABCAccount *account))callback;
+
+- (ABCAccount *)loginWithKey:(NSString *)username
+                         key:key
+                    delegate:(id)delegate
+                       error:(ABCError **)nserror;
+
+
 /**
  *
  */

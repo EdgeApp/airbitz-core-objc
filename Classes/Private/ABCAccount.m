@@ -35,6 +35,7 @@ static NSNumberFormatter        *numberFormatter = nil;
 @property (nonatomic, strong)   NSTimer             *walletLoadingTimer;
 @property                       BOOL                bNewDeviceLogin;
 @property (atomic, copy)        NSString            *password;
+@property (atomic, copy)        NSString            *loginKey;
 @property                       NSMutableArray      *walletUUIDsLoaded;
 
 @end
@@ -819,6 +820,9 @@ static NSNumberFormatter        *numberFormatter = nil;
 //    dispatch_async(dispatch_get_main_queue(),^{
 //        [self postWalletsLoadingNotification];
 //    });
+    ABCError *error;
+    self.loginKey = [self getLoginKey:&error];
+    
     [self.abc setLastAccessedAccount:self.name];
     [self.settings loadSettings];
     [self requestExchangeRateUpdate];
@@ -1730,9 +1734,6 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
         {
             [self.abc.localSettings.touchIDUsersDisabled removeObject:self.name];
             [self.abc.localSettings saveAll];
-            [self.abc.keyChain updateLoginKeychainInfo:self.name
-                                          password:self.password
-                                        useTouchID:YES];
         }
     }
     
@@ -1760,6 +1761,26 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 {
     self.settings.bDisablePINLogin = !enable;
     return [self.settings saveSettings];
+}
+
+- (NSString *)getLoginKey:(ABCError **)error;
+{
+    tABC_Error tError;
+    char *szKey = NULL;
+    NSString *key = nil;
+    ABCError *abcError = nil;
+    
+    ABC_GetLoginKey([self.name UTF8String], [self.password UTF8String], &szKey, &tError);
+    abcError = [ABCError makeNSError:tError];
+    if (!abcError && szKey) {
+        key = [NSString stringWithUTF8String:szKey];
+    }
+    if (szKey) {
+        free(szKey);
+    }
+    if (error) *error = abcError;
+    ABCLog(2,@("Login key: %@"), key);
+    return key;
 }
 
 #pragma mark - OTP Authentication
@@ -2043,8 +2064,8 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
         else
         {
             [self.abc.keyChain updateLoginKeychainInfo:self.name
-                                          password:self.password
-                                        useTouchID:!onDisabled];
+                                              loginKey:self.loginKey
+                                            useTouchID:!onDisabled];
         }
     }
     return NO;
