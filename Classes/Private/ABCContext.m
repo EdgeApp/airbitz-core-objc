@@ -213,7 +213,7 @@
 {
     ABCError *abcError;
     tABC_Error tError;
-    char *key;
+    char *key = NULL;
     NSString *token = nil;
     
     ABC_Recovery2Key([username UTF8String], &key, &tError);
