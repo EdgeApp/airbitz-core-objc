@@ -381,7 +381,7 @@ typedef enum eABCDeviceCaps
 - (NSArray *)getRecovery2Questions:(NSString *)username
                                      recoveryToken:(NSString *)recoveryToken
                                              error:(ABCError **)error;
-- (NSString *)getLocalRecoveryToken:(NSString *)username error:(ABCError **)error;
+- (NSString *)getRecovery2Token:(NSString *)username error:(ABCError **)error;
 
 /**
  * Gets a list of recovery questions to ask user. These are suggested questions from the Airbitz

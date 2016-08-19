@@ -1866,6 +1866,14 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     return nCount;
 }
 
+- (ABCError *)disableRecovery2;
+{
+    tABC_Error tError;
+    ABC_Recovery2Delete([self.name UTF8String], [self.password UTF8String], &tError);
+    
+    return [ABCError makeNSError:tError];
+}
+
 - (NSString *)setupRecovery2Questions:(NSArray *)questions
                               answers:(NSArray *)answers
                                 error:(ABCError **)error

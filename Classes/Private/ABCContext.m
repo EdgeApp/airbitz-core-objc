@@ -209,12 +209,32 @@
     });
 }
 
-- (NSString *)getLocalRecoveryToken:(NSString *)username error:(ABCError **)error;
+- (NSString *)getRecovery2Token:(NSString *)username error:(ABCError **)error;
 {
-    NSString *key = [self.keyChain createKeyWithUsername:username key:RECOVERY2_KEY];
-    NSString *recoveryToken = [self.keyChain getKeychainString:key
-                                                         error:error];
-    return recoveryToken;
+    ABCError *abcError;
+    tABC_Error tError;
+    char *key;
+    NSString *token = nil;
+    
+    ABC_Recovery2Key([username UTF8String], &key, &tError);
+    abcError = [ABCError makeNSError:tError];
+    
+    if (key)
+    {
+        token = [NSString stringWithUTF8String:key];
+        free(key);
+    }
+    if (error)
+        *error = abcError;
+    
+    if (!token)
+    {
+        NSString *keyChainKey = [self.keyChain createKeyWithUsername:username key:RECOVERY2_KEY];
+        token = [self.keyChain getKeychainString:keyChainKey
+                                           error:error];
+    }
+    
+    return token;
 }
 
 
