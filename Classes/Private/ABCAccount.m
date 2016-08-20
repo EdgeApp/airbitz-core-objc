@@ -1901,45 +1901,17 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 {
     NSString *token = nil;
     
-    char            **ppszQuestions = NULL;
-    char            **ppszAnswers = NULL;
-    
-    int numberOfQ = [questions count];
-    int numberOfA = [answers count];
-    
-    ppszQuestions = malloc(numberOfQ * sizeof(char *));
-    for (int i = 0; i < numberOfQ; i++)
-    {
-        NSString *q = (NSString *)questions[i];
-        int length = [q length];
-        ppszQuestions[i] = [questions[i] UTF8String];
-    }
-    
-    ppszAnswers = malloc(numberOfA * sizeof(char *));
-    for (int i = 0; i < numberOfA; i++)
-    {
-        NSString *a = (NSString *)answers[i];
-        int length = [a length];
-        ppszAnswers[i] = [answers[i] UTF8String];
-    }
-    
     tABC_Error tABCerror;
     char *pszKey = NULL;
 
     ABC_Recovery2Setup([self.name UTF8String],
                        [self.password UTF8String],
-                       ppszQuestions,
-                       numberOfQ,
-                       ppszAnswers,
-                       numberOfA,
+                       [questions[0] UTF8String],
+                       [answers[0] UTF8String],
+                       [questions[1] UTF8String],
+                       [answers[1] UTF8String],
                        &pszKey,
                        &tABCerror);
-    
-    if (ppszAnswers)
-        free(ppszAnswers);
-    if (ppszQuestions)
-        free(ppszQuestions);
-    
     
     ABCError *abcError = [ABCError makeNSError:tABCerror];
 

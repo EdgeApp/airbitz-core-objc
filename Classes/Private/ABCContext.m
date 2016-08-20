@@ -992,21 +992,11 @@
         
         // Copy NSArray to char **
         
-        int numberOfA = [answers count];
-        
-        ppszAnswers = malloc(numberOfA * sizeof(char *));
-        for (int i = 0; i < numberOfA; i++)
-        {
-            NSString *a = (NSString *)answers[i];
-            int length = [a length];
-            ppszAnswers[i] = [answers[i] UTF8String];
-        }
-        
         // This actually logs in the user
         ABC_Recovery2Login([username UTF8String],
                            [recoveryToken UTF8String],
-                           ppszAnswers,
-                           numberOfA,
+                           [answers[0] UTF8String],
+                           [answers[1] UTF8String],
                            &szResetToken, &szResetDate, &error);
         
         abcError = [ABCError makeNSError:error];
