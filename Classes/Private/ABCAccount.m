@@ -1892,6 +1892,12 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     tABC_Error tError;
     ABC_Recovery2Delete([self.name UTF8String], [self.password UTF8String], &tError);
     
+    NSString *keyChainKey = [self.abc.keyChain createKeyWithUsername:self.name key:RECOVERY2_KEY];
+    [self.abc.keyChain setKeychainData:nil
+                                   key:[self.abc.keyChain createKeyWithUsername:self.name key:RECOVERY2_KEY]
+                         authenticated:YES];
+
+    
     return [ABCError makeNSError:tError];
 }
 
