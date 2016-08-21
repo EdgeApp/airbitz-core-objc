@@ -14,6 +14,7 @@
 @property (atomic, copy)    NSString                *loginKey;
 
 - (void)login;
+- (void)startSuspend;
 - (void)enterBackground;
 - (void)enterForeground;
 - (BOOL)didLoginExpire;

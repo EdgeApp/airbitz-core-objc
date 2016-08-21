@@ -464,14 +464,20 @@ typedef enum eABCDeviceCaps
 - (bool) isTestNet;
 
 /**
- * Call this routine from within applicationDidEnterBackground to have ABC
- * spin down any background queues
+ * Call this routines to have ABC spin down any background queues. Should be called as
+ * the very last ABC routine in applicationDidEnterBackground after the app is no longer
+ * given background running capability.
+ */
+- (void) startSuspend;
+
+/**
+ * Call this routine from within applicationDidEnterBackground. This starts the auto-logout
+ * timer which is then invoked the next time the app is brought to the foreground.
  */
 - (void) enterBackground;
 
 /**
- * Call this routine from within applicationDidEnterBackground to have ABC
- * spin up any background queues
+ * Call this routine from within applicationWillEnterForeground
  */
 - (void) enterForeground;
 

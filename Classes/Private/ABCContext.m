@@ -29,6 +29,7 @@
 @interface ABCContext ()
 {
     ABCExchangeCache                                *_exchangeCache;
+    NSTimer                                         *_backgroundLogoutTimer;
 }
 
 
@@ -442,16 +443,31 @@
     }
 }
 
+- (void) startSuspend;
+{
+    for (ABCAccount *user in self.loggedInUsers)
+    {
+        [user startSuspend];
+    }
+}
+
 - (void)enterBackground
 {
     for (ABCAccount *user in self.loggedInUsers)
     {
         [user enterBackground];
     }
+    _backgroundLogoutTimer = [NSTimer scheduledTimerWithTimeInterval:1
+                                                              target:self
+                                                            selector:@selector(checkLoginExpired)
+                                                            userInfo:nil
+                                                             repeats:YES];
 }
 
 - (void)enterForeground
 {
+    if (_backgroundLogoutTimer)
+        [_backgroundLogoutTimer invalidate];
     [self checkLoginExpired];
     
     for (ABCAccount *user in self.loggedInUsers)

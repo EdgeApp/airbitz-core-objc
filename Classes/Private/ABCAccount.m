@@ -157,13 +157,20 @@ static NSNumberFormatter        *numberFormatter = nil;
     }
 }
 
+- (void)startSuspend;
+{
+    if ([self isLoggedIn])
+    {
+        [self stopQueues];
+        [self disconnectWatchers];
+    }
+}
+
 - (void)enterBackground
 {
     if ([self isLoggedIn])
     {
         [self saveLogoutDate];
-        [self stopQueues];
-        [self disconnectWatchers];
     }
 }
 
