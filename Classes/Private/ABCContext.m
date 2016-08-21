@@ -30,6 +30,7 @@
 {
     ABCExchangeCache                                *_exchangeCache;
     NSTimer                                         *_backgroundLogoutTimer;
+    BOOL                                            _backgroundMode;
 }
 
 
@@ -410,6 +411,8 @@
 // or network fetch log the user out
 - (void)checkLoginExpired
 {
+    if (!_backgroundMode) return;
+    
     BOOL bLoginExpired;
     
     NSString *username;
@@ -453,6 +456,7 @@
 
 - (void)enterBackground
 {
+    _backgroundMode = YES;
     for (ABCAccount *user in self.loggedInUsers)
     {
         [user enterBackground];
@@ -474,6 +478,7 @@
     {
         [user enterForeground];
     }
+    _backgroundMode = NO;
 }
 
 - (bool)isTestNet
