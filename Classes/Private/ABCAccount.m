@@ -176,11 +176,7 @@ static NSNumberFormatter        *numberFormatter = nil;
 
 - (void)enterForeground
 {
-    if ([self isLoggedIn])
-    {
-        [self connectWatchers];
-        [self startQueues];
-    }
+    
 }
 
 - (void)stopQueues
