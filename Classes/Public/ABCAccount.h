@@ -30,7 +30,15 @@
 @class ABCTransaction;
 @class ABCWallet;
 @class ABCBitIDSignature;
+@class ABCEdgeLoginInfo;
 @protocol ABCAccountDelegate;
+
+#define DUMMY_EDGE_LOGIN_TOKEN @"IAMEDGE619"
+
+@interface ABCEdgeLoginInfo : NSObject
+@property (atomic, strong) NSString                     *requestor;
+@property (atomic, strong) NSArray                      *repoTypes;
+@end
 
 @interface ABCAccount : NSObject
 ///----------------------------------------------------------
@@ -360,6 +368,16 @@
  * @return BOOL YES if user should be asked.
  */
 - (BOOL)needsRecoveryQuestionsReminder;
+
+/// -----------------------------------------------------------------------------
+/// @name Edge Login Management - Private routines, Airbitz only. DO NOT USE
+/// -----------------------------------------------------------------------------
+
+- (void)getEdgeLoginRequest:(NSString *)elRequestToken
+                   callback:(void (^)(ABCError *error, ABCEdgeLoginInfo *info)) callback;
+- (ABCEdgeLoginInfo *) getEdgeLoginRequest:(NSString *)elRequestToken;
+- (ABCError *) approveEdgeLoginRequest:(NSString *)elRequestToken;
+- (ABCError *) deleteEdgeLoginRequest:(NSString *)elRequestToken;
 
 /// -----------------------------------------------------------------------------
 /// @name Misc ABCAccount methods

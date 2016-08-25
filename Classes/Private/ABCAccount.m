@@ -1598,6 +1598,87 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     }
 }
 
+- (void)getEdgeLoginRequest:(NSString *)elRequestToken
+                   callback:(void (^)(ABCError *error, ABCEdgeLoginInfo *info)) callback;
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+        ABCError *error;
+        
+        ABCEdgeLoginInfo *info = [self getEdgeLoginRequest:elRequestToken error:&error];
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            if (callback) callback(error, info);
+        });
+    });
+}
+
+- (ABCEdgeLoginInfo *) getEdgeLoginRequest:(NSString *)elRequestToken error:(ABCError **)error;
+{
+    ABCError *abcError = nil;
+    
+    if (![elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN])
+    {
+        tABC_Error tError;
+        tError.code = ABC_CC_Error;
+        abcError = [ABCError makeNSError:tError description:@"Invalid Edge Login Request"];
+        if (error)
+            *error = abcError;
+        return nil;
+    }
+    
+    ABCEdgeLoginInfo *info = [ABCEdgeLoginInfo alloc];
+    
+    info.requestor = @"com.augur";
+    NSArray *array = [NSArray arrayWithObjects:@"wallet:bitcoin", @"wallet:ethereum", nil ];
+    
+    if (error)
+        *error = nil;
+    
+    return info;
+}
+
+- (void)approveEdgeLoginRequest:(NSString *)elRequestToken
+                       callback:(void (^)(ABCError *error)) callback;
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+        ABCError *error = [self approveEdgeLoginRequest:elRequestToken];
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            if (callback) callback(error);
+        });
+    });
+}
+
+- (ABCError *) approveEdgeLoginRequest:(NSString *)elRequestToken;
+{
+    ABCError *error;
+    
+    if (![elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN])
+    {
+        tABC_Error tError;
+        tError.code = ABC_CC_Error;
+        error = [ABCError makeNSError:tError description:@"Invalid Edge Login Request"];
+        return error;
+    }
+    else
+    {
+        return nil;
+    }
+}
+
+- (ABCError *) deleteEdgeLoginRequest:(NSString *)elRequestToken;
+{
+    if (![elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN])
+    {
+        tABC_Error tError;
+        tError.code = ABC_CC_Error;
+        [ABCError makeNSError:tError description:@"Invalid Edge Login Request"];
+        return nil;
+    }
+    else
+    {
+        return nil;
+    }
+}
+
 
 
 /////////////////////////////////////////////////////////////////
@@ -2098,5 +2179,13 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 }
 
 
+@end
+
+@implementation ABCEdgeLoginInfo
+- (id)init
+{
+    self = [super init];
+    return self;
+}
 @end
 
