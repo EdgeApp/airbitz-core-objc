@@ -278,11 +278,11 @@ class ABCContext {
    * @param {string} apikey Get an API Key from https://developer.airbitz.co
    * @param {string} hbits Set to null for now
    */
-  static makeABCContext (apikey, hbits, callback) {
+  static makeABCContext (apikey, type, hbits, callback) {
     if (abcContext)
       callback(null, abcContext)
     else {
-      AirbitzCoreRCT.init(apikey, hbits, (rcterror) => {
+      AirbitzCoreRCT.init(apikey, type, hbits, (rcterror) => {
         var abcError = ABCError.makeABCError(rcterror)
         if (abcError && (abcError.code != abcc.ABCConditionCodeReinitialization)) {
           callback(abcError, null)

@@ -31,12 +31,14 @@ ABCAccount *abcAccount = nil;
 
 RCT_EXPORT_MODULE();
 
-RCT_EXPORT_METHOD(init:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey
+RCT_EXPORT_METHOD(init:(NSString *)abcAPIKey
+                  type:(NSString *)type
+                  hbits:(NSString *)hbitsKey
                   callback:(RCTResponseSenderBlock)callback)
 {
     if (!abc)
     {
-        abc = [ABCContext makeABCContext:abcAPIKey hbits:hbitsKey];
+        abc = [ABCContext makeABCContext:abcAPIKey type:type hbits:hbitsKey];
         if (!abc)
         {
             callback([self makeError:ABCConditionCodeError
