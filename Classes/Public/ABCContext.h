@@ -66,12 +66,18 @@ typedef enum eABCDeviceCaps
 /**
  * Initialize the ABCContext object. Required for functionality of ABC SDK.
  * @param abcAPIKey NSString* API key obtained from Airbitz Inc.
+ * @param type Type of account that this application will be accessing. Type is of the format
+ *  "account:repo:com.domain.app". At this moment, all types must begin with "account:repo:"
+ *  and developers should add their reverse domain and application afterwards. This 'type' is
+ *  what allows a singleSignOn login to access the same account object for this particular application.
+ *  ie. User's using Edge Login (SingleSignOn) in application type "account:repo:com.domain.app" will get a
+ *  different account repository when logged into an app with type "account:repo:com.domain2.app".
  * @param hbitsKey (Optional) unique key used to encrypt private keys for use as implementation
  * specific "gift cards" that are only redeemable by applications using this implementation.
  * @return ABCContext Instance of ABCContext object
  */
-+ (ABCContext *)makeABCContext:(NSString *)abcAPIKey;
-+ (ABCContext *)makeABCContext:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey;
++ (ABCContext *)makeABCContext:(NSString *)abcAPIKey type:(NSString *)type;
++ (ABCContext *)makeABCContext:(NSString *)abcAPIKey type:(NSString *)type hbits:(NSString *)hbitsKey;
 
 /**
  * Free the ABCContext object.

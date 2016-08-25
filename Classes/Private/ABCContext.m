@@ -44,12 +44,12 @@
 
 @implementation ABCContext
 
-+ (ABCContext *)makeABCContext:(NSString *)abcAPIKey;
++ (ABCContext *)makeABCContext:(NSString *)abcAPIKey type:(NSString *)type;
 {
-    return [ABCContext makeABCContext:abcAPIKey hbits:@""];
+    return [ABCContext makeABCContext:abcAPIKey type:type hbits:@""];
 }
 
-+ (ABCContext *)makeABCContext:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey;
++ (ABCContext *)makeABCContext:(NSString *)abcAPIKey type:(NSString *)type hbits:(NSString *)hbitsKey;
 {
     ABCContext *abcContext  = [ABCContext alloc];
 
@@ -88,6 +88,7 @@
         ABC_Initialize([docs_dir UTF8String],
                 [ca_path UTF8String],
                 [abcAPIKey UTF8String],
+                [type UTF8String],
                 [hbitsKey UTF8String],
                 (unsigned char *)[seedData bytes],
                 (unsigned int)[seedData length],
