@@ -1,12 +1,14 @@
 //
+// ABCError+Internal.h
+//
 // Created by Paul P on 1/30/16.
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "AirbitzCore+Internal.h"
+#import "ABCError.h"
+#import "ABCContext+Internal.h"
 
-@interface ABCError : NSObject
+@interface ABCError (Internal)
 
 /*
  * errorMap
@@ -15,7 +17,7 @@
  */
 + (NSString *)conditionCodeMap:(const ABCConditionCode) code;
 
-+ (NSError *)makeNSError:(tABC_Error)error;
-+ (NSError *)makeNSError:(tABC_Error)error description:(NSString *)description;
++ (ABCError *)makeNSError:(tABC_Error)error;
++ (ABCError *)makeNSError:(tABC_Error)error description:(NSString *)description;
 
 @end

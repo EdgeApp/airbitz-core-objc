@@ -5,7 +5,7 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import "AirbitzCore.h"
+#import "ABCContext.h"
 
 @class ABCPaymentRequest;
 
@@ -15,11 +15,15 @@
 @property                           NSString            *privateKey;
 @property                           NSString            *bitIDURI;
 @property                           NSString            *bitIDDomain;
+@property                           NSString            *bitIDCallbackURI;
 @property                           NSString            *paymentRequestURL;
 @property                           uint64_t            amountSatoshi;
 @property                           ABCMetaData         *metadata;
 @property                           NSString            *returnURI;
+@property                           BOOL                bitidPaymentAddress;
+@property                           BOOL                bitidKYCProvider;
+@property                           BOOL                bitidKYCRequest;
 
-- (ABCPaymentRequest *) getPaymentRequest:(NSError **)error;
+- (ABCPaymentRequest *) getPaymentRequest:(ABCError **)error;
 
 @end

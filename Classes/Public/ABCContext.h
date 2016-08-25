@@ -1,5 +1,5 @@
 //
-// AirbitzCore.h
+// ABCContext.h
 //
 // Created by Paul P on 2016/02/09.
 // Copyright (c) 2016 Airbitz. All rights reserved.
@@ -11,6 +11,7 @@
 #import "ABCCurrency.h"
 #import "ABCDataStore.h"
 #import "ABCDenomination.h"
+#import "ABCError.h"
 #import "ABCExchangeCache.h"
 #import "ABCKeychain.h"
 #import "ABCMetaData.h"
@@ -24,7 +25,7 @@
 #import "ABCWallet.h"
 
 /**
- * The AirbitzCore object is the starting point in accessing the entire Airbitz SDK. AirbitzCore should
+ * The ABCContext object is the starting point in accessing the entire Airbitz SDK. ABCContext should
  * first be initialized using init. From here, developers can create and login to accounts which will
  * return an ABCAccount object representing a logged in account. Within each account, you can create
  * ABCWallet objects using createWallet. Each ABCWallet represents a single BIP32 HD chain of addresses which don't cross
@@ -56,24 +57,30 @@ typedef enum eABCDeviceCaps
 @class ABCAccount;
 @class ABCPasswordRuleResult;
 
-@interface AirbitzCore : NSObject
+@interface ABCContext : NSObject
 
 /// -----------------------------------------------------------------------------
-/// @name AirbitzCore initialization / free routines
+/// @name ABCContext initialization / free routines
 /// -----------------------------------------------------------------------------
 
 /**
- * Initialize the AirbitzCore object. Required for functionality of ABC SDK.
+ * Initialize the ABCContext object. Required for functionality of ABC SDK.
  * @param abcAPIKey NSString* API key obtained from Airbitz Inc.
+ * @param type Type of account that this application will be accessing. Type is of the format
+ *  "account:repo:com.domain.app". At this moment, all types must begin with "account:repo:"
+ *  and developers should add their reverse domain and application afterwards. This 'type' is
+ *  what allows a singleSignOn login to access the same account object for this particular application.
+ *  ie. User's using Edge Login (SingleSignOn) in application type "account:repo:com.domain.app" will get a
+ *  different account repository when logged into an app with type "account:repo:com.domain2.app".
  * @param hbitsKey (Optional) unique key used to encrypt private keys for use as implementation
  * specific "gift cards" that are only redeemable by applications using this implementation.
- * @return AirbitzCore Instance of AirbitzCore object
+ * @return ABCContext Instance of ABCContext object
  */
-- (id)init:(NSString *)abcAPIKey hbits:(NSString *)hbitsKey;
-- (id)init:(NSString *)abcAPIKey;
++ (ABCContext *)makeABCContext:(NSString *)abcAPIKey type:(NSString *)type;
++ (ABCContext *)makeABCContext:(NSString *)abcAPIKey type:(NSString *)type hbits:(NSString *)hbitsKey;
 
 /**
- * Free the AirbitzCore object.
+ * Free the ABCContext object.
  */
 - (void)free;
 
@@ -101,8 +108,7 @@ typedef enum eABCDeviceCaps
              password:(NSString *)password
                   pin:(NSString *)pin
              delegate:(id)delegate
-             complete:(void (^)(ABCAccount *account)) completionHandler
-                error:(void (^)(NSError *)) errorHandler;
+             callback:(void (^)(ABCError *, ABCAccount *account)) callback;
 
 
 /** Create an Airbitz account with specified username, password, and PIN.
@@ -117,7 +123,7 @@ typedef enum eABCDeviceCaps
                      password:(NSString *)password
                           pin:(NSString *)pin
                      delegate:(id)delegate
-                        error:(NSError **)error;
+                        error:(ABCError **)error;
 
 /**
  * Login to an Airbitz account using completion handlers.
@@ -136,29 +142,28 @@ typedef enum eABCDeviceCaps
  *  in requestOTPReset to request a reset of OTP. The reset will take 7 days
  * @return void
  */
-- (void)passwordLogin:(NSString *)username
+- (void)loginWithPassword:(NSString *)username
              password:(NSString *)password
              delegate:(id)delegate
                   otp:(NSString *)otp
-             complete:(void (^)(ABCAccount *account)) completionHandler
-                error:(void (^)(NSError *, NSDate *otpResetDate, NSString *otpResetToken)) errorHandler;
+             callback:(void (^)(ABCError *error, ABCAccount *account)) callback;
 
 /**
  * Login to an Airbitz account.
  * @param username NSString
  * @param password NSString
  * @param delegate ABCAccountDelegate object for callbacks. May be set to nil;
- * @param error NSError May be set to nil. Only used when not using completion handler
+ * @param error ABCError May be set to nil. Only used when not using completion handler
  * @return ABCAccount Account object or nil if failure.
  */
-- (ABCAccount *)passwordLogin:(NSString *)username
+- (ABCAccount *)loginWithPassword:(NSString *)username
                      password:(NSString *)password
                      delegate:(id)delegate
-                        error:(NSError **)error;
+                        error:(ABCError **)error;
 
 /**
  * Login to an Airbitz account. This routine allows caller to receive back an otpResetToken
- * which is used with [AirbitzCore requestOTPReset] to remove OTP from the specified account.
+ * which is used with [ABCContext requestOTPReset] to remove OTP from the specified account.
  * The otpResetToken is only returned if the caller has provided the correct username and password
  * but the account had OTP enabled. In such case, signIn will also provide an otpResetDate which is
  * the date when the account OTP will be disabled if a prior OTP reset was successfully requested.
@@ -171,16 +176,14 @@ typedef enum eABCDeviceCaps
  * @param otpResetToken NSMutableString A reset token to be used to request disabling of OTP for
  *  this account.
  * @param otpResetDate NSDate Date which the account reset will occur
- * @param error NSError May be set to nil. Only used when not using completion handler
+ * @param error ABCError May be set to nil. Only used when not using completion handler
  * @return ABCAccount Account object or nil if failure.
  */
-- (ABCAccount *)passwordLogin:(NSString *)username
+- (ABCAccount *)loginWithPassword:(NSString *)username
                      password:(NSString *)password
                      delegate:(id)delegate
                           otp:(NSString *)otp
-                otpResetToken:(NSMutableString *)otpResetToken
-                 otpResetDate:(NSDate **)otpResetDate
-                        error:(NSError **)error;
+                        error:(ABCError **)error;
 
 /**
  * Login to an Airbitz account with PIN using completion handlers. Used to sign into
@@ -199,7 +202,7 @@ typedef enum eABCDeviceCaps
                   pin:(NSString *)pin
              delegate:(id)delegate
              complete:(void (^)(ABCAccount *user)) completionHandler
-                error:(void (^)(NSError *)) errorHandler;
+                error:(void (^)(ABCError *)) errorHandler;
 
 
 /**
@@ -214,7 +217,7 @@ typedef enum eABCDeviceCaps
 - (ABCAccount *)pinLogin:(NSString *)username
                           pin:(NSString *)pin
                      delegate:(id)delegate
-                        error:(NSError **)error;
+                        error:(ABCError **)error;
 
 /**
  * Log in a user using recovery answers. Will only succeed if user has recovery questions and answers
@@ -237,7 +240,36 @@ typedef enum eABCDeviceCaps
                          delegate:(id)delegate
                               otp:(NSString *)otp
                          complete:(void (^)(ABCAccount *account)) completionHandler
-                            error:(void (^)(NSError *, NSDate *resetDate, NSString *resetToken)) errorHandler;
+                            error:(void (^)(ABCError *, NSDate *resetDate, NSString *resetToken)) errorHandler;
+
+- (void)loginWithRecovery2:(NSString *)username
+                   answers:(NSArray *)answers
+             recoveryToken:(NSString *)recoveryToken
+                  delegate:(id)delegate
+                       otp:(NSString *)otp
+                  callback:(void (^)(ABCError *error, ABCAccount *account)) callback;
+
+- (ABCAccount *)loginWithRecovery2:(NSString *)username
+                           answers:(NSArray *)answers
+                     recoveryToken:(NSString *)recoveryToken
+                          delegate:(id)delegate
+                               otp:(NSString *)otp
+                             error:(ABCError **)error;
+
+- (void)loginWithKey:(NSString *)username
+                 key:(NSString *)key
+            delegate:(id)delegate
+            callback:(void (^)(ABCError *, ABCAccount *account))callback;
+
+- (ABCAccount *)loginWithKey:(NSString *)username
+                         key:key
+                    delegate:(id)delegate
+                       error:(ABCError **)nserror;
+
+
+/**
+ *
+ */
 
 /**
  * Get ABCAccount object for username if logged in.
@@ -253,7 +285,7 @@ typedef enum eABCDeviceCaps
  * @param error NSError**
  * @return BOOL true if user has a password
  */
-- (BOOL)accountHasPassword:(NSString *)username error:(NSError **)error;
+- (BOOL)accountHasPassword:(NSString *)username error:(ABCError **)error;
 
 /** 
  * Checks a password for valid entropy looking for correct minimum
@@ -269,7 +301,7 @@ typedef enum eABCDeviceCaps
  * @param accounts NSMutableArray* array of strings of account names
  * @return NSError* error code
  */
-- (NSError *) listLocalAccounts:(NSMutableArray *) accounts;
+- (NSArray *) listUsernames:(ABCError **) error;
 
 /**
  * Checks if an account with the specified username exists locally on the current device.
@@ -287,7 +319,7 @@ typedef enum eABCDeviceCaps
  * @param username NSString* username to check
  * @return nil if username is available
  */
-- (NSError *)isUsernameAvailable:(NSString *)username;
+- (ABCError *)usernameAvailable:(NSString *)username;
 
 /*
  * Attempts to auto-relogin the specified user if they are within their auto-logout
@@ -311,7 +343,7 @@ typedef enum eABCDeviceCaps
                          doBeforeLogin:(void (^)(void)) doBeforeLogin
                    completionWithLogin:(void (^)(ABCAccount *account, BOOL usedTouchID)) completionWithLogin
                      completionNoLogin:(void (^)(void)) completionNoLogin
-                                 error:(void (^)(NSError *error)) errorHandler;
+                                 error:(void (^)(ABCError *error)) errorHandler;
 
 /**
  * Checks if PIN login is possible for the given username. This checks if
@@ -320,28 +352,28 @@ typedef enum eABCDeviceCaps
  * @param error NSError** (optional) May be set to nil.
  * @return BOOL YES PIN login is possible
  */
-- (BOOL)accountHasPINLogin:(NSString *)username error:(NSError **)error;
-- (BOOL)accountHasPINLogin:(NSString *)username;
+- (BOOL)pinLoginEnabled:(NSString *)username error:(ABCError **)error;
+- (BOOL)pinLoginEnabled:(NSString *)username;
 
 /**
  * Deletes named account from local device. Account is recoverable if it contains a password.
- * Use [AirbitzCore accountHasPassword] to determine if account has a password. Recommend warning
+ * Use [ABCContext accountHasPassword] to determine if account has a password. Recommend warning
  * user before executing deleteLocalAccount if accountHasPassword returns FALSE.
  * @param username NSString*  username of account to delete
  * @return NSError* nil if method succeeds
  */
-- (NSError *)deleteLocalAccount:(NSString *)username;
+- (ABCError *)deleteLocalAccount:(NSString *)username;
 
 /**
  * Returns the NSString* of the last account that was logged into. If that account was deleted,
  * returns the username of another local account. This can be overridden by calling
- * [AirbitzCore setLastAccessedAccount]
+ * [ABCContext setLastAccessedAccount]
  * @return NSString* username of last account
  */
 - (NSString *) getLastAccessedAccount;
 
 /**
- * Overrides the cached account name returned by [AirbitzCore getLastAccessedAccount]
+ * Overrides the cached account name returned by [ABCContext getLastAccessedAccount]
  * @param username NSString* username
  */
 - (void) setLastAccessedAccount:(NSString *) username;
@@ -361,24 +393,19 @@ typedef enum eABCDeviceCaps
  * have been set.
  */
 - (NSArray *)getRecoveryQuestionsForUserName:(NSString *)username
-                                       error:(NSError **)error;
+                                       error:(ABCError **)error;
+
+- (NSArray *)getRecovery2Questions:(NSString *)username
+                                     recoveryToken:(NSString *)recoveryToken
+                                             error:(ABCError **)error;
+- (NSString *)getRecovery2Token:(NSString *)username error:(ABCError **)error;
+
 /**
  * Gets a list of recovery questions to ask user. These are suggested questions from the Airbitz
  * servers, but app is free to choose its own to present the user.
- * @param completionHandler Completion handler code block which is called with the following args<br>
- * - *param* arrayCategoryString NSMutableString* array of string based questions<br>
- * - *param* arrayCategoryNumeric NSMutableString* array of numeric based questions<br>
- * - *param* arrayCategoryMust NSMutableString* array of questions which cannot be answered via 
- *  information from public records
- * @param errorHandler Error handler code block which is called with the following args<br>
- * - *param* NSError* error
  * @return void
  */
-+ (void)listRecoveryQuestionChoices: (void (^)(
-                                               NSMutableArray *arrayCategoryString,
-                                               NSMutableArray *arrayCategoryNumeric,
-                                               NSMutableArray *arrayCategoryMust)) completionHandler
-                              error:(void (^)(NSError *error)) errorHandler;
++ (void)listRecoveryQuestionChoices: (void (^)(ABCError *error, NSArray *arrayQuestions)) callback;
 
 #pragma mark - OTP Management
 /// -----------------------------------------------------------------------------
@@ -388,37 +415,35 @@ typedef enum eABCDeviceCaps
 /**
  * Returns an array of usernames of accounts local to device that
  * have a pending OTP reset on the server. 
- * @param error NSError object
+ * @param error ABCError object
  * @return NSArray* of NSString* of usernames
  */
-- (NSArray *)listPendingOTPResetUsernames:(NSError **)error;
+- (NSArray *)listPendingOTPResetUsernames:(ABCError **)error;
 
 /**
  * Checks if the current account has a pending request to reset (disable)
  * OTP.
  * @param username NSString username to check
- * @param error NSError error object or nil if success
+ * @param error ABCError error object or nil if success
  * @return BOOL YES if account has pending reset
  */
-- (BOOL) hasOTPResetPending:(NSString *)username error:(NSError **)error;
+- (BOOL) hasOTPResetPending:(NSString *)username error:(ABCError **)error;
 
 /**
  * Launches an OTP reset timer on the server,
  * which will disable the OTP authentication requirement when it expires.
  * @param username NSString*
- * @param token NSString* Reset token returned by the signIn... routines
+ * @param otpResetToken NSString* Reset token returned by the signIn... routines
  * if sign in failes due to missing or incorrect OTP.
  * (Optional. If used, method returns immediately with void)
- * @param completionHandler Completion handler code block
- * @param errorHandler Error handler code block which is called with the following args<br>
+ * @param callback Code block which is called with the following args<br>
  * - *param* NSError* error
- * @return NSError object or nil if success. Return void if using completion
- *  handler
+ * @return ABCError object or nil if success. Return void if using callback
  */
-- (void)requestOTPReset:(NSString *)username token:(NSString *)token
-               complete:(void (^)(void)) completionHandler
-                  error:(void (^)(NSError *error)) errorHandler;
-- (NSError *)requestOTPReset:(NSString *)username token:(NSString *)token;
+- (void)requestOTPReset:(NSString *)username
+                  token:(NSString *)otpResetToken
+               callback:(void (^)(ABCError *error)) callback;
+- (ABCError *)requestOTPReset:(NSString *)username token:(NSString *)token;
 
 #pragma mark - System Calls and Queries
 /// ------------------------------------------------------------------
@@ -426,7 +451,7 @@ typedef enum eABCDeviceCaps
 /// ------------------------------------------------------------------
 
 /**
- * Gets the version of AirbitzCore compiled into this implementation
+ * Gets the version of ABCContext compiled into this implementation
  * @return NSString* Version number if string format. ie. "1.8.5"
  */
 - (NSString *)getVersion;
@@ -439,20 +464,26 @@ typedef enum eABCDeviceCaps
 - (BOOL) hasDeviceCapability:(ABCDeviceCaps) caps;
 
 /**
- * Returns TRUE if AirbitzCore is compiled for testnet
+ * Returns TRUE if ABCContext is compiled for testnet
  * @return BOOL
  */
 - (bool) isTestNet;
 
 /**
- * Call this routine from within applicationDidEnterBackground to have ABC
- * spin down any background queues
+ * Call this routines to have ABC spin down any background queues. Should be called as
+ * the very last ABC routine in applicationDidEnterBackground after the app is no longer
+ * given background running capability.
+ */
+- (void) startSuspend;
+
+/**
+ * Call this routine from within applicationDidEnterBackground. This starts the auto-logout
+ * timer which is then invoked the next time the app is brought to the foreground.
  */
 - (void) enterBackground;
 
 /**
- * Call this routine from within applicationDidEnterBackground to have ABC
- * spin up any background queues
+ * Call this routine from within applicationWillEnterForeground
  */
 - (void) enterForeground;
 
@@ -464,19 +495,19 @@ typedef enum eABCDeviceCaps
 - (void)setConnectivity:(BOOL)hasConnectivity;
 
 /*
- * Uploads AirbitzCore debug log with optional message from user.
+ * Uploads ABCContext debug log with optional message from user.
  * @param userText NSString* text to send to support staff
  * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
  * @param completionHandler Completion handler code block which is called with void
  * @param errorHandler Error handler code block which is called with the following args<br>
  * - *param* NSError* error
- * @return NSError object or nil if success. Return void if using completion
+ * @return ABCError object or nil if success. Return void if using completion
  *  handler
  */
 - (void)uploadLogs:(NSString *)userText
           complete:(void(^)(void))completionHandler
-             error:(void (^)(NSError *error)) errorHandler;
-- (NSError *)uploadLogs:(NSString *)userText;
+             error:(void (^)(ABCError *error)) errorHandler;
+- (ABCError *)uploadLogs:(NSString *)userText;
 
 
 #pragma mark - Utility Methods
@@ -493,7 +524,7 @@ typedef enum eABCDeviceCaps
  * @return NSString* Fixed username with text lowercased, leading and
  * trailing white space removed, and all whitespace condensed to one space.
  */
-+ (NSString *)fixUsername:(NSString *)username error:(NSError **)error;
++ (NSString *)fixUsername:(NSString *)username error:(ABCError **)error;
 
 /// ------------------------------------------------------------------
 /// @name Class methods to retrieve constant parameters from ABC

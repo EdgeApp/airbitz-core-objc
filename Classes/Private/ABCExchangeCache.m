@@ -13,7 +13,7 @@
     
 }
 
-@property (atomic, strong)      AirbitzCore             *abc;
+@property (atomic, strong)      ABCContext *abc;
 @property (atomic, strong)      ABCAccount              *account;
 @property (atomic, strong)      NSMutableArray          *currenciesToCheck;
 
@@ -21,7 +21,7 @@
 
 @implementation ABCExchangeCache
 
-- (id)init:(AirbitzCore *)abc;
+- (id)init:(ABCContext *)abc;
 {
     // get the currencies
     self.abc = abc;
@@ -79,10 +79,10 @@
 
 - (double) satoshiToCurrency:(uint64_t) satoshi
                 currencyCode:(NSString *)currencyCode
-                       error:(NSError **)nserror;
+                       error:(ABCError **)nserror;
 {
     tABC_Error error;
-    NSError *nserror2 = nil;
+    ABCError *nserror2 = nil;
     double currency = 0.0;
     
     int currencyNum = [self getCurrencyNumFromCode:currencyCode];
@@ -107,10 +107,10 @@
 
 - (uint64_t) currencyToSatoshi:(double)currency
                   currencyCode:(NSString *)currencyCode
-                         error:(NSError **)nserror;
+                         error:(ABCError **)nserror;
 {
     tABC_Error error;
-    NSError *nserror2 = nil;
+    ABCError *nserror2 = nil;
     int64_t satoshi = 0;
     
     int currencyNum = [self getCurrencyNumFromCode:currencyCode];

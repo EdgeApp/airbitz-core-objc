@@ -1,17 +1,17 @@
 //
-// AirbitzCore+Internal.h
+// ABCContext+Internal.h
 //
 // Created by Paul P on 2016/02/09.
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
 #import "ABC.h"
-#import "AirbitzCore.h"
+#import "ABCContext.h"
 #import "ABCAccount+Internal.h"
 #import "ABCCategories+Internal.h"
 #import "ABCCurrency+Internal.h"
 #import "ABCDataStore+Internal.h"
-#import "ABCError.h"
+#import "ABCError+Internal.h"
 #import "ABCExchangeCache+Internal.h"
 #import "ABCKeychain+Internal.h"
 #import "ABCLocalSettings.h"
@@ -25,7 +25,7 @@
 #import "ABCAccount+Internal.h"
 #import "ABCWallet+Internal.h"
 
-@interface AirbitzCore(Internal)
+@interface ABCContext (Internal)
 
 @property (atomic, strong) ABCLocalSettings         *localSettings;
 @property (atomic, strong) ABCKeychain              *keyChain;
@@ -34,7 +34,7 @@
 @property (atomic, strong) NSOperationQueue         *exchangeQueue;
 
 - (NSDate *)dateFromTimestamp:(int64_t) intDate;
-- (NSError *)setOTPKey:(NSString *)username
+- (ABCError *)setupOTPKey:(NSString *)username
                    key:(NSString *)key;
 
 @end

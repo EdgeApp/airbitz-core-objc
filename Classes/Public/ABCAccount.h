@@ -3,11 +3,11 @@
 //  Airbitz
 //
 
-#import "AirbitzCore.h"
+#import "ABCContext.h"
 
 /**
  * The ABCAccount object represents a fully logged in account. This is returned by various signIn
- * routines from AirbitzCore. It contains an ABCSettings object which are account settings that
+ * routines from ABCContext. It contains an ABCSettings object which are account settings that
  * carry over from device to device. ABCAccount also contains an array of ABCWallet object wallets and archived
  * wallets which should be checked for the parameter loaded=YES before being accessed.
  *
@@ -16,12 +16,13 @@
  * into using an app running on the Airbitz SDK.
  */
 
-@class AirbitzCore;
+@class ABCContext;
 @class ABCAccount;
 @class ABCCategories;
 @class ABCCurrency;
 @class ABCDataStore;
 @class ABCDenomination;
+@class ABCError;
 @class ABCExchangeCache;
 @class ABCSpend;
 @class ABCSettings;
@@ -45,7 +46,7 @@
 
 /// ABCExchangeCache object. Used to convert bitcoin values to/from fiat in various formats
 /// The exchange cache is internally implemented as a global object shared across all users of
-/// AirbitzCore in the same application.
+/// ABCContext in the same application.
 @property (atomic, strong) ABCExchangeCache             *exchangeCache;
 
 ///----------------------------------------------------------
@@ -117,31 +118,28 @@
 /// -----------------------------------------------------------------------------
 
 /**
- * @param password NSString new password for currently logged in user
+ * @param password NSString Set password for current ABCAccount
  * (Optional. If used, method returns immediately with void)
  * @param completionHandler (Optional) completion handler code block
  * @param errorHandler (Optional) Code block called on error with parameters<br>
  * - *param* NSError
- * @return NSError object or nil if success. Return void if using completion
+ * @return ABCError object or nil if success. Return void if using completion
  *  handler
  */
 - (void)changePassword:(NSString *)password
-              complete:(void (^)(void)) completionHandler
-                 error:(void (^)(NSError *)) errorHandler;
-- (NSError *)changePassword:(NSString *)password;
+           callback:(void (^)(ABCError *error)) callback;
+- (ABCError *)changePassword:(NSString *)password;
 
 /**
- * @param pin NSString New pin for currently logged in user
+ * @param pin NSString Set PIN for current ABCAccount
  * (Optional. If used, method returns immediately with ABCCConditionCodeOk)
- * @param completionHandler Completion handler code block
- * @param errorHandler Error handler code block which is called with the following args<br>
+ * @param callback Callback code block
  * - *param* NSError
- * @return NSError Error object. Nil if success. Returns void if completion handlers used
+ * @return ABCError Error object. Nil if success. Returns void if completion handlers used
  */
 - (void)changePIN:(NSString *)pin
-         complete:(void (^)(void)) completionHandler
-            error:(void (^)(NSError *)) errorHandler;
-- (NSError *)changePIN:(NSString *)pin;
+      callback:(void (^)(ABCError *error)) callback;
+- (ABCError *)changePIN:(NSString *)pin;
 
 /**
  * Check if this user has a password on the account or if it is
@@ -149,7 +147,7 @@
  * @param error (Optional) NSError* Error object. Nil if success
  * @return BOOL true if user has a password
  */
-- (BOOL)accountHasPassword:(NSError **)error;
+- (BOOL)accountHasPassword:(ABCError **)error;
 - (BOOL)accountHasPassword;
 
 /**
@@ -162,14 +160,14 @@
 
 /**
  * Checks a PIN for correctness. This checks against the PIN used
- * during account creation in [AirbitzCore createAccount] or the PIN changed
+ * during account creation in [ABCContext createAccount] or the PIN changed
  * with [ABCAccount changePIN]<br>
  * This is used to guard access to certain actions in the GUI.
  * @param pin NSString* Pin to check
  * @param error (Optional) NSError* Error object. Nil if success
  * @return BOOL YES if PIN is correct
  */
-- (BOOL) checkPIN:(NSString *)pin error:(NSError **)error;
+- (BOOL) checkPIN:(NSString *)pin error:(ABCError **)error;
 - (BOOL) checkPIN:(NSString *)pin;
 
 /**
@@ -183,14 +181,14 @@
  * Enable or disable PIN login on this account. Set enable = YES to allow
  * PIN login. Enabling PIN login creates a local account decryption key that
  * is split with one have in local device storage and the other half on Airbitz
- * servers. When using [AirbitzCore pinLogin:username:pin:delegate:error] the PIN is sent to Airbitz servers
+ * servers. When using [ABCContext pinLogin:username:pin:delegate:error] the PIN is sent to Airbitz servers
  * to authenticate the user. If the PIN is correct, the second half of the decryption
  * key is sent back to the device. Combined with the locally saved key, the two
  * are then used to decrypt the local account thereby loggin in the user.
  * @param enable BOOL set to YES to enable PIN login
  * @return NSError* Nil if success
  */
-- (NSError *) pinLoginSetup:(BOOL)enable;
+- (ABCError *) enablePINLogin:(BOOL)enable;
 
 /**
  * Check if this account is allowed to login via PIN
@@ -225,7 +223,7 @@
 - (void) createWallet:(NSString *)walletName
              currency:(NSString *)currency
              complete:(void (^)(ABCWallet *)) completionHandler
-                error:(void (^)(NSError *)) errorHandler;
+                error:(void (^)(ABCError *)) errorHandler;
 
 
 /**
@@ -236,10 +234,10 @@
  * @param error NSError** May be set to nil. (Optional)
  * @return ABCWallet wallet object or nil if failure.
  */
-- (ABCWallet *) createWallet:(NSString *)walletName currency:(NSString *)currency error:(NSError **)error;
+- (ABCWallet *) createWallet:(NSString *)walletName currency:(NSString *)currency error:(ABCError **)error;
 - (ABCWallet *) createWallet:(NSString *)walletName currency:(NSString *)currency;
 
-- (NSError *)createFirstWalletIfNeeded;
+- (ABCError *)createFirstWalletIfNeeded;
 
 /**
  * Returns an ABCWallet object looked up by walletUUID
@@ -258,15 +256,15 @@
  * @param destinationIndexPath NSIndexPath* The destination array position of the wallet
  * @return NSError* Error object. Nil if success.
  */
-- (NSError *)reorderWallets:(NSIndexPath *)sourceIndexPath
+- (ABCError *)reorderWallets:(NSIndexPath *)sourceIndexPath
                 toIndexPath:(NSIndexPath *)destinationIndexPath;
 
 /**
  * Returns an array of the wallet IDs in the account
- * @param error NSError (optional)
+ * @param error ABCError (optional)
  * @return NSArray array of NSString wallet IDs
  */
-- (NSArray *)listWalletIDs:(NSError **)error;
+- (NSArray *)listWalletIDs:(ABCError **)error;
 - (NSArray *)listWalletIDs;
 
 /// -----------------------------------------------------------------------------
@@ -280,25 +278,25 @@
  * @param key NSString* key to set
  * @return NSError*
  */
-- (NSError *)setOTPKey:(NSString *)key;
+- (ABCError *)setupOTPKey:(NSString *)key;
 
 /**
  * Gets the locally saved OTP key for the current user.
- * @param error NSError error object or nil if success
+ * @param error ABCError error object or nil if success
  * @return NSString OTP key
  */
-- (NSString *)getOTPLocalKey:(NSError **)error;
+- (NSString *)getOTPLocalKey:(ABCError **)error;
 
 /**
  * Reads the OTP configuration from the server. Gets information on whether OTP
  * is enabled for the current account, and how long a reset request will take.
  * An OTP reset is a request to disable OTP made through the method
- * [AirbitzCore requestOTPReset]
+ * [ABCContext requestOTPReset]
  * @param enabled bool* enabled flag if OTP is enabled for this user
  * @param timeout long* number seconds required after a reset is requested
  * @return NSError* or nil if no error
  */
-- (NSError *)getOTPDetails:(bool *)enabled
+- (ABCError *)getOTPDetails:(bool *)enabled
                    timeout:(long *)timeout;
 
 /**
@@ -308,21 +306,21 @@
  * before OTP is disabled.
  * @return NSError* or nil if no error
  */
-- (NSError *)enableOTP:(long)timeout;
+- (ABCError *)enableOTP:(long)timeout;
 
 /**
  * Removes the OTP authentication requirement from the server for the
  * currently logged in user. Also removes local key from device
  * @return NSError* or nil if no error
  */
-- (NSError *)disableOTP;
+- (ABCError *)disableOTP;
 
 /**
  * Removes the OTP reset request from the server for the
  * currently logged in user
  * @return NSError* or nil if no error
  */
-- (NSError *)cancelOTPResetRequest;
+- (ABCError *)cancelOTPResetRequest;
 
 /// -----------------------------------------------------------------------------
 /// @name Password Recovery
@@ -342,9 +340,18 @@
 - (void)setupRecoveryQuestions:(NSString *)questions
                        answers:(NSString *)answers
                       complete:(void (^)(void)) completionHandler
-                         error:(void (^)(NSError *error)) errorHandler;
-- (NSError *)setupRecoveryQuestions:(NSString *)questions
+                         error:(void (^)(ABCError *error)) errorHandler;
+- (ABCError *)setupRecoveryQuestions:(NSString *)questions
                             answers:(NSString *)answers;
+
+- (NSString *)setupRecovery2Questions:(NSArray *)questions
+                              answers:(NSArray *)answers
+                                error:(ABCError **)error;
+- (void)setupRecovery2Questions:(NSArray *)questions
+                        answers:(NSArray *)answers
+                       callback:(void (^)(ABCError *error, NSString *recoveryToken)) callback;
+
+- (ABCError *)disableRecovery2;
 
 /**
  * GUI utility function to help determine if the user should be asked to setup
@@ -368,8 +375,8 @@
  * @return NSError* or nil if no error. Returns void if using completionHandler
  */
 - (void)clearBlockchainCache:(void (^)(void)) completionHandler
-                       error:(void (^)(NSError *error)) errorHandler;
-- (NSError *)clearBlockchainCache;
+                       error:(void (^)(ABCError *error)) errorHandler;
+- (ABCError *)clearBlockchainCache;
 
 
 /**
@@ -398,9 +405,12 @@
 /**
  * Login to a BitID server given the request URI
  * @param uri NSString URI request from server in the form "bitid://server.com/bitid?x=NONCE"
- * @return NSError Error object if failure. Nil if success.
+ * @return ABCError Error object if failure. Nil if success.
  */
-- (NSError *) bitidLogin:(NSString *)uri;
+- (ABCError *) bitidLogin:(NSString *)uri;
+
+// Undocumented. Do not use
+- (ABCError *) bitidLoginMeta:(NSString *)uri kycURI:(NSString *)kycURI;
 
 /**
  * Sign an arbitrary message with a BitID URI. The URI determines the key derivation
@@ -409,7 +419,7 @@
  * @param message NSString message to sign.
  * @return ABCBitIDSignature BitID signature object
  */
-- (ABCBitIDSignature *)bitidSign:(NSString *)uri message:(NSString *)message;
+- (ABCBitIDSignature *)signBitIDRequest:(NSString *)uri message:(NSString *)message;
 
 
 @end

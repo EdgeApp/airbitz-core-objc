@@ -7,7 +7,7 @@
 //
 
 #import "ABCWallet+Internal.h"
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 
 #define HIDDEN_BITZ_URI_SCHEME                          @"hbits"
@@ -20,7 +20,7 @@ static const int importTimeout                  = 30;
 
 @property (nonatomic, strong)   ABCError                    *abcError;
 @property (nonatomic, strong)   void                        (^importCompletionHandler)(ABCImportDataModel dataModel, NSString *address, ABCTransaction *transaction, uint64_t amount);
-@property (nonatomic, strong)   void                        (^importErrorHandler)(NSError *error);
+@property (nonatomic, strong)   void                        (^importErrorHandler)(ABCError *error);
 @property                       ABCImportDataModel          importDataModel;
 @property (nonatomic, strong)   NSString                    *sweptAddress;
 @property (nonatomic, strong)   NSTimer                     *importCallbackTimer;
@@ -56,7 +56,7 @@ static const int importTimeout                  = 30;
 
 }
 
-- (NSError *) renameWallet:(NSString *)newName;
+- (ABCError *) renameWallet:(NSString *)newName;
 {
     tABC_Error error;
     ABC_RenameWallet([self.account.name UTF8String],
@@ -68,7 +68,7 @@ static const int importTimeout                  = 30;
     return [ABCError makeNSError:error];
 }
 
-- (NSError *)removeWallet
+- (ABCError *)removeWallet
 {
     // Check if we are trying to delete the current wallet
     if ([self.account.currentWallet.uuid isEqualToString:self.uuid])
@@ -97,7 +97,7 @@ static const int importTimeout                  = 30;
 }
 
 - (void) removeWallet:(void(^)(void))completionHandler
-                error:(void (^)(NSError *error)) errorHandler;
+                error:(void (^)(ABCError *error)) errorHandler;
 {
     // Check if we are trying to delete the current wallet
     if ([self.account.currentWallet.uuid isEqualToString:self.uuid])
@@ -123,7 +123,7 @@ static const int importTimeout                  = 30;
          tABC_Error error;
          
          ABC_WalletRemove([self.account.name UTF8String], [self.uuid UTF8String], &error);
-         NSError *nserror = [ABCError makeNSError:error];
+         ABCError *nserror = [ABCError makeNSError:error];
          
          [self.account refreshWallets];
          
@@ -141,11 +141,11 @@ static const int importTimeout                  = 30;
 {
     return [self createNewReceiveAddress:nil];
 }
-- (ABCReceiveAddress *)createNewReceiveAddress:(NSError **)nserror;
+- (ABCReceiveAddress *)createNewReceiveAddress:(ABCError **)nserror;
 {
     ABCReceiveAddress *receiveAddress = [[ABCReceiveAddress alloc] initWithWallet:self];
 
-    NSError *error = [receiveAddress createAddress];
+    ABCError *error = [receiveAddress createAddress];
 
     if (nserror)
         *nserror = error;
@@ -155,11 +155,11 @@ static const int importTimeout                  = 30;
 }
 
 - (void)createNewReceiveAddress:(void (^)(ABCReceiveAddress *))completionHandler
-                          error:(void (^)(NSError *error)) errorHandler
+                          error:(void (^)(ABCError *error)) errorHandler
 {
     [self.account postToGenQRQueue:^(void)
      {
-         NSError *error = nil;
+         ABCError *error = nil;
          ABCReceiveAddress *receiveAddress = [self createNewReceiveAddress:&error];
 
          dispatch_async(dispatch_get_main_queue(), ^(void)
@@ -181,7 +181,7 @@ static const int importTimeout                  = 30;
 {
     return [self getReceiveAddress:address error:nil];
 }
-- (ABCReceiveAddress *)getReceiveAddress:(NSString *)address error:(NSError **)nserror;
+- (ABCReceiveAddress *)getReceiveAddress:(NSString *)address error:(ABCError **)nserror;
 {
     ABCReceiveAddress *receiveAddress = [[ABCReceiveAddress alloc] initWithWallet:self];
 
@@ -190,11 +190,11 @@ static const int importTimeout                  = 30;
     return receiveAddress;
 }
 
-- (ABCSpend *)createNewSpend:(NSError **)nserror;
+- (ABCSpend *)createNewSpend:(ABCError **)nserror;
 {
     ABCSpend *spend = nil;
     tABC_Error error;
-    NSError *lnserror = nil;
+    ABCError *lnserror = nil;
     void *ptr;
     
     ABC_SpendNew([self.account.name UTF8String], [[self uuid] UTF8String], &ptr, &error);
@@ -215,11 +215,11 @@ static const int importTimeout                  = 30;
 - (void)importPrivateKey:(NSString *)privateKey
                importing:(void (^)(NSString *address)) importingHandler
                 complete:(void (^)(ABCImportDataModel dataModel, NSString *address, ABCTransaction *transaction, uint64_t amount)) completionHandler
-                   error:(void (^)(NSError *error)) errorHandler;
+                   error:(void (^)(ABCError *error)) errorHandler;
 {
     bool bSuccess = NO;
     tABC_Error error;
-    NSError *nserror = nil;
+    ABCError *nserror = nil;
     
     // We will use the sweep callback to call these GUI handlers when done.
     self.importCompletionHandler = completionHandler;
@@ -303,12 +303,12 @@ static const int importTimeout                  = 30;
 }
 
 
-- (NSError *)exportTransactionsToCSV:(NSMutableString *) csv;
+- (ABCError *)exportTransactionsToCSV:(NSMutableString *) csv;
 {
     return [self exportTransactionsToCSV:csv start:nil end:nil];
 }
 
-- (NSError *)exportTransactionsToCSV:(NSMutableString *) csv start:(NSDate *)start end:(NSDate* )end;
+- (ABCError *)exportTransactionsToCSV:(NSMutableString *) csv start:(NSDate *)start end:(NSDate* )end;
 {
     char *szCsvData = nil;
     tABC_Error error;
@@ -334,7 +334,7 @@ static const int importTimeout                  = 30;
                   [self.account.password UTF8String],
                   [self.uuid UTF8String],
                   startTime, endTime, &szCsvData, &error);
-    NSError *nserror = [ABCError makeNSError:error];
+    ABCError *nserror = [ABCError makeNSError:error];
     if (!nserror)
     {
         [csv setString:[NSString stringWithCString:szCsvData encoding:NSASCIIStringEncoding]];
@@ -344,12 +344,12 @@ static const int importTimeout                  = 30;
     return nserror;
 }
 
-- (NSError *)exportTransactionsToQBO:(NSMutableString *) qbo;
+- (ABCError *)exportTransactionsToQBO:(NSMutableString *) qbo;
 {
     return [self exportTransactionsToQBO:qbo start:nil end:nil];
 }
 
-- (NSError *)exportTransactionsToQBO:(NSMutableString *) qbo start:(NSDate *)start end:(NSDate* )end;
+- (ABCError *)exportTransactionsToQBO:(NSMutableString *) qbo start:(NSDate *)start end:(NSDate* )end;
 {
     char *szQBOData = nil;
     tABC_Error error;
@@ -375,7 +375,7 @@ static const int importTimeout                  = 30;
                   [self.account.password UTF8String],
                   [self.uuid UTF8String],
                   startTime, endTime, &szQBOData, &error);
-    NSError *nserror = [ABCError makeNSError:error];
+    ABCError *nserror = [ABCError makeNSError:error];
     if (!nserror)
     {
         [qbo setString:[NSString stringWithCString:szQBOData encoding:NSASCIIStringEncoding]];
@@ -385,7 +385,7 @@ static const int importTimeout                  = 30;
     return nserror;
 }
 
-- (NSError *)exportWalletPrivateSeed:(NSMutableString *) seed
+- (ABCError *)exportWalletPrivateSeed:(NSMutableString *) seed
 {
     tABC_Error error;
     char *szSeed = NULL;
@@ -398,7 +398,7 @@ static const int importTimeout                  = 30;
                          [self.account.password UTF8String],
                          [self.uuid UTF8String],
                          &szSeed, &error);
-    NSError *nserror = [ABCError makeNSError:error];
+    ABCError *nserror = [ABCError makeNSError:error];
     if (!nserror)
     {
         [seed setString:[NSString stringWithUTF8String:szSeed]];
@@ -407,7 +407,7 @@ static const int importTimeout                  = 30;
     return nserror;
 }
 
-- (NSError *)exportWalletXPub:(NSMutableString *) seed
+- (ABCError *)exportWalletXPub:(NSMutableString *) seed
 {
     tABC_Error error;
     char *szSeed = NULL;
@@ -420,7 +420,7 @@ static const int importTimeout                  = 30;
                          [self.account.password UTF8String],
                          [self.uuid UTF8String],
                          &szSeed, &error);
-    NSError *nserror = [ABCError makeNSError:error];
+    ABCError *nserror = [ABCError makeNSError:error];
     if (!nserror)
     {
         [seed setString:[NSString stringWithUTF8String:szSeed]];
@@ -458,7 +458,7 @@ static const int importTimeout                  = 30;
     }
     else
     {
-        ABCLog(2,@("Error: AirbitzCore.loadTransactions:  %s\n"), Error.szDescription);
+        ABCLog(2,@("Error: ABCContext.loadTransactions:  %s\n"), Error.szDescription);
     }
     ABC_FreeTransaction(pTrans);
     return transaction;
@@ -520,7 +520,7 @@ static const int importTimeout                  = 30;
     }
     else
     {
-        ABCLog(2,@("Error: AirbitzCore.loadTransactions:  %s\n"), Error.szDescription);
+        ABCLog(2,@("Error: ABCContext.loadTransactions:  %s\n"), Error.szDescription);
     }
     ABC_FreeTransactions(aTransactions, tCount);
 }
@@ -593,10 +593,10 @@ static const int importTimeout                  = 30;
     return txHeight;
 }
 
-- (NSError *)searchTransactionsIn:(NSString *)term addTo:(NSMutableArray *) arrayTransactions;
+- (ABCError *)searchTransactionsIn:(NSString *)term addTo:(NSMutableArray *) arrayTransactions;
 {
     tABC_Error Error;
-    NSError *nserror = nil;
+    ABCError *nserror = nil;
     unsigned int tCount = 0;
     ABCTransaction *transaction;
     tABC_TxInfo **aTransactions = NULL;
@@ -616,7 +616,7 @@ static const int importTimeout                  = 30;
     }
     else
     {
-        ABCLog(2,@("Error: AirbitzCore.searchTransactionsIn:  %s\n"), Error.szDescription);
+        ABCLog(2,@("Error: ABCContext.searchTransactionsIn:  %s\n"), Error.szDescription);
     }
     ABC_FreeTransactions(aTransactions, tCount);
     return nserror;
@@ -751,10 +751,10 @@ static const int importTimeout                  = 30;
 
 #pragma mark - Private Key Sweep helper methods
 
-- (NSError *)sweepKey:(NSString *)privateKey intoWallet:(NSString *)walletUUID address:(NSString **)address
+- (ABCError *)sweepKey:(NSString *)privateKey intoWallet:(NSString *)walletUUID address:(NSString **)address
 {
     tABC_Error error;
-    NSError *nserror = nil;
+    ABCError *nserror = nil;
     char *pszAddress = NULL;
     ABC_SweepKey([self.account.name UTF8String],
                  [self.account.password UTF8String],
@@ -770,7 +770,7 @@ static const int importTimeout                  = 30;
     return nserror;
 }
 
-- (void)handleSweepCallback:(ABCTransaction *)tx amount:(uint64_t)amount error:(NSError *)error;
+- (void)handleSweepCallback:(ABCTransaction *)tx amount:(uint64_t)amount error:(ABCError *)error;
 {
     [self cancelImportExpirationTimer];
     
@@ -798,7 +798,7 @@ static const int importTimeout                  = 30;
     self.importCallbackTimer = nil;
     tABC_Error error;
     error.code = ABC_CC_NoTransaction;
-    NSError *nserror = [ABCError makeNSError:error];
+    ABCError *nserror = [ABCError makeNSError:error];
     dispatch_async(dispatch_get_main_queue(), ^{
         if (self.importErrorHandler) self.importErrorHandler(nserror);
         self.importErrorHandler = nil;

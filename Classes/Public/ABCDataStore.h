@@ -5,7 +5,7 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import "AirbitzCore.h"
+#import "ABCContext.h"
 
 /**
  * The ABCDataStore object implements the Airbitz auto-encrypted, auto-backed up, and auto 
@@ -35,7 +35,7 @@
  * @param value NSString* value of data to write
  * @return NSError* Error object. Nil if success
  */
-- (NSError *)dataWrite:(NSString *)folder withKey:(NSString *)key withValue:(NSString *)value;
+- (ABCError *)dataWrite:(NSString *)folder withKey:(NSString *)key withValue:(NSString *)value;
 
 /**
  * Reads a key value pair from the data store.
@@ -44,7 +44,7 @@
  * @param data Initialized & allocated NSMutableString* to receive data
  * @return NSError* Error object. Nil if success
  */
-- (NSError *)dataRead:(NSString *)folder withKey:(NSString *)key data:(NSMutableString *)data;
+- (ABCError *)dataRead:(NSString *)folder withKey:(NSString *)key data:(NSMutableString *)data;
 
 /**
  * Removes key value pair from the data store.
@@ -52,13 +52,21 @@
  * @param key NSString* key of data
  * @return NSError* Error object. Nil if success
  */
-- (NSError *)dataRemoveKey:(NSString *)folder withKey:(NSString *)key;
+- (ABCError *)dataRemoveKey:(NSString *)folder withKey:(NSString *)key;
+
+/**
+ * Lists all the keys in a folder of the dataStore.
+ * @param folder NSString* folder name to read data
+ * @param keys NSMutableArray* Array of NSString keys
+ * @return NSError* Error object. Nil if success
+ */
+- (ABCError *)dataListKeys:(NSString *)folder keys:(NSMutableArray *)keys;
 
 /**
  * Removes all key value pairs from the specified folder in the data store.
  * @param folder NSString* folder name to read data
  * @return NSError* Error object. Nil if success
  */
-- (NSError *)dataRemoveFolder:(NSString *)folder;
+- (ABCError *)dataRemoveFolder:(NSString *)folder;
 
 @end

@@ -6,12 +6,14 @@
 //
 
 #import "ABCKeychain.h"
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 #define PASSWORD_KEY            @"key_password"
+#define LOGINKEY_KEY            @"key_loginkey"
 #define RELOGIN_KEY             @"key_relogin"
 #define USE_TOUCHID_KEY         @"key_use_touchid"
-#define LOGOUT_TIME_KEY          @"key_logout_time"
+#define LOGOUT_TIME_KEY         @"key_logout_time"
+#define RECOVERY2_KEY           @"key_recovery2"
 #define SEC_ATTR_SERVICE        @"co.airbitz.airbitz"
 
 @class ABCSettings;
@@ -21,13 +23,13 @@
 
 @property (nonatomic) ABCLocalSettings *localSettings;
 
-- (id) init:(AirbitzCore *)abc;
+- (id) init:(ABCContext *)abc;
 - (BOOL) setKeychainData:(NSData *)data key:(NSString *)key authenticated:(BOOL) authenticated;
-- (NSData *) getKeychainData:(NSString *)key error:(NSError **)error;
+- (NSData *) getKeychainData:(NSString *)key error:(ABCError **)error;
 - (BOOL) setKeychainString:(NSString *)s key:(NSString *)key authenticated:(BOOL) authenticated;
 - (BOOL) setKeychainInt:(int64_t) i key:(NSString *)key authenticated:(BOOL) authenticated;
-- (int64_t) getKeychainInt:(NSString *)key error:(NSError **)error;
-- (NSString *) getKeychainString:(NSString *)key error:(NSError **)error;
+- (int64_t) getKeychainInt:(NSString *)key error:(ABCError **)error;
+- (NSString *) getKeychainString:(NSString *)key error:(ABCError **)error;
 - (NSString *) createKeyWithUsername:(NSString *)username key:(NSString *)key;
 - (BOOL) bHasSecureEnclave;
 - (BOOL)authenticateTouchID:(NSString *)promptString fallbackString:(NSString *)fallbackString
@@ -37,6 +39,6 @@
 - (BOOL) disableKeychainBasedOnSettings:(NSString *)username;
 - (void) clearKeychainInfo:(NSString *)username;
 - (void) updateLoginKeychainInfo:(NSString *)username
-                        password:(NSString *)password
+                        loginKey:(NSString *)key
                       useTouchID:(BOOL) bUseTouchID;
 @end

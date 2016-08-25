@@ -3,9 +3,9 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import "AirbitzCore.h"
+#import "ABCContext.h"
 
-@class AirbitzCore;
+@class ABCContext;
 @class ABCKeychain;
 @class ABCAccount;
 @class ABCDenomination;
@@ -56,13 +56,13 @@
  * Loads all settings into ABCSettings from encrypted storage
  * @return NSSError object
  */
-- (NSError *)loadSettings;
+- (ABCError *)loadSettings;
 
 /**
  * Saves all settings from ABCSettings to encrypted storage
  * @return NSSError object
  */
-- (NSError *)saveSettings;
+- (ABCError *)saveSettings;
 
 /**
  * Returns YES if touchID is allowed on this account and device

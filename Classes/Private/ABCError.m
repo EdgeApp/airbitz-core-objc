@@ -4,7 +4,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 @interface ABCError ()
 
@@ -12,12 +12,12 @@
 
 @implementation ABCError
 
-+ (NSError *)makeNSError:(tABC_Error)error;
++ (ABCError *)makeNSError:(tABC_Error)error;
 {
     return [ABCError makeNSError:error description:[ABCError errorMap:error]];
 }
 
-+ (NSError *)makeNSError:(tABC_Error)error description:(NSString *)description;
++ (ABCError *)makeNSError:(tABC_Error)error description:(NSString *)description;
 {
     if (ABCConditionCodeOk == error.code)
     {
@@ -43,14 +43,24 @@
         if (!failureDetail)
             failureDetail = @"";
         
-        return [NSError errorWithDomain:ABCErrorDomain
-                                   code:error.code
-                               userInfo:@{ NSLocalizedDescriptionKey:description,
-                                           NSLocalizedFailureReasonErrorKey:failureReason,
-                                           NSLocalizedRecoverySuggestionErrorKey:failureDetail }];
+        ABCError *abcError = [ABCError errorWithDomain:ABCErrorDomain
+                                                  code:error.code
+                                              userInfo:@{ NSLocalizedDescriptionKey:description,
+                                                          NSLocalizedFailureReasonErrorKey:failureReason,
+                                                          NSLocalizedRecoverySuggestionErrorKey:failureDetail }];
+        return abcError;
     }
 }
 
++(ABCError *) errorWithDomain:(NSInteger) code
+                     userInfo:(NSDictionary *)userInfo;
+{
+    ABCError *error = [ABCError alloc];
+    error.code = code;
+    error.userInfo = userInfo;
+    
+    return error;
+}
 
 
 + (NSString *)errorMap:(tABC_Error)error;

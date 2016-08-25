@@ -3,7 +3,7 @@
 //  Airbitz
 //
 
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 @interface ABCParsedURI ()
 {
@@ -13,11 +13,11 @@
 
 @implementation ABCParsedURI
 
-- (ABCPaymentRequest *) getPaymentRequest:(NSError **)nserror;
+- (ABCPaymentRequest *) getPaymentRequest:(ABCError **)nserror;
 {
     ABCPaymentRequest *paymentRequest = nil;
     tABC_PaymentRequest *pPaymentRequest = NULL;
-    NSError *lnserror = nil;
+    ABCError *lnserror = nil;
     tABC_Error error;
     
     if (self.paymentRequestURL)

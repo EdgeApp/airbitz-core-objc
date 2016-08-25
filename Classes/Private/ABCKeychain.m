@@ -9,11 +9,11 @@
 #import "NSMutableData+Secure.h"
 #import <LocalAuthentication/LocalAuthentication.h>
 #import "ABCKeychain+Internal.h"
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 @interface ABCKeychain ()
 
-@property (nonatomic) AirbitzCore *abc;
+@property (nonatomic) ABCContext *abc;
 @property (nonatomic) ABCLocalSettings *localSettings;
 
 @end
@@ -23,7 +23,7 @@
     
 }
 
-- (id) init:(AirbitzCore *)abc;
+- (id) init:(ABCContext *)abc;
 {
     self = [super init];
     self.abc = abc;
@@ -75,7 +75,7 @@
     return NO;
 }
 
-- (NSData *) getKeychainData:(NSString *)key error:(NSError **)error;
+- (NSData *) getKeychainData:(NSString *)key error:(ABCError **)error;
 {
     NSDictionary *query = @{(__bridge id)kSecClass:(__bridge id)kSecClassGenericPassword,
             (__bridge id)kSecAttrService:SEC_ATTR_SERVICE,
@@ -86,7 +86,7 @@
 
     if (status == errSecItemNotFound) return nil;
     if (status == noErr) return CFBridgingRelease(result);
-    if (error) *error = [NSError errorWithDomain:@"Airbitz" code:status
+    if (error) *error = [ABCError errorWithDomain:@"Airbitz" code:status
                                         userInfo:@{NSLocalizedDescriptionKey:@"SecItemCopyMatching error"}];
     return nil;
 }
@@ -94,7 +94,7 @@
 - (BOOL) bHasSecureEnclave;
 {
     LAContext *context = [LAContext new];
-    NSError *error = nil;
+    ABCError *error = nil;
 
     if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error])
     {
@@ -110,7 +110,7 @@
 
 {
     LAContext *context = [LAContext new];
-    NSError *error = nil;
+    ABCError *error = nil;
     __block NSInteger authcode = 0;
 
     if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error])
@@ -173,7 +173,7 @@
 //        
 //        
 //        [context evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
-//                localizedReason:(promptString.length > 0 ? promptString : @" ") reply:^(BOOL success, NSError *error)
+//                localizedReason:(promptString.length > 0 ? promptString : @" ") reply:^(BOOL success, ABCError *error)
 //                {
 //                    authcode = (success) ? 1 : error.code;
 //                }];
@@ -206,7 +206,7 @@
 #else
 - (BOOL) setKeychainData:(NSData *)data key:(NSString *)key authenticated:(BOOL) authenticated;
 { return NO; }
-- (NSData *) getKeychainData:(NSString *)key error:(NSError **)error;
+- (NSData *) getKeychainData:(NSString *)key error:(ABCError **)error;
 { return nil; }
 - (BOOL) bHasSecureEnclave;
 { return NO; }
@@ -230,7 +230,7 @@
     }
 }
 
-- (NSString *) getKeychainString:(NSString *)key error:(NSError **)error;
+- (NSString *) getKeychainString:(NSString *)key error:(ABCError **)error;
 {
     @autoreleasepool {
         NSData *d = [self getKeychainData:key error:error];
@@ -250,7 +250,7 @@
     }
 }
 
-- (int64_t) getKeychainInt:(NSString *)key error:(NSError **)error;
+- (int64_t) getKeychainInt:(NSString *)key error:(ABCError **)error;
 {
     @autoreleasepool {
         NSData *d = [self getKeychainData:key error:error];
@@ -311,7 +311,7 @@
 }
 
 - (void) updateLoginKeychainInfo:(NSString *)username
-                        password:(NSString *)password
+                        loginKey:(NSString *)loginKey
                       useTouchID:(BOOL) bUseTouchID;
 {
     dispatch_async(dispatch_get_main_queue(), ^(void) {
@@ -324,11 +324,11 @@
         [self setKeychainInt:bUseTouchID
                              key:[self createKeyWithUsername:username key:USE_TOUCHID_KEY]
                    authenticated:YES];
-        if (password != nil)
+        if (loginKey != nil)
         {
-            [self setKeychainString:password
-                                    key:[self createKeyWithUsername:username key:PASSWORD_KEY]
-                          authenticated:YES];
+            [self setKeychainString:loginKey
+                                key:[self createKeyWithUsername:username key:LOGINKEY_KEY]
+                      authenticated:YES];
         }
     });
 }

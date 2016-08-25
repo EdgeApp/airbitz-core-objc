@@ -3,7 +3,7 @@
 //  AirBitz
 //
 
-#import "AirbitzCore.h"
+#import "ABCContext.h"
 
 @class ABCWallet;
 @class ABCPaymentRequest;
@@ -36,7 +36,7 @@ typedef enum eABCSpendFeeLevel
  * @param amount uint64_t Amount of bitcoin to send in satoshis
  * @return NSError
  */
-- (NSError *)addAddress:(NSString *)address amount:(uint64_t)amount;
+- (ABCError *)addAddress:(NSString *)address amount:(uint64_t)amount;
 
 /**
  * Adds a transfer of funds between ABCWallets in an account. The source
@@ -46,44 +46,44 @@ typedef enum eABCSpendFeeLevel
  * @param destWallet ABCWallet Destination wallet for transfer
  * @param amountSatoshi uint64_t Amount of transfer
  * @param destMeta ABCMetaData Metadata to tag the destination transaction with
- * @return NSError Error object. Nil if success
+ * @return ABCError Error object. Nil if success
  */
-- (NSError *)addTransfer:(ABCWallet *)destWallet amount:(uint64_t)amountSatoshi destMeta:(ABCMetaData *)destMeta;
+- (ABCError *)addTransfer:(ABCWallet *)destWallet amount:(uint64_t)amountSatoshi destMeta:(ABCMetaData *)destMeta;
 
 /**
  * Adds a BIP70 payment request to this ABCSpend transaction. No amount parameter is
  * provided as the payment request always has the amount included. Generate an
  * ABCPaymentRequest object by calling parseURI then getPaymentRequest
  * @param paymentRequest ABCPaymentRequest object to add
- * @return NSError Error object. Nil if success
+ * @return ABCError Error object. Nil if success
  */
-- (NSError *)addPaymentRequest:(ABCPaymentRequest *)paymentRequest;
+- (ABCError *)addPaymentRequest:(ABCPaymentRequest *)paymentRequest;
 
 /**
  * Signs this send request and broadcasts it to the blockchain
- * @param error NSError object
+ * @param error ABCError object
  * @return ABCTransaction Transaction object
  */
-- (ABCTransaction *)signBroadcastAndSave:(NSError **)error;
+- (ABCTransaction *)signBroadcastAndSave:(ABCError **)error;
 
 /**
  * Signs this send request and broadcasts it to the blockchain. Uses completion handlers
  * @param completionHandler Completion handler code block<br>
  * - *param* ABCTransaction Transaction object
  * @param errorHandler Error handler code block which is called with the following args<br>
- * - *param* NSError error object
+ * - *param* ABCError error object
  * @return void
  */
 - (void)signBroadcastAndSave:(void(^)(ABCTransaction *))completionHandler
-                       error:(void(^)(NSError *error)) errorHandler;
+                       error:(void(^)(ABCError *error)) errorHandler;
 
 
 /**
  * Calculate the amount of fees needed to send this transaction
- * @param error NSError (optional)
+ * @param error ABCError (optional)
  * @return uint64_t Total fees required for this transaction
  */
-- (uint64_t)getFees:(NSError **)error;
+- (uint64_t)getFees:(ABCError **)error;
 - (uint64_t)getFees;
 
 /**
@@ -91,17 +91,17 @@ typedef enum eABCSpendFeeLevel
  * @param completionHandler Completion handler code block which is called with uint64_t totalFees<br>
  * - *param* uint64_t Amount of fees in satoshis
  * @param errorHandler Error handler code block which is called with the following args<br>
- * - *param* NSError error object
+ * - *param* ABCError error object
  */
 - (void)getFees:(void(^)(uint64_t fees))completionHandler
-          error:(void(^)(NSError *error)) errorHandler;
+          error:(void(^)(ABCError *error)) errorHandler;
 
 /**
  * Get the maximum amount spendable from this wallet using the currenct ABCSpend object
- * @param error NSError (optional)
+ * @param error ABCError (optional)
  * @return uint64_t Maximum spendable from this wallet in satoshis
  */
-- (uint64_t)getMaxSpendable:(NSError **)error;
+- (uint64_t)getMaxSpendable:(ABCError **)error;
 - (uint64_t)getMaxSpendable;
 
 /**
@@ -109,15 +109,15 @@ typedef enum eABCSpendFeeLevel
  * @param completionHandler Completion handler code block which is called with uint64_t totalFees<br>
  * - *param* uint64_t amountSpendable Total amount spendablein satoshis
  * @param errorHandler Error handler code block which is called with the following args<br>
- * - *param* NSError error object
+ * - *param* ABCError error object
  */
 - (void)getMaxSpendable:(void(^)(uint64_t amountSpendable))completionHandler
-                  error:(void(^)(NSError *error)) errorHandler;
+                  error:(void(^)(ABCError *error)) errorHandler;
 
 
-- (ABCUnsentTx *)signTx:(NSError **)error;
+- (ABCUnsentTx *)signTx:(ABCError **)error;
 - (void)signTx:(void(^)(ABCUnsentTx *unsentTx))completionHandler
-         error:(void(^)(NSError *error)) errorHandler;
+         error:(void(^)(ABCError *error)) errorHandler;
 
 
 @end
@@ -134,8 +134,8 @@ typedef enum eABCSpendFeeLevel
 @interface ABCUnsentTx : NSObject
 @property                           NSString                *base16;
 
-- (NSError *)broadcastTx;
-- (ABCTransaction *)saveTx:(NSError **)error;
+- (ABCError *)broadcastTx;
+- (ABCTransaction *)saveTx:(ABCError **)error;
 @end
 
 

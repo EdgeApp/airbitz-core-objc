@@ -6,13 +6,13 @@
 //
 
 #import "ABCReceiveAddress.h"
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 @interface ABCReceiveAddress (Internal)
 
 @property (atomic, strong) ABCWallet         *wallet;
 
-- (NSError *)createAddress;
+- (ABCError *)createAddress;
 - (id)initWithWallet:(ABCWallet *)wallet;
 
 @end

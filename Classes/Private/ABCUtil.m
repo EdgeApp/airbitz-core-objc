@@ -11,7 +11,7 @@
 #endif
 #import <sys/sysctl.h>
 #import "ABCUtil.h"
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 
 
@@ -20,13 +20,14 @@
 
 }
 
-+ (ABCParsedURI *)parseURI:(NSString *)uri error:(NSError **)nserror;
++ (ABCParsedURI *)parseURI:(NSString *)uri error:(ABCError **)nserror;
 {
     tABC_ParsedUri *parsedUri = NULL;
     char *szBitidDomain = NULL;
+    char *szBitidCallbackURI = NULL;
     ABCParsedURI *abcParsedURI = nil;
     tABC_Error error;
-    NSError *lnserror = nil;
+    ABCError *lnserror = nil;
     
     if (!uri)
     {
@@ -44,6 +45,10 @@
         abcParsedURI                        = [ABCParsedURI alloc];
         abcParsedURI.metadata               = [ABCMetaData alloc];
         abcParsedURI.amountSatoshi          = parsedUri->amountSatoshi;
+        abcParsedURI.bitidKYCRequest        = parsedUri->bitidKYCRequest;
+        abcParsedURI.bitidKYCProvider       = parsedUri->bitidKYCProvider;
+        abcParsedURI.bitidPaymentAddress    = parsedUri->bitidPaymentAddress;
+        
         if (parsedUri->szAddress)
             abcParsedURI.address            = [NSString stringWithUTF8String:parsedUri->szAddress];
         if (parsedUri->szWif)
@@ -51,9 +56,11 @@
         if (parsedUri->szBitidUri)
         {
             abcParsedURI.bitIDURI           = [NSString stringWithUTF8String:parsedUri->szBitidUri];
-            ABC_BitidParseUri(nil, nil, [abcParsedURI.bitIDURI UTF8String], &szBitidDomain, &error);
+            ABC_BitidParseUri(nil, nil, [abcParsedURI.bitIDURI UTF8String], &szBitidDomain, &szBitidCallbackURI, &error);
             if (szBitidDomain)
                 abcParsedURI.bitIDDomain    = [NSString stringWithUTF8String:szBitidDomain];
+            if (szBitidCallbackURI)
+                abcParsedURI.bitIDCallbackURI    = [NSString stringWithUTF8String:szBitidCallbackURI];
         }
         if (parsedUri->szLabel)
             abcParsedURI.metadata.payeeName = [NSString stringWithUTF8String:parsedUri->szLabel];
@@ -94,13 +101,13 @@
     return uri;
 }
 
-+ (UIImage *)encodeStringToQRImage:(NSString *)string error:(NSError **)nserror;
++ (UIImage *)encodeStringToQRImage:(NSString *)string error:(ABCError **)nserror;
 {
     unsigned char *pData = NULL;
     unsigned int width;
     tABC_Error error;
     UIImage *image = nil;
-    NSError *nserror2 = nil;
+    ABCError *nserror2 = nil;
     
     ABC_QrEncode([string UTF8String], &pData, &width, &error);
     nserror2 = [ABCError makeNSError:error];

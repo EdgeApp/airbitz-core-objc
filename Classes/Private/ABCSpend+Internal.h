@@ -6,7 +6,7 @@
 //
 
 #import "ABCSpend.h"
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 @interface ABCPaymentRequest (Internal)
 @property                           tABC_PaymentRequest     *pPaymentRequest;

@@ -24,9 +24,43 @@ If you are using React Native, you'll likely get a link error that you are missi
 
 And you're done. You should be able to call into AirbitzCore. See documentation below for code samples.
 
+## Using with React Native
+
+Follow the above for installing the CocoaPod into the iOS project of your React Native app but use this line in your `Podfile`. Currently only the `develop` branch has React Native support
+
+    target "nameOfYourProjectHere" do
+        pod 'AirbitzCore', :http => "https://developer.airbitz.co/download/airbitz-core-objc-develop-newest.tgz"
+    end
+
+
+Clone this repo locally to your computer at the same level as your app repo.
+
+Open the iOS project workspace of your app. Drag the files 
+
+    ReactBridge/ABCReact.c
+    ReactBridge/ABCReact.h 
+    
+and drop them into your React iOS "Libraries" folder in the XCode project.
+
+Create a softlink from the airbitz-core-objc/ReactBridge/abc-react.js file to your React app project main directory. If your project repo is at the same level as airbitz-core-objc, ie.
+
+    .../airbitz-core-obj/
+    .../your-app-repo/YourReactApp/
+
+Then run the following from the ```YourReactApp``` directory
+
+    ln -s ../../airbitz-core-objc/ReactBridge/abc-react.js abc-react.js
+    
+Sample javascript code for using AirbitzCore from ReactNative can be seen in the following repo
+
+https://github.com/Airbitz/airbitz-react-test
+
+See the file ```abc-react-test.js```
+
 ## Documentation
 
 https://developer.airbitz.co/objc/
+
 
 ## Building
 

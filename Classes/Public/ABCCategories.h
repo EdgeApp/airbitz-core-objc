@@ -3,15 +3,17 @@
 // Copyright (c) 2016 Airbitz. All rights reserved.
 //
 
-#import "AirbitzCore.h"
+#import "ABCContext.h"
+
+@class ABCError;
 
 @interface ABCCategories : NSObject
 
 @property (readonly, atomic, assign)      NSArray         *listCategories;
 
-- (NSError *)addCategory:(NSString *)category;
-- (NSError *)removeCategory:(NSString *)category;
-- (NSError *)saveCategories:(NSArray *)arrayCategories;
+- (ABCError *)addCategory:(NSString *)category;
+- (ABCError *)removeCategory:(NSString *)category;
+- (ABCError *)saveCategories:(NSArray *)arrayCategories;
 
 
 

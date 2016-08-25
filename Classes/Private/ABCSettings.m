@@ -4,7 +4,7 @@
 //
 
 #import "ABCSettings+Internal.h"
-#import "AirbitzCore+Internal.h"
+#import "ABCContext+Internal.h"
 
 
 @interface ABCSettings ()
@@ -32,7 +32,7 @@
     return self;
 }
 
-- (NSError *)loadSettings;
+- (ABCError *)loadSettings;
 {
     tABC_Error error;
     tABC_AccountSettings *pSettings = NULL;
@@ -76,7 +76,7 @@
     return [ABCError makeNSError:error];
 }
 
-- (NSError *)saveSettings;
+- (ABCError *)saveSettings;
 {
     tABC_Error error;
     tABC_AccountSettings *pSettings;
@@ -84,7 +84,7 @@
     BOOL exchangeRateSourceChanged = NO;
 
     ABC_LoadAccountSettings([self.account.name UTF8String], [self.account.password UTF8String], &pSettings, &error);
-    NSError *nserror = [ABCError makeNSError:error];
+    ABCError *nserror = [ABCError makeNSError:error];
 
     if (!nserror)
     {
@@ -118,7 +118,7 @@
         if (settingsChanged)
         {
             ABC_UpdateAccountSettings([self.account.name UTF8String], [self.account.password UTF8String], pSettings, &error);
-            NSError *nserror = [ABCError makeNSError:error];
+            ABCError *nserror = [ABCError makeNSError:error];
             
             if (!nserror)
             {
@@ -168,7 +168,7 @@
         [self.local.touchIDUsersEnabled addObject:self.account.name];
         [self.local saveAll];
         [self.keyChain updateLoginKeychainInfo:self.account.name
-                                      password:password
+                                      loginKey:self.account.loginKey
                                     useTouchID:YES];
         self.account.password = password;
         return YES;
@@ -188,8 +188,8 @@
         [self.local.touchIDUsersEnabled removeObject:self.account.name];
         [self.local saveAll];
         [self.keyChain updateLoginKeychainInfo:self.account.name
-                                 password:self.account.password
-                               useTouchID:NO];
+                                      loginKey:self.account.loginKey
+                                    useTouchID:NO];
     }
 }
 

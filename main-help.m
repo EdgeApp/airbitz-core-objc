@@ -21,7 +21,7 @@ If you are using React Native, you'll likely get a link error that you are missi
 
 And you're done. You should be able to call into AirbitzCore. See below for code samples.
 
-    #import "AirbitzCore.h"
+    #import "ABCContext.h"
 
     // Global account object
     ABCAccount *gAccount;
@@ -29,7 +29,7 @@ And you're done. You should be able to call into AirbitzCore. See below for code
     - (void) exampleMethod
     {
         // Create an account
-        AirbitzCore *abc  = [[AirbitzCore alloc] init:@"YourAPIKeyHere"];
+        AirbitzCore *abc  = [AirbitzCore makeABCContext:@"YourAPIKeyHere"];
         gAccount = [abc createAccount:@"myusername" password:@"MyPa55w0rd!&" pin:@"4283" delegate:self error:nil];
         // New account is auto logged in after creation
         
@@ -49,19 +49,19 @@ And you're done. You should be able to call into AirbitzCore. See below for code
         [gAccount logout];
         
         // Log back in with full credentials
-        gAccount = [abc passwordLogin:@"myusername" password:@"MyPa55w0rd!&" delegate:self error:nil];
+        gAccount = [abc loginWithPassword:@"myusername" password:@"MyPa55w0rd!&" delegate:self error:nil];
         
         // Logout
         [gAccount logout];
         
         // Log back in with PIN using completion handler codeblock
-        [abc pinLogin:@"myusername" pin:@"4283" delegate:self complete:^(ABCAccount *account)
-         {
-             gAccount = account;
-             
-         } error:^(NSError *error) {
-             NSLog(@"Argh! Error code: %d. Error string:%@", (int)error.code, error.userInfo[NSLocalizedDescriptionKey]);
-         }];
+        [abc pinLogin:@"myusername" pin:@"4283" delegate:self callback:^(ABCError *error, ABCAccount *account)
+        {
+            if (!error)
+                gAccount = account;
+            else
+                NSLog(@"Argh! Error code: %d. Error string:%@", (int)error.code, error.userInfo[NSLocalizedDescriptionKey]);
+        }];
         
     }
 
