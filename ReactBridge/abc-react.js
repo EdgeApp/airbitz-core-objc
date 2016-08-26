@@ -540,3 +540,4 @@ module.exports.ABCContext = ABCContext
 module.exports.ABCAccount = ABCAccount
 module.exports.ABCCallbacks = ABCCallbacks
 module.exports.ABCConditionCode = abcc
+module.exports.makeABCContext = makeABCContext
