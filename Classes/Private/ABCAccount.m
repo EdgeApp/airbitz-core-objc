@@ -1615,7 +1615,24 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 {
     ABCError *abcError = nil;
     
-    if (![elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN])
+    
+    ABCEdgeLoginInfo *info = [ABCEdgeLoginInfo alloc];
+    
+    NSMutableArray *ma = [[NSMutableArray alloc] init];
+
+    if ([elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_AUGUR])
+    {
+        info.requestor = @"Augur Prediction Market";
+        info.requestorImageUrl = @"https://airbitz.co/go/wp-content/uploads/2016/08/augur_logo_100.png";
+        info.repoTypes = [NSArray arrayWithObjects:@"account:repo:com.augur", @"wallet:repo:ethereum", nil];
+    }
+    else if ([elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_ARCADECITY])
+    {
+        info.requestor = @"Arcade City";
+        info.requestorImageUrl = @"https://airbitz.co/go/wp-content/uploads/2016/08/ACLOGOnt-1.png";
+        info.repoTypes = [NSArray arrayWithObjects:@"account:repo:city.arcade", @"wallet:repo:bitcoin", nil];
+    }
+    else
     {
         tABC_Error tError;
         tError.code = ABC_CC_Error;
@@ -1624,11 +1641,23 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
             *error = abcError;
         return nil;
     }
+
+    for (NSString *s in info.repoTypes)
+    {
+        if ([s isEqualToString:@"account:repo:com.augur"])
+            [ma addObject:@"Augur Account"];
+        else if ([s isEqualToString:@"account:repo:city.arcade"])
+            [ma addObject:@"Arcade City Account"];
+        else if ([s isEqualToString:@"wallet:repo:ethereum"])
+            [ma addObject:@"Ethereum Wallet"];
+        else if ([s isEqualToString:@"wallet:repo:bitcoin"])
+            [ma addObject:@"Bitcoin Wallet"];
+        else
+            [ma addObject:s];
+    }
     
-    ABCEdgeLoginInfo *info = [ABCEdgeLoginInfo alloc];
-    
-    info.requestor = @"com.augur";
-    NSArray *array = [NSArray arrayWithObjects:@"wallet:bitcoin", @"wallet:ethereum", nil ];
+    info.repoNames = [ma copy];
+    info.token = elRequestToken;
     
     if (error)
         *error = nil;
@@ -1651,7 +1680,8 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 {
     ABCError *error;
     
-    if (![elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN])
+    if (![elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_ARCADECITY] &&
+        ![elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_AUGUR])
     {
         tABC_Error tError;
         tError.code = ABC_CC_Error;
@@ -1666,7 +1696,8 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 
 - (ABCError *) deleteEdgeLoginRequest:(NSString *)elRequestToken;
 {
-    if (![elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN])
+    if (![elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_ARCADECITY] &&
+        ![elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_AUGUR])
     {
         tABC_Error tError;
         tError.code = ABC_CC_Error;
@@ -1679,7 +1710,21 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     }
 }
 
-
+- (NSArray *) getEdgeLoginRepos:(NSString *)repoType;
+{
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    
+    if ([repoType isEqualToString:@"wallet:repo:bitcoin"])
+    {
+        for (ABCWallet *w in self.arrayWallets)
+        {
+            [array addObject:w];
+        }
+    }
+    if (array.count > 0)
+        return [array copy];
+    return nil;
+}
 
 /////////////////////////////////////////////////////////////////
 //////////////////// New ABCAccount methods ////////////////////

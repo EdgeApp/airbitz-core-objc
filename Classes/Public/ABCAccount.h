@@ -33,11 +33,15 @@
 @class ABCEdgeLoginInfo;
 @protocol ABCAccountDelegate;
 
-#define DUMMY_EDGE_LOGIN_TOKEN @"IAMEDGE619"
+#define DUMMY_EDGE_LOGIN_TOKEN_AUGUR @"EDGYAUGUR1"
+#define DUMMY_EDGE_LOGIN_TOKEN_ARCADECITY @"ARCADECITY"
 
 @interface ABCEdgeLoginInfo : NSObject
+@property (atomic, strong) NSString                     *token;
 @property (atomic, strong) NSString                     *requestor;
+@property (atomic, strong) NSString                     *requestorImageUrl;
 @property (atomic, strong) NSArray                      *repoTypes;
+@property (atomic, strong) NSArray                      *repoNames;
 @end
 
 @interface ABCAccount : NSObject
@@ -375,9 +379,10 @@
 
 - (void)getEdgeLoginRequest:(NSString *)elRequestToken
                    callback:(void (^)(ABCError *error, ABCEdgeLoginInfo *info)) callback;
-- (ABCEdgeLoginInfo *) getEdgeLoginRequest:(NSString *)elRequestToken;
-- (ABCError *) approveEdgeLoginRequest:(NSString *)elRequestToken;
+- (void)approveEdgeLoginRequest:(NSString *)elRequestToken
+                       callback:(void (^)(ABCError *error)) callback;
 - (ABCError *) deleteEdgeLoginRequest:(NSString *)elRequestToken;
+- (NSArray *) getEdgeLoginRepos:(NSString *)repoType;
 
 /// -----------------------------------------------------------------------------
 /// @name Misc ABCAccount methods
