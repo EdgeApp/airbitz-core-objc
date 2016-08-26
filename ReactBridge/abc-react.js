@@ -264,6 +264,30 @@ class ABCBitIDSignature {
     this.address = ""
   }
 }
+
+/**
+ * Initialize and create an ABCContext object. Required for functionality of ABC SDK.
+ *
+ * @param {string} apikey Get an API Key from https://developer.airbitz.co
+ * @param {string} hbits Set to null for now
+ */
+function makeABCContext (apikey, type, hbits, callback) {
+  if (abcContext)
+    callback(null, abcContext)
+  else {
+    AirbitzCoreRCT.init(apikey, type, hbits, (rcterror) => {
+      var abcError = ABCError.makeABCError(rcterror)
+      if (abcError && (abcError.code != abcc.ABCConditionCodeReinitialization)) {
+        callback(abcError, null)
+      } else {
+        abcContext = new ABCContext()
+        callback(null, abcContext)
+      }
+    })
+  }
+}
+
+
 /**
  * ABCContext class
  *
@@ -271,29 +295,6 @@ class ABCBitIDSignature {
  * ABCAccount
  */
 class ABCContext {
-
-  /**
-   * Initialize and create an ABCContext object. Required for functionality of ABC SDK.
-   *
-   * @param {string} apikey Get an API Key from https://developer.airbitz.co
-   * @param {string} hbits Set to null for now
-   */
-  static makeABCContext (apikey, hbits, callback) {
-    if (abcContext)
-      callback(null, abcContext)
-    else {
-      AirbitzCoreRCT.init(apikey, hbits, (rcterror) => {
-        var abcError = ABCError.makeABCError(rcterror)
-        if (abcError && (abcError.code != abcc.ABCConditionCodeReinitialization)) {
-          callback(abcError, null)
-        } else {
-          abcContext = new ABCContext()
-          callback(null, abcContext)
-        }
-      })
-    }
-  }
-
 
   /**
    * Create an Airbitz account with specified username, password, and PIN
