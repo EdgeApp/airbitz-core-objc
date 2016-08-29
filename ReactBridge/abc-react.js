@@ -280,10 +280,14 @@ function makeABCContext (opts, callback) {
     callback({'code' : 1, 'message': 'Missing account type'})
     return;
   }
+  if (opts.hbits == null) {
+    opts.hbits = ''
+    return;
+  }
   if (abcContext)
     callback(null, abcContext)
   else {
-    AirbitzCoreRCT.init(opts.apikey, opts.accountType, hbits, (rcterror) => {
+    AirbitzCoreRCT.init(opts.apikey, opts.accountType, opts.hbits, (rcterror) => {
       var abcError = ABCError.makeABCError(rcterror)
       if (abcError && (abcError.code != abcc.ABCConditionCodeReinitialization)) {
         callback(abcError, null)
