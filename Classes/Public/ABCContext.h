@@ -407,6 +407,11 @@ typedef enum eABCDeviceCaps
  */
 + (void)listRecoveryQuestionChoices: (void (^)(ABCError *error, NSArray *arrayQuestions)) callback;
 
+/**
+ *
+ */
+- (NSString *)getLoginPackage:(NSString *)username error:(ABCError **)error;
+
 #pragma mark - OTP Management
 /// -----------------------------------------------------------------------------
 /// @name OTP (2 Factor Auth) Management
