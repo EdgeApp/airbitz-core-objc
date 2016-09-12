@@ -280,6 +280,33 @@
     return nil;
 }
 
+- (NSString *)getLoginPackage:(NSString *)username error:(ABCError **)error;
+{
+    tABC_Error tabcerror;
+    char *szPackage = NULL;
+    NSString *package = nil;
+    
+    ABC_GetLoginPackages(&szPackage,
+                         [username UTF8String],
+                         &tabcerror);
+    
+    ABCError *abcError = [ABCError makeNSError:tabcerror];
+    if (!abcError)
+    {
+        package = [NSString stringWithUTF8String:szPackage];
+    }
+    
+    if (szPackage)
+        free(szPackage);
+    
+    if (error)
+        *error = abcError;
+    
+    return package;
+}
+
+
+
 - (void)autoReloginOrTouchIDIfPossibleMain:(NSString *)username
                                   complete:(void (^)(BOOL doRelogin, NSString *password, NSString *loginKey, BOOL usedTouchID)) completionHandler;
 

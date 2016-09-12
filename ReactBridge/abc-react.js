@@ -271,11 +271,23 @@ class ABCBitIDSignature {
  * @param {string} apikey Get an API Key from https://developer.airbitz.co
  * @param {string} hbits Set to null for now
  */
-function makeABCContext (apikey, type, hbits, callback) {
+function makeABCContext (opts, callback) {
+  if (opts.apikey == null) {    
+    callback({'code' : 1, 'message': 'Missing API Key'})
+    return
+  }
+  if (opts.accountType == null) {
+    callback({'code' : 1, 'message': 'Missing account type'})
+    return;
+  }
+  if (opts.hbits == null) {
+    opts.hbits = ''
+    return;
+  }
   if (abcContext)
     callback(null, abcContext)
   else {
-    AirbitzCoreRCT.init(apikey, type, hbits, (rcterror) => {
+    AirbitzCoreRCT.init(opts.apikey, opts.accountType, opts.hbits, (rcterror) => {
       var abcError = ABCError.makeABCError(rcterror)
       if (abcError && (abcError.code != abcc.ABCConditionCodeReinitialization)) {
         callback(abcError, null)
@@ -540,3 +552,4 @@ module.exports.ABCContext = ABCContext
 module.exports.ABCAccount = ABCAccount
 module.exports.ABCCallbacks = ABCCallbacks
 module.exports.ABCConditionCode = abcc
+module.exports.makeABCContext = makeABCContext
