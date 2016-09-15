@@ -1616,82 +1616,110 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     ABCError *abcError = nil;
     
     
-    ABCEdgeLoginInfo *info = [ABCEdgeLoginInfo alloc];
+    ABCEdgeLoginInfo *info = nil;
     
-    NSMutableArray *ma = [[NSMutableArray alloc] init];
+//    if ([elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_AUGUR])
+//    {
+//        info.requestor = @"Augur Prediction Market";
+//        info.requestorImageUrl = @"https://airbitz.co/go/wp-content/uploads/2016/08/augur_logo_100.png";
+//        info.repoTypes = [NSArray arrayWithObjects:@"account:repo:com.augur", @"wallet:repo:ethereum", nil];
+//    }
+//    else if ([elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_ARCADECITY])
+//    {
+//        info.requestor = @"Arcade City";
+//        info.requestorImageUrl = @"https://airbitz.co/go/wp-content/uploads/2016/08/ACLOGOnt-1.png";
+//        info.repoTypes = [NSArray arrayWithObjects:@"account:repo:city.arcade", @"wallet:repo:bitcoin", nil];
+//    }
+//    else
+//    {
+//        tABC_Error tError;
+//        tError.code = ABC_CC_Error;
+//        abcError = [ABCError makeNSError:tError description:@"Invalid Edge Login Request"];
+//        if (error)
+//            *error = abcError;
+//        return nil;
+//    }
 
-    if ([elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_AUGUR])
+    tABC_Error tError;
+    int hLobby;
+    ABC_FetchLobby([elRequestToken UTF8String], &hLobby, &tError);
+    abcError = [ABCError makeNSError:tError];
+    
+    if (!abcError)
     {
-        info.requestor = @"Augur Prediction Market";
-        info.requestorImageUrl = @"https://airbitz.co/go/wp-content/uploads/2016/08/augur_logo_100.png";
-        info.repoTypes = [NSArray arrayWithObjects:@"account:repo:com.augur", @"wallet:repo:ethereum", nil];
-    }
-    else if ([elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_ARCADECITY])
-    {
-        info.requestor = @"Arcade City";
-        info.requestorImageUrl = @"https://airbitz.co/go/wp-content/uploads/2016/08/ACLOGOnt-1.png";
-        info.repoTypes = [NSArray arrayWithObjects:@"account:repo:city.arcade", @"wallet:repo:bitcoin", nil];
-    }
-    else
-    {
-        tABC_Error tError;
-        tError.code = ABC_CC_Error;
-        abcError = [ABCError makeNSError:tError description:@"Invalid Edge Login Request"];
-        if (error)
-            *error = abcError;
-        return nil;
-    }
+        char *szRequestType;
+        char *szDisplayName;
+        
+        ABC_GetLobbyAccountRequest(hLobby, &szRequestType, &szDisplayName, &tError);
+        abcError = [ABCError makeNSError:tError];
+        
+        if (!abcError)
+        {
+            
+            info = [ABCEdgeLoginInfo alloc];
+            info.repoTypes = [NSArray arrayWithObjects:[NSString stringWithUTF8String:szRequestType], nil];
+            info.requestor = [NSString stringWithUTF8String:szDisplayName];
 
-    for (NSString *s in info.repoTypes)
-    {
-        if ([s isEqualToString:@"account:repo:com.augur"])
-            [ma addObject:@"Augur Account"];
-        else if ([s isEqualToString:@"account:repo:city.arcade"])
-            [ma addObject:@"Arcade City Account"];
-        else if ([s isEqualToString:@"wallet:repo:ethereum"])
-            [ma addObject:@"Ethereum Wallet"];
-        else if ([s isEqualToString:@"wallet:repo:bitcoin"])
-            [ma addObject:@"Bitcoin Wallet"];
-        else
-            [ma addObject:s];
+            if ([info.requestor isEqualToString:@"Augur Prediction Market"])
+                info.requestorImageUrl = @"https://airbitz.co/go/wp-content/uploads/2016/08/augur_logo_100.png";
+            else if ([info.requestor isEqualToString:@"Arcade City"])
+                        info.requestorImageUrl = @"https://airbitz.co/go/wp-content/uploads/2016/08/ACLOGOnt-1.png";
+            
+            NSMutableArray *ma = [[NSMutableArray alloc] init];
+            
+            for (NSString *s in info.repoTypes)
+            {
+                if ([s isEqualToString:@"account:repo:com.augur"])
+                {
+                    [ma addObject:@"Augur Account"];
+                }
+                else if ([s isEqualToString:@"account:repo:city.arcade"])
+                {
+                    [ma addObject:@"Arcade City Account"];
+                }
+                else if ([s isEqualToString:@"wallet:repo:ethereum"])
+                {
+                    [ma addObject:@"Ethereum Wallet"];
+                }
+                else if ([s isEqualToString:@"wallet:repo:bitcoin"])
+                {
+                    [ma addObject:@"Bitcoin Wallet"];
+                }
+                else
+                {
+                    [ma addObject:s];
+                }
+            }
+            
+            info.repoNames = [ma copy];
+            info.token = elRequestToken;
+            info.hLobby = hLobby;
+        }
     }
-    
-    info.repoNames = [ma copy];
-    info.token = elRequestToken;
-    
     if (error)
-        *error = nil;
+        *error = abcError;
     
     return info;
 }
 
-- (void)approveEdgeLoginRequest:(NSString *)elRequestToken
-                       callback:(void (^)(ABCError *error)) callback;
+- (void) approveEdgeLoginRequest:(ABCEdgeLoginInfo *)edgeLoginInfo
+                              callback:(void (^)(ABCError *error)) callback;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-        ABCError *error = [self approveEdgeLoginRequest:elRequestToken];
+        ABCError *error = [self approveEdgeLoginRequest:edgeLoginInfo];
         dispatch_async(dispatch_get_main_queue(), ^(void) {
             if (callback) callback(error);
         });
     });
 }
 
-- (ABCError *) approveEdgeLoginRequest:(NSString *)elRequestToken;
+- (ABCError *) approveEdgeLoginRequest:(ABCEdgeLoginInfo *)edgeLoginInfo;
 {
     ABCError *error;
+    tABC_Error tError;
     
-    if (![elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_ARCADECITY] &&
-        ![elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_AUGUR])
-    {
-        tABC_Error tError;
-        tError.code = ABC_CC_Error;
-        error = [ABCError makeNSError:tError description:@"Invalid Edge Login Request"];
-        return error;
-    }
-    else
-    {
-        return nil;
-    }
+    ABC_ApproveLobbyAccountRequest([self.name UTF8String], [self.password UTF8String], edgeLoginInfo.hLobby, &tError);
+    return [ABCError makeNSError:tError];
 }
 
 - (ABCError *) deleteEdgeLoginRequest:(NSString *)elRequestToken;
