@@ -1598,7 +1598,161 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     }
 }
 
+- (void)getEdgeLoginRequest:(NSString *)elRequestToken
+                   callback:(void (^)(ABCError *error, ABCEdgeLoginInfo *info)) callback;
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+        ABCError *error;
+        
+        ABCEdgeLoginInfo *info = [self getEdgeLoginRequest:elRequestToken error:&error];
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            if (callback) callback(error, info);
+        });
+    });
+}
 
+- (ABCEdgeLoginInfo *) getEdgeLoginRequest:(NSString *)elRequestToken error:(ABCError **)error;
+{
+    ABCError *abcError = nil;
+    
+    
+    ABCEdgeLoginInfo *info = nil;
+    
+//    if ([elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_AUGUR])
+//    {
+//        info.requestor = @"Augur Prediction Market";
+//        info.requestorImageUrl = @"https://airbitz.co/go/wp-content/uploads/2016/08/augur_logo_100.png";
+//        info.repoTypes = [NSArray arrayWithObjects:@"account:repo:com.augur", @"wallet:repo:ethereum", nil];
+//    }
+//    else if ([elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_ARCADECITY])
+//    {
+//        info.requestor = @"Arcade City";
+//        info.requestorImageUrl = @"https://airbitz.co/go/wp-content/uploads/2016/08/ACLOGOnt-1.png";
+//        info.repoTypes = [NSArray arrayWithObjects:@"account:repo:city.arcade", @"wallet:repo:bitcoin", nil];
+//    }
+//    else
+//    {
+//        tABC_Error tError;
+//        tError.code = ABC_CC_Error;
+//        abcError = [ABCError makeNSError:tError description:@"Invalid Edge Login Request"];
+//        if (error)
+//            *error = abcError;
+//        return nil;
+//    }
+
+    tABC_Error tError;
+    int hLobby;
+    ABC_FetchLobby([elRequestToken UTF8String], &hLobby, &tError);
+    abcError = [ABCError makeNSError:tError];
+    
+    if (!abcError)
+    {
+        char *szRequestType;
+        char *szDisplayName;
+        
+        ABC_GetLobbyAccountRequest(hLobby, &szRequestType, &szDisplayName, &tError);
+        abcError = [ABCError makeNSError:tError];
+        
+        if (!abcError)
+        {
+            
+            info = [ABCEdgeLoginInfo alloc];
+            info.repoTypes = [NSArray arrayWithObjects:[NSString stringWithUTF8String:szRequestType], nil];
+            info.requestor = [NSString stringWithUTF8String:szDisplayName];
+
+            if ([info.requestor isEqualToString:@"Augur Prediction Market"])
+                info.requestorImageUrl = @"https://airbitz.co/go/wp-content/uploads/2016/08/augur_logo_100.png";
+            else if ([info.requestor isEqualToString:@"Arcade City"])
+                        info.requestorImageUrl = @"https://airbitz.co/go/wp-content/uploads/2016/08/ACLOGOnt-1.png";
+            
+            NSMutableArray *ma = [[NSMutableArray alloc] init];
+            
+            for (NSString *s in info.repoTypes)
+            {
+                if ([s isEqualToString:@"account:repo:com.augur"])
+                {
+                    [ma addObject:@"Augur Account"];
+                }
+                else if ([s isEqualToString:@"account:repo:city.arcade"])
+                {
+                    [ma addObject:@"Arcade City Account"];
+                }
+                else if ([s isEqualToString:@"wallet:repo:ethereum"])
+                {
+                    [ma addObject:@"Ethereum Wallet"];
+                }
+                else if ([s isEqualToString:@"wallet:repo:bitcoin"])
+                {
+                    [ma addObject:@"Bitcoin Wallet"];
+                }
+                else
+                {
+                    [ma addObject:s];
+                }
+            }
+            
+            info.repoNames = [ma copy];
+            info.token = elRequestToken;
+            info.hLobby = hLobby;
+        }
+    }
+    if (error)
+        *error = abcError;
+    
+    return info;
+}
+
+- (void) approveEdgeLoginRequest:(ABCEdgeLoginInfo *)edgeLoginInfo
+                              callback:(void (^)(ABCError *error)) callback;
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+        ABCError *error = [self approveEdgeLoginRequest:edgeLoginInfo];
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            if (callback) callback(error);
+        });
+    });
+}
+
+- (ABCError *) approveEdgeLoginRequest:(ABCEdgeLoginInfo *)edgeLoginInfo;
+{
+    ABCError *error;
+    tABC_Error tError;
+    
+    ABC_ApproveLobbyAccountRequest([self.name UTF8String], [self.password UTF8String], edgeLoginInfo.hLobby, &tError);
+    return [ABCError makeNSError:tError];
+}
+
+- (ABCError *) deleteEdgeLoginRequest:(NSString *)elRequestToken;
+{
+    if (![elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_ARCADECITY] &&
+        ![elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_AUGUR])
+    {
+        tABC_Error tError;
+        tError.code = ABC_CC_Error;
+        [ABCError makeNSError:tError description:@"Invalid Edge Login Request"];
+        return nil;
+    }
+    else
+    {
+        return nil;
+    }
+}
+
+- (NSArray *) getEdgeLoginRepos:(NSString *)repoType;
+{
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    
+    if ([repoType isEqualToString:@"wallet:repo:bitcoin"])
+    {
+        for (ABCWallet *w in self.arrayWallets)
+        {
+            [array addObject:w];
+        }
+    }
+    if (array.count > 0)
+        return [array copy];
+    return nil;
+}
 
 /////////////////////////////////////////////////////////////////
 //////////////////// New ABCAccount methods ////////////////////
@@ -2098,5 +2252,13 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 }
 
 
+@end
+
+@implementation ABCEdgeLoginInfo
+- (id)init
+{
+    self = [super init];
+    return self;
+}
 @end
 
