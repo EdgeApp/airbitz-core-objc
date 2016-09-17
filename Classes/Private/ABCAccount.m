@@ -16,6 +16,7 @@ static NSNumberFormatter        *numberFormatter = nil;
     
     BOOL                                            bInitialized;
     BOOL                                            bHasSentWalletsLoaded;
+    BOOL                                            _bSuspended;
     long                                            iLoginTimeSeconds;
     NSOperationQueue                                *dataQueue;
     NSOperationQueue                                *walletsQueue;
@@ -154,6 +155,7 @@ static NSNumberFormatter        *numberFormatter = nil;
                                                             repeats:YES];
             
         });
+        [self startDataSyncTimer];
     }
 }
 
@@ -163,6 +165,7 @@ static NSNumberFormatter        *numberFormatter = nil;
     {
         [self stopQueues];
         [self disconnectWatchers];
+        _bSuspended = YES;
     }
 }
 
@@ -176,7 +179,12 @@ static NSNumberFormatter        *numberFormatter = nil;
 
 - (void)enterForeground
 {
-    
+    if (_bSuspended)
+    {
+        [self startQueues];
+        [self connectWatchers];
+        _bSuspended = NO;
+    }
 }
 
 - (void)stopQueues
@@ -1308,6 +1316,11 @@ static NSNumberFormatter        *numberFormatter = nil;
         ABC_GeneralInfoUpdate(&error);
     }];
     
+    [self startDataSyncTimer];
+}
+
+- (void) startDataSyncTimer;
+{
     [self postToDataQueue:^{
         dispatch_async(dispatch_get_main_queue(),^{
             
