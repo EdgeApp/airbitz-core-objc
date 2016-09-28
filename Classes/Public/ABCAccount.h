@@ -476,6 +476,10 @@
 /// @param wallet ABCWallet
 - (void) abcAccountWalletLoaded:(ABCWallet *)wallet;
 
+/// Specific wallet has had all it's addresses checked for new transactions
+/// @param wallet ABCWallet
+- (void) abcAccountWalletAddressesChecked:(ABCWallet *)wallet;
+
 /// Wallets in the account have changed. Changes may include new wallet order or wallet names.
 - (void) abcAccountWalletsChanged;
 

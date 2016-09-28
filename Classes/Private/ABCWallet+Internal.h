@@ -12,7 +12,6 @@
 
 @interface ABCWallet (Internal)
 
-@property                           BOOL                bAddressesLoaded;
 @property                           BOOL                bBlockHeightChanged;
 
 - (id)initWithUser:(ABCAccount *) user;

@@ -57,6 +57,9 @@ typedef NS_ENUM(NSUInteger, ABCImportDataModel) {
 /// signIn while wallet info is being decrypted and loaded
 @property (nonatomic, assign)   BOOL            loaded;
 
+/// YES if this wallet and all it's addresses have been checked for new transactions
+@property (nonatomic, assign)   BOOL            addressesChecked;
+
 /// The ABCAccount object which contains this wallet.
 @property (nonatomic, strong)   ABCAccount      *account;
 
