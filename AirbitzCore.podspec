@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "AirbitzCore"
-  s.version      = "1.0.1"
+  s.version      = "1.0.2"
   s.summary      = "Bitcoin and Edge Security Library"
 
   # This description is used to generate tags and improve search results.
@@ -57,7 +57,7 @@ developers to secure arbitrary data which provides automatic client-side encrypt
   s.author             = { "Paul Puey" => "paul@airbitz.co" }
   # Or just: s.author    = "Paul Puey"
   # s.authors            = { "Paul Puey" => "paul@airbitz.co" }
-  # s.social_media_url   = "http://twitter.com/Paul Puey"
+  s.social_media_url   = "http://twitter.com/Airbitz"
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -81,7 +81,7 @@ developers to secure arbitrary data which provides automatic client-side encrypt
   #  Supports git, hg, bzr, svn and HTTP.
   #
   #s.source = { :git => 'https://github.com/Airbitz/airbitz-core-objc.git', :tag => '0.10.3' }
-  s.source = { :path => './' }
+  s.source = { :git => 'git@github.com:Airbitz/airbitz-core-objc.git', :tag => '1.0.2' }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
