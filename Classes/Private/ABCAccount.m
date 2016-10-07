@@ -1649,8 +1649,9 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     {
         char *szRequestType;
         char *szDisplayName;
+        char *szDisplayImageUrl;
         
-        ABC_GetLobbyAccountRequest(hLobby, &szRequestType, &szDisplayName, &tError);
+        ABC_GetLobbyAccountRequest(hLobby, &szRequestType, &szDisplayName, &szDisplayImageUrl, &tError);
         abcError = [ABCError makeNSError:tError];
         
         if (!abcError)
@@ -1660,10 +1661,14 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
             info.repoTypes = [NSArray arrayWithObjects:[NSString stringWithUTF8String:szRequestType], nil];
             info.requestor = [NSString stringWithUTF8String:szDisplayName];
 
-            if ([info.requestor isEqualToString:@"Augur Prediction Market"])
-                info.requestorImageUrl = @"https://airbitz.co/go/wp-content/uploads/2016/08/augur_logo_100.png";
-            else if ([info.requestor isEqualToString:@"Arcade City"])
-                        info.requestorImageUrl = @"https://airbitz.co/go/wp-content/uploads/2016/08/ACLOGOnt-1.png";
+            if (szDisplayImageUrl)
+            {
+                NSString *imageUrl = [NSString stringWithUTF8String:szDisplayImageUrl];
+                if (imageUrl.length > 6)
+                {
+                    info.requestorImageUrl = imageUrl;
+                }
+            }
             
             NSMutableArray *ma = [[NSMutableArray alloc] init];
             
