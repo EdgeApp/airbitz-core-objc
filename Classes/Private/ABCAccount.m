@@ -1682,6 +1682,10 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
                 {
                     [ma addObject:@"Arcade City Account"];
                 }
+                else if ([s isEqualToString:@"account:repo:com.mydomain.myapp"])
+                {
+                    [ma addObject:@"Cloud Chain Account"];
+                }
                 else if ([s isEqualToString:@"wallet:repo:ethereum"])
                 {
                     [ma addObject:@"Ethereum Wallet"];
