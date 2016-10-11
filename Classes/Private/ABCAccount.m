@@ -426,9 +426,21 @@ static NSNumberFormatter        *numberFormatter = nil;
     self.bAllWalletsLoaded = NO;
 }
 
+
+- (void)refreshWalletsIfNotBusy:(void(^)(void))cb
+{
+    if (0 == [walletsQueue operationCount])
+        [self refreshWallets:cb];
+    else
+        ABCLog(2, @"refreshWallets BUSY");
+}
+
 - (void)refreshWallets;
 {
-    [self refreshWallets:nil];
+    if (0 == [walletsQueue operationCount])
+        [self refreshWallets:nil];
+    else
+        ABCLog(2, @"refreshWallets BUSY");
 }
 
 - (void)refreshWallets:(void(^)(void))cb
@@ -495,7 +507,6 @@ static NSNumberFormatter        *numberFormatter = nil;
                     self.currentWallet = [self selectWalletWithUUID:lastCurrentWalletUUID];
                     self.currentWalletIndex = (int) [self.arrayWallets indexOfObject:self.currentWallet];
                 }
-                [self checkWalletsLoadingNotification];
                 [self postNotificationWalletsChanged];
                 
                 ABCLog(2,@"EXIT refreshWallets MainQueue: %@", [NSThread currentThread].name);
@@ -508,33 +519,12 @@ static NSNumberFormatter        *numberFormatter = nil;
     }];
 }
 
-- (void)checkWalletsLoadingNotification
+- (void)postWalletAddressesChecked:(ABCWallet *)wallet
 {
-    if (!self.bNewDeviceLogin)
-    {
-        ABCLog(1, @"************ numWalletsLoaded=%d", self.numWalletsLoaded);
-        if (self.arrayWallets && self.numWalletsLoaded > 0)
-        {
-            // Loop over all wallets and post them as loaded if they are
-            for (ABCWallet *w in self.arrayWallets)
-            {
-                // This loaded flag only means the wallet info has been loaded from disk,
-                // not that all addresses have been checked on the blockchain. This is fine
-                // for logins on a previous device. For new device logins, we will wait for
-                // ABC_AsyncEventType_AddressCheckDone
-                if (w.loaded)
-                    [self postWalletsLoadedNotification:w];
-            }
-        }
-    }
-}
-
-- (void)postWalletsLoadedNotification:(ABCWallet *)wallet
-{
-    if (self.delegate && !wallet.bAddressesLoaded) {
-        wallet.bAddressesLoaded = YES;
-        if ([self.delegate respondsToSelector:@selector(abcAccountWalletLoaded:)]) {
-            [self.delegate abcAccountWalletLoaded:wallet];
+    if (self.delegate && !wallet.addressesChecked) {
+        wallet.addressesChecked = YES;
+        if ([self.delegate respondsToSelector:@selector(abcAccountWalletAddressesChecked:)]) {
+            [self.delegate abcAccountWalletAddressesChecked:wallet];
         }
     }
 }
@@ -1504,7 +1494,7 @@ static NSNumberFormatter        *numberFormatter = nil;
 
 void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 {
-    ABCAccount *user = (__bridge id) pInfo->pData;
+    ABCAccount *account = (__bridge id) pInfo->pData;
     ABCError *error = [ABCError makeNSError:pInfo->status];
     uint64_t amount = (uint64_t) pInfo->sweepSatoshi;
     
@@ -1525,22 +1515,17 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     }
     
     if (ABC_AsyncEventType_IncomingBitCoin == pInfo->eventType) {
-        BOOL doRefresh = !user.bNewDeviceLogin;
-        if ([user.walletUUIDsLoaded containsObject:walletUUID])
-            doRefresh = YES;
-        
-        if (doRefresh)
         {
-            [user refreshWallets:^ {
-                if (user.delegate) {
-                    if ([user.delegate respondsToSelector:@selector(abcAccountIncomingBitcoin:transaction:)]) {
+            [account refreshWalletsIfNotBusy:^ {
+                if (account.delegate) {
+                    if ([account.delegate respondsToSelector:@selector(abcAccountIncomingBitcoin:transaction:)]) {
                         ABCWallet *wallet = nil;
                         ABCTransaction *tx = nil;
                         if (walletUUID)
-                            wallet = [user getWallet:walletUUID];
+                            wallet = [account getWallet:walletUUID];
                         if (txid)
                             tx = [wallet getTransaction:txid];
-                        [user.delegate abcAccountIncomingBitcoin:wallet transaction:tx];
+                        [account.delegate abcAccountIncomingBitcoin:wallet transaction:tx];
                     }
                 }
             }];
@@ -1549,14 +1534,14 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
         ABCWallet *wallet = nil;
         if (walletUUID)
         {
-            wallet = [user getWallet:walletUUID];
+            wallet = [account getWallet:walletUUID];
             if (wallet)
             {
                 wallet.bBlockHeightChanged = YES;
-                if (user.delegate) {
-                    if ([user.delegate respondsToSelector:@selector(abcAccountBlockHeightChanged:)]) {
+                if (account.delegate) {
+                    if ([account.delegate respondsToSelector:@selector(abcAccountBlockHeightChanged:)]) {
                         dispatch_async(dispatch_get_main_queue(), ^(void) {
-                            [user.delegate abcAccountBlockHeightChanged:wallet];
+                            [account.delegate abcAccountBlockHeightChanged:wallet];
                         });
                     }
                 }
@@ -1564,54 +1549,211 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
         }
         
     } else if (ABC_AsyncEventType_TransactionUpdate == pInfo->eventType) {
-        [user refreshWallets:^{
-            [user postNotificationWalletsChanged];
-        }];
+        [account refreshWallets];
     } else if (ABC_AsyncEventType_BalanceUpdate == pInfo->eventType) {
-        BOOL doRefresh = !user.bNewDeviceLogin;
-        if ([user.walletUUIDsLoaded containsObject:walletUUID])
-            doRefresh = YES;
-
-        if (doRefresh)
-        {
-            [user refreshWallets:^ {
-                if (user.delegate) {
-                    if ([user.delegate respondsToSelector:@selector(abcAccountBalanceUpdate:transaction:)]) {
-                        ABCWallet *wallet = nil;
-                        ABCTransaction *tx = nil;
-                        if (walletUUID)
-                            wallet = [user getWallet:walletUUID];
-                        if (txid)
-                            tx = [wallet getTransaction:txid];
-                        [user.delegate abcAccountBalanceUpdate:wallet transaction:tx];
-                    }
+        [account refreshWalletsIfNotBusy:^ {
+            if (account.delegate) {
+                if ([account.delegate respondsToSelector:@selector(abcAccountBalanceUpdate:transaction:)]) {
+                    ABCWallet *wallet = nil;
+                    ABCTransaction *tx = nil;
+                    if (walletUUID)
+                        wallet = [account getWallet:walletUUID];
+                    if (txid)
+                        tx = [wallet getTransaction:txid];
+                    [account.delegate abcAccountBalanceUpdate:wallet transaction:tx];
                 }
-            }];
-        }
+            }
+        }];
     } else if (ABC_AsyncEventType_IncomingSweep == pInfo->eventType) {
         ABCWallet *wallet = nil;
         ABCTransaction *tx = nil;
         if (walletUUID)
-            wallet = [user getWallet:walletUUID];
+            wallet = [account getWallet:walletUUID];
         if (txid)
             tx = [wallet getTransaction:txid];
         [wallet handleSweepCallback:tx amount:amount error:error];
         
     } else if (ABC_AsyncEventType_AddressCheckDone == pInfo->eventType) {
-        if (walletUUID)
-            [user.walletUUIDsLoaded addObject:walletUUID];
-        
-        [user refreshWallets:^ {
-            ABCWallet *wallet = nil;
+        dispatch_async(dispatch_get_main_queue(),^{
+            ABC_Log([[NSString stringWithFormat:@"ABC_AsyncEventType_AddressCheckDone", walletUUID] UTF8String]);
             if (walletUUID)
-                wallet = [user getWallet:walletUUID];
-            [user postWalletsLoadedNotification:wallet];
-        }];
-        
+            {
+                ABC_Log([[NSString stringWithFormat:@"ABC_AsyncEventType_AddressCheckDone %@", walletUUID] UTF8String]);
+                [account.walletUUIDsLoaded addObject:walletUUID];
+                ABCWallet *wallet = nil;
+                if (walletUUID)
+                    wallet = [account getWallet:walletUUID];
+                [account postWalletAddressesChecked:wallet];
+                
+            }
+        });
     }
 }
 
+- (void)getEdgeLoginRequest:(NSString *)elRequestToken
+                   callback:(void (^)(ABCError *error, ABCEdgeLoginInfo *info)) callback;
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+        ABCError *error;
+        
+        ABCEdgeLoginInfo *info = [self getEdgeLoginRequest:elRequestToken error:&error];
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            if (callback) callback(error, info);
+        });
+    });
+}
 
+- (ABCEdgeLoginInfo *) getEdgeLoginRequest:(NSString *)elRequestToken error:(ABCError **)error;
+{
+    ABCError *abcError = nil;
+    
+    
+    ABCEdgeLoginInfo *info = nil;
+    
+//    if ([elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_AUGUR])
+//    {
+//        info.requestor = @"Augur Prediction Market";
+//        info.requestorImageUrl = @"https://airbitz.co/go/wp-content/uploads/2016/08/augur_logo_100.png";
+//        info.repoTypes = [NSArray arrayWithObjects:@"account:repo:com.augur", @"wallet:repo:ethereum", nil];
+//    }
+//    else if ([elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_ARCADECITY])
+//    {
+//        info.requestor = @"Arcade City";
+//        info.requestorImageUrl = @"https://airbitz.co/go/wp-content/uploads/2016/08/ACLOGOnt-1.png";
+//        info.repoTypes = [NSArray arrayWithObjects:@"account:repo:city.arcade", @"wallet:repo:bitcoin", nil];
+//    }
+//    else
+//    {
+//        tABC_Error tError;
+//        tError.code = ABC_CC_Error;
+//        abcError = [ABCError makeNSError:tError description:@"Invalid Edge Login Request"];
+//        if (error)
+//            *error = abcError;
+//        return nil;
+//    }
+
+    tABC_Error tError;
+    int hLobby;
+    ABC_FetchLobby([elRequestToken UTF8String], &hLobby, &tError);
+    abcError = [ABCError makeNSError:tError];
+    
+    if (!abcError)
+    {
+        char *szRequestType;
+        char *szDisplayName;
+        char *szDisplayImageUrl;
+        
+        ABC_GetLobbyAccountRequest(hLobby, &szRequestType, &szDisplayName, &szDisplayImageUrl, &tError);
+        abcError = [ABCError makeNSError:tError];
+        
+        if (!abcError)
+        {
+            
+            info = [ABCEdgeLoginInfo alloc];
+            info.repoTypes = [NSArray arrayWithObjects:[NSString stringWithUTF8String:szRequestType], nil];
+            info.requestor = [NSString stringWithUTF8String:szDisplayName];
+
+            if (szDisplayImageUrl)
+            {
+                NSString *imageUrl = [NSString stringWithUTF8String:szDisplayImageUrl];
+                if (imageUrl.length > 6)
+                {
+                    info.requestorImageUrl = imageUrl;
+                }
+            }
+            
+            NSMutableArray *ma = [[NSMutableArray alloc] init];
+            
+            for (NSString *s in info.repoTypes)
+            {
+                if ([s isEqualToString:@"account:repo:com.augur"])
+                {
+                    [ma addObject:@"Augur Account"];
+                }
+                else if ([s isEqualToString:@"account:repo:city.arcade"])
+                {
+                    [ma addObject:@"Arcade City Account"];
+                }
+                else if ([s isEqualToString:@"account:repo:com.mydomain.myapp"])
+                {
+                    [ma addObject:@"Cloud Chain Account"];
+                }
+                else if ([s isEqualToString:@"wallet:repo:ethereum"])
+                {
+                    [ma addObject:@"Ethereum Wallet"];
+                }
+                else if ([s isEqualToString:@"wallet:repo:bitcoin"])
+                {
+                    [ma addObject:@"Bitcoin Wallet"];
+                }
+                else
+                {
+                    [ma addObject:s];
+                }
+            }
+            
+            info.repoNames = [ma copy];
+            info.token = elRequestToken;
+            info.hLobby = hLobby;
+        }
+    }
+    if (error)
+        *error = abcError;
+    
+    return info;
+}
+
+- (void) approveEdgeLoginRequest:(ABCEdgeLoginInfo *)edgeLoginInfo
+                              callback:(void (^)(ABCError *error)) callback;
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+        ABCError *error = [self approveEdgeLoginRequest:edgeLoginInfo];
+        dispatch_async(dispatch_get_main_queue(), ^(void) {
+            if (callback) callback(error);
+        });
+    });
+}
+
+- (ABCError *) approveEdgeLoginRequest:(ABCEdgeLoginInfo *)edgeLoginInfo;
+{
+    ABCError *error;
+    tABC_Error tError;
+    
+    ABC_ApproveLobbyAccountRequest([self.name UTF8String], [self.password UTF8String], edgeLoginInfo.hLobby, &tError);
+    return [ABCError makeNSError:tError];
+}
+
+- (ABCError *) deleteEdgeLoginRequest:(NSString *)elRequestToken;
+{
+    if (![elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_ARCADECITY] &&
+        ![elRequestToken isEqualToString:DUMMY_EDGE_LOGIN_TOKEN_AUGUR])
+    {
+        tABC_Error tError;
+        tError.code = ABC_CC_Error;
+        [ABCError makeNSError:tError description:@"Invalid Edge Login Request"];
+        return nil;
+    }
+    else
+    {
+        return nil;
+    }
+}
+
+- (NSArray *) getEdgeLoginRepos:(NSString *)repoType;
+{
+    NSMutableArray *array = [[NSMutableArray alloc] init];
+    
+    if ([repoType isEqualToString:@"wallet:repo:bitcoin"])
+    {
+        for (ABCWallet *w in self.arrayWallets)
+        {
+            [array addObject:w];
+        }
+    }
+    if (array.count > 0)
+        return [array copy];
+    return nil;
+}
 
 /////////////////////////////////////////////////////////////////
 //////////////////// New ABCAccount methods ////////////////////
@@ -2111,5 +2253,13 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
 }
 
 
+@end
+
+@implementation ABCEdgeLoginInfo
+- (id)init
+{
+    self = [super init];
+    return self;
+}
 @end
 

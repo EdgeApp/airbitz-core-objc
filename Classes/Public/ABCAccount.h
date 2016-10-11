@@ -30,7 +30,20 @@
 @class ABCTransaction;
 @class ABCWallet;
 @class ABCBitIDSignature;
+@class ABCEdgeLoginInfo;
 @protocol ABCAccountDelegate;
+
+#define DUMMY_EDGE_LOGIN_TOKEN_AUGUR @"EDGYAUGUR1"
+#define DUMMY_EDGE_LOGIN_TOKEN_ARCADECITY @"ARCADECITY"
+
+@interface ABCEdgeLoginInfo : NSObject
+@property (atomic, strong)  NSString                    *token;
+@property (atomic, strong)  NSString                    *requestor;
+@property (atomic, strong)  NSString                    *requestorImageUrl;
+@property (atomic, strong)  NSArray                     *repoTypes;
+@property (atomic, strong)  NSArray                     *repoNames;
+@property                   int                         hLobby;
+@end
 
 @interface ABCAccount : NSObject
 ///----------------------------------------------------------
@@ -362,6 +375,17 @@
 - (BOOL)needsRecoveryQuestionsReminder;
 
 /// -----------------------------------------------------------------------------
+/// @name Edge Login Management - Private routines, Airbitz only. DO NOT USE
+/// -----------------------------------------------------------------------------
+
+- (void)getEdgeLoginRequest:(NSString *)elRequestToken
+                   callback:(void (^)(ABCError *error, ABCEdgeLoginInfo *info)) callback;
+- (void)approveEdgeLoginRequest:(ABCEdgeLoginInfo *)edgeLoginInfo
+                       callback:(void (^)(ABCError *error)) callback;
+- (ABCError *) deleteEdgeLoginRequest:(NSString *)elRequestToken;
+- (NSArray *) getEdgeLoginRepos:(NSString *)repoType;
+
+/// -----------------------------------------------------------------------------
 /// @name Misc ABCAccount methods
 /// -----------------------------------------------------------------------------
 
@@ -451,6 +475,10 @@
 /// Specific wallet has finished loading. Other wallets may still be loading
 /// @param wallet ABCWallet
 - (void) abcAccountWalletLoaded:(ABCWallet *)wallet;
+
+/// Specific wallet has had all it's addresses checked for new transactions
+/// @param wallet ABCWallet
+- (void) abcAccountWalletAddressesChecked:(ABCWallet *)wallet;
 
 /// Wallets in the account have changed. Changes may include new wallet order or wallet names.
 - (void) abcAccountWalletsChanged;
