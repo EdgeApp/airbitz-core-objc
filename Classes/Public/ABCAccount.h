@@ -210,6 +210,13 @@
 - (BOOL) hasPINLogin;
 
 /**
+ * Check if this account has a PIN whether or not it's enabled for login
+ * @return BOOL YES if PIN login is enabled
+ */
+- (BOOL) hasPIN;
+
+
+/**
  * Logout the current ABCAccount object
  * @return void
  */

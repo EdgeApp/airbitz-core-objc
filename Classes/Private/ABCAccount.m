@@ -1910,6 +1910,16 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
      }];
 }
 
+- (BOOL) hasPIN;
+{
+    if (self.settings.strPIN)
+    {
+        if ([self.settings.strPIN length] == 4)
+            return YES;
+    }
+    return NO;
+}
+
 - (BOOL) hasPINLogin;
 {
     return !self.settings.bDisablePINLogin;
