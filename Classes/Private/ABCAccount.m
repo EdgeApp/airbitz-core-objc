@@ -521,8 +521,8 @@ static NSNumberFormatter        *numberFormatter = nil;
 
 - (void)postWalletAddressesChecked:(ABCWallet *)wallet
 {
-    if (self.delegate && !wallet.addressesChecked) {
-        wallet.addressesChecked = YES;
+    wallet.addressesChecked = YES;
+    if (self.delegate) {
         if ([self.delegate respondsToSelector:@selector(abcAccountWalletAddressesChecked:)]) {
             [self.delegate abcAccountWalletAddressesChecked:wallet];
         }
@@ -1574,6 +1574,7 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
         [wallet handleSweepCallback:tx amount:amount error:error];
         
     } else if (ABC_AsyncEventType_AddressCheckDone == pInfo->eventType) {
+        
         dispatch_async(dispatch_get_main_queue(),^{
             ABC_Log([[NSString stringWithFormat:@"ABC_AsyncEventType_AddressCheckDone", walletUUID] UTF8String]);
             if (walletUUID)
