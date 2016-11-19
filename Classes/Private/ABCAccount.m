@@ -682,6 +682,9 @@ static NSNumberFormatter        *numberFormatter = nil;
     NSNumber *formatNumber;
     if (!error)
     {
+        if (fCurrency == 0.0)
+            return NULL;
+        
         if (denomination.multiplier == ABCDenominationMultiplierUBTC ||
             denomination.multiplier == ABCDenominationMultiplierMBTC)
         {
@@ -726,7 +729,7 @@ static NSNumberFormatter        *numberFormatter = nil;
     }
     else
     {
-        return @"";
+        return NULL;
     }
 }
 
