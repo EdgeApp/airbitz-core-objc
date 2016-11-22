@@ -32,7 +32,7 @@
 - (NSString *) getKeychainString:(NSString *)key error:(ABCError **)error;
 - (NSString *) createKeyWithUsername:(NSString *)username key:(NSString *)key;
 - (BOOL) bHasSecureEnclave;
-- (BOOL)authenticateTouchID:(NSString *)promptString fallbackString:(NSString *)fallbackString
+- (void)authenticateTouchID:(NSString *)promptString fallbackString:(NSString *)fallbackString
                    complete:(void (^)(BOOL didAuthenticate)) completionHandler;
 - (void) disableRelogin:(NSString *)username;
 - (void) disableTouchID:(NSString *)username;

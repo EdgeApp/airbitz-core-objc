@@ -105,7 +105,7 @@
 }
 
 // Authenticate w/touchID
-- (BOOL)authenticateTouchID:(NSString *)promptString fallbackString:(NSString *)fallbackString
+- (void)authenticateTouchID:(NSString *)promptString fallbackString:(NSString *)fallbackString
                    complete:(void (^)(BOOL didAuthenticate)) completionHandler;
 
 {
@@ -210,8 +210,8 @@
 { return nil; }
 - (BOOL) bHasSecureEnclave;
 { return NO; }
-- (BOOL)authenticateTouchID:(NSString *)promptString fallbackString:(NSString *)fallbackString;
-{ return NO; }
+- (void)authenticateTouchID:(NSString *)promptString fallbackString:(NSString *)fallbackString;
+{ return; }
 
 #endif
 
