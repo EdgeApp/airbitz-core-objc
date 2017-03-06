@@ -426,6 +426,13 @@ typedef enum eABCDeviceCaps
 - (NSArray *)listPendingOTPResetUsernames:(ABCError **)error;
 
 /**
+ * Returns an NSArray of login messages for all the local users on the
+ * current device. This may include messages for pending OTP reset or
+ * corrupt password recovery data
+ */
+- (NSArray *)getLoginMessages:(ABCError **)nserror;
+
+/**
  * Checks if the current account has a pending request to reset (disable)
  * OTP.
  * @param username NSString username to check

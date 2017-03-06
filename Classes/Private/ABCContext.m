@@ -1380,6 +1380,29 @@
     return usernameArray;
 }
 
+- (NSArray *)getLoginMessages:(ABCError **)nserror;
+{
+    tABC_Error error;
+    ABCError *nserror2 = nil;
+    char *szLoginMessages = NULL;
+    NSArray *arrayMessages = nil;
+    
+    ABC_GetLoginMessages(&szLoginMessages, &error);
+    nserror2 = [ABCError makeNSError:error];
+
+    if (!nserror2)
+    {
+        NSString *json = [NSString stringWithUTF8String:szLoginMessages];
+        NSData * jsonData = [json dataUsingEncoding:NSUTF8StringEncoding];
+        arrayMessages = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:&nserror2];
+    }
+    
+    if (nserror)
+        *nserror = nserror2;
+    
+    return arrayMessages;
+}
+
 - (ABCError *)setupOTPKey:(NSString *)username
                       key:(NSString *)key;
 {
