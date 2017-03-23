@@ -69,7 +69,7 @@
     {
         NSString *description = [NSString stringWithUTF8String:error.szDescription];
         if ([@"0" isEqualToString:description]) {
-            return NSLocalizedString(@"Invalid PIN.", nil);
+            return NSLocalizedString(@"Invalid PIN/Password", nil);
         } else {
             return [NSString stringWithFormat:
                     NSLocalizedString(@"Too many failed login attempts. Please try again in %@ seconds.", nil),
