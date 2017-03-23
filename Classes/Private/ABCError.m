@@ -94,7 +94,7 @@
         case ABCConditionCodeAccountDoesNotExist:
             return NSLocalizedString(@"We were unable to find your account. Be sure your username is correct.", nil);
         case ABCConditionCodeBadPassword:
-            return NSLocalizedString(@"Invalid user name or password", nil);
+            return NSLocalizedString(@"Invalid username, PIN, or password", nil);
         case ABCConditionCodeWalletAlreadyExists:
             return NSLocalizedString(@"Wallet already exists.", nil);
         case ABCConditionCodeInvalidWalletID:
