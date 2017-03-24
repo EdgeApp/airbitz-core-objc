@@ -152,31 +152,14 @@
 
 }
 
-- (BOOL) enableTouchID;
+- (void) enableTouchID;
 {
-    if (!self.account.password) return NO;
-    return [self enableTouchID:self.account.password];
-}
-
-- (BOOL) enableTouchID:(NSString *)password;
-{
-    // Need a password to enable touchID until we get support for login handles
-
-    if ([self.account checkPassword:password])
-    {
-        [self.local.touchIDUsersDisabled removeObject:self.account.name];
-        [self.local.touchIDUsersEnabled addObject:self.account.name];
-        [self.local saveAll];
-        [self.keyChain updateLoginKeychainInfo:self.account.name
-                                      loginKey:self.account.loginKey
-                                    useTouchID:YES];
-        self.account.password = password;
-        return YES;
-    }
-    else
-    {
-        return NO;
-    }
+    [self.local.touchIDUsersDisabled removeObject:self.account.name];
+    [self.local.touchIDUsersEnabled addObject:self.account.name];
+    [self.local saveAll];
+    [self.keyChain updateLoginKeychainInfo:self.account.name
+                                  loginKey:self.account.loginKey
+                                useTouchID:YES];
 }
 
 - (void) disableTouchID;

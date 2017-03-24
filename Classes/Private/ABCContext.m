@@ -718,9 +718,9 @@
             [self setLastAccessedAccount:username];
             // update user's default currency num to match their locale
             NSString *currencyCode = [ABCCurrency getCurrencyCodeOfLocale];
-            [account.settings enableTouchID];
             [account setDefaultCurrency:currencyCode];
             [account login];
+            [account.settings enableTouchID];
         }
     }
     
