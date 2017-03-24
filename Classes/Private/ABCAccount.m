@@ -1643,18 +1643,18 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
     
     if (!abcError)
     {
-        char *szRequestType;
+        char *szAppId;
         char *szDisplayName;
         char *szDisplayImageUrl;
         
-        ABC_GetLobbyAccountRequest(hLobby, &szRequestType, &szDisplayName, &szDisplayImageUrl, &tError);
+        ABC_GetLobbyAccountRequest(hLobby, &szAppId, &szDisplayName, &szDisplayImageUrl, &tError);
         abcError = [ABCError makeNSError:tError];
         
         if (!abcError)
         {
             
             info = [ABCEdgeLoginInfo alloc];
-            info.repoTypes = [NSArray arrayWithObjects:[NSString stringWithUTF8String:szRequestType], nil];
+            info.repoTypes = [NSArray arrayWithObjects:[NSString stringWithUTF8String:szAppId], nil];
             info.requestor = [NSString stringWithUTF8String:szDisplayName];
 
             if (szDisplayImageUrl)
@@ -1670,25 +1670,21 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
             
             for (NSString *s in info.repoTypes)
             {
-                if ([s isEqualToString:@"account:repo:com.augur"])
+                if ([s isEqualToString:@"com.augur"])
                 {
                     [ma addObject:@"Augur Account"];
                 }
-                else if ([s isEqualToString:@"account:repo:city.arcade"])
+                else if ([s isEqualToString:@"city.arcade"])
                 {
                     [ma addObject:@"Arcade City Account"];
                 }
-                else if ([s isEqualToString:@"account:repo:com.mydomain.myapp"])
+                else if ([s isEqualToString:@"com.mydomain.myapp"])
                 {
                     [ma addObject:@"Cloud Chain Account"];
                 }
-                else if ([s isEqualToString:@"wallet:repo:ethereum"])
+                else if ([s isEqualToString:@"ai.wings.app-alpha"])
                 {
-                    [ma addObject:@"Ethereum Wallet"];
-                }
-                else if ([s isEqualToString:@"wallet:repo:bitcoin"])
-                {
-                    [ma addObject:@"Bitcoin Wallet"];
+                    [ma addObject:@"Wings Alpha"];
                 }
                 else
                 {
