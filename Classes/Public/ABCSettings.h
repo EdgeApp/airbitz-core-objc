@@ -43,11 +43,20 @@
 /// Preferred exchange rate source. Set to one of the values in ABCArrayExchanges
 @property (nonatomic, copy) NSString* exchangeRateSource;
 
+/// List of user override Bitcoin servers. Must be Electrum servers, one per line separated by '\n'. Must be of the format
+/// stratum://[servername]:[port]
+/// ie. stratum://electrum.mydomain.com:50001
+/// User may have multiple servers each seperated by a newline '\n'
+@property (nonatomic, copy) NSString* overrideBitcoinServerList;
+
 /// If YES, payment request QR Codes and URIs should have the user's firstName, lastName, and nickName on the request
 @property (nonatomic) bool bNameOnPayments;
 
 /// Require a PIN on spend. This is not enforced by ABC but a reference for the GUI to verify
 @property (nonatomic) bool bSpendRequirePin;
+
+/// Use the bitcoin server override list
+@property (nonatomic) bool bOverrideBitcoinServers;
 
 /// Require a PIN if spending greater than spendRequirePinSatoshis. This is not enforced by ABC but a reference for the GUI to verify
 @property (nonatomic) int64_t spendRequirePinSatoshis;
