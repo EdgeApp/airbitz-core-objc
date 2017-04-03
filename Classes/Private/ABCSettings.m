@@ -195,12 +195,14 @@
         pSettings->bNameOnPayments                        != self.bNameOnPayments           ||
         pSettings->bSpendRequirePin                       != self.bSpendRequirePin          ||
         pSettings->spendRequirePinSatoshis                != self.spendRequirePinSatoshis   ||
+        pSettings->bOverrideBitcoinServers                != self.bOverrideBitcoinServers   ||
 
         ![self isNSStringEqualToCString:self.firstName            cstring:pSettings->szFirstName         ] ||
         ![self isNSStringEqualToCString:self.lastName             cstring:pSettings->szLastName          ] ||
         ![self isNSStringEqualToCString:self.nickName             cstring:pSettings->szNickname          ] ||
         ![self isNSStringEqualToCString:self.fullName             cstring:pSettings->szFullName          ] ||
         ![self isNSStringEqualToCString:self.strPIN               cstring:pSettings->szPIN               ] ||
+        ![self isNSStringEqualToCString:self.overrideBitcoinServerList               cstring:pSettings->szOverrideBitcoinServerList               ] ||
         ![self isNSStringEqualToCString:self.exchangeRateSource   cstring:pSettings->szExchangeRateSource] )
     {
         settingsChanged = YES;
