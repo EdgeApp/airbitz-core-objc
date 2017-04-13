@@ -53,7 +53,9 @@
             self.fullName             = pSettings->szFullName           ? [NSString stringWithUTF8String:pSettings->szFullName] : nil;
             self.strPIN               = pSettings->szPIN                ? [NSString stringWithUTF8String:pSettings->szPIN] : nil;
             self.exchangeRateSource   = pSettings->szExchangeRateSource ? [NSString stringWithUTF8String:pSettings->szExchangeRateSource] : nil;
+            self.overrideBitcoinServerList  = pSettings->szOverrideBitcoinServerList ? [NSString stringWithUTF8String:pSettings->szOverrideBitcoinServerList] : nil;
 
+            self.bOverrideBitcoinServers    = pSettings->bOverrideBitcoinServers;
             self.bNameOnPayments            = pSettings->bNameOnPayments;
             self.bSpendRequirePin           = pSettings->bSpendRequirePin;
             self.spendRequirePinSatoshis    = pSettings->spendRequirePinSatoshis;
@@ -100,6 +102,7 @@
             pSettings->bSpendRequirePin                       = self.bSpendRequirePin          ;
             pSettings->spendRequirePinSatoshis                = self.spendRequirePinSatoshis   ;
             pSettings->bDisablePINLogin                       = self.bDisablePINLogin          ;
+            pSettings->bOverrideBitcoinServers                = self.bOverrideBitcoinServers   ;
 
             self.firstName          ? [ABCUtil replaceString:&(pSettings->szFirstName         ) withString:[self.firstName          UTF8String]] : nil;
             self.lastName           ? [ABCUtil replaceString:&(pSettings->szLastName          ) withString:[self.lastName           UTF8String]] : nil;
@@ -107,6 +110,7 @@
             self.fullName           ? [ABCUtil replaceString:&(pSettings->szFullName          ) withString:[self.fullName           UTF8String]] : nil;
             self.strPIN             ? [ABCUtil replaceString:&(pSettings->szPIN               ) withString:[self.strPIN             UTF8String]] : nil;
             self.exchangeRateSource ? [ABCUtil replaceString:&(pSettings->szExchangeRateSource) withString:[self.exchangeRateSource UTF8String]] : nil;
+            self.overrideBitcoinServerList ? [ABCUtil replaceString:&(pSettings->szOverrideBitcoinServerList) withString:[self.overrideBitcoinServerList UTF8String]] : nil;
             settingsChanged = YES;
         }
 
@@ -191,12 +195,14 @@
         pSettings->bNameOnPayments                        != self.bNameOnPayments           ||
         pSettings->bSpendRequirePin                       != self.bSpendRequirePin          ||
         pSettings->spendRequirePinSatoshis                != self.spendRequirePinSatoshis   ||
+        pSettings->bOverrideBitcoinServers                != self.bOverrideBitcoinServers   ||
 
         ![self isNSStringEqualToCString:self.firstName            cstring:pSettings->szFirstName         ] ||
         ![self isNSStringEqualToCString:self.lastName             cstring:pSettings->szLastName          ] ||
         ![self isNSStringEqualToCString:self.nickName             cstring:pSettings->szNickname          ] ||
         ![self isNSStringEqualToCString:self.fullName             cstring:pSettings->szFullName          ] ||
         ![self isNSStringEqualToCString:self.strPIN               cstring:pSettings->szPIN               ] ||
+        ![self isNSStringEqualToCString:self.overrideBitcoinServerList               cstring:pSettings->szOverrideBitcoinServerList               ] ||
         ![self isNSStringEqualToCString:self.exchangeRateSource   cstring:pSettings->szExchangeRateSource] )
     {
         settingsChanged = YES;
