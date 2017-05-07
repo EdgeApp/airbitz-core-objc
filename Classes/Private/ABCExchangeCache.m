@@ -95,9 +95,12 @@
         ABCCurrency *c = [self getCurrencyFromCode:currencyCode];
         [self addCurrencyToCheck:c];
         
-        ABCAccount *account = self.abc.loggedInUsers[0];
-        if (account)
-            [account requestExchangeRateUpdate];
+        if (self.abc.loggedInUsers && [self.abc.loggedInUsers count])
+        {
+            ABCAccount *account = self.abc.loggedInUsers[0];
+            if (account)
+                [account requestExchangeRateUpdate];
+        }
     }
     
     if (nserror) *nserror = nserror2;
