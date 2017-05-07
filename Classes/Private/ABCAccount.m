@@ -1670,13 +1670,9 @@ void ABC_BitCoin_Event_Callback(const tABC_AsyncBitCoinInfo *pInfo)
             
             for (NSString *s in info.repoTypes)
             {
-                if ([s isEqualToString:@"com.augur"])
+                if ([s isEqualToString:@"net.augur.app"])
                 {
                     [ma addObject:@"Augur Account"];
-                }
-                else if ([s isEqualToString:@"city.arcade"])
-                {
-                    [ma addObject:@"Arcade City Account"];
                 }
                 else if ([s isEqualToString:@"com.mydomain.myapp"])
                 {
