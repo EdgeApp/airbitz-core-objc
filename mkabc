@@ -4,7 +4,9 @@ set -e
 
 # Pick up the current directory:
 CURRENT_DIR=$(pwd)
-export BUILD_DIR=${BUILD_DIR:-$CURRENT_DIR/../airbitz-core/deps/build}
+if [ -z ${BUILD_DIR+x} ]; then
+  export BUILD_DIR=${BUILD_DIR:-$CURRENT_DIR/../airbitz-core/deps/build};
+fi
 
 # Testnet options:
 if [ "${1-}" = "testnet" ]; then
