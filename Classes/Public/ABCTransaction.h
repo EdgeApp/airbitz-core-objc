@@ -30,7 +30,7 @@
 @property (nonatomic, strong)   NSDate          *date;
 
 /// Block height that this transaction confirmed. 0 if unconfirmed
-@property (nonatomic, assign)   unsigned long   height;
+@property (nonatomic, assign)   long   height;
 
 /// Amount of this transaction in satoshis. Amount is negative for outgoing spends
 @property (nonatomic, assign)   SInt64			amountSatoshi;
