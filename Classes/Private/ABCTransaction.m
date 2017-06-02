@@ -11,7 +11,7 @@
 
 @interface ABCTransaction ()
 {
-    unsigned long           _height;
+    long           _height;
 }
 
 @end
@@ -52,7 +52,7 @@
     return _height;
 }
 
-- (void)setHeight:(unsigned long)height;
+- (void)setHeight:(long)height;
 {
     _height = height;
 }

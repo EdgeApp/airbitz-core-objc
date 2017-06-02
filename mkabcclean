@@ -9,11 +9,14 @@ mkdir -m 0775 -p Libraries
 
 touch ../airbitz-core/deps/recipes/abc/abc.recipe
 
+if [ -z ${BUILD_DIR+x} ]; then
+  export BUILD_DIR=${BUILD_DIR:-$CURRENT_DIR/../airbitz-core/deps/build};
+fi
+
 if [ "${1-}" = "testnet" ]; then
     shift
     (
         cd ../airbitz-core/deps
-        export BUILD_DIR=${CURRENT_DIR}/../airbitz-core/deps/build-testnet
 	make abc.clean
         make abc.package-ios-universal ENABLE_TESTNET=1 $@
     )
@@ -22,7 +25,6 @@ if [ "${1-}" = "testnet" ]; then
 else
     (
         cd ../airbitz-core/deps
-        export BUILD_DIR=${CURRENT_DIR}/../airbitz-core/deps/build
 	make abc.clean
         make abc.package-ios-universal $@
     )
