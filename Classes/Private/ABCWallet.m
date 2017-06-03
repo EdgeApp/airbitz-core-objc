@@ -737,7 +737,7 @@ static const int importTimeout                  = 30;
 // overriding the description - used in debugging
 - (NSString *)description
 {
-	return([NSString stringWithFormat:@"Wallet - UUID: %@, Name: %@, CurrencyCode: %@, Attributes: %d, Balance: %lf, Transactions: %@",
+	return([NSString stringWithFormat:@"Wallet - UUID: %@, Name: %@, CurrencyCode: %@, Attributes: %d, Balance: %llu, Transactions: %@",
             self.uuid,
             self.name,
 //            self.strUserName,
