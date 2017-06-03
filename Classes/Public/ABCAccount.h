@@ -373,14 +373,6 @@
 
 - (ABCError *)disableRecovery2;
 
-/**
- * GUI utility function to help determine if the user should be asked to setup
- * recovery questions and answers. This routine factors the amount of funds the account
- * has received and whether or not recovery Q/A has already been setup.
- * @return BOOL YES if user should be asked.
- */
-- (BOOL)needsRecoveryQuestionsReminder;
-
 /// -----------------------------------------------------------------------------
 /// @name Edge Login Management - Private routines, Airbitz only. DO NOT USE
 /// -----------------------------------------------------------------------------
