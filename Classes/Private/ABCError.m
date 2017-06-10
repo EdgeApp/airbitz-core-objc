@@ -142,6 +142,7 @@
         case ABCConditionCodeNoTransaction:
             return NSLocalizedString(@"No Transactions in Wallet", nil);
         case ABCConditionCodeSysError:
+            return NSLocalizedString(@"Trouble accessing network. Please check network connection", nil);
         case ABCConditionCodeNotInitialized:
         case ABCConditionCodeReinitialization:
         case ABCConditionCodeParseError:
