@@ -81,7 +81,7 @@ developers to secure arbitrary data which provides automatic client-side encrypt
   #  Supports git, hg, bzr, svn and HTTP.
   #
   #s.source = { :git => 'https://github.com/Airbitz/airbitz-core-objc.git', :tag => '0.10.3' }
-  s.source = { :http => "https://developer.airbitz.co/download/airbitz-core-objc-1.1.2.tgz" }
+  s.source = { :http => "https://developer.airbitz.co/download/airbitz-core-objc-1.2.0.tgz" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
