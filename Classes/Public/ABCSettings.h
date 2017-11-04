@@ -61,6 +61,9 @@
 /// Require a PIN if spending greater than spendRequirePinSatoshis. This is not enforced by ABC but a reference for the GUI to verify
 @property (nonatomic) int64_t spendRequirePinSatoshis;
 
+/// Choice of chain to follow for segwit2x fork
+@property (nonatomic) int forkChoice;
+
 /**
  * Loads all settings into ABCSettings from encrypted storage
  * @return NSSError object
